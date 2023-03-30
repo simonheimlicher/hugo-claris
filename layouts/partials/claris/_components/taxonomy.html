@@ -2,7 +2,7 @@
 {{- with .Page }}
   {{- $page = . }}
 {{- end }}
-{{- $headingLevel := default "2" .HeadingLevel }}
+{{- $headingLevel := default 3 .HeadingLevel }}
 {{- with $page -}}<!-- Restore "." to refer to page context fromw hich the partial was called -->
 {{- $tagsLimit := (default 100 .Site.Params.numberOfTagsShown) }}
 {{- $taxonomyMaxYears := (default 10 .Site.Params.taxonomyMaxYears) }}

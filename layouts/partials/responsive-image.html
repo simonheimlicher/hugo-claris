@@ -8,9 +8,9 @@
 {{- $imgProcess := .Process -}}
 {{- $imgClass := .ImgClass -}}
 {{- $imgPosition := default "center center" .ImgPosition -}}
-{{- $figureClass := cond (ne "" $caption) "figcaption" "" -}}
+{{- $figureClass := cond (ne "" $caption) "caption" "" -}}
 {{- with .FigureClass -}}
-  {{- $figureClass = . -}}
+  {{- $figureClass = printf "%s %s" $figureClass . -}}
 {{- end }}
 {{- with .float -}}
   {{- if $figureClass -}}
@@ -138,7 +138,7 @@
       {{- if $figureClass -}}
         {{- with $caption -}}
           <figcaption>
-            {{- . | markdownify -}}
+            {{- . | $page.RenderString -}}
           </figcaption>
         {{- end }}
         </figure>
@@ -185,7 +185,7 @@
     {{- if $figureClass -}}
         {{- with $caption -}}
         <figcaption>
-          {{- . | markdownify -}}
+          {{- . | $page.RenderString -}}
         </figcaption>
         {{- end }}
       </figure>

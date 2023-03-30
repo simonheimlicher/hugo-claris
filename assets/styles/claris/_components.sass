@@ -166,135 +166,6 @@
   &_link.grid
     // FIXME: Height 100% required for Safari
     height: 100%
-  &_item
-    margin-bottom: 1rem
-    border-radius: 0.25rem
-    background: var(--bg)
-    @include drop-shadow(3rem, 0.1, 0.3)
-    @media (any-hover: hover)
-      &:hover, &:focus, a, a:hover, a:focus
-        color: var(--text-hover)
-        background: var(--bg-hover)
-    &.grid
-      height: 100%
-      margin-bottom: 0
-    &_featured
-      grid-column: auto / span 2
-      @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
-        .excerpt, .content-excerpt
-          font-size: 125%
-  &_tag
-    padding: 0 0.5rem
-    font-size: 0.9rem
-    &s
-      display: none
-      &.jswidgetopen
-        display: block // initial
-        position: fixed
-        top: 0
-        left: 0
-        height: 100vh
-        overflow-y: auto
-        width: 100vw
-        padding: 5rem 1.5rem
-        background: var(--translucent)
-        cursor: pointer
-        z-index: 999
-        overflow-y: auto
-      &_toggle
-        margin-top: 0.5rem
-        margin-left: 0.5rem
-        cursor: pointer
-  &_tag, &_share
-    margin: 0.5rem
-  &_share
-    display: inline-flex
-  &_meta
-    align-items: stretch
-    font-family: var(--font)
-    font-size: 0.9rem
-    &, span
-      display: inline-flex
-      flex-flow: row wrap
-    span
-      align-items: center
-    .button
-      margin: 0.125rem 0.25rem
-    .icon
-      width: 0.9rem;
-      height: 0.9rem;
-      &:first-child
-        margin-left: 0
-
-  &_date, &_time
-    margin: 0.125rem
-
-  &_content
-    @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
-      font-size: 1.3rem
-    @include list-style
-    background: var(--choice-bg)
-    font-family: var(--font-article)
-    margin-top: calc( (1 - var(--line-height-heading) ) * 1em)
-
-.article_aside
-  display: none
-  position: sticky
-  margin: 0.8rem 0 1rem auto
-  // top: calc(#{$nav-height} + 5vh)
-  top: calc(#{$nav-height} + #{$screenViewBodyPadding})
-  align-self: start
-  border-radius: 0.25rem
-  // padding: 0.5rem 1rem 0 1rem
-  font-family: var(--font)
-  // background: rgba(var(--RGB_bg), 0.9)
-  // https://stackoverflow.com/a/66962139/617559
-  // width: fit-content
-  // display: flex
-  // align-items: center
-  // @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none))
-  //   background: linear-gradient(180deg, rgba(var(--RGB_bg), 0.8) 0%, rgba(var(--RGB_bg), 0.8) 80%, rgba(var(--RGB_bg), 0.8) 100%)
-  //   backdrop-filter: blur(50px)
-  //   -webkit-backdrop-filter: blur(50px)
-  &:after
-    content: ""
-    padding: 0.5px
-    top: 0
-    bottom: 0
-    background: var(--xhaze)
-    background: linear-gradient(to bottom, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze))
-    position: absolute
-    // right: 1px
-    right: calc(-0.5 * var(--column-gap))
-  @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
-    display: block
-
-.content
-  &_link, &_title
-    margin-top: 0
-    margin-bottom: 0
-  &s
-    margin-top: 2rem
-  &_link.grid
-    // FIXME: Height 100% required for Safari
-    height: 100%
-  &_item
-    margin-bottom: 1rem
-    border-radius: 0.25rem
-    background: var(--bg)
-    @include drop-shadow(3rem, 0.1, 0.3)
-    @media (any-hover: hover)
-      &:hover, &:focus, a, a:hover, a:focus
-        color: var(--text-hover)
-        background: var(--bg-hover)
-    &.grid
-      height: 100%
-      margin-bottom: 0
-    &_featured
-      grid-column: auto / span 2
-      @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
-        .excerpt, .content-excerpt
-          font-size: 125%
   &_tag, &_meta_tag
     padding: 0 0.5rem
     font-size: 0.9rem
@@ -355,6 +226,57 @@
     background: var(--choice-bg)
     font-family: var(--font-article)
     margin-top: calc( (1 - var(--line-height-heading) ) * 1em)
+
+.article_aside
+  display: none
+  position: sticky
+  margin: 0.8rem 0 1rem auto
+  // top: calc(#{$nav-height} + 5vh)
+  top: calc(#{$nav-height} + #{$screenViewBodyPadding})
+  align-self: start
+  border-radius: 0.25rem
+  // padding: 0.5rem 1rem 0 1rem
+  font-family: var(--font)
+  // background: rgba(var(--RGB_bg), 0.9)
+  // https://stackoverflow.com/a/66962139/617559
+  // width: fit-content
+  // display: flex
+  // align-items: center
+  // @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none))
+  //   background: linear-gradient(180deg, rgba(var(--RGB_bg), 0.8) 0%, rgba(var(--RGB_bg), 0.8) 80%, rgba(var(--RGB_bg), 0.8) 100%)
+  //   backdrop-filter: blur(50px)
+  //   -webkit-backdrop-filter: blur(50px)
+  &:after
+    content: ""
+    padding: 0.5px
+    top: 0
+    bottom: 0
+    background: var(--xhaze)
+    background: linear-gradient(to bottom, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze))
+    position: absolute
+    // right: 1px
+    right: calc(-0.5 * var(--column-gap))
+  @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+    display: block
+
+.content
+  &_item
+    margin-bottom: 1rem
+    border-radius: 0.25rem
+    background: var(--bg)
+    @include drop-shadow(3rem, 0.1, 0.3)
+    @media (any-hover: hover)
+      &:hover, &:focus, a, a:hover, a:focus
+        color: var(--text-hover)
+        background: var(--bg-hover)
+    &.grid
+      height: 100%
+      margin-bottom: 0
+    &_featured
+      grid-column: auto / span 2
+      @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+        .excerpt
+          font-size: 125%
 
 .content_aside
   display: none
@@ -583,118 +505,70 @@
         right: 0.45rem
 
 .excerpt
-  padding: ($screenViewBodyPadding / 1.5) $screenViewBodyPadding
   height: 100%
+  display: flex
+  flex-direction: column
+  // justify-content: space-between
+  align-items: flex-start
+  grid-gap: 0
   &:after
     content: ''
     display: table;
     clear: both
+  &_title, &_meta
+    width: 100%
+    padding: 0 $screenViewBodyPadding
   &_header, &_footer
-    padding: 0
+    width: 100%
   &_title
+    width: 100%
+    padding-top: ($screenViewBodyPadding / 1.5)
+    // margin: calc(-#{$screenViewBodyPadding} / 1.5) calc(-1 * #{$screenViewBodyPadding})
+    // padding: ($screenViewBodyPadding / 1.5) $screenViewBodyPadding
+    @extend h3
     margin: 0
-    padding-top: 0
-  &_thumbnail
-    // min-height: 10rem
-    display: none
-    @media screen and (min-width: $screenViewBreakpointWidthMobile)
-      display: block
-      border-radius: 0.5rem
-
-  &_footer
+  &_main
+    height: 100%
+    overflow: auto
+    padding: calc(#{$screenViewBodyPadding} / 1.5) $screenViewBodyPadding calc(#{$screenViewBodyPadding} / 1.5) $screenViewBodyPadding
     &.partition
       .excerpt_thumbnail
-        float: left
-        margin: 0.35em 1em 0.2em 0
-        max-width: 40%
-        // max-width: 128px
-        max-height: 100%
-      img
-          margin: 0
-
-  &_grid
-    display: flex
-    flex-wrap: wrap
-    flex-direction: column
-    justify-content: space-between
-    // margin: 0 0 -1rem -1rem
-    gap: 1rem
-
-    @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
-      .content_item
-        flex-grow: 1
-        flex-basis: calc((#{$screenViewBreakpointWidthOneColumn} - 2 * #{$screenViewBodyPadding} - 2rem) / 2)
-
-    @supports (display: grid)
-      @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
-        &
-          display: grid
-          grid-gap: 1rem
-          margin: 0
-          /* Auto-fit as many items on a row as possible without going under $list-excerpt-width */
-          // grid-template-columns: repeat(auto-fit, minmax(#{$list-excerpt-width}, 1fr))
-          // grid-auto-flow: dense
-          grid-template-columns: repeat(2, minmax(#{$list-excerpt-width}, 1fr))
-          grid-auto-flow: dense
-          .content_item
-            margin: 0
-      @media screen and (min-width: $screenViewBreakpointWidthUltrawide)
-        &
-          grid-template-columns: repeat(4, minmax(#{$list-excerpt-width}, 1fr))
-          grid-gap: $screenViewBodyPadding
-
-.content-excerpt
-  padding: ($screenViewBodyPadding / 1.5) $screenViewBodyPadding
-  height: 100%
-  &:after
-    content: ''
-    display: table;
-    clear: both
-  &_header, &_footer
-    padding: 0
-  &_title
-    margin: calc(-#{$screenViewBodyPadding} / 1.5) calc(-1 * #{$screenViewBodyPadding})
-    padding: ($screenViewBodyPadding / 1.5) $screenViewBodyPadding
-    @extend h3
+        padding-bottom: calc(#{$screenViewBodyPadding} / 1.5)
+    @media screen and (min-width: $screenViewBreakpointWidthNarrow)
+      &.partition
+        padding-top: calc(#{$screenViewBodyPadding} / 1.5 - 0.4em)
+        .excerpt_thumbnail
+          float: left
+          padding-top: 0.4em
+          padding-right: 1em
+          max-width: 40%
+          max-height: 100%
   &_thumbnail
-    // display: none
     img
+      margin: 0
       aspect-ratio: 1.618033988749894 // golden ratio
     @media screen and (min-width: $screenViewBreakpointWidthMobile)
-      // display: block
-      // min-height: 10rem
       border-radius: 0.5rem
     @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
       img
         aspect-ratio: 1
-
-  &_read-on
-    display: none
-    .read-on
-      &::before
-        content: "↳  "
-    // text-align: right
-    margin-top: $screenViewBodyPadding
-    @media screen and (min-width: $screenViewBreakpointWidthNarrow)
-      display: block
   &_footer
-    overflow: auto
-    // margin: calc(#{$screenViewBodyPadding} / 1.5) 0
-    &.partition
-      .content-excerpt_thumbnail
-        margin: calc(#{$screenViewBodyPadding} / 1.5) 0
-    img
+    // padding-bottom: ($screenViewBodyPadding / 1.5)
+    &_read-on
+      display: none
+      // margin: auto 0 0 auto
+      padding: $screenViewBodyPadding $screenViewBodyPadding ($screenViewBodyPadding / 1.5) $screenViewBodyPadding
       margin: 0
-    @media screen and (min-width: $screenViewBreakpointWidthMobile)
-      margin: 0 calc(-1 * #{$screenViewBodyPadding}) calc(-#{$screenViewBodyPadding} / 1.5) calc(-1 * #{$screenViewBodyPadding})
-      padding: ($screenViewBodyPadding / 1.5) $screenViewBodyPadding
-      &.partition
-        .content-excerpt_thumbnail
-          float: left
-          margin: 0.35em 1em 0.2em 0
-          max-width: 40%
-          // max-width: 128px
-          max-height: 100%
+      width: 100%
+      .read-on
+        &::before
+          content: "↳  "
+      text-align: right
+    @media screen and (min-width: $screenViewBreakpointWidthNarrow)
+      &
+        padding-bottom: 0
+      &_read-on
+        display: block
 
   &_grid
     display: flex
@@ -704,7 +578,7 @@
     margin: 0 0 -1rem -1rem
     .content_item
       margin: 0 0 1rem 1rem
-      padding: 0.5rem 1rem
+      // padding: 0.5rem 1rem
     @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
       .content_item
         flex-grow: 1
@@ -724,6 +598,39 @@
       @supports (display: grid)
         &
           grid-gap: $screenViewBodyPadding
+
+.hero-image_background_main
+  .excerpt
+    &_grid
+      display: flex
+      flex-wrap: wrap
+      flex-direction: column
+      justify-content: space-between
+      margin: 0 0 -1rem -1rem
+      gap: 1rem
+
+      @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+        .content_item
+          flex-grow: 1
+          flex-basis: calc((#{$screenViewBreakpointWidthOneColumn} - 2 * #{$screenViewBodyPadding} - 2rem) / 2)
+
+      @supports (display: grid)
+        @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+          &
+            display: grid
+            grid-gap: 1rem
+            margin: 0
+            /* Auto-fit as many items on a row as possible without going under $list-excerpt-width */
+            // grid-template-columns: repeat(auto-fit, minmax(#{$list-excerpt-width}, 1fr))
+            // grid-auto-flow: dense
+            grid-template-columns: repeat(2, minmax(#{$list-excerpt-width}, 1fr))
+            grid-auto-flow: dense
+            .content_item
+                margin: 0
+        @media screen and (min-width: $screenViewBreakpointWidthUltrawide)
+          &
+            grid-template-columns: repeat(4, minmax(#{$list-excerpt-width}, 1fr))
+            grid-gap: $screenViewBodyPadding
 
 .sidebar
   @include aside
@@ -1101,7 +1008,6 @@ html[data-mode="dim"]
       @include note-dim-colors
 
 .shortcode_responsive-figure
-  background: var(--figure-bg)
   @at-root figure#{&}
     margin: calc(#{$screenViewBodyPadding}) auto
     padding: calc(#{$screenViewBodyPadding}) calc(#{$screenViewBodyPadding})
@@ -1114,22 +1020,20 @@ html[data-mode="dim"]
     max-width: 100%
     max-height: 100%
     padding: 0
-  figcaption
+  &.caption
+    background: var(--figure-bg)
+    padding: calc(#{$screenViewBodyPadding} / 1.5) calc(#{$screenViewBodyPadding} / 2)
     color: var(--text)
     font-family: var(--font)
     // text-align: center
 
   &.background-light
     background: var(--bg-light)
-    figcaption
-      color: var(--text-light)
-      padding: calc(#{$screenViewBodyPadding} / 1.5) calc(#{$screenViewBodyPadding} / 2)
+    color: var(--text-light)
 
   &.background-dark
     background: var(--bg-dark)
-    figcaption
-      color: var(--text-dark)
-      padding: calc(#{$screenViewBodyPadding} / 1.5) calc(#{$screenViewBodyPadding} / 2)
+    color: var(--text-dark)
 
   &_img &.shape-round
     border-radius: 50%

@@ -1,21 +1,21 @@
 {{- $page := .Page }}
 {{- $items := .Items }}
 {{- $itemType := default "section" .ItemType }}
+{{- $headingLevel := default 2 .HeadingLevel }}
 {{- $excerptPartial := default "claris/_components/excerpt" .Partial }}
 {{- $template := "claris/_components/list" }}
-{{- $s := site.Params }}
-{{- $p := $page.Params }}
-        <div class="content_multicolumn content_grid">
+{{- $mainSection := (in ($page.Param "mainSections") .Section) -}}
+
+        <div class="content_multicolumn content{{ if $mainSection }} main-section{{ end }}">
           <div class="excerpt_grid">
           {{- range ($page.Paginate $items).Pages }}
-          {{/* {{- range $items }} */}}
-            {{/* {{- warnf "%s[%s]: Listing page %v" $page $template . }} */}}
+            {{/* {{- warnf "%s[%s]: Listing page:%v with .Params:%v" $page $template . .Params }} */}}
             <article class="content_item{{ if .Params.featured }} content_item_featured{{ end }} grid">
-              {{ partial $excerptPartial (dict "Page" . "RelativeDates" false "ShowTags" false) }}
+              {{ partial $excerptPartial (dict "Page" . "HeadingLevel" $headingLevel "RelativeDates" false "ShowTags" false) }}
             </article>
           {{- end }}
           </div>
-          {{- if gt (len $items) $s.paginate }}
+          {{- if gt (len $items) ($page.Param "paginate") }}
           <div class="pagination_grid">
             {{- template "_internal/pagination.html" $page }}
           </div>

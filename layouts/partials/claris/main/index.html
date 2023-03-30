@@ -13,7 +13,6 @@
 
 {{- $s := .Site.Params }}
 {{- $p := .Params }}
-{{- $title := .Title | markdownify }}
 
 {{- $mainInnerClassList := (slice "main_inner" "wrap") }}
 {{ if (and (eq $kind "page") (not (or (eq $p.singleColumn true) (eq $p.sidebar false) ) ) ) }}
@@ -22,7 +21,6 @@
 
 {{- $componentParams := (dict
   "Page" $page
-  "Title" $title
   "ItemType" $itemType
   "HeadingLevel" 2
 ) }}

@@ -29,7 +29,7 @@
 {{- if $displayTableOfContents }}
   {{ partial "claris/_components/aside-article" . }}
 {{- end }}
-<article class="content_singlecolumn content article_content{{ if $mainSection }} main-section{{ end }}">
+<article class="article_content content_singlecolumn content{{ if $mainSection }} main-section{{ end }}">
   {{- partial "claris/_components/title" $page }}
   {{- if (and (eq $itemType "article") $mainSection) -}}
     {{- partial "claris/_components/meta" . }}
