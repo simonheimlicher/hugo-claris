@@ -1,0 +1,34 @@
+{{- $page := . }}
+{{- $p := .Params }}
+{{- $s := .Site.Params }}
+{{- $template := "partials/header" }}
+{{- $centerLogo := $s.centerLogo }}
+{{- $logo := $s.logo }}
+{{- $logoURL := $s.logoURL }}
+    <header class="nav_header">
+      <nav class="nav wrap">
+        {{- /* FIXME: partial "claris/header/logo" is required for mobile navigation to work. Otherwise, JS "theme/mobile-nav.js" will terminate early" */ -}}
+        {{- if $centerLogo }}
+          {{- partialCached "claris/header/logo" (dict "logo" $logo "class" "nav_hide" "logoURL" $logoURL ) }}
+        {{- else }}
+          {{- partialCached "claris/header/logo" (dict "logo" $logo "logoURL" $logoURL ) }}
+        {{- end }}
+        <div class='nav_body nav_body_{{ $s.mobileNavigation }}'>
+          {{- $menuData := .Site.Data.menu }}
+          {{- with $menuData }}
+            {{ partial "claris/header/nav" (dict "ctx" $page "Page" $page "Menu" $menuData) }}
+          {{- else }}
+            {{ partial "claris/header/nav" (dict "ctx" $page "Page" . "Menu" .Site.Menus.main) }}
+          {{- end }}
+          {{- if $centerLogo }}
+            {{ partial "claris/header/logo" (dict "logo" $logo "class" "nav_center") }}
+          {{- end }}
+          {{- if (ne .Type "vitae") }}
+          <div class="nav_parent nav_parent_follow_mode">
+          {{- partialCached "claris/header/follow" . }}
+          {{- partialCached "claris/header/mode" . }}
+          {{- end }}
+          </div>
+        </div>
+      </nav>
+    </header>

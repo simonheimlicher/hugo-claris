@@ -1,0 +1,32 @@
+{{- /* partial alternative-type
+Determines the [Content Type](https://gohugo.io/content-management/types/)
+of the page passed as argument in the current context, as follows:
+- If the value of '.Page.Type' matches a directory under `:project/assets/styles`,
+  that value is returned
+- Otherwise, the function returns false
+USAGE: Set up your hugo project directory in two steps:
+- An pages that should be rendered with an alternative theme added to the default theme
+  have their .Type  set to the name of that theme.
+- The alternative theme installs a directory with its name. For example, if
+  pages of type 'vitae' should be rendered with the alternative theme,
+  there must be a file 'main.{sass,scss,css}' in the directory ':project/assets/styles/vitae':
+    ':project/assets/styles/vitae/main.sass'
+Once this is set up, you can call this function in the context of a page:
+  {{- alternativeType := partial "claris/_functions/alternative-type" . }}
+*/ -}}
+{{- $page := .Page }}
+{{- $template := "claris/_functions/alternative-type" }}
+{{- $alternativeType := false }}
+{{- $pageType := $page.Type }}
+{{- $resourceGlob := (printf "/styles/%s/main.*" .Type) }}
+{{- if (ne $pageType "claris") }}
+  {{- with (resources.GetMatch $resourceGlob ) }}
+    {{/* {{- warnf "%s[%s]: Returning '%s' as alternative content type: Got resource '%s' matching '%s'"
+        $page $template $pageType . $resourceGlob }} */}}
+    {{- $alternativeType = $pageType }}
+  {{/* {{- else }}
+    {{- warnf "%s[%s]: Not considering '%s' as an alternative content type: No resource matching '%s'"
+        $page $template $pageType $resourceGlob }} */}}
+  {{- end }}
+{{- end }}
+{{- return $alternativeType }}

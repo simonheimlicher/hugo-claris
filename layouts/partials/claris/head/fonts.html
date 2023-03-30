@@ -1,0 +1,79 @@
+<!-- Fonts: Determine if CSS from Google Fonts should be inclucded-->
+{{- $page := .Page }}
+{{- $template := "claris/head/fonts" }}
+{{- $themeFontPath := default "/fonts" ($page.Param "fontPath") }}
+{{- $fontFamilySans := default "Cabin" ($page.Param "fontFamilySans") }}
+{{- $fontFamilySerif := default "Merriweather" ($page.Param "fontFamilySerif") }}
+{{- $fontFamilyMono := default "DM Mono" ($page.Param "fontFamilyMono") }}
+{{- $fontFamilies := (slice $fontFamilySans $fontFamilySerif $fontFamilyMono) }}
+{{/* {{- warnf "%s[%s]: fontFamilies:%v customFonts:%v $fontsSelfHosted:%v"
+  $page $template $fontFamilies ($page.Param "customFonts") ($page.Param "fontsSelfHosted") }} */}}
+{{- if ne ($page.Param "customFonts") true }}
+  {{- if eq ($page.Param "fontsSelfHosted") false }}
+    {{/* {{- warnf "%s[%s]: Loading fonts in fontFamilies:%v from Google " $page $template $fontFamilies }} */}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    {{- if in $fontFamilies "IBM Plex Sans" }}
+      <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    {{- end }}
+    {{- if in $fontFamilies "Public Sans" }}
+      <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    {{- end }}
+    {{- if in $fontFamilies "Work Sans" }}
+      <link href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    {{- end }}
+    {{- if in $fontFamilies "Cabin" }}
+    <link href="https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    {{- end }}
+    {{- if in $fontFamilies "Merriweather Sans" }}
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    {{- end }}
+
+    {{- if in $fontFamilies "IBM Plex Serif" }}
+      <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    {{- end }}
+    {{- if in $fontFamilies "Merriweather" }}
+      <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+    {{- end }}
+    {{- if in $fontFamilies "Crimson Pro" }}
+      <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    {{- end }}
+    {{- if in $fontFamilies "Literata" }}
+      <link href="https://fonts.googleapis.com/css2?family=Literata:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    {{- end }}
+    {{- if in $fontFamilies "Cormorant" }}
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    {{- end }}
+
+    {{- if in $fontFamilies "IBM Plex Mono" }}
+      <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    {{- end }}
+    {{- if in $fontFamilies "Inconsolata" }}
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    {{- end }}
+    {{- if in $fontFamilies "JetBrains Mono" }}
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;1,100;1,200;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
+    {{- end }}
+    {{- if in $fontFamilies "DM Mono" }}
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
+    {{- end }}
+  {{- else }}
+      <link rel="preload" href="{{ $themeFontPath }}/ibm-plex-sans-v8-latin/ibm-plex-sans-v8-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+      {{- /*  <link rel="preload" href="{{ $themeFontPath }}/ibm-plex-sans-v8-latin/ibm-plex-sans-v8-latin-italic.woff2" as="font" type="font/woff2" crossorigin>
+      <link rel="preload" href="{{ $themeFontPath }}/ibm-plex-sans-v8-latin/ibm-plex-sans-v8-latin-300.woff2" as="font" type="font/woff2" crossorigin>
+      <link rel="preload" href="{{ $themeFontPath }}/ibm-plex-sans-v8-latin/ibm-plex-sans-v8-latin-300italic.woff2" as="font" type="font/woff2" crossorigin>
+      <link rel="preload" href="{{ $themeFontPath }}/ibm-plex-sans-v8-latin/ibm-plex-sans-v8-latin-600.woff2" as="font" type="font/woff2" crossorigin>
+      <link rel="preload" href="{{ $themeFontPath }}/ibm-plex-sans-v8-latin/ibm-plex-sans-v8-latin-600italic.woff2" as="font" type="font/woff2" crossorigin>  */ -}}
+      {{- if (or .IsPage .IsHome) }}
+      <link rel="preload" href="{{ $themeFontPath }}/ibm-plex-serif-v9-latin/ibm-plex-serif-v9-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+      {{- /*  <link rel="preload" href="{{ $themeFontPath }}/ibm-plex-serif-v9-latin/ibm-plex-serif-v9-latin-italic.woff2" as="font" type="font/woff2" crossorigin>
+      <link rel="preload" href="{{ $themeFontPath }}/ibm-plex-serif-v9-latin/ibm-plex-serif-v9-latin-300.woff2" as="font" type="font/woff2" crossorigin>
+      <link rel="preload" href="{{ $themeFontPath }}/ibm-plex-serif-v9-latin/ibm-plex-serif-v9-latin-300italic.woff2" as="font" type="font/woff2" crossorigin>
+      <link rel="preload" href="{{ $themeFontPath }}/ibm-plex-serif-v9-latin/ibm-plex-serif-v9-latin-600.woff2" as="font" type="font/woff2" crossorigin>
+      <link rel="preload" href="{{ $themeFontPath }}/ibm-plex-serif-v9-latin/ibm-plex-serif-v9-latin-600italic.woff2" as="font" type="font/woff2" crossorigin>
+      <link rel="preload" href="{{ $themeFontPath }}/ibm-plex-mono-v6-latin/ibm-plex-mono-v6-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+      <link rel="preload" href="{{ $themeFontPath }}/ibm-plex-mono-v6-latin/ibm-plex-mono-v6-latin-italic.woff2" as="font" type="font/woff2" crossorigin>  */ -}}
+      {{- end }}
+  {{- end }}
+{{- end }}

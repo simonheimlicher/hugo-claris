@@ -1,0 +1,29 @@
+{{- $count := default 1 . -}}
+{{- $header := false -}}
+{{- $prefix := false -}}
+{{- if reflect.IsMap . }}
+  {{- $count = .Count }}
+  {{- with .Header }}
+  {{- $header = printf . }}
+{{- end }}
+{{- with .Prefix }}
+  {{- $prefix = printf "%s: " . }}
+{{- end }}
+{{- end }}
+{{- $loremipsum := slice "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat." "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur." "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." -}}
+
+{{- with $header }}
+  {{ . | safeHTML  }}
+{{- end }}
+
+{{- range seq $count}}
+<p class="loremipsum">
+  {{- with $prefix }}
+  {{ . | safeHTML }}
+  {{- end }}
+  {{- range $index := seq 0 (index (shuffle (seq 0 3) ) 0 ) -}}
+    {{ index $loremipsum $index }}&nbsp;
+  {{- end -}}
+</p>
+{{- $loremipsum = shuffle $loremipsum -}}
+{{- end -}}

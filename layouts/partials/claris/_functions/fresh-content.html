@@ -1,0 +1,24 @@
+{{- $page := .Page }}
+{{- $s := site.Params }}
+{{- $p := $page.Params }}
+{{- $template := "claris/_functions/fresh-content" }}
+{{- $recentMaxYears := (default 5 $s.recentMaxYears) }}
+{{- with $p.recentMaxYears }}
+  {{- $recentMaxYears = . }}
+{{- end }}
+{{- $items := slice }}
+{{- with .Items }}
+  {{- $items = . }}
+{{- else }}
+  {{- with .Section }}
+    {{- $items = where site.RegularPages.ByLastmod.Reverse "Section" "eq" . }}
+  {{- else }}
+    {{ $items = where site.RegularPages.ByLastmod.Reverse "Section" "in" ($page.Param "mainSections") }}
+  {{- end }}
+{{- end }}
+<!-- Limit list of articles in main sections (e.g. /articles) to last n years -->
+{{- $content_recent := where $items "Lastmod" "ge" (now.AddDate (int (sub 0 $recentMaxYears)) 0 0) }}
+{{/*  {{- warnf "content_recent: %#v" $content_recent }}  */}}
+{{- $content_expired := where $content_recent ".Params.BestBefore" "lt" (now) }}
+{{/*  {{- warnf "content_expired: %d %#v" (len $content_expired) $content_expired }}  */}}
+{{- return ($content_recent | complement $content_expired) }}

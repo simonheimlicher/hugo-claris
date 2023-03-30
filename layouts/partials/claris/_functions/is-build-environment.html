@@ -1,0 +1,45 @@
+{{- $envID := . }}
+{{- $template := "partials/_functions/is-build-environment" }}
+{{- $isEnv := false }}
+{{- $validEnvironments := (slice "devel" "test" "stage") }}
+{{ range  $validEnvID  := $validEnvironments }}
+  {{- $paramID := printf "%sEnvironments"  $validEnvID  }}
+  {{- if (and (isset site.Params ($paramID) )
+              (not reflect.isSlice (index site.Params ($paramID) ) ) ) }}
+  {{- errorf "Site parameter site.Params.%sEnvironments must be a slice, not %T"
+       $validEnvID  (index site.Params ($paramID) ) -}}
+  {{- end }}
+{{- end }}
+{{- $develEnvironments := default (slice "development" "devel") site.Params.develEnvironments }}
+{{- $testEnvironments  := default (slice "testing" "test") site.Params.testEnvironments }}
+{{- $stageEnvironments := default (slice "staging" "stage") site.Params.stageEnvironments }}
+{{- $prodEnvironments  := default (append $stageEnvironments (slice "production" "prod") ) site.Params.prodEnvironments }}
+
+{{- if (eq $envID "devel") }}
+  {{- if (in $develEnvironments hugo.Environment) }}
+    {{- /* warnf "[%s]:  envID=%s: Found hugo.Environment=%s IN develEnvironments=%v"
+    $template $envID hugo.Environment $develEnvironments */ -}}
+    {{- $isEnv = true }}
+  {{- end }}
+{{- else if (eq $envID "test" ) }}
+  {{- if (in $testEnvironments hugo.Environment) }}
+    {{- /* warnf "[%s]:  envID=%s: Found hugo.Environment=%s IN testEnvironments=%v"
+    $template $envID hugo.Environment $testEnvironments */ -}}
+    {{- $isEnv = true }}
+  {{- end }}
+{{- else if (eq $envID "stage" ) }}
+  {{- if (in $stageEnvironments hugo.Environment) }}
+    {{- /* warnf "[%s]:  envID=%s: Found hugo.Environment=%s IN stageEnvironments=%v"
+    $template $envID hugo.Environment $stageEnvironments */ -}}
+    {{- $isEnv = true }}
+  {{- end }}
+{{- else if (eq $envID "prod" ) }}
+  {{- if (or hugo.IsProduction (in $prodEnvironments hugo.Environment) ) }}
+    {{- /* warnf "[%s]:  envID=%s: Either hugo.IsProduction=%s or found hugo.Environment=%s IN prodEnvironments=%v"
+    $template $envID hugo.IsProduction hugo.Environment $prodEnvironments */ -}}
+    {{- $isEnv = true }}
+  {{- end }}
+{{- end }}
+{{- /* warnf "[%s]: envID=%s hugo.Environment=%s hugo.IsProduction=%v: returning %v"
+    $template $envID hugo.Environment hugo.IsProduction $isEnv */ -}}
+{{- return $isEnv }}

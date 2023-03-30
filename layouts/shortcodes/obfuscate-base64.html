@@ -1,0 +1,16 @@
+{{ $encoded := (.Inner | htmlEscape | markdownify | base64Encode) }}
+{{ $halfLength := div (len $encoded) 2 }}
+{{ $part1 := substr $encoded 0 $halfLength }}
+{{ $part2 := substr $encoded $halfLength }}
+<span id="mangled_{{ md5 $encoded }}">[ OBFUSCATED ]</span>
+<script>
+  (() => {
+    let base64ToUnicode = str =>
+      decodeURIComponent(atob(str).split("").map(c =>
+        "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)).join(""));
+    document.addEventListener("DOMContentLoaded", () => {
+      let element = document.getElementById("mangled_{{ md5 $encoded }}");
+      element.innerHTML = base64ToUnicode({{ $part1 }} + {{ $part2 }});
+    });
+  })();
+</script>

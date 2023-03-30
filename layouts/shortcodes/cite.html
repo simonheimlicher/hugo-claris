@@ -1,0 +1,5 @@
+{{- if .Inner }}
+<footer>
+  <cite>{{ .Inner | $.Page.RenderString (dict "display" "inline") }}</cite>{{ with .Get "adapted" }}{{ if (eq . true) }} ({{ T "cite.adapted" }}){{ end }}{{ end }}
+</footer>
+{{- end }}

@@ -1,0 +1,23 @@
+{{- $page := .Page }}
+{{- $items := .Items }}
+{{- $itemType := default "section" .ItemType }}
+{{- $excerptPartial := default "claris/_components/excerpt" .Partial }}
+{{- $template := "claris/_components/list" }}
+{{- $s := site.Params }}
+{{- $p := $page.Params }}
+        <div class="content_multicolumn content_grid">
+          <div class="excerpt_grid">
+          {{- range ($page.Paginate $items).Pages }}
+          {{/* {{- range $items }} */}}
+            {{/* {{- warnf "%s[%s]: Listing page %v" $page $template . }} */}}
+            <article class="content_item{{ if .Params.featured }} content_item_featured{{ end }} grid">
+              {{ partial $excerptPartial (dict "Page" . "RelativeDates" false "ShowTags" false) }}
+            </article>
+          {{- end }}
+          </div>
+          {{- if gt (len $items) $s.paginate }}
+          <div class="pagination_grid">
+            {{- template "_internal/pagination.html" $page }}
+          </div>
+          {{- end }}
+        </div>

@@ -1,0 +1,6 @@
+{{- define "main" }}
+{{- $template := "_default/single" }}
+{{ partial "html-comment" (printf "[%s]: BEGIN define main" $template) }}
+{{ partial "claris/main/index" . }}
+{{ partial "html-comment" (printf "[%s]: END   define main" $template) }}
+{{- end }}

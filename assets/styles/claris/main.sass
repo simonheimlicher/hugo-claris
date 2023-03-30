@@ -1,0 +1,35 @@
+{{- $page := .Page }}
+{{- $mediaType := .MediaType }}
+/* File='styles/claris/main.sass': .Page='{{ .Page }}' $contentType='#{$contentType}' $mediaType='#{$mediaType}' */
+
+// Core stylesheets that are included for all media types
+@import 'functions'
+
+@import 'colors'
+{{- $themeColorSchemePath := default "colors" ($page.Param "themeColorSchemePath") }}
+{{- with (default false ($page.Param "themeColorScheme") ) }}
+{{- $themeColorSchemeFile := printf "%s/%s" }}
+@import '{{ $themeColorSchemeFile }}'
+{{- end }}
+
+@import 'variables'
+@import 'override'
+
+{{- $fontsSelfHosted := default false ($page.Param "fontsSelfHosted") }}
+{{- $customFonts := default false ($page.Param "customFonts") }}
+{{- if and $fontsSelfHosted (not $customFonts) -}}
+  {{- $themeFontPath := default "/fonts" ($page.Param "fontPath") }}
+$themeFontPath: '{{ $themeFontPath }}'
+@import 'fonts'
+{{- end }}
+
+// Additional stylesheets
+@import 'base'
+@import 'components'
+{{- if (in (slice "all" "screen") $mediaType) }}
+@import 'components_screen'
+{{- else if (in (slice "all" "print") $mediaType) }}
+@import 'components_print'
+{{- end }}
+@import 'utils'
+@import 'syntax'

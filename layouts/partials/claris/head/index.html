@@ -1,0 +1,40 @@
+{{- $themeColorLit := default "hsl(47, 20%, 98%)" (.Page.Param "themeColorLit") }}
+{{- $themeColorDim := default "hsl(47, 20%, 10%)" (.Page.Param "themeColorDim") }}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="{{- $themeColorLit -}}">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="{{- $themeColorDim -}}">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    {{- $title := .Site.Title }}
+    {{- $partialHeadTitle := printf "%s/head/title" (default "claris" .Type) }}
+    {{ partial "html-comment"
+        (printf "BASEOF: Looking for %s" (printf "partials/%s" $partialHeadTitle) ) }}
+    {{- if (or false (templates.Exists (printf "partials/%s.html" $partialHeadTitle) ) ) }}
+      {{- $title = partial $partialHeadTitle . }}
+    {{- else }}
+      {{- $title = partial "claris/head/title" . }}
+    {{- end }}
+    <title>{{ $title }}</title>
+    {{ hugo.Generator }}
+    {{- partial "claris/head/json-ld" . }}
+    {{/* {{ partial "claris/head/opengraph" . }} */}}
+    <meta name="description" content="{{ .Description | default $.Site.Params.description }}">
+    {{ template "_internal/opengraph.html" . }}
+    {{ template "_internal/twitter_cards.html" . }}
+    {{ partial "claris/head/robots" . }}
+{{- with .Page.Param "googleSiteVerification" }}
+    <meta name="google-site-verification" content="{{ . }}">
+{{- end }}
+{{- range .AlternativeOutputFormats -}}
+  {{- if (ne .Rel "canonical" )}}
+    {{ printf `<link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML }}
+  {{- end }}
+{{- end }}
+    <link rel="canonical" type="text/html" href="{{ partial "claris/_functions/canonical-url" . }}" title="{{ $title }}">
+    {{- partialCached "claris/head/favicon" . }}
+{{- partial "claris/head/assets" . -}} {{- /* (dict "Page" .Page "Type" .Type "Layout" .Layout) */ -}}
+{{- /* BEGIN Styles for JavaScript module lazysizes */}}
+    <noscript>
+      <style>.lazyload { display: none; }</style>
+    </noscript>
+{{- /* END   Styles for JavaScript module lazysizes */ -}}

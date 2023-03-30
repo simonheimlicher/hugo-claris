@@ -1,0 +1,47 @@
+{{- $page := . }}
+{{- $template := "claris/_components/title" }}
+{{- $title := .Title }}
+{{- $titleClass := "content-title" }}
+{{- $subTitle := .Params.subtitle }}
+{{- $superTitle := .Params.supertitle }}
+
+{{/* {{- partial "html-comment" (printf "[%s]: BEGIN: Kind:%s .Params:%s" $template .Kind .Params) }} */}}
+
+{{- if reflect.IsMap . }}
+  {{- $page = .Page }}
+  {{- $title = default $page.Title .Title }}
+  {{- $subTitle = default $page.Params.subtitle .SuperTitle }}
+  {{- $superTitle = default $page.Params.supertitle .SubTitle }}
+  {{- with .TitleClass }}
+    {{- $titleClass = . }}
+  {{- end }}
+{{- end }}
+
+{{- with $page -}}<!-- Restore "." to refer to page context from which the partial was called -->
+  <!-- Adjust title for some values of .Kind -->
+  {{- if in (slice "taxonomy") .Kind }}
+    {{- partial "html-comment" (printf "[%s]: .Kind:%s .Singular:%s .Plural:%s .Section:%s .Title:%s" $template .Kind .Data.Singular .Data.Plural .Section .Title) }}
+    {{- $title = default .Data.Plural (default (T (printf "%s_list_title" .Data.Singular) | title) $title) }}
+  {{- else if in (slice "term") .Kind }}
+    {{- partial "html-comment" (printf "[%s]: .Kind:%s .Singular:%s .Plural:%s .Section:%s .Title:%s" $template .Kind .Data.Singular .Data.Plural .Section .Title) }}
+    {{- $title = default .Data.Singular $title }}
+    {{- $titlePrefix := T "articles_in_taxonomy" }}
+    {{ if in (slice "tag") .Data.Singular}}
+      {{ $titlePrefix = T "articles_with_taxonomy" }}
+    {{- end }}
+    {{- $title = printf "%s %s %s" (humanize $titlePrefix) .Data.Singular ($page.RenderString (printf "*%s*" .Title) ) | safeHTML }}
+  {{- end }}
+
+  {{- if $title }}
+          <h1  id="articleTop"{{- with $titleClass }} class="{{ . }}" {{ end -}}>
+  {{- with $superTitle }}
+           <span class="supertitle">{{. | $page.RenderString }}</span>
+  {{- end -}}
+  {{ $title | $page.RenderString }}
+  {{- with $subTitle }}
+            <span class="subtitle">{{. | $page.RenderString }}</span>
+  {{- end -}}
+         </h1>
+  {{- end -}}
+{{- end -}}
+{{/* {{- partial "html-comment" (printf "[%s]:   END" $template) }} */}}

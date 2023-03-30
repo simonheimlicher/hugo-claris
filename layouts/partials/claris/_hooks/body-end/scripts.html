@@ -1,0 +1,12 @@
+{{- with $assets := partial "claris/_functions/asset-bundles" . -}}
+<!-- Include legacy JS -->
+  {{- with .Scripts.polyfills }}
+    <script nomodule src="{{ .Permalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
+  {{- end -}}
+  {{- with .Scripts.legacy }}
+    <script nomodule src="{{ .Permalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
+  {{- end -}}
+  {{- with .Scripts.modern_late }}
+    <script type="module" src="{{ .Permalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
+  {{- end -}}
+{{- end -}}

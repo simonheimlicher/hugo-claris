@@ -1,0 +1,40 @@
+<!-- https://github.com/bep/portable-hugo-links/blob/master/layouts/_default/_markup/render-link.html -->
+{{- $link := .Destination }}
+{{ $isRemote := strings.HasPrefix $link "http" }}
+{{- if $isRemote -}}
+{{- /* If URLs contain ports, then even local URLs may appear to be remote */ -}}
+{{- /* Complex logic below has not been properly tested and is now disabled 2023-02-08 */ -}}
+{{- /*
+{{- $linkURL := urls.Parse $link }}
+{{- $linkHostPortParts := split $linkURL.Host ":" -}}
+{{- $linkHost := index $linkHostPortParts 0 -}}
+{{- $baseURL := urls.Parse site.BaseURL }}
+{{- $baseHostPortParts := split $baseURL.Host ":" -}}
+{{- $baseHost := index $baseHostPortParts 0 -}}
+{{- if strings.HasPrefix $linkHost $baseHost -}}
+{{- warnf "_markup/render-link: LOCAL LINK '%v': baseHost='%v' linkHost='%v'" $link $baseHost $linkHost -}}
+{{- $isRemote = false -}}
+{{- else }}
+{{- warnf "_markup/render-link: REMOTE LINK '%v': baseHost='%v' linkHost='%v'" $link $baseHost $linkHost -}}
+{{- end -}}
+{{- */ -}}
+{{- /* -}}
+{{- $linkHostParts := split $linkHost "." -}}
+{{- $linkTopLevelDomain := last 2 $linkHostParts -}}
+{{- $baseHostParts := split $baseHost "." -}}
+{{- $baseTopLevelDomain := last 2 $baseHostParts -}}
+{{- if eq $linkTopLevelDomain $baseTopLevelDomain -}}
+{{- $isRemote = false -}}
+{{- else }}
+{{- warnf "_markup/render-link: baseTopLevelDomain='%v' linkTopLevelDomain='%v'" $baseTopLevelDomain $linkTopLevelDomain -}}
+{{- end -}}
+{{- */ -}}
+{{- else }}
+{{ $url := urls.Parse .Destination }}
+{{- if $url.Path -}}
+{{ $fragment := "" }}
+{{- with $url.Fragment }}{{ $fragment = printf "#%s" . }}{{ end -}}
+{{- with .Page.GetPage $url.Path }}{{ $link = printf "%s%s" .RelPermalink $fragment }}{{ end }}{{ end -}}
+{{- end -}}
+<a href="{{ $link | safeURL }}"{{ with .Title}} title="{{ . }}"{{ end }}{{ if $isRemote }} target="_blank"{{ end }}>{{ .Text | safeHTML }}</a>
+{{- /* avoid additional space from empty line at end of file */ -}}

@@ -1,0 +1,150 @@
+{{- $styleBundles := dict }}
+{{- $page := .Page }}
+{{- $mediaTypeList := .MediaTypeList }}
+{{- $contentTypeList := .ContentTypeList }}
+{{- $template := "claris/_functions/style-bundles" }}
+
+{{- $contentTypeListID := delimit $contentTypeList "-" }}
+{{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" site.Params }}
+{{- $supportIE11 := default false (and $envProd .Site.Params.supportIE11) }}
+{{/* {{- warnf "%s[%s]: $contentTypeList:%s $supportIE11:%v" $page $template $contentTypeList $supportIE11 -}} */}}
+<!-- https://www.hackification.io/software-development/hugo/html/asset-bundling/ */ -->
+{{- $sourceExt := "sass" }}
+{{- $targetExt := "css" -}}
+{{- $legacySuffix := default "_legacy" .LegacySuffix }}
+{{- $fingerprintOptions := default "sha256" site.Params.resourceFingerprintOptions }}
+
+{{- $toCSSoptionsBase := dict }}
+{{- if $envProd }}
+  {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "compressed" "enableSourceMap" "false") -}}
+{{- else }}
+  {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "expanded" "enableSourceMap" "true") -}}
+{{- end }}
+{{- $toCSSIncludePaths := slice }}
+{{- range $contentTypeList }}
+  {{- $toCSSIncludePaths = append (slice (printf "assets/styles/%s" . ) ) $toCSSIncludePaths }}
+{{- end }}
+{{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "includePaths" $toCSSIncludePaths)}}
+{{- $postCSSoptions := (dict "config" "postcss.config.js" "noMap" false) -}}
+
+{{- $styleResources := (dict
+  "all" (dict
+    "file" "main"
+    "supportIE11" true
+  )
+  "screen" (dict
+    "file" "main"
+    "media" "screen"
+  "supportIE11" true
+  )
+  "print"  (dict
+    "file" "main"
+    "media" "print"
+    "supportIE11" false
+  )
+) -}}
+
+{{- $concatSASS := false }}
+
+{{- range $resourceID, $params := $styleResources }}
+  {{- $mediaType := default "all" $params.media }}
+  {{- if (in $mediaTypeList $mediaType) }}
+    {{/* {{- warnf "%s[%s]: Generating style bundle for MediaType=%s in MediaTypeList=%v"
+    $page $template $mediaType $mediaTypeList }} */}}
+    <!-- Parameters to pass to the hugoParamsFile and other top-level style files
+      that are executed as templates -->
+    {{- $tplParams := (dict "Page" $page "ContentType" $contentTypeListID "MediaType" $mediaType) }}
+    {{/* {{- warnf "%s[%s]: resourceID:%v params:%v $tplParams:%v" $page $template $resourceID $params $tplParams }} */}}
+
+    <!-- Concat CSS -->
+    {{- $CSSResourceList := slice }}
+
+    <!-- Cconcat SASS -->
+    {{- $executedResourceList := slice }}
+    {{- $executedFileList := slice }}
+
+    {{- range $contentType := $contentTypeList }}
+      {{- $resourcePathPrefix := printf "styles/%s" $contentType -}}
+
+      <!-- Get the Hugo params file resource and execute it as a Go Template -->
+      {{- $hugoParamsFile := printf "%s/hugo-params" $resourcePathPrefix }}
+      <!-- Get the main SASS/SCSS file resource and execute it as a Go Template -->
+      {{- $resourceFileBaseName := (default $resourceID $params.file) }}
+      {{- $styleMainFile := printf "%s/%s" $resourcePathPrefix $resourceFileBaseName }}
+      {{- $styleFileTemplates := (slice $hugoParamsFile $styleMainFile) }}
+
+      {{- $contentTypeExecutedResources := slice }}
+      {{- range $resourceFile := $styleFileTemplates }}
+        {{- with resources.GetMatch (printf "%s.*" $resourceFile ) -}}
+          {{- $executedFile := printf "%s_%s-executed.%s" $resourceFile $resourceID $sourceExt }}
+          {{- $executedResource := resources.ExecuteAsTemplate $executedFile $tplParams . }}
+          {{- if $concatSASS }}
+            {{- $executedFileList = append (slice $executedFile) $executedFileList }}
+            {{- $executedResourceList = append (slice $executedResource) $executedResourceList }}
+          {{- else }}
+            {{- $contentTypeExecutedResources = append (slice $executedResource) $contentTypeExecutedResources }}
+          {{- end -}}
+        {{- else -}}
+          {{- errorf "%s[%s]: resourceFile '%s' not found" $page $template $resourceFile }}
+        {{- end -}}
+      {{- end -}}
+      {{- if not $concatSASS }}
+        {{- $contentTypeTargetPathPrefix := printf "styles/%s" $contentType -}}
+        {{- $contentTypeConcatFile := printf "%s/%s.%s" $contentTypeTargetPathPrefix $resourceID $sourceExt }}
+        {{- $contentTypeConcatResource := $contentTypeExecutedResources | resources.Concat $contentTypeConcatFile }}
+
+        {{/* {{- warnf "%s[%s]: $contentTypeConcatResource .MediaType:%s .Content:\n%v\n...\n%v"
+            $page $template $contentTypeConcatResource.MediaType
+            (substr $contentTypeConcatResource.Content 0 100)
+            (substr $contentTypeConcatResource.Content -100) }} */}}
+
+        {{- $contentTypeTargetFile := printf "%s/%s.%s" $contentTypeTargetPathPrefix $resourceID $targetExt }}
+        {{- $toCSSoptions := merge $toCSSoptionsBase (dict "targetPath" $contentTypeTargetFile) -}}
+        {{- $contentTypeCSSResource := $contentTypeConcatResource | resources.ToCSS $toCSSoptions }}
+        {{- $CSSResourceList = append (slice $contentTypeCSSResource) $CSSResourceList }}
+        {{/* {{- warnf "%s[%s]: Add contentTypeCSSResource .MediaType %#v to CSSResourceList:%v"
+            $page $template $contentTypeCSSResource.MediaType $CSSResourceList }} */}}
+      {{- end -}}
+    {{- end }}
+
+    {{/* {{- warnf "%s[%s]: Contents of CSSResourceList:" $page $template }}
+    {{- range $idx, $resource := $CSSResourceList }}
+      {{- warnf "%s[%s]: %d --> %v .Name:%v .MediaType:%v" $page $template $idx $resource $resource.Name $resource.MediaType }}
+    {{- end }} */}}
+
+    {{- $concatResource := "" }}
+    {{- $bundle := "" }}
+    {{- $targetPathPrefix := printf "styles/%s" $contentTypeListID -}}
+    {{- $targetFile := printf "%s/%s.%s" $targetPathPrefix $resourceID $targetExt }}
+
+    {{- if $concatSASS }}
+      {{- $sassImportFile := printf "styles/%s/%s.%s" $contentTypeListID $resourceID $sourceExt }}
+      {{- $toCSSoptions := merge $toCSSoptionsBase (dict "targetPath" $targetFile) -}}
+      {{- $concatResource = $executedResourceList | resources.Concat $sassImportFile }}
+      {{/* {{- warnf "%s[%s]: $concatResource '%s'.Content:\n%v"
+      $page $template $concatResource $concatResource.Content }} */}}
+      {{- $bundle = $concatResource | resources.ToCSS $toCSSoptions | resources.Fingerprint $fingerprintOptions }}
+    {{- else }}
+      {{/* {{- warnf "%s[%s]: concat CSSResourceList:%s targetFile:%s"
+          $page $template $CSSResourceList $targetFile }} */}}
+      {{- $concatResource = $CSSResourceList | resources.Concat $targetFile }}
+      {{- $bundle = $concatResource | resources.Fingerprint $fingerprintOptions }}
+    {{- end }}
+    {{/* {{- warnf "%s[%s]: $bundle[%s] %#v: MediaType:%s Content:\n%v\n...\n%v"
+        $page $template $bundle $resourceID $bundle.MediaType (substr $bundle.Content 0 100) (substr $bundle.Content -100) }} */}}
+    {{- $styleBundles = merge $styleBundles (dict $resourceID $bundle) -}}
+
+    {{- if (and $supportIE11 $params.supportIE11) }}
+      {{- $legacyResourceID := printf "%s%s" $resourceID $legacySuffix }}
+      {{- $legacyExecutedFile := printf "%s.sass" $legacyResourceID }}
+      {{- $toCSSoptions := merge $toCSSoptionsBase (dict "targetPath" (printf "%s/%s.%s" $targetPathPrefix $legacyResourceID $targetExt) ) -}}
+      {{- $legacyBundle := . | resources.ExecuteAsTemplate $legacyExecutedFile $tplParams | resources.ToCSS $toCSSoptions | resources.PostCSS $postCSSoptions | resources.Fingerprint $fingerprintOptions -}}
+      {{- $styleBundles = merge $styleBundles (dict $legacyResourceID $legacyBundle) -}}
+    {{- end -}}
+  {{/* {{- else }}
+    {{- warnf "%s[%s]: Not generating style bundle for MediaType=%s: not in MediaTypeList=%v"
+        $page $template $mediaType $mediaTypeList }} */}}
+  {{- end }}
+{{- end }}
+{{/* {{- warnf "%s[%s]: returning styleBundles: %s" $page $template $styleBundles }} */}}
+{{- return $styleBundles -}}

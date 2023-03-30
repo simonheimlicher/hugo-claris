@@ -1,0 +1,43 @@
+{{- $page := .Page }}
+{{- $template := "claris/_functions/asset-bundles" }}
+{{- $assets := dict }}
+
+{{- $contentTypeList := slice "claris" }}
+{{- with partial "claris/_functions/alternative-type" . }}
+  {{- $contentTypeList = append (slice .) $contentTypeList }}
+{{- end -}}
+
+{{- $onlyMediaType := default "all" ($page.Param "onlyMediaType") }}
+{{- $mediaTypeList := (slice "all" "screen" "print") }}
+{{- if not (eq $onlyMediaType "all") }}
+  {{- $mediaTypeList = (slice $onlyMediaType) }}
+{{- end }}
+{{- $legacyMediaType := default "all" $onlyMediaType }}
+{{- $legacySuffix := "_legacy" }}
+
+{{- $contentTypeListID := delimit $contentTypeList "-" }}
+{{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" site.Params }}
+{{- $supportIE11 := default false (and $envProd .Site.Params.supportIE11) }}
+{{- $minifyBundles := $envProd }}
+
+{{/* {{- warnf "%s[%s]: RelPermalink=%s.Type=%s .Layout=%s $contentTypeList=%s $mediaTypeList=%s" .Page $template .Page.RelPermalink .Type .Layout $contentTypeList $mediaTypeList -}} */}}
+
+{{- $bundleParams := (dict
+    "MediaTypeList" $mediaTypeList
+    "ContentTypeList" $contentTypeList
+    "MinifyBundles" $minifyBundles
+    "SupportIE11" $supportIE11
+    "legacyMediaType" $legacyMediaType
+    "LegacySuffix" $legacySuffix
+) }}
+
+<!-- Bundle CSS: styles from all content types merged per mediaType type -->
+{{- $styleBundles := partialCached "claris/_functions/style-bundles"
+  (merge $bundleParams (dict "Page" $page)) $bundleParams }}
+
+<!-- Bundle JS: styles from all content types merged per mediaType type -->
+{{- $scriptBundles := partialCached "claris/_functions/script-bundles"
+  (merge $bundleParams (dict "Page" $page)) $bundleParams }}
+
+{{- $assets = (dict "Styles" $styleBundles "Scripts" $scriptBundles "Params" $bundleParams) }}
+{{- return $assets }}

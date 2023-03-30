@@ -1,0 +1,20 @@
+{{- $page := .Page }}
+{{- $template := "claris/_hooks/body-end/google-analytics" }}
+{{ if not (partialCached "claris/_functions/is-build-environment" "devel" hugo.Environment site.Params) }}
+  {{- with site.Config.Services.GoogleAnalytics.ID -}}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ . }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '{{ . }}');
+    </script>
+  {{- else -}}
+    {{- warnf "%s[%s]: Parameter site.Params.GoogleAnalytics not set" }}
+  {{- end -}}
+  {{/* {{ template "_internal/google_analytics_async.html" . }} */}}
+{{/* {{- else }}
+  {{- warnf "%s[%s]: Not including Google Analytics with googleAnalytics='%v' [env=%s == devel: %#v]"
+      $page $template site.Config.Services.GoogleAnalytics.ID hugo.Environment
+      (partialCached "claris/_functions/is-build-environment" "devel" hugo.Environment site.Params) -}} */}}
+{{- end }}

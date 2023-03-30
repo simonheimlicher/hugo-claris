@@ -1,0 +1,50 @@
+{{- $page := .Page }}
+{{- $imageResourceArgs := . }}
+{{- $img := false }}
+{{- $template := "claris/_functions/image-resource" }}
+{{- $resourceSpec := .Resource }}
+{{- $process := .Process }}
+{{- if (hasPrefix $resourceSpec "http") }}
+  {{ $img = resources.GetRemote (absURL $resourceSpec) }}
+{{- else }}
+  {{/* {{- $img = $page.Resources.GetMatch (printf "%s*" $resourceSpec) -}} */}}
+  {{- $img = partial "claris/_functions/resources" $imageResourceArgs -}}
+  {{- if not $img }}
+    {{- $img = resources.GetMatch (printf "%s*" $resourceSpec) -}}
+  {{- end }}
+  {{- /* FIXME: Don't look for images in directory of page }}
+  {{- if and (not $img) .File -}}
+    {{ $path := path.Join .File.Dir (printf "%s*" $resourceSpec) }}
+    {{- $img = resources.Get $path -}}
+    {{- warnf (printf "%s: path=%s img=%#v" $alt $path $img) -}}
+  {{- end -}}
+  {{ */ -}}
+{{- end }}
+
+{{- if $img }}
+  {{- if $process }}
+    {{- $process_method := "fill" }}
+    {{- $process_args := $process }}
+    {{- if reflect.IsMap $process }}
+      {{- $process_method = (index $process "method") }}
+      {{- $process_args = (index $process "args") }}
+    {{- end }}
+
+    {{- if (eq $process_method "fill")}}
+      {{- /* warnf "partial '_functions/image-resource'[%s]: %q.Fill '%s'" $page $resourceSpec $process_args */ -}}
+      {{- $img = $img.Fill $process_args }}
+    {{- else if (eq $process_method "fit")}}
+      {{- /* warnf "partial '_functions/image-resource'[%s]: %q.Fit '%s'" $page $resourceSpec $process_args */ -}}
+      {{- $img = $img.Fit $process_args }}
+    {{- else if (eq $process_method "crop")}}
+      {{- /* warnf "partial '_functions/image-resource'[%s]: %q.Crop '%s'" $page $process_args */ -}}
+      {{- $img = $img.Crop $process_args }}
+    {{- else if (eq $process_method "resize")}}
+      {{- /* warnf "partial '_functions/image-resource'[%s]: %q.Resize '%s'" $page $resourceSpec $process_args */ -}}
+      {{- $img = $img.Resize $process_args }}
+    {{- end }}
+  {{- end }}
+{{- else -}}
+  {{- warnf "%s[%s]: no resource matching %s" $page $template $resourceSpec -}}
+{{- end -}}
+{{ return $img }}

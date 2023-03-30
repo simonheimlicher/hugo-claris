@@ -1,0 +1,80 @@
+{{- $page := . }}
+{{- with .Page }}
+  {{- $page = . }}
+{{- end }}
+{{- $headingLevel := default "2" .HeadingLevel }}
+{{- with $page -}}<!-- Restore "." to refer to page context fromw hich the partial was called -->
+{{- $tagsLimit := (default 100 .Site.Params.numberOfTagsShown) }}
+{{- $taxonomyMaxYears := (default 10 .Site.Params.taxonomyMaxYears) }}
+{{- $sidebarTaxonomies := .Site.Taxonomies }}
+{{- with .Site.Params.sidebarTaxonomies }}
+  {{- $sidebarTaxonomies = . }}
+{{- end }}
+{{- range $key, $taxonomy := .Site.Taxonomies }}
+  {{- if in $sidebarTaxonomies $key }}
+    {{- $recentTagsScratch := newScratch }}
+    {{- $taxonomyListComplete := true }}
+    {{- range $taxonomy.Alphabetical }}
+      {{- $taxonomyListComplete := true }}
+      {{- $tag := . }}
+      {{- $recentPages := where .Pages "Lastmod" "ge" (now.AddDate (int (sub 0 $taxonomyMaxYears)) 0 0) }}
+      {{- $recentTagsScratch.Set "recentTagCounter" 0 }}
+      {{- $recentTagsScratch.Set "lastArticleDate" ("2006-05-04" | time) }}
+      {{- range $recentPages }}
+        {{- $recentTagsScratch.Add "recentTagCounter" 1 }}
+        {{- if gt .PublishDate ($recentTagsScratch.Get "lastArticleDate")}}
+        {{- $recentTagsScratch.Set "lastArticleDate" .PublishDate }}
+        {{- end }}
+      {{- end }}
+      {{- if gt ($recentTagsScratch.Get "recentTagCounter") 0 }}
+        {{- $recentCount := ($recentTagsScratch.Get "recentTagCounter") }}
+        {{- $lastArticleDate := ($recentTagsScratch.Get "lastArticleDate") }}
+        {{- $recentTagsScratch.SetInMap "tagsInfo" $tag.Name (dict "tag" $tag "recentCount" $recentCount) }}
+        <!-- {{- printf "%s: lastArticleDate %s" $tag.Name $lastArticleDate }} -->
+        {{- $recentTagsScratch.SetInMap "tagsInfo" $tag.Name (dict "tag" $tag "lastArticleDate" $lastArticleDate) }}
+      {{- else }}
+        {{- $taxonomyListComplete = false }}
+      {{- end }}
+    {{- end }}
+    {{- $recentTagsInfo := $recentTagsScratch.Get "tagsInfo" }}
+    {{- if gt $recentTagsInfo 0 }}
+      <div>
+        {{ printf "<h%s class=\"mt-4 taxonomy\" id=\"%s-section\">" $headingLevel $key | safeHTML }}{{ T $key }}{{ printf "</h%s>" $headingLevel | safeHTML }}
+        <nav class="tags_nav">
+          {{- $slicedTags := sort (sort $recentTagsInfo "lastArticleDate" "desc") "recentCount" "desc" | first $tagsLimit }}
+          {{- $taxonomyPageURL := absLangURL $key -}}
+          {{- range $slicedTags }}
+          {{- $tag := .tag }}
+          {{- $recentCount := .recentCount }}
+          <a href='{{ $taxonomyPageURL }}/{{ (replace $tag.Name "#" "%23") | urlize }}/' class="article_tag button button_translucent" title="{{ $tag.Name }}">
+            {{- $tag.Page.Title }}
+            <span class="button_tally">{{ $tag.Count }}</span>
+          </a>
+          {{- end }}
+          {{- if (or $taxonomyListComplete (gt (len $taxonomy.ByCount) $tagsLimit) ) }}
+          <br>
+          <div class="article_tags_toggle button button_translucent">{{ T (printf "all_%s" (lower $key)) }}</div>
+          {{- $tagsInfo := newScratch }}
+          <div class="article_tags">
+            <div class="tags_list">
+              {{- range $taxonomy.Alphabetical }}
+              {{- $tagsInfo.Add "tagsInfo" (slice .Name .Count)}}
+              <a href='{{ $taxonomyPageURL }}/{{ (replace .Name "#" "%23") | urlize }}/' class=" article_tag button button_translucent" data-position={{ .Count }} title="{{ .Name }}">
+                {{- .Page.Title -}}
+                <span class="button_tally">{{ .Count }}</span>
+              </a>
+              {{- end }}
+              <div class="tags_sort"><span title="sort alphabetically">[A~Z]</span><span title="sort by count">[0~9]</span>
+              </div>
+              <span class="tags_hide"><svg class="icon">
+              <use xlink:href="#closeme"></use>
+            </svg></span>
+            </div>
+          </div>
+        </nav>
+      </div>
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}

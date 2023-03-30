@@ -1,0 +1,369 @@
+*
+  box-sizing: border-box
+  -webkit-appearance: none
+  margin: 0
+  padding: 0
+
+body, html
+  // scroll-behavior: smooth
+  // Replaced by settings smooth scrolling only for 'html:focus-within', see below
+  font-size: calc(var(--font-size))
+  font-kerning: normal
+  -webkit-text-size-adjust: 100%
+  -webkit-font-feature-settings: "kern" 1
+  text-rendering: optimizeSpeed
+  &::-webkit-scrollbar-corner
+    background-color: transparent
+
+  // https://schepp.dev/posts/smooth-scrolling-and-page-search/
+@keyframes smoothscroll-html
+  from, to
+    scroll-behavior: smooth
+@keyframes smoothscroll-html-focus-within
+  from, to
+    scroll-behavior: smooth
+html
+  animation: smoothscroll-html 1s
+html:focus-within
+  animation-name: smoothscroll-html-focus-within
+  scroll-behavior: smooth
+
+body
+  font-family: var(--font)
+  background: var(--choice-bg)
+  // FIXME: Allow transition of background
+  // background: transparent
+  color: var(--text)
+  font-size: 1.1rem
+  line-height: var(--line-height)
+  // FIXME: min-height needs to be applied to main element
+  // to hide footer until the user scrools up and reveals it
+  // Applying min-height to body has negative side effects
+  // min-height: 100vh
+  margin: 0 auto
+  position: relative
+  display: flex
+  flex-direction: column
+  justify-content: space-between
+  font-kerning: normal
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+  &.macos, &.windows, &.ios
+    text-rendering: optimizeLegibility
+    // FIXME
+    // Disabled because it causes color_mode_label to become too high in Safari
+    // font-variant: common-ligatures
+
+  // https://web.dev/prefers-color-scheme/#activating-dark-mode-in-the-operating-system
+  // transition: color var(--darkmode-duration) var(--darkmode-timing), background-color var(--darkmode-duration) var(--darkmode-timing)
+  .color_mode_transition
+    transition: all var(--darkmode-duration) var(--darkmode-timing)
+
+
+  // Allow breaking long wordds including URLs
+  // https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
+  // These are technically the same, but use both
+  // https://stackoverflow.com/a/67249632/617559
+  // Prioritizes keeping any and all words unbroken while avoiding overflow, so if a word
+  // is too long to fit on the rest of the line, it wraps first and tries to fit the rest
+  // of the text on the next line
+  overflow-wrap: break-word
+  word-wrap: break-word
+
+  // word-break: break-all; Prioritizes minimizing the space wasted while avoiding overflow,
+  // before keeping any words unbroken, so it never wraps anywhere but at the right margin
+  // word-break: break-word
+
+  // Adds a hyphen where the word breaks, if supported
+  hyphens: auto
+
+a
+  text-decoration: none
+  color: inherit
+  &:focus, &:focus-within
+    outline: none !important
+  &:hover
+    @media (any-hover: hover)
+      color: var(--text-hover)
+      // text-decoration: underline
+      // text-underline-position: under
+      // text-underline-offset: 0.1em
+  &:active
+    color: var(--xaccent)
+  &:focus
+    outline: var(--accent)
+
+  // Avoid adding a hyphen where the word breaks
+  hyphens: none
+  word-wrap: break-word
+  overflow-wrap: break-word
+
+h1,h2,h3,h4,h5,h6
+  font-family: inherit
+  font-weight: 400
+  // padding: 5px 0
+  // margin: 15px 0
+  padding: $heading-padding-top 0 calc(#{$heading-padding-top} * 0.25) 0
+  margin: $heading-margin-top 0 calc(#{$heading-margin-top} * 0.25) 0
+  color: var(--header-text)
+  line-height: calc(var(--line-height-heading))
+  &:hover .link
+    opacity: 1
+h1
+  font-size: 180%
+h2
+  font-size: 140%
+h3
+  font-size: 120%
+h4, h5, h6
+  font-size: 100%
+
+@media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+  h1
+   font-size: 240%
+  h2
+    font-size: 180%
+  h3
+    font-size: 140%
+  h4
+    font-size: 120%
+
+img, svg
+  max-width: 100%
+  vertical-align: middle
+img
+  height: auto // initiial
+  margin: 1rem auto
+  padding: 0
+  &:focus, &:focus-within
+    outline: none !important
+    border: none !important
+
+// FIXME
+// Commented out flex: 1 as it leads to main having height 0 in IE 11
+// main
+//   flex: 1
+
+ul
+  list-style: none
+  -webkit-padding-start: 0
+  -moz-padding-start: 0
+
+em
+  font-weight: 400
+
+b, strong
+  font-weight: 600
+
+hr
+  border: none
+  padding: 1px
+  background: var(--xhaze)
+  opacity: 0.5
+  margin: 1rem 0
+
+aside
+  h3
+    position: relative
+    margin: 0 !important
+  ul
+    list-style: disc outside none // initial
+    padding-left: 1rem
+  li
+    padding: 0.25rem 0
+
+table
+  width: 100%
+  border-collapse: collapse
+  background: var(--table-haze)
+  // border-style: hidden
+  margin-bottom: 1.5rem
+  &:not(.ln-table) t
+    background: var(--table-bg)
+
+td, th
+  padding: 0.5rem 1rem
+  border: 1px solid var(--table-border)
+
+td,
+th
+  padding: 0.5rem 1rem
+  font-weight: 400
+  &:not(:first-child)
+    padding-left: 1.5rem
+
+th
+  font-weight: 600
+
+tbody
+  padding: 0
+  tr
+    &:nth-child(even)
+      background-color: var(--table-haze)
+    &:nth-child(odd)
+      background-color: var(--table-bg)
+
+blockquote
+  // margin: 1.5rem auto
+  // quotes: '\201C''\201D''\2018''\2019'
+  // padding: 1.5rem
+  // color: var(--text)
+  // padding: 1rem 1.5rem
+  // border-left: 0.25rem solid var(--theme)
+  // position: relative
+  // background: var(--haze)
+  font-style: italic
+  // font-weight: lighter
+  // Source: https://codepen.io/bharanim/pen/BoLNdd
+  $blockquote-quotation-color-open: rgba(var(--RGB_text), 0.5)
+  $blockquote-quotation-color-close: rgba(var(--RGB_text), 0.1)
+  --box-margin-top: 0.25em
+  --box-margin-right: 0
+  --box-margin-bottom: calc(0.5 * var(--box-margin-top))
+  --box-margin-left: 0
+
+  --box-padding-top: 0.5rem
+  // FIXME: It's important to avoid that the quotation mark sticks out on the right hand side
+  // This may induce a horizontal scoll bar with side effects such as the navigation bar
+  // moving slightly even when 'position: fixed' is set
+  --box-padding-right: 1.0rem
+  --box-padding-bottom: calc(1.2 * var(--box-padding-top))
+  --box-padding-left: calc(1.5 * var(--box-padding-top))
+
+  --quotation-mark-font-size-to-height-factor: 4
+  --quotation-mark-open-height: 1rem
+  --quotation-mark-open-line-height: calc(var(--quotation-mark-open-height))
+  --quotation-mark-open-font-size: calc(var(--quotation-mark-open-height) * var(--quotation-mark-font-size-to-height-factor))
+  --quotation-mark-close-height: 2.0rem
+  --quotation-mark-close-line-height: calc(var(--quotation-mark-close-height))
+  --quotation-mark-close-font-size: calc(var(--quotation-mark-close-height) * var(--quotation-mark-font-size-to-height-factor))
+
+  --quote-padding-left: calc(var(--box-padding-left) + 0.75 * var(--quotation-mark-open-height))
+  --quote-padding-right: calc(var(--box-padding-right) + 1.5 * var(--quotation-mark-close-height))
+
+  margin: var(--box-margin-top) var(--box-margin-right) var(--box-margin-bottom) var(--box-margin-left)
+
+  color: var(--text)
+  position: relative
+  overflow: visible
+  background: transparent
+
+  width: calc(100% - var(--box-margin-left) - var(--box-margin-right))
+  padding: calc(var(--box-padding-top)) calc(var(--box-padding-right) + var(--quote-padding-right)) calc(var(--box-padding-bottom)) calc(var(--box-padding-left) + var(--quote-padding-left))
+
+  min-height: calc(1.25 * var(--quotation-mark-close-height))
+
+  &:before
+    font-family: var(--font-serif), Georgia, serif
+    content: "“"
+    position: absolute
+    top: calc(var(--box-padding-top) + 2 * var(--quotation-mark-open-height))
+    left: calc(var(--box-padding-left) - 1.5 * var(--quotation-mark-open-height))
+    line-height: calc(var(--quotation-mark-open-line-height))
+    font-size: 5em
+    font-size: calc(var(--quotation-mark-open-font-size))
+    color: $blockquote-quotation-color-open
+    font-weight: normal
+
+  &:after
+    font-family: var(--font-serif), Georgia, serif
+    content: "”"
+    position: absolute
+    bottom: calc(-0.8 * var(--quotation-mark-close-height))
+    right: calc( var(--box-padding-right) - 0.5 * var(--quotation-mark-close-height))
+    line-height: calc(var(--quotation-mark-close-line-height))
+    font-size: calc(var(--quotation-mark-close-font-size))
+    color: $blockquote-quotation-color-close
+    font-weight: normal
+
+  footer
+    text-align: right
+    margin: 0 4em 0 2em
+    margin: 0
+    cite
+      display: block
+      font-weight: 200
+      opacity: 0.8
+      font-style: italic
+
+@media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+  .view-screen
+    blockquote
+      --quotation-mark-open-height: 1rem
+      --quotation-mark-close-height: 3rem
+      --box-margin-left: 5%
+      --box-margin-right: 5%
+
+@media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+  .view-screen
+    blockquote
+      --quotation-mark-open-height: 1.2rem
+      --quotation-mark-close-height: 3.6rem
+      --box-margin-left: 10%
+      --box-margin-right: 10%
+
+      h2
+        font-size: 150%
+        font-weight: 600
+      h3
+        font-size: 120%
+        font-weight: 600
+      h4
+        font-size: 100%
+        font-weight: 600
+      h2, h3, h4, h5
+        color: var(--text)
+        margin: 0
+        padding: 0
+
+      + .highlight_wrap
+        margin-top: 2.25rem
+
+* + p
+  padding-top: calc(1em * (var(--line-height) - 1))
+p + *
+  padding-top: calc(1.5em * (var(--line-height) - 1))
+
+p + p
+  padding-top: calc(2em * (var(--line-height) - 1))
+
+blockquote + p
+  padding-top: 0.25em
+  padding-bottom: 0.75em
+
+ul + p,
+ol + p
+  padding-top: 0.5em
+  padding-bottom: 0.25em
+
+dl
+  --column-gap: 1em
+  --dt-width: calc( (100% - var(--column-gap)) / 2)
+  --dt-padding-left: calc(var(--dt-width) + var(--column-gap))
+  --dd-width: calc(100% - var(--dt-width) - var(--column-gap))
+  display: flex
+  flex-wrap: wrap
+  width: 100%
+dl > *
+  padding-top: 0.5em
+dt
+  width: var(--dt-width)
+  font-weight: var(--font-weight-strong)
+  text-align: right
+dd
+  width: var(--dd-width)
+  padding-left: var(--column-gap)
+  margin-left: 0
+dd + dd
+  width: 100%
+  padding-left: calc(var(--dt-padding-left))
+dt + dt
+  padding-right: var(--dd-width)
+dt + dt + dd
+  margin-top: -1.625em
+  /* own height including padding */
+  padding-left: calc(var(--dt-padding-left))
+
+@media screen and (min-width: $screenViewBreakpointWidthNarrow)
+  dl
+    --dt-width: 25%

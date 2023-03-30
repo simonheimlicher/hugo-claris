@@ -1,0 +1,24 @@
+{{- $noteTitle :=  (T "note_title_default" ) -}}
+{{- $noteClassName := "" -}}
+{{ if .IsNamedParams }}
+  {{- with .Get "title" }}
+    {{- $noteTitle = . -}}
+  {{ end }}
+  {{- with .Get "class" }}
+    {{- $noteClassName = . -}}
+  {{ end }}
+{{ else }}
+  {{- $noteClassName = (default "" (.Get 0) ) -}}
+  {{- if $noteClassName -}}
+    {{- $noteTitle = T (printf "note_title_%s" $noteClassName) -}}
+    {{- if eq $noteTitle "" }}
+      {{- $noteTitle = ($noteClassName) -}}
+    {{- end -}}
+  {{- end -}}
+{{ end }}
+<div class="note_wrap">
+  <div class="note {{ $noteClassName }}">
+    <h2>{{ humanize $noteTitle }}</h2>
+    {{ .Inner }}
+  </div>
+</div>

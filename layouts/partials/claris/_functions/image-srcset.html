@@ -1,0 +1,71 @@
+{{- $page := .Page }}
+{{- $imageResourceArgs := . }}
+{{- $resourceSpec := .Resource }}
+{{- $template := "claris/_functions/image-srcset" }}
+{{- $imageSrcSet := dict }}
+{{- $srcSet := "" }}
+{{- $processingQuality := default false .Quality -}}
+{{- $processingFormat := default false .Format -}}
+{{- $processingHint := default false .Hint -}}
+{{- $includeOriginalImage := default false ($page.Param "responsiveImageIncludeOriginal") }}
+
+{{- with $img := partial "claris/_functions/image-resource" $imageResourceArgs }}
+  {{ $maxWidth := $img.Width }}
+  {{- $placeholderSvg := printf "<svg xmlns=%q viewBox=%q></svg>" "http://www.w3.org/2000/svg" (printf "0 0 %d %d" $img.Width $img.Height) | safeHTML }}
+  {{- $placeholderInlineImg := printf "data:image/svg+xml,%s" $placeholderSvg | replaceRE " " "%20" | replaceRE "<" "%3c" | replaceRE ">" "%3e" | replaceRE "\"" "'" | safeURL }}
+
+  {{- if site.Params.lazyLoadLowImageQualityPlaceholder }}
+    {{- $placeholder := ($img.Resize "48x q20") | images.Filter (images.GaussianBlur 6) -}}
+    {{- $placeholderInlineImg = printf "data:image/jpeg;base64,%s" ($placeholder.Content | base64Encode) | safeURL | safeHTMLAttr }}
+  {{- end -}}
+
+  {{/* {{- $numVersions := 15 }} */}}
+  {{/* {{- $powerBase := math.Sqrt (math.Sqrt 2) }} */}}
+  {{- $numVersions := 7 }}
+  {{- $powerBase := math.Sqrt 2 }}
+  {{- $sizeRange := math.Pow $powerBase (sub $numVersions 1) }}
+  {{- $roundBase := 2 }}
+  {{- $roundToNearest := math.Pow $roundBase (math.Round (div (math.Log (div $maxWidth (math.Pow $roundBase (sub $numVersions 1) ))) (math.Log $roundBase) ) ) }}
+  {{- $baseWidth := mul (math.Round (div (div $maxWidth $sizeRange) $roundToNearest)) $roundToNearest }}
+  {{- $sep := "" }}
+  {{- $srcSetWidths := slice -}}
+
+  {{/* {{- warnf "%s[%s]:\n    maxWidth=%d ratio smallest:largest = 1:%.0f baseWidth=%.2f roundToNearest=%.2f"
+      $page $template $maxWidth $sizeRange $baseWidth $roundToNearest -}} */}}
+  {{- range $i, $exp := (seq $numVersions) }}
+    {{- $widthCalculated := mul $baseWidth (math.Pow $powerBase $i) }}
+    {{- $width := int (math.Round (mul (math.Round (div $widthCalculated $roundToNearest) ) $roundToNearest) ) }}
+    {{- if (eq $i (sub $numVersions 1) ) }}
+      {{/* {{- warnf "    [%s]: width=maxWidth=%d i=%d exp=%d width=%d [%.2f]" $template $maxWidth $i $exp $width $widthCalculated -}} */}}
+      {{- $width = $maxWidth }}
+    {{/* {{- else }}
+      {{- warnf "    [%s]: i=%d exp=%d width=%d [%.2f]" $template $i $exp $width $widthCalculated -}} */}}
+    {{- end }}
+    {{- $srcSetWidths = $srcSetWidths | append $width }}
+    {{- $resizeSpec := printf "%dx" $width }}
+    {{- with $processingFormat }}
+    {{- $resizeSpec = printf "%s %s" $resizeSpec . }}
+    {{- end }}
+    {{- with $processingQuality }}
+    {{- $resizeSpec = printf "%s q%s" $resizeSpec . }}
+    {{- end }}
+    {{- with $processingHint }}
+    {{- $resizeSpec = printf "%s %s" $resizeSpec . }}
+    {{- end }}
+    {{- with ($img.Resize $resizeSpec ) }}
+      {{- $srcURL := .RelPermalink }}
+      {{- $srcSet = printf "%s%s%s %dw" $srcSet $sep .RelPermalink $width -}}
+      {{- $sep = ", " }}
+      {{- /* warnf "img.Width=%d width=%d" $img.Width $width */ -}}
+    {{- end }}
+  {{- end -}}
+
+  {{- /* Offer the original image in the srcset */ -}}
+  {{- if $includeOriginalImage }}
+    {{- $srcSet = printf "%s, %s %dw" $srcSet $img.RelPermalink $img.Width -}}
+  {{- end }}
+  {{- $imageSrcSet = (dict "Img" $img "SrcSet" $srcSet "Placeholder" $placeholderInlineImg) }}
+{{- else }}
+  {{- errorf "%s[%s]: No image matching parameter .Resource='%s'" $page $template $resourceSpec }}
+{{- end }}
+{{- return $imageSrcSet }}

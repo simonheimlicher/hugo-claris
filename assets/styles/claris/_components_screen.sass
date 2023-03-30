@@ -1,0 +1,1078 @@
+// General navigation definition
+%upcaret
+  width: 0
+  height: 0
+  border-left: 0.33rem solid transparent
+  border-right: 0.33rem solid transparent
+  top: -0.5rem
+  left: 1rem
+
+@media screen
+  .to_top
+    background-color: var(--theme)
+    width: 2.75rem
+    height: 2.75rem
+    display: flex
+    justify-content: center
+    align-items: center
+    cursor: pointer
+    border-radius: 50%
+    position: fixed
+    bottom: 1.5rem
+    right: 1.5rem
+    z-index: 99
+    &.ios
+      position: absolute
+      bottom: 0.75rem
+      right: 0
+    &:hover
+      background-color: var(--theme)
+    svg
+      fill: var(--theme-text)
+      opacity: 0.5
+      transition: 0.3s opacity var(--ease)
+    &:hover svg
+      opacity: 1
+
+@media screen
+  .nav
+    display: flex
+
+.nav
+  justify-content: space-between
+  color: var(--text)
+  white-space: nowrap
+  @include chrome
+  // FIXME: Overflow-y leads to scroll bars
+  // Does not work because overlow-x and -y cannot be set independently
+  // https://stackoverflow.com/q/6421966/617559
+  // overflow-x: auto
+  // overflow-y: visible
+  img
+    margin: auto 0
+
+  &_active
+    padding: 0
+    border-radius: 0.125rem
+    // &, &_is_menu.nav_menu, &_has_menu:not(.nav_open), &_parent_is_menu.nav_menu, &_parent_has_menu, .nav_open_sub &_is_menu, .nav_open_sub &_parent_is_menu, .nav_open_sub &_parent_parent_is_menu
+    &, &_is_menu.nav_menu, &_has_menu:not(.nav_open), &_parent_is_menu.nav_menu, &_parent_has_menu, &_in_section
+      // background-color: var(--choice-bg-menu-active)
+      // color: var(--text)
+      // text-decoration: none
+      // background-repeat: repeat-x
+      // background-position: bottom
+      // background-size: 100% 100%
+      // background-image: linear-gradient(to top, var(--xxhaze) 0, var(--xxxhaze) 100%)
+      // svg
+      //   filter: invert(100%);
+      &::after
+        position: absolute
+        content: ''
+        top: 0
+        bottom: 0.25rem
+        left: 0
+        right: 0
+        margin: 0 0.5rem
+        // height: 100%
+        // background-image: linear-gradient(to right, var(--theme-hover) 0, var(--theme) 20%, var(--theme) 80%, var(--theme-hover) 100%)
+        // background-image: linear-gradient(to right, var(--theme) 0, var(--theme) 100%)
+        // background-image: linear-gradient(to right, var(--xxhaze) 0, var(--xhaze) 50%, var(--xxhaze) 100%)
+        background-image: linear-gradient(to right, var(--xxxhaze) 0, var(--xxhaze) 50%, var(--xxxhaze) 100%)
+        background-size: 100% 8%
+        background-repeat: repeat-x
+        background-position-y: bottom
+      &:active
+        color: var(--xaccent)
+      &:focus
+        outline: var(--accent)
+  &_open_sub
+    .nav_active.nav_child.nav_item
+      color: var(--text)
+      text-decoration: none
+      background-repeat: repeat-x
+      background-position: bottom
+      background-size: 100% 100%
+      background-image: linear-gradient(to top, var(--xhaze) 0,  var(--xxhaze) 50%, var(--xhaze) 100%)
+      border: 1px solid var(--xxxhaze)
+      svg
+        filter: invert(100%);
+      &::after
+        content: none
+  &_active
+    z-index: calc(#{$main-z-index} + 1)
+    color: var(--theme-text-hover)
+    &::after
+      z-index: -1
+      color: var(--theme-text-hover)
+      bottom: 0
+      background-size: 100% 100%
+      background: var(--theme-bg-active)
+      // background-image: linear-gradient(to right, var(--xxhaze) 0, var(--xxxhaze) 10%, var(--xxhaze) 30%, var(--xxhaze) 50%, var(--xxxhaze) 70%, var(--xxhaze) 90%)
+      background-repeat: repeat-x
+      background-position-y: bottom
+      height: unset
+      margin: 0.25rem 0 0 0
+      border-radius: 0.125rem 0.8rem 0 0
+      --all: 0
+      // --top-left: 0.5rem
+      --top-right: 0.5rem
+      -webkit-mask: linear-gradient(45deg, transparent 0 var(--bottom-left,var(--all)) ,#fff 0) bottom left, linear-gradient( -45deg, transparent 0 var(--bottom-right,var(--all)),#fff 0) bottom right, linear-gradient( 135deg, transparent 0 var(--top-left,var(--all)) ,#fff 0) top left, linear-gradient(-135deg, transparent 0 var(--top-right,var(--all)) ,#fff 0) top right
+      -webkit-mask-size: 50.5% 50.5%
+      -webkit-mask-repeat: no-repeat
+      svg
+        filter: invert(100%)
+
+  &_icon
+    width: 0.7rem
+    margin-left: 0.33rem
+    transition: transform 0.3s var(--ease)
+    transform-origin: 50% 50%
+  &, &_body
+    flex-direction: column
+  &_body
+    // FIXME: Overflow-y leads to scroll bars
+    // overflow-x: auto
+    position: fixed
+    width: 90%
+    max-width: 16.5rem
+    top: 0
+    bottom: 0
+    display: flex
+    flex: 1
+    background: inherit
+    transition: transform 0.3s var(--easing)
+    &_right
+      transform: translateX(calc(100% + 100vw))
+      right: 0
+      .color_mode .color_mode_label
+        padding-right: 0.5rem
+    &_left
+      transform: translateX(calc(-100% - 100vw))
+      left: 0
+      .color_mode .color_mode_label
+        padding-left: 0.5rem
+
+    &:after
+      content: ''
+      position: absolute
+      top: #{$nav-height-narrow}
+      left: 0
+      width: 100%
+      height: 100%
+      z-index: -1
+      background: rgba(var(--RGB_choice-bg), 0.98)
+      @include background-gradient-translucent("to bottom", 0.9)
+
+  &_header
+    position: relative
+    left: 0
+    top: 0
+    width: 100%
+    height: $nav-height-narrow
+    z-index: 99
+    padding: 0
+    background: transparent
+    line-height: 1.5rem
+
+    &:after
+      content: ''
+      position: absolute
+      top: 0
+      left: 0
+      width: 100%
+      height: 100%
+      z-index: -1
+      background: rgba(var(--RGB_choice-bg), 0.98)
+      @include background-gradient-translucent("to top", 0.9)
+      // @include shadow-centered-narrow
+  &_item, &_follow
+    padding: 0.25rem 0.25rem
+  &_item
+    display: inline-flex
+    // border-radius: 0.25rem
+    border-radius: 0
+    align-items: center
+  &_item, &_follow
+    @media (any-hover: hover)
+      &:hover
+        z-index: calc(#{$main-z-index} + 1)
+        color: var(--theme-text-hover)
+        // Cut off top-right corner
+        &::after
+          z-index: -1
+          content: ''
+          position: absolute
+          color: var(--theme-text-hover)
+          top: 0
+          right: 0
+          bottom: 0
+          left: 0
+          background-size: 100% 100%
+          background-image: linear-gradient(to top, var(--theme-bg-hover) 0, var(--theme-bg-hover) 100%)
+          background-repeat: repeat-x
+          background-position-y: bottom
+          height: unset
+          margin: 0.25rem 0 0 0
+          border-radius: 0.125rem 0.8rem 0 0
+          --all: 0
+          // --top-left: 0.5rem
+          --top-right: 0.5rem
+          -webkit-mask: linear-gradient(45deg, transparent 0 var(--bottom-left,var(--all)) ,#fff 0) bottom left, linear-gradient( -45deg, transparent 0 var(--bottom-right,var(--all)),#fff 0) bottom right, linear-gradient( 135deg, transparent 0 var(--top-left,var(--all)) ,#fff 0) top left, linear-gradient(-135deg, transparent 0 var(--top-right,var(--all)) ,#fff 0) top right
+          -webkit-mask-size: 50.5% 50.5%
+          -webkit-mask-repeat: no-repeat
+          svg
+            filter: invert(100%)
+        // No cut off corner on site logo (nav_brand) and mobile menu (nav_close)
+        &.nav_brand, &.nav_close
+          &::after
+            --top-right: unset
+            margin-top: 0
+            border-radius: 0 0.125rem 0 0.125rem
+
+  &_follow
+    margin: 0 0.25rem
+    line-height: 1.25rem
+    .icon
+      margin: 0
+    &:first-child
+      margin-left: 0
+    a
+      padding: 0.5rem
+    svg
+      width: 1.5rem
+      height: 1.5rem
+
+  &_sub
+    width: 100%
+    left: 0
+    position: absolute
+    z-index: 20
+    border-radius: 0 0 0.5rem 0.5rem
+    top: 3rem
+    transition: height 0.3s ease-in-out
+    height: 0
+    overflow: hidden
+    padding: 0.96rem 0 0
+    background: transparent
+
+  &_parent, &_brand_parent
+    position: relative
+    display: flex
+    align-items: center
+    border-radius: 0.5rem
+    width: fit-content
+
+  &_parent
+    display: grid
+    &_follow_mode
+      display: flex
+      align-content: center
+      justify-content: space-between;
+      width: 100%
+      // margin: 1.5rem 0
+      .color_mode
+        margin-right: 0
+        margin-left: auto
+
+  &_open + &_sub &_child
+    padding-top: 0.5rem
+    padding-bottom: 0.5rem
+    z-index: 3
+    & + a
+      @media screen and (min-width: $screenViewBreakpointWidthMobile)
+        padding-top: 0.5rem
+        border-radius: 0.5rem
+    &:not(:first-child)
+      position: relative
+    &:first-child:before
+      position: absolute
+      content: ""
+      @extend %upcaret
+      border-bottom: 0.5rem solid var(--choice-bg-menu)
+      z-index: 2
+  &_open + &_sub
+    height: auto // initial
+    z-index: 999
+    overflow: auto // initial
+    border-radius: 0.5rem
+    padding-bottom: 0.5rem
+    padding: 0
+    @media screen and (min-width: $screenViewBreakpointWidthMobile)
+      color: var(--text)
+      background: transparent
+      width: auto
+      white-space: nowrap
+      color: var(--text)
+    &:before, &:after
+      content: ""
+      position: absolute
+    &:before
+      @extend %upcaret
+      z-index: 1
+      @media screen and (min-width: $screenViewBreakpointWidthMobile)
+        border-bottom: 0.5rem solid var(--choice-bg-menu)
+    &:after
+      top: 0
+      left: 0
+      right: 0
+      bottom: 0
+      border-radius: 0.5rem
+      background: var(--choice-bg-menu)
+      box-shadow: 0.25rem 0.25rem 3rem var(--shadow)
+      @media screen and (min-width: $screenViewBreakpointWidthMobile)
+        background: var(--choice-bg-menu)
+        width: auto
+        white-space: nowrap
+  &_open &_icon
+    transform: rotate(180deg)
+
+  &_sub &_item
+    &:not(.nav_child)
+      position: relative
+    position: relative
+    z-index: 5
+    display: block
+    padding-top: 0.75rem
+    padding-bottom: 0.75rem
+    transition: background 0.3s ease-out
+    margin: 0
+
+  & &_brand
+    position: relative
+    margin-left: calc(-1 * #{$screenViewBodyPadding})
+    margin-right: 0rem
+    padding: 0 $screenViewBodyPadding 0 $screenViewBodyPadding
+    z-index: 999
+    width: min-content
+    /* Required to avoid nav bar incl. burger menu icon from disappearing */
+    min-height: 1rem
+    img
+      height: calc(#{$nav-height-narrow})
+      width: auto
+      max-width: unset
+    @media screen and (min-width: $screenViewBreakpointWidthMobile)
+      // padding-left: 0
+      img
+        background: transparent !important
+  &_close
+    position: absolute
+    right: 0
+    top: 0
+    bottom: 0
+    height: 100%
+    padding-left: 1.5rem
+    padding-right: $screenViewBodyPaddingNarrow
+    cursor: pointer
+    z-index: 1000
+    display: flex
+    justify-content: center
+    align-items: center
+    svg
+      width: 1.25rem
+      fill: var(--text)
+      height: 1.25rem
+      display: none
+      &:first-child
+        display: block // initial
+      &.isopen
+        display: none
+        + svg
+          display: block // initial
+
+    .icon
+      margin: 0
+    img
+      height: calc(#{$nav-height-narrow} - 0.5rem)
+  &_center
+    display: none
+    @media screen and (min-width: $screenViewBreakpointWidthMobile)
+      display: flex
+      flex: 1
+      align-items: center
+      justify-content: center
+      + .follow
+        flex: 0 1 auto // initial
+
+  &_sub
+    position: relative
+    top: auto // initial
+    padding-top: 0
+    top: 0.25rem
+
+.color
+  &_mode
+    display: none
+    width: min-content
+    margin: auto 0
+    justify-content: flex-end
+    &_label
+      font-size: 0.75rem // Minimal size for mobile users according to Lighthouse
+      text-transform: uppercase
+      width: min-content
+      text-align: right
+      margin-right: 0.25rem
+      line-height: var(--line-height-label)
+      white-space: pre-wrap
+      word-wrap: normal
+      overflow-wrap: normal
+      hyphens: none
+  &_choice
+    width: 3rem
+    background-color: var(--translucent)
+    border-radius: 1rem
+    height: 1.5rem
+    margin: auto 0
+    outline: none
+    border: none
+    -webkit-appearance: none
+    cursor: pointer
+    position: relative
+    position: relative
+    overflow: hidden
+    // box-shadow: 0 0.25rem 1rem rgba(0,0,0,0.15)
+    @include drop-shadow-offset(0, 0.25rem, 1rem, 0.25, 0.35)
+    &:hover
+      background-color: var(--translucent-hover)
+    &:after
+      content: ""
+      position: absolute
+      top: 0.1rem
+      left: 0.1rem
+      width: 1.3rem
+      height: 1.3rem
+      // background-image: url("#{$images}sun.svg")
+      background-image: url("#{$images}sun-mono.svg");
+      background-position: center
+      background-size: cover
+      border-radius: 50%
+      z-index: 2
+
+  &_animate
+    transition: transform 0.5s cubic-bezier(0.075, 0.82, 0.165, 1)
+    &:after
+      transition: transform 0.5s cubic-bezier(.19,1,.22,1)
+      will-change: transform
+
+.main
+  // Ensure .main extends padding to reach under nav_header
+  // when nav_header is position: relative
+  // padding-top: 0
+  padding: #{$nav-height-narrow} 0 $screenViewBodyPadding 0
+  margin: - #{$nav-height-narrow} auto 0 auto
+  @media screen and (min-width: $screenViewBreakpointWidthWide)
+    min-height: 100vh
+    min-height: 100lvh
+    padding-bottom: 1.5rem
+  &_inner
+    @include chrome
+
+.footer
+  // Footer shall stick to the bottom and reveal when body scrolls up
+  @media screen and (min-height: $screenViewBreakpointHeightShallow)
+    position: sticky
+    bottom: 0
+    left: 0
+    width: 100%
+
+.hero-image
+  &_above-main
+    &_figure
+      margin: 0
+      padding: 0
+      z-index: calc(#{$main-z-index} + 1)
+      // FIXME: Let's not push the image under the navigation bar
+      // margin-top: calc(-1 * #{$nav-height})
+    &_img
+      margin: 0
+      padding: 0
+      max-width: unset
+      max-height: unset
+      width: 100%
+      height: auto
+      max-height: calc(min(50vh, 70vw))
+      object-fit: cover
+      object-position: center center
+      border-radius: 0
+      @media screen and (min-height: $screenViewBreakpointHeightTall)
+        max-height: calc(min(40vh, 50vw))
+
+  &_background
+    &_main
+      position: relative
+      display: flex
+      flex-direction: column
+      justify-content: flex-end
+      padding-bottom: 0
+      .content-title
+        color: white
+        text-shadow: 1.5px 1.5px 1.5px black
+        font-size: 4rem
+        text-align: center
+        position: relative
+        margin-bottom: 3rem
+      .main_inner
+        position: relative
+        display: flex
+        flex-direction: column
+        justify-content: flex-end
+        min-height: calc(100vh - #{$nav-height} - 3 * #{$screenViewBodyPadding})
+        min-height: calc(100lvh - #{$nav-height} - 3 * #{$screenViewBodyPadding})
+        margin-bottom: calc(#{$nav-height} - 100vh)
+        margin-bottom: calc(#{$nav-height} - 100lvh)
+        padding-bottom: calc(#{$screenViewBodyPadding})
+        z-index: calc(#{$main-z-index} + 2)
+      & ~ .footer
+        position: sticky
+        bottom: 0
+        padding-top: calc(#{$screenViewBodyPadding})
+        background: var(--bg-dark)
+        color: var(--text-dark)
+        h1, h2, h3, a
+          color: var(--text-dark)
+    &_figure
+      display: none
+    &_main &_figure
+      display: initial
+      position: sticky
+      bottom: 0
+      margin: 0
+      padding: 0
+      z-index: calc(#{$main-z-index} + 1)
+      margin-top: calc(-1 * #{$nav-height})
+    &_img
+      margin: 0
+      padding: 0
+      border-radius: 0
+      width: 100%
+      height: 100vh
+      height: 100lvh
+
+// FIXME: Testing of settings for iOS devices below
+// .footer
+//   position: relative
+//   z-index: calc(#{$main-z-index} + 1)
+// .hero-image_background
+//   &_main &_figure
+//     display: none
+
+// .hero-image_background
+//   &_figure
+//     display: block
+//     z-index: calc(#{$main-z-index} - 1)
+//     position: fixed
+//     top: 0
+//   &_img
+//     height: 100vh
+//     height: calc(100lvh + 100px)
+//   &_main
+//     background: transparent
+//     height: auto
+//     .main_inner
+//       margin: 0
+//     & ~ .footer
+//       position: relative
+//       z-index: calc(#{$main-z-index} + 1)
+
+
+// FIXME: Mobile Safari gets confused with position: sticky on footer
+// https://browserstrangeness.bitbucket.io/css_hacks.html#safari
+// https://stackoverflow.com/a/25975282/617559
+// _::-webkit-full-page-media, _:future, :root .footer
+//   @media screen and (min-height: $screenViewBreakpointHeightShallow)
+//     position: relative
+//     z-index: -1
+// https://syntaxfix.com/question/5666/css-media-query-to-target-only-ios-devices
+@supports (-webkit-touch-callout: none)
+  .footer
+    position: relative
+    z-index: calc(#{$main-z-index} + 1)
+  .hero-image_background
+    &_main &_figure
+      display: none
+
+  .hero-image_background
+    &_figure
+      display: block
+      z-index: calc(#{$main-z-index} - 1)
+      position: fixed
+      top: 0
+    &_img
+      height: 100vh
+      height: calc(100lvh + 100px)
+    &_main
+      background: transparent
+      height: auto
+      .main_inner
+        margin: 0
+      & ~ .footer
+        position: relative
+        z-index: calc(#{$main-z-index} + 1)
+
+@media screen and (max-width: #{$screenViewBreakpointWidthMobile - 0.01})
+  html.jsopen
+    @include nav-bar-anchor-offset
+    .nav_header
+      position: fixed
+  .jsopen
+    &:after
+      content: ""
+      position: fixed
+      z-index: 2
+      background-color: rgba(0,0,0,0.3)
+      top: 0
+      left: 0
+      right: 0
+      bottom: 0
+    .nav_body .nav_item, .nav_body .nav_item.nav_menu
+      border-radius: 0.5rem
+      padding-top: 0.5rem
+      padding-bottom: 0.5rem
+    .nav
+      &_body
+        transform: translateX(0)
+        padding-left: 1.5rem
+        padding-right: 1.5rem
+      &_parent
+        width: 100%
+        &:first-child
+          margin-top: calc(#{$nav-height-narrow} + #{$screenViewBodyPadding})
+        &_follow_mode
+          // justify-content: flex-start
+          justify-content: flex-end
+          flex: 0 1 auto // initial
+          margin-top: 0.75rem
+      &_active
+        &, &_is_menu.nav_menu, &_has_menu:not(.nav_open), &_parent_is_menu.nav_menu, &_parent_has_menu, .nav_open_sub &_is_menu, .nav_open_sub &_parent_is_menu, .nav_open_sub &_parent_parent_is_menu
+          // background-color: var(--choice-bg-menu-active)
+          color: var(--text)
+          text-decoration: none
+          background-repeat: repeat-x
+          background-position: bottom
+          background-size: 100% 100%
+          background-image: linear-gradient(to top, var(--xxhaze) 0, var(--xxxhaze) 100%)
+          svg
+            filter: invert(100%);
+          // &::after
+          //   top: calc(#{$nav-height-narrow} - 0.125rem)
+          //   height: 0.125rem
+          //   background-image: linear-gradient(to right, var(--theme-hover) 0, var(--theme) 20%, var(--theme) 80%, var(--theme-hover) 100%)
+          //   background-size: 100%
+          //   background-position-y: top
+          //   background-origin: padding-box
+          &::after
+            content: none
+
+// Narrow navigation menu bar
+@media screen and (min-width: $screenViewBreakpointWidthMobile)
+  .nav
+    &_header
+      font-size: 0.9rem
+    &, &_body
+      flex-direction: row
+    &_body
+      position: relative
+      transform: none
+      width: auto
+      max-width: none
+      top: auto // initial
+      bottom: auto // initial
+      transition: none
+      &:after
+        content: none
+    &_parent
+      position: relative
+      display: flex
+      align-items: center
+      // margin: 0.25rem 0
+      padding: 0.25rem 0
+      &_follow_mode
+        margin-left: auto
+        display: flex
+        align-content: center
+        justify-content: space-between
+        width: auto // initial
+        .color_mode
+          margin-right: 0
+    &_follow
+      &:first-child
+        a
+          margin-left: 0
+    &_follow, &_parent
+      svg
+        width: 1.25rem
+        height: 1.25rem
+
+    &_sub
+      position: absolute
+      left: 0
+      top: 3rem
+      width: 100%
+      height: 0
+      z-index: 20
+      padding: 0.96rem 0 0
+    & &_brand
+      padding: 0 0.5rem 0 $screenViewBodyPadding
+      img
+        height: calc(#{$nav-height-narrow})
+        width: auto
+        max-width: unset
+        background: transparent !important
+    &_center
+      display: flex
+      flex: 1
+      align-items: center
+      justify-content: center
+      + .follow
+        flex: 0 1 auto // initial
+    &_hide, &_close
+      display: none
+
+  .color_mode
+    position: relative
+    right: auto // initial
+    top: auto // initial
+    // FIXME: Always display label for accessibility
+    // &_label
+    //   display: none
+
+// Full navigation menu bar
+@media screen and (min-width: $screenViewBreakpointWidthNarrow)
+  .nav
+    &_header
+      height: $nav-height
+      font-size: 1.1rem
+      line-height: 1.5rem
+    &_item, &_follow
+      padding: 0.5rem 0.5rem
+    &_follow, &_parent
+      svg
+        width: 1.5rem
+        height: 1.5rem
+
+    & &_brand
+      // padding: 0.25rem 1.5rem
+      img
+        height: $nav-height
+
+    .color_mode_label
+      display: flex
+      line-height: 1.25rem
+
+// If the homepage contains a hero element, we want to be able to scroll
+// directly to the beginning of the content, without smooth scrolling
+html.content-above-header
+  &, body
+    scroll-behavior: auto
+  body
+    min-height: 100vh
+    min-height: 100lvh
+
+.table_of_contents
+  visibility: hidden
+  @include aside-meta
+  width: 100%
+
+  h2
+    font-size: 100%
+    margin: 0 -1rem
+    padding: 0.25rem 1rem
+    border-radius: 0.25rem
+    text-transform: uppercase
+
+  a
+    text-decoration: none
+    color: var(--text)
+    position: relative
+
+  ul
+    padding: 0.25rem 1.5rem
+    margin: 0 -0.5rem
+    list-style: outside circle
+    width: 100%
+
+  li
+    list-style-type: circle
+    width: 100%
+
+  nav > a, nav:not(.active) li, nav:not(.active) li.visible ~ li, nav.active li
+    @media (any-hover: hover)
+      &:hover
+        color: var(--theme-bg-hover)
+        cursor: pointer
+        list-style-type: none
+        a
+          color: var(--theme-bg-hover)
+          &::before
+            content: ''
+            display: block
+            width: 1ch
+            height: 100%
+            position: absolute
+            top: 0
+            bottom: 0
+            left: -1rem
+            background-color: var(--theme-bg-hover)
+            opacity: 1
+          // Triangle
+          // &::before
+          //   content: ''
+          //   position: absolute
+          //   top: calc((1 - var(--line-height)) * 1em / 2 + 0.3em + 0.2rem)
+          //   left: calc(-1rem + 0.25ch)
+          //   opacity: 1
+          //   border-style: solid
+          //   border-width: calc(var(--line-height) * 0.3em) 0 calc(var(--line-height) * 0.3em) 1ch
+          //   border-color: transparent transparent transparent var(--accent)
+          // Line below
+          // &::after
+          //   content: ''
+          //   display: block
+          //   width: 100%
+          //   height: 0.125em
+          //   position: absolute
+          //   // top: 0
+          //   bottom: -0.25rem
+          //   // left: -1rem
+          //   background-color: var(--theme-bg-hover)
+
+      &:active
+        color: var(--accent)
+        cursor: pointer
+        a
+          color: var(--accent)
+
+  li.active, nav:not(.active) li.visible //, li.visible:not(.active) + li.active
+    // list-style-type: disc
+    list-style-type: none
+    cursor: auto // initial
+    a
+      &::before
+        content: ''
+        display: block
+        width: 1ch
+        height: 100%
+        position: absolute
+        top: 0
+        bottom: 0
+        left: -1rem
+        background-color: var(--xxhaze)
+        opacity: 1
+      // Triangle
+      // &::before
+      //   content: ''
+      //   position: absolute
+      //   top: calc((1 - var(--line-height)) * 1em / 2 + 0.3em + 0.2rem)
+      //   left: calc(-1rem + 0.25ch)
+      //   opacity: 1
+      //   border-style: solid
+      //   border-width: calc(var(--line-height) * 0.3em) 0 calc(var(--line-height) * 0.3em) 1ch
+      //   border-color: transparent transparent transparent var(--text)
+      // Line below
+      // &::after
+      //   content: ''
+      //   display: block
+      //   width: 100%
+      //   height: 0.125em
+      //   position: absolute
+      //   // top: 0
+      //   bottom: -0.25rem
+      //   // left: -1rem
+      //   background-color: var(--xxhaze)
+
+  nav:not(.active) li.visible ~ li.visible
+    list-style-type: circle
+    cursor: auto // initial
+
+body:not(.modern-js) .article_aside .table_of_contents
+  visibility: visible
+
+@media only screen
+  .outdated:before
+    content: ''
+    display: block
+    width: 60%
+    height: 1rem
+    position: absolute
+    left: 0.2rem
+    bottom: 0.05rem
+    background-color: rgba(0, 0, 0, 0.5)
+    transform: rotate(-2deg)
+    box-shadow: 0 0 10px #000
+    opacity: 1
+    z-index: -1
+
+  .outdated:after
+    content: ''
+    display: block
+    width: 60%
+    height: 1rem
+    position: absolute
+    right: 0.2rem
+    bottom: 0.05rem
+    background-color: rgba(0, 0, 0, 0.5)
+    transform: rotate(2deg)
+    box-shadow: 0 0 10px #000
+    opacity: 1
+    z-index: -1
+
+  .outated h2:before
+    content: ''
+    display: block
+    width: 30%
+    height: 1.5rem
+    position: absolute
+    top: -0.75rem
+    left: 35%
+    background-color: rgba(240, 240, 180, 0.35)
+    transform: rotate(-3deg)
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.15), inset 0 0 2px rgba(255, 255, 255, 0.8)
+    opacity: 1
+
+.article_content, .sidebar, .footer
+  a:not(.button):not(nav a):not(sup a)
+    color: inherit // Same as surrounding text should be ok for background contrast
+    text-decoration: none
+    &:hover
+      @media (any-hover: hover)
+        color: var(--theme-hover)
+        text-decoration: underline
+        text-underline-position: under
+        text-underline-offset: 0.1em
+    &:active
+      color: var(--xaccent)
+    &:focus
+      outline: var(--accent)
+
+  p a:not(.button):not(nav a):not(sup a), li a:not(.button):not(nav a):not(sup a)
+    color: inherit // Same as surrounding text should be ok for background contrast
+    padding: 0 0 0.125rem 0
+    background-image: linear-gradient(to right, var(--xhaze) 0, var(--xxhaze) 50%, var(--xhaze)100%)
+    background-size: 50% 12%
+    background-position-y: 1.1rem
+    background-repeat: repeat-x
+    background-position: bottom
+    &:hover
+      @media (any-hover: hover)
+        color: inherit // Same as surrounding text should be ok for background contrast
+        text-decoration: none
+        background-size: 50% 100%
+        border-radius: 0.125rem
+        // FIXME: May lead to shifts
+        // padding: 0 0.25rem 0 0.25rem
+        // margin: 0 -0.25rem
+    &:active
+      color: var(--xaccent)
+    &:focus
+      outline: var(--accent)
+
+
+
+@media screen and (min-height: $screenViewBreakpointHeightShallow)
+  html
+    @include nav-bar-anchor-offset
+    .nav_header
+      position: fixed
+
+html.content-above-header
+  @include nav-bar-anchor-offset
+  .nav_header
+    position: sticky
+.lede, .main-section .article_body > p:nth-of-type(1):not(h2 + p)
+  margin: 1rem 0 3rem 0
+  font-style: italic
+  font-size: 133%
+  font-weight: 300
+  line-height: 1.5
+
+.drop-cap, .main-section .article_body > p + p:nth-of-type(2)
+  margin-top: 2rem
+  &:first-letter
+    color: var(--initial)
+    float: left
+    font-size: 8em
+    line-height: 6.7rem
+    padding: 0 0.5rem 0 0
+    margin: -2rem 0 0 -0.5rem
+
+// footnotes-accessible.js
+// https://danielpost.com/articles/making-hugos-footnotes-accessible/
+
+@keyframes highlight
+  0%
+    opacity: 1
+  100%
+    opacity: 0
+
+@keyframes highlight-color
+  0%
+    opacity: 1
+    // color: var(--theme-text-lit)
+    background: var(--highlight-bg-yellow)
+  // 30%
+  //   color: var(--text)
+  100%
+    background: var(--theme-bg)
+
+.footnotes li
+  & p
+    position: relative
+    z-index: ($main-z-index  + 1)
+    &:after
+      position: absolute
+      z-index: -1
+      content: ''
+      top: 0
+      left: 0
+      right: 0
+      bottom: 0
+      background: rgba(var(--RGB_highlight-bg-yellow), 1)
+      opacity: 0
+  &:target, &:focus
+    p:after
+      animation: highlight 3s cubic-bezier(0.3, 0, 1, 0.7)
+
+p sup[id^=fnref]
+  line-height: 0
+  a
+    @extend .button_translucent
+    position: relative
+    z-index: ($main-z-index  + 1)
+    top: 0
+    left: 0
+    padding: 0 0.3em 0
+    border-radius: 50%
+  a:after
+    position: absolute
+    z-index: -1
+    content: ''
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+    border-radius: 50%
+    background: var(--theme-bg)
+    opacity: 0
+  &:target, &:focus
+    a
+      animation: highlight-color 3s cubic-bezier(0.3, 0, 1, 0.7)
+
+.u-hidden-visually
+  clip-path: inset(100%)
+  clip: rect(1px, 1px, 1px, 1px)
+  height: 1px
+  overflow: hidden
+  position: absolute
+  white-space: nowrap
+  width: 1px
+.medium-zoom-image
+    margin-top: var(--navigation-header-height)
+    // z-index: $main-z-index
+    z-index: calc(#{$main-z-index} + 100)
+    &--opened
+      // @include drop-shadow-offset(0.5rem, 0.5rem, 1rem, 0.2, 0.2)
+      z-index: calc(#{$main-z-index} + 101)
+      // background: var(--bg-light)
+.medium-zoom
+  &--opened
+    .medium-zoom-overlay
+      z-index: calc(#{$main-z-index} + 100)

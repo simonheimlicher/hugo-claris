@@ -1,0 +1,154 @@
+{{- $scriptBundles := dict -}}
+{{- $page := .Page }}
+{{- $mediaTypeList := .MediaTypeList }}
+{{- $contentTypeList := .ContentTypeList }}
+{{- $template := "claris/_functions/script-bundles" }}
+
+{{- $contentTypeListID := delimit $contentTypeList "-" }}
+{{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" site.Params }}
+{{- $supportIE11 := default false (and $envProd .Site.Params.supportIE11) }}
+{{- $minifyBundle := $envProd }}
+{{/* {{- warnf "%s[%s]: $contentTypeList:%s $supportIE11:%v" $page $template $contentTypeList $supportIE11 -}} */}}
+<!-- https://www.hackification.io/software-development/hugo/html/asset-bundling/ */ -->
+{{- $sourceExt := "js" }}
+{{- $targetExt := "js" -}}
+{{- $legacySuffix := default "_legacy" .LegacySuffix }}
+{{- $fingerprintOptions := default "sha256" site.Params.resourceFingerprintOptions }}
+
+{{- $tmpContext := . -}}
+
+{{- /* $targetVersion := "es6" */ -}}
+{{- /* Avoid error 'JSBUILD: failed to transform "js/modern_late-bundle.js" (text/javascript): Transforming async generator functions to the configured target environment ("es2015") is not supported yet' */ -}}
+{{- $targetVersion := "es2020" }}
+{{- $legacyTargetVersion := $targetVersion }}
+{{- if $supportIE11 }}
+  {{- $legacyTargetVersion = "es5" }}
+{{- end }}
+
+{{- $jsBuildOptionsBase := (dict
+    "target" $targetVersion
+    "sourceMap" "inline"
+    "minify" $minifyBundle
+    ) }}
+
+{{- $scriptResources := (dict
+  "polyfills" (dict
+    "target" $legacyTargetVersion
+    "supportIE11" true)
+  "legacy" (dict
+    "target" $legacyTargetVersion
+    "supportIE11" $supportIE11)
+  "modern_early" (dict
+    "target" $targetVersion
+    "supportIE11" false)
+  "modern_late" (dict
+    "target" $targetVersion
+    "supportIE11" false)
+) }}
+
+{{- range $resourceID, $params := $scriptResources }}
+  {{- $mediaType := default "all" $params.media }}
+  {{- if (in $mediaTypeList $mediaType) }}
+    {{/* {{- warnf "%s[%s]: Generating script bundle for MediaType=%s in MediaTypeList=%v"
+        $page $template $mediaType $mediaTypeList }} */}}
+    <!-- Parameters to pass to the hugoParamsFile and other top-level script files
+      that are executed as templates -->
+    {{- $tplParams := (dict "Page" $page "ContentType" $contentTypeListID "MediaType" $mediaType) }}
+    {{/* {{- warnf "%s[%s]: resourceID:%v params:%v $tplParams:%v" $page $template $resourceID $params $tplParams }} */}}
+
+    {{- $scriptResourceList := slice }}
+
+    {{- range $contentType := $contentTypeList }}
+      {{- $resourcePathPrefix := printf "scripts/%s" $contentType -}}
+
+      <!-- Get the Hugo params file resource and execute it as a Go Template -->
+      {{- $hugoParamsFile := printf "%s/hugo-params" $resourcePathPrefix }}
+
+      <!-- Get the main JavaScript file resource and execute it as a Go Template -->
+      {{- $resourceFileBaseName := (default $resourceID $params.file) }}
+      {{- $scriptMainFile := printf "%s/%s" $resourcePathPrefix $resourceFileBaseName }}
+
+      {{- $scriptFileTemplates := (slice $hugoParamsFile $scriptMainFile) }}
+      {{- $contentTypeExecutedResources := slice }}
+
+      {{- range $resourceFile := $scriptFileTemplates }}
+        {{- with resources.GetMatch (printf "%s.*" $resourceFile ) -}}
+          {{- $executedFile := printf "%s_%s-executed.%s" $resourceFile $resourceID $sourceExt }}
+          {{- $executedResource := resources.ExecuteAsTemplate $executedFile $tplParams . }}
+          {{- $contentTypeExecutedResources = append (slice $executedResource) $contentTypeExecutedResources }}
+        {{- else -}}
+          {{- if (eq $contentType "claris") }}
+            {{- errorf "%s[%s]: resourceFile '%s' not found" $page $template $resourceFile }}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- with $contentTypeExecutedResources }}
+        {{- $contentTypeTargetPathPrefix := printf "scripts/%s" $contentType -}}
+        {{- $contentTypeTargetFile := printf "%s/%s-executed-concat.%s" $contentTypeTargetPathPrefix $resourceID $targetExt }}
+        {{- $contentTypeScriptResource := $contentTypeExecutedResources | resources.Concat $contentTypeTargetFile }}
+
+        {{/* {{- warnf "%s[%s]: $contentTypeScriptResource .MediaType:%s .Content:\n%v\n...\n%v"
+            $page $template $contentTypeScriptResource.MediaType
+            (substr $contentTypeScriptResource.Content 0 100)
+            (substr $contentTypeScriptResource.Content -100) }} */}}
+
+        {{- $scriptResourceList = append (slice $contentTypeScriptResource) $scriptResourceList }}
+      {{- end }}
+    {{- end }}
+
+    {{- warnf "%s[%s]: Contents of scriptResourceList for resourceID %s:" $page $template $resourceID }}
+    {{- range $idx, $resource := $scriptResourceList }}
+      {{- warnf "%s[%s]: %d --> %v .Name:%v .MediaType:%v" $page $template $idx $resource $resource.Name $resource.MediaType }}
+    {{- end }}
+
+    {{/* {{- $bundle = (slice $hugoParams $bundle) | resources.Concat $bundleFile }}
+    {{- if (and $supportIE11 $params.supportIE11 ) }}
+      {{- $bundle = $bundle | js.Build (dict "target" $targetVersion "minify" false) -}}
+      {{- $bundle = $bundle | babel -}}
+      {{- $bundle = $bundle | js.Build (dict "target" $params.target "minify" $minifyBundle) -}}
+    {{- else }}
+      {{- $bundle = $bundle | js.Build (dict "target" $params.target "minify" $minifyBundle) -}}
+      {{- end }}
+    {{- $bundle = $bundle | resources.Fingerprint $fingerprintOptions -}}
+    {{- $scriptBundles = merge $scriptBundles (dict $resourceID $bundle) }} */}}
+
+    {{- $concatResource := "" }}
+    {{- $bundle := "" }}
+    {{- $targetPathPrefix := printf "scripts/%s" $contentTypeListID -}}
+    {{- $targetFile := printf "%s/%s.%s" $targetPathPrefix $resourceID $targetExt }}
+
+    {{/* {{- warnf "%s[%s]: concat scriptResourceList:%s targetFile:%s"
+        $page $template $scriptResourceList $targetFile }} */}}
+
+    {{- $concatResource = $scriptResourceList | resources.Concat $targetFile }}
+
+    {{- if (and $supportIE11 $params.supportIE11 ) }}
+      {{- $bundle = $concatResource | js.Build (merge $jsBuildOptionsBase (dict "target" $targetVersion "minify" false) ) -}}
+      {{- $bundle = $bundle | babel -}}
+      {{- $bundle = $bundle | js.Build (merge $jsBuildOptionsBase (dict "target" $params.target) ) -}}
+    {{- else }}
+      {{- $bundle = $concatResource | js.Build (merge $jsBuildOptionsBase (dict "target" $params.target) ) -}}
+      {{/* {{- warnf "%s[%s]: js.Build concatResource:%v target:%v produced bundle:%v"
+          $page $template $concatResource $params.target $bundle }} */}}
+    {{- end }}
+
+    {{- $bundle = $bundle | resources.Fingerprint $fingerprintOptions }}
+    {{/* {{- warnf "%s[%s]: $bundle[%s] %#v: MediaType:%s Content:\n%v\n...\n%v"
+        $page $template $bundle $resourceID $bundle.MediaType (substr $bundle.Content 0 100) (substr $bundle.Content -100) }} */}}
+    {{- $scriptBundles = merge $scriptBundles (dict $resourceID $bundle) -}}
+
+    {{- if (and $supportIE11 $params.supportIE11) }}
+      {{- $legacyResourceID := printf "%s%s" $resourceID $legacySuffix }}
+      {{- $legacyExecutedFile := printf "%s.%s" $legacyResourceID $sourceExt }}
+      {{- $legacyBundle := $concatResource js.Build (merge $jsBuildOptionsBase (dict "target" $targetVersion "minify" false) ) -}}
+      {{- $legacyBundle = $bundle | babel -}}
+      {{- $legacyBundle = $legacyBundle | js.Build (merge $jsBuildOptionsBase (dict "target" $params.target) ) -}}
+      {{- $scriptBundles = merge $scriptBundles (dict $legacyResourceID $legacyBundle) -}}
+    {{- end -}}
+  {{/* {{- else }}
+    {{- warnf "%s[%s]: Not generating script bundle for MediaType=%s: not in MediaTypeList=%v"
+    $page $template $mediaType $mediaTypeList }} */}}
+  {{- end }}
+{{- end }}
+{{/* {{- warnf "%s[%s]: returning $scriptBundles: %s" $page $template $scriptBundles }} */}}
+{{- return $scriptBundles -}}

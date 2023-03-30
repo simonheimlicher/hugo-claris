@@ -1,0 +1,360 @@
+{{- $res := dict }}
+{{- $page := .Page }}
+{{- $plain := default "john.doe+private@example.net" .Plain }}
+{{- $oneTimePassword := default "" .OneTimePassword }}
+{{- $template := "claris/_functions/obfuscate-link" }}
+{{- $asciiToInt := (dict
+  "+" 43
+  "/" 47
+  "0" 48
+  "1" 49
+  "2" 50
+  "3" 51
+  "4" 52
+  "5" 53
+  "6" 54
+  "7" 55
+  "8" 56
+  "9" 57
+  "A" 65
+  "B" 66
+  "C" 67
+  "D" 68
+  "E" 69
+  "F" 70
+  "G" 71
+  "H" 72
+  "I" 73
+  "J" 74
+  "K" 75
+  "L" 76
+  "M" 77
+  "N" 78
+  "O" 79
+  "P" 80
+  "Q" 81
+  "R" 82
+  "S" 83
+  "T" 84
+  "U" 85
+  "V" 86
+  "W" 87
+  "X" 88
+  "Y" 89
+  "Z" 90
+  "a" 97
+  "b" 98
+  "c" 99
+  "d" 100
+  "e" 101
+  "f" 102
+  "g" 103
+  "h" 104
+  "i" 105
+  "j" 106
+  "k" 107
+  "l" 108
+  "m" 109
+  "n" 110
+  "o" 111
+  "p" 112
+  "q" 113
+  "r" 114
+  "s" 115
+  "t" 116
+  "u" 117
+  "v" 118
+  "w" 119
+  "x" 120
+  "y" 121
+  "z" 122
+) }}
+{{- $intToAscii := (dict
+  "43" "+"
+  "47" "/"
+  "48" "0"
+  "49" "1"
+  "50" "2"
+  "51" "3"
+  "52" "4"
+  "53" "5"
+  "54" "6"
+  "55" "7"
+  "56" "8"
+  "57" "9"
+  "65" "A"
+  "66" "B"
+  "67" "C"
+  "68" "D"
+  "69" "E"
+  "70" "F"
+  "71" "G"
+  "72" "H"
+  "73" "I"
+  "74" "J"
+  "75" "K"
+  "76" "L"
+  "77" "M"
+  "78" "N"
+  "79" "O"
+  "80" "P"
+  "81" "Q"
+  "82" "R"
+  "83" "S"
+  "84" "T"
+  "85" "U"
+  "86" "V"
+  "87" "W"
+  "88" "X"
+  "89" "Y"
+  "90" "Z"
+  "97" "a"
+  "98" "b"
+  "99" "c"
+  "100" "d"
+  "101" "e"
+  "102" "f"
+  "103" "g"
+  "104" "h"
+  "105" "i"
+  "106" "j"
+  "107" "k"
+  "108" "l"
+  "109" "m"
+  "110" "n"
+  "111" "o"
+  "112" "p"
+  "113" "q"
+  "114" "r"
+  "115" "s"
+  "116" "t"
+  "117" "u"
+  "118" "v"
+  "119" "w"
+  "120" "x"
+  "121" "y"
+  "122" "z"
+) }}
+
+{{- $base64Chars := (slice
+  "+"
+  "/"
+  "0"
+  "1"
+  "2"
+  "3"
+  "4"
+  "5"
+  "6"
+  "7"
+  "8"
+  "9"
+  "A"
+  "B"
+  "C"
+  "D"
+  "E"
+  "F"
+  "G"
+  "H"
+  "I"
+  "J"
+  "K"
+  "L"
+  "M"
+  "N"
+  "O"
+  "P"
+  "Q"
+  "R"
+  "S"
+  "T"
+  "U"
+  "V"
+  "W"
+  "X"
+  "Y"
+  "Z"
+  "a"
+  "b"
+  "c"
+  "d"
+  "e"
+  "f"
+  "g"
+  "h"
+  "i"
+  "j"
+  "k"
+  "l"
+  "m"
+  "n"
+  "o"
+  "p"
+  "q"
+  "r"
+  "s"
+  "t"
+  "u"
+  "v"
+  "w"
+  "x"
+  "y"
+  "z"
+  "="
+) }}
+
+{{- $base64CharIndex := (dict
+  "+" 0
+  "/" 1
+  "0" 2
+  "1" 3
+  "2" 4
+  "3" 5
+  "4" 6
+  "5" 7
+  "6" 8
+  "7" 9
+  "8" 10
+  "9" 11
+  "A" 12
+  "B" 13
+  "C" 14
+  "D" 15
+  "E" 16
+  "F" 17
+  "G" 18
+  "H" 19
+  "I" 20
+  "J" 21
+  "K" 22
+  "L" 23
+  "M" 24
+  "N" 25
+  "O" 26
+  "P" 27
+  "Q" 28
+  "R" 29
+  "S" 30
+  "T" 31
+  "U" 32
+  "V" 33
+  "W" 34
+  "X" 35
+  "Y" 36
+  "Z" 37
+  "a" 38
+  "b" 39
+  "c" 40
+  "d" 41
+  "e" 42
+  "f" 43
+  "g" 44
+  "h" 45
+  "i" 46
+  "j" 47
+  "k" 48
+  "l" 49
+  "m" 50
+  "n" 51
+  "o" 52
+  "p" 53
+  "q" 54
+  "r" 55
+  "s" 56
+  "t" 57
+  "u" 58
+  "v" 59
+  "w" 60
+  "x" 61
+  "y" 62
+  "z" 63
+  "=" 64
+) }}
+
+{{- $numSymbols := len $base64Chars }}
+
+{{- $plainEncoded := (base64Encode $plain) }}
+{{/* {{- $plainEncoded = "abcdefghijklmnopqrstuvwxyz" }} */}}
+
+{{- $encodedLength := len $plainEncoded }}
+<!-- Generate one-time-password of the same length as $plainEncoded
+Since we can only shuffle and iterate over slices, we work with slices -->
+{{- $oneTimePasswordEncoded := base64Encode $oneTimePassword }}
+{{- $oneTimePasswordEncodedLength := len $oneTimePasswordEncoded }}
+{{- $oneTimePasswordEncodedSlice := slice }}
+{{- if ne $oneTimePasswordEncodedLength $encodedLength }}
+  <!-- Generate random bits to use as one-time password -->
+  <!-- Source: https://geekthis.net/post/hugo-random-numbers/ -->
+  {{- $seed := int (printf "0x%.8s" $page.File.UniqueID) }}
+  {{- $oneTimePasswordEncoded = base64Encode $seed }}
+  {{- $oneTimePasswordEncodedLength = len $oneTimePasswordEncoded }}
+{{- end }}
+
+{{- range $idx, $num := seq (len $plainEncoded) }}
+  {{- $otpEncChar := substr $oneTimePasswordEncoded (mod $idx $oneTimePasswordEncodedLength) 1 }}
+  {{- $oneTimePasswordEncodedSlice = append (slice $otpEncChar) $oneTimePasswordEncodedSlice }}
+{{- end }}
+{{- $oneTimePasswordEncoded = delimit $oneTimePasswordEncodedSlice "" }}
+{{- $oneTimePasswordEncodedLength = len $oneTimePasswordEncodedSlice }}
+{{- if ne $oneTimePasswordEncodedLength $encodedLength }}
+  {{- errorf "%s[%s]: Failed to generate one-time password of length %d; got '%s' with length %d" }}
+{{- end }}
+
+<!-- Define slice that will contain the encrypted characters -->
+{{- $encryptedSlice := slice }}
+
+<!-- Define slice that will contain the decrypted characters -->
+{{- $decryptedSlice := slice }}
+
+<!-- DEBUG: Define slice that will contain the integers corresponding to the characters in $oneTimePasswordEncodedSlice -->
+{{- $oneTimePasswordInt := slice }}
+<!-- DEBUG: Define slice of integers to hold the encrypted integers -->
+{{- $encryptedInt := slice }}
+<!-- DEBUG: Define slice of integers to hold the decrypted integers -->
+{{- $decryptedInt := slice }}
+
+<!-- Encrypt $plainEncoded by adding $oneTimePasswordInt mod $numSymbols -->
+{{- range $idx, $otpChar := $oneTimePasswordEncodedSlice }}
+  {{- $encodedChar := substr $plainEncoded $idx 1 }}
+  {{- $encodedCharInt := int (index $base64CharIndex $encodedChar) }}
+
+  {{- $otpCharInt := int (index $base64CharIndex $otpChar) }}
+  {{- $oneTimePasswordInt = append (slice $otpCharInt) $oneTimePasswordInt }}
+
+  {{- $encryptedCharInt := math.Mod (add $encodedCharInt $otpCharInt) $numSymbols }}
+  {{- $encryptedInt = append (slice $encryptedCharInt) $encryptedInt }}
+
+  {{- $encryptedChar := (index $base64Chars $encryptedCharInt) }}
+  {{- $encryptedSlice = append (slice $encryptedChar) $encryptedSlice }}
+
+  {{- $decryptedCharInt := math.Mod (sub (add $encryptedCharInt $numSymbols) $otpCharInt) $numSymbols }}
+  {{- $decryptedInt = append (slice $decryptedCharInt) $decryptedInt }}
+
+  {{- $decryptedChar := (index $base64Chars $decryptedCharInt) }}
+  {{- $decryptedSlice = append (slice $decryptedChar) $decryptedSlice }}
+
+  {{/* {{- warnf "[%s]: otpChar:'%s' otpCharInt:%d encodedChar:'%s' encodedCharInt:%d encryptedCharInt:%d encryptedChar:'%s' decryptedCharInt:%d decryptedChar:'%s'"
+      $template $otpChar $otpCharInt $encodedChar $encodedCharInt $encryptedCharInt $encryptedChar $decryptedCharInt $decryptedChar }} */}}
+{{- end }}
+{{- $noScript := T "private-data-requires-javascript" }}
+
+{{- $encrypted := delimit $encryptedSlice "" }}
+{{- $decrypted := delimit $decryptedSlice "" }}
+{{- $decoded   := base64Decode $decrypted }}
+
+{{- $url := urls.Parse $plain }}
+{{- $scheme := $url.Scheme }}
+{{- $address := substr $plain (len $scheme) }}
+{{- $addressDisplay := strings.TrimLeft ":/" $address }}
+{{- $nonAddressPart := substr $plain 0 (sub (len $plain) (len $addressDisplay) ) }}
+{{- $res = merge $res (dict
+    "Plain" $plain
+    "Scheme" $nonAddressPart
+    "OneTimePassword" $oneTimePasswordEncoded
+    "Encrypted" $encrypted
+    "NoScript" $noScript
+) }}
+{{/* {{- warnf "[%s]: plain:'%s' $scheme:'%s' address:'%s' addressDisplay:'%s' nonAddressPart:'%s' encoded:'%s' oneTimePasswordEncoded:'%s' encrypted:'%s' decrypted:'%s' decoded:'%s'"
+    $template $plain $scheme $address $addressDisplay $nonAddressPart $plainEncoded $oneTimePasswordEncoded $encrypted $decrypted $decoded }} */}}
+{{- return $res }}

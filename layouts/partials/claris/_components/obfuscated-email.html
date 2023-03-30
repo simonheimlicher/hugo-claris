@@ -1,0 +1,8 @@
+{{- $page := .Page }}
+{{- $template := "claris/_components/obfuscated-email" }}
+{{- $plain := default site.Author.email .Plain }}
+{{- if not (strings.HasPrefix "mailto:" $plain )}}
+  {{- $plain = printf "mailto:%s" $plain }}
+{{- end }}
+{{- $noScript := .NoScript }}
+{{- partial "claris/_components/obfuscated-link" (dict "Page" $page "Plain" $plain "NoScript" $noScript) }}

@@ -1,0 +1,73 @@
+{{- $page := . }}
+{{- $relativeDates := false }}
+{{- $showTags := true }}
+{{- if reflect.IsMap . }}
+  {{- with .Page }}
+    {{- $page = . }}
+  {{- end }}
+  {{- $relativeDates = default $relativeDates .RelativeDates }}
+  {{- $showTags = default $showTags .ShowTags }}
+{{- end }}
+{{- with $page -}}<!-- Restore "." to refer to page context fromw hich the partial was called -->
+  {{- $s := .Site.Params }}
+  {{- $p := .Params }}
+  {{- $content_meta := false -}}
+                  {{- if ( ne $p.showDate false ) }}
+                    {{- if not $content_meta }}
+                    <div class="content_meta">
+                    {{- $content_meta = true }}
+                    {{- end -}}
+                    <span>{{ partial "sprite" (dict "icon" "calendar") }}</span>
+                    <span class="content_meta_date_published content_meta_date">
+                    {{- if $relativeDates }}
+                    {{- if eq .Lastmod .Date -}}
+                    {{- humanize (T "meta_date_published" ) -}}
+                    {{ partial "relative-date" .Date -}}
+                    {{- else }}
+                    {{- humanize (T "meta_date_updated" ) -}}{{ partial "relative-date" .Lastmod -}},</span>
+                    <span class="content_meta_date_published content_meta_date">{{ (T "meta_date_published" ) -}}
+                    &nbsp;
+                    {{- (.Date.Format (default "Jan 2, 2006" $s.dateFormat)) -}}
+                    {{- end }}
+                    {{- else }}
+                    {{- if eq .Lastmod .Date -}}
+                    {{ (.Date.Format (default "Jan 2, 2006" $s.dateFormat)) -}}
+                    {{- else }}
+                    {{- (.Date.Format (default "Jan 2, 2006" $s.dateFormat)) }}</span>
+                    <span class="content_meta_date_updated content_meta_date">({{ (T "meta_date_updated" ) -}}&nbsp;{{- (.Lastmod.Format (default "Jan 2, 2006" $s.dateFormat)) -}})
+                    {{- end }}
+                    {{- end -}}
+                    </span>
+                  {{- end -}}
+                  {{- if ne .Params.showReadTime false -}}
+                    {{- if not $content_meta }}
+                    <div class="content_meta">
+                    {{- $content_meta = true }}
+                    {{- end -}}
+                    <span class="content_meta_time">·&nbsp;{{ T "reading_time" . }}&nbsp;</span>
+                  {{- end }}
+                  {{- if ne $showTags false -}}
+                  {{- with .Params.tags -}}
+                    {{- if not $content_meta }}
+                    <div class="content_meta">
+                    {{- $content_meta = true }}
+                    {{- end }}
+                      {{- range . }}
+                        {{- $tag := urlize . }}
+                        <a href='{{ absLangURL (printf "tags/%s" $tag) }}' title="{{ . }}" class="content_meta_tag button button_translucent">
+                          {{- . }}
+                        </a>
+                      {{- end }}
+                  {{- end }}
+                  {{ end }}
+                  {{- if default true ($page.Param "showShare") }}
+                    {{- if not $content_meta }}
+                    <div class="content_meta">
+                    {{- $content_meta = true }}
+                    {{- end }}
+                      <span class="page_only"> · {{- partial "claris/_components/share" . }}</span>
+                    {{- end }}
+                  {{- if $content_meta }}
+                  </div>
+                  {{- end }}
+{{- end }}

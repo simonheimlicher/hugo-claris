@@ -1,0 +1,74 @@
+{{- $page := .Page }}
+{{- $template := "partials/_components/excerpt" }}
+{{- $relativeDates := default true .RelativeDates }}
+{{- $showTags := default true .ShowTags }}
+{{- $thumbnailSizeSpec := "256x256 Smart" }}
+{{- $headerPartial := default "" .HeaderPartial }}
+{{- $itemType := default "pages" .ItemType }}
+{{- $headingLevel := default 3 .HeadingLevel }}
+
+{{- if (eq $itemType "article") }}
+  {{- $headerPartial = default "claris/_components/meta" .HeaderPartial  }}
+{{- end }}
+
+{{- with .Page }}
+  {{- $thumbnail := default .Params.featureImage }}
+  {{- $summary := "" }}
+  {{- range (slice .Params.excerpt .Summary .Params.description .Params.summary) }}
+    {{- with . }}
+      {{- $summary = . | markdownify | plainify }}
+    {{- end }}
+  {{- end }}
+  {{- $title := .Title | markdownify -}}
+  {{- $plainTitle := $title | plainify -}}
+
+                {{- if not $headerPartial }}
+                <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
+                {{- end }}
+                <div class="content-excerpt">
+                  <div class="content-excerpt_header">
+                    {{- if $headerPartial }}
+                    <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
+                    {{- end }}
+                      <h{{ $headingLevel }} class="content-excerpt_title">
+                        {{ $title | markdownify }}
+                      </h{{ $headingLevel }}>
+                    {{- if $headerPartial }}
+                    </a>
+                    {{- end }}
+                  {{- with $headerPartial }}
+                    {{- partial $headerPartial (dict "Page" $page "relativeDates" $relativeDates "showTags" $showTags) }}
+                  {{- end }}
+                  </div>
+                  {{- if $headerPartial }}
+                  <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
+                  {{- end }}
+                  {{- if $thumbnail }}
+                    <div class="content-excerpt_footer partition">
+                      <div class="content-excerpt_thumbnail">
+                        {{/* {{- partial "html-comment" (printf "[%s]: processing thumbnail:%v spec:%v"
+                          $template $thumbnail $thumbnailSizeSpec)}} */}}
+                        {{- partial "responsive-image" (dict "Page" $page "Resource" $thumbnail "Alt" $title "Size" $thumbnailSizeSpec) $page $thumbnail }}
+                      </div>
+                  {{- else }}
+                    <div class="content-excerpt_footer">
+                  {{- end }}
+                      <div class="content-excerpt_body">
+                        <p class="pale">
+                          {{- $summary }}
+                        </p>
+                      </div>
+                      <div class="content-excerpt_read-on">
+                        <span class="read-on">
+                          {{- T "read_on" }}
+                        </span>
+                      </div>
+                    </div>
+                  {{- if $headerPartial }}
+                  </a>
+                  {{- end }}
+                </div>
+                {{- if not $headerPartial }}
+                </a>
+                {{- end }}
+{{- end }}

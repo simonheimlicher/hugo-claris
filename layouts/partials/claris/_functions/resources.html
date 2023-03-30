@@ -1,0 +1,156 @@
+{{- $imageResourceArgs := . }}
+{{- $page := .Page }}
+{{- $originalPage := default .Page .OriginalPage }}
+{{- $resource := .Resource }}
+{{- $pageBundleResourceGlob := "" }}
+{{- $siteResourceGlob := "" }}
+{{- $res := false }}
+{{- $template := "claris/_functions/resources" }}
+{{- $debug := default false (strings.Contains $resource "never-match-this_debugging_disabled") }}
+{{- /* https://stackoverflow.com/a/74084154
+In branch bundles (directories with _index.md that contain leaf bundles, i.e., further sub directories that you want to render as pages)
+you can have resources ONLY in the same folder.
+For leaf bundles (index.md) you can have resources in subfolders.
+I guess it is because every subfolder in branch bundles is supposed to be a page with resources (leaf bundle).
+Here is the source https://gohugo.io/content-management/page-bundles/ (see the table row Where can the Resources live?)
+Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structure/11822/7?u=kaushalmodi
+*/ -}}
+{{- /* Ensure $pageBundleResourceGlob has an extension or ends in an asterisk */ -}}
+{{- if (or (path.Ext $resource) (strings.HasSuffix $resource "*")) }}
+  {{- $pageBundleResourceGlob = $resource }}
+  {{- $siteResourceGlob = $resource }}
+{{- else }}
+  {{- $pageBundleResourceGlob = printf "%s*" $resource }}
+  {{- $siteResourceGlob = printf "%s*" $resource }}
+{{- end }}
+{{- $resourcePage := $page }}
+{{ if $debug }}{{ warnf "%s[%s]: Looking for resource matching '%s' [originalPage=%s]"
+    $page $template $pageBundleResourceGlob $originalPage.RelPermalink }}{{ end -}}
+{{- with $page }}
+  {{- $splitRes := path.Split $pageBundleResourceGlob }}
+  {{- if $splitRes.Dir }}
+    {{- if (and .BundleType (eq .BundleType "leaf") )}}
+      {{- if $debug }}{{ warnf "%s[%s]: LEAF: Looking for resource in page bundle matching %s"
+          $page $template $pageBundleResourceGlob }}{{ end -}}
+    {{- else }}
+      {{- /* We are in a branch bundle. Hence, no resources will be available in any subfolders
+      Instead, we check if there is a headless bundle as a descendant of this branch bundle */ -}}
+
+      {{- $resPathParts := split $pageBundleResourceGlob "/" }}
+      {{- $resPathRoot := (index (first 1 $resPathParts) 0) }}
+      {{- $resPathRemains := delimit (last (sub (len $resPathParts) 1) $resPathParts) "/" }}
+
+      {{/*
+      {{- $currentSection := strings.TrimRight "/" $page.CurrentSection.RelPermalink }}
+
+      {{- $resourcePagePath := path.Join $currentSection $resPathRoot }}
+      {{- $resourcePagePath = printf "/%s" (strings.TrimLeft "/" (path.Join $currentSection $resPathRoot)) }}
+      {{- if $debug }}
+        {{- if (or false (eq $currentSection "")) }}
+        {{- warnf "%s[%s]: resource page bundle at root '%s' contains: \nresources.Match *\n%s\nresources.Match ** / *:\n%s"
+          $page $template $resourcePagePath
+          (sort (resources.Match $resourcePagePath) "Name")
+          (sort (resources.Match (printf "%s/%s/%s" (strings.TrimRight "*" $resourcePagePath) "**" "*")) "Name") -}}
+        {{- end }}
+      {{- end }}
+      {{- if (or true $debug) }}{{ warnf "%s[%s]: BRANCH: calling site.GetPage '%s'"
+        $page $template $resourcePagePath }}{{ end -}}
+      {{- $resourcePage = site.GetPage $resourcePagePath }}
+      */}}
+
+      {{- $parent := "" }}
+      {{- with .Parent }}
+        {{- $parent = .RelPermalink }}
+      {{- end }}
+      {{- with .GetPage $resPathRoot }}
+        {{- $resourcePage = . }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: Found resource page bundle at resPathRoot=%s: %s. CurrentSection=%s .Section=%s .Parent=%s"
+              $page $template $resPathRoot $resourcePage .CurrentSection.RelPermalink .Section $parent }}
+        {{- end }}
+      {{- else }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: Could not find resource page bundle at resPathRoot=%s. .CurrentSection=%s .Section=%s .Parent=%s"
+              $page $template $resPathRoot .CurrentSection.RelPermalink .Section $parent }}
+        {{- end }}
+      {{- end }}
+
+      {{- with $resourcePage }}
+        {{- $pageBundleResourceGlob = $resPathRemains }}
+        {{/* {{- if $debug }}{{ warnf "%s[%s]: BRANCH: Looking for resource in descendant page bundle %s: %s matching %s"
+          $page $template $resourcePagePath $resourcePage $pageBundleResourceGlob }}{{ end -}} */}}
+      {{/* {{- else }}
+        {{- if $debug }}{{ warnf "%s[%s]: BRANCH: No page bundle found: site.GetPage '%s' returned '%s'"
+        $page $template $resourcePagePath $resourcePage }}{{ end -}}
+        {{- if $debug }}
+          {{- range $subPage := (sort $page.Site.Pages "Permalink") }}
+            {{- if (strings.Contains $subPage.Permalink $currentSection) }}
+              {{ warnf "%s[%s]: descendant page: %#v" $page $template $subPage.File.Path }}
+            {{- end }}
+          {{- end }}
+        {{- end }} */}}
+      {{- end }}
+    {{- end }}
+  {{- else }}
+    {{- if $debug }}{{ warnf "%s[%s]: resourcePage=page (path.Split %s returned %s with .Dir=%v)"
+        $page $template $pageBundleResourceGlob $splitRes $splitRes.Dir }}{{ end -}}
+  {{- end }}
+  {{- with $resourcePage }}
+    {{- if (and false $debug) }}
+      {{- warnf "%s[%s]: resource page bundle %s contains: \nresources.Match *\n%s\nresources.Match ** / *:\n%s"
+        $page $template $resourcePage
+        (sort ($resourcePage.Resources.Match "*") "Name")
+        (sort ($resourcePage.Resources.Match (printf "%s/%s" "**" "*")) "Name") -}}
+    {{- end }}
+    {{- with .Resources.GetMatch $pageBundleResourceGlob }}
+      {{- if $debug }}{{ warnf "%s[%s]: Found resource %s in page bundle %s matching %s" $page $template . $resourcePage $pageBundleResourceGlob }}{{ end -}}
+      {{- $res = . }}
+    {{- else }}
+      {{- if $debug }}{{ warnf "%s[%s]: No resource found in page bundle %s matching %s" $page $template $resourcePage $pageBundleResourceGlob }}{{ end -}}
+    {{- end }}
+  {{- else }}
+    {{- if $debug }}{{ warnf "%s[%s]: invalid resourcePage=%v)"
+        $page $template $resourcePage }}{{ end -}}
+  {{- end }}
+  {{- if not $res }}
+    {{/* {{- if (and $page.Parent (ne $page.Parent.RelPermalink "/" ) ) }} */}}
+    {{- if $page.Parent }}
+      {{- $parentArgs := (merge $imageResourceArgs (dict "OriginalPage" $originalPage "Page" $page.Parent)) }}
+      {{- if $debug }}{{ warnf "%s[%s]: Calling %s with parent=%s RelPermalink=%s with parentArgs=%s"
+          $page $template $template $page.Parent $page.Parent.RelPermalink $parentArgs }}{{ end -}}
+      {{- $res = partial $template $parentArgs }}
+      {{- with $res }}
+        {{/* NOTICE: Returning the $res as a reference to the ResourceAdapter appears to work,
+            so there is no need to construct the absolute path below:
+        {{- $absolutePath := path.Join (path.Dir $page.Parent.File.Path) (path.Dir $pageBundleResourceGlob) (path.Base $res.Name) }} */}}
+        {{/* {{- $res = path.Join (strings.TrimRight "/" $page.Parent.RelPermalink) $res }} */}}
+        {{- if $debug }}{{ warnf "%s[%s]: Found resource in parent=%s: res='%s'"
+            $page $template $page.Parent $res }}{{ end -}}
+      {{- else }}
+        {{- if $debug }}{{ warnf "%s[%s]: Nothing found in parent=%s: resource=%s"
+            $page $template $page.Parent $res }}{{ end -}}
+      {{- end }}
+    {{- else }}
+      {{- if $debug }}{{ warnf "%s[%s]: Page has invalid parent=%s"
+          $page $template $page.Parent }}{{ end -}}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- with $res }}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: originalPage=%s Returning resource of type %s resource:\n'%s'"
+        $page $template $originalPage $res.MediaType ($res | transform.Unmarshal) -}}
+  {{- end }}
+{{- else }}
+  {{- if (eq $page $originalPage) }}
+    {{- with resources.GetMatch $siteResourceGlob }}
+      {{- $res = . }}
+      {{- if $debug }}{{ warnf "%s[%s]: Found resource %s in site resources matching %s" $page $template . $siteResourceGlob }}{{ end -}}
+    {{- else }}
+      {{- if $debug }}{{ warnf "%s[%s]: No resource found in site resources matching %s" $page $template $siteResourceGlob }}{{ end -}}
+    {{- end }}
+  {{- else }}
+    {{- if $debug }}{{ warnf "%s[%s]: Not looking at site resources: page=%s != originalPage=%s" $page $template $page $originalPage  }}{{ end -}}
+  {{- end }}
+{{- end }}
+{{- return $res }}

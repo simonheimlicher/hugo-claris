@@ -1,0 +1,162 @@
+#
+# Theme: claris
+#
+[read_more]
+other = "Mehr lesen"
+
+[read_on]
+other = "Weiterlesen"
+
+[copyright]
+other = "Copyright"
+
+[all_rights]
+other = "Alle Rechte vorbehalten"
+
+[share_on]
+other = "Teilen"
+
+[article]
+other = "Artikel"
+
+[articles]
+other = "Artikel"
+
+[featured_articles]
+other = "Ausgewählte Artikel"
+
+[recent_articles]
+other = "Neue Artikel"
+
+[related_articles]
+other = "Verwandte Artikel"
+
+[articles_in_taxonomy]
+other = "Artikel in"
+
+[articles_with_taxonomy]
+other = "Artikel mit"
+
+[404_title]
+other = "Verirrt"
+
+[could_not_find]
+other = "Wir konnten die Seite nicht finden"
+
+[go_back]
+other = "Zurück"
+
+[translations]
+other = "Übersetzungen"
+
+[categories]
+other = "Kategorien"
+
+[tags]
+other = "Tags"
+
+[series]
+other = "Serien"
+
+[all_categories]
+other = "Alle Kategorien"
+
+[all_tags]
+other = "Alle Tags"
+
+[all_series]
+other = "Alle Serien"
+
+[overview]
+other = "Übersicht"
+
+[reading_time]
+other = "{{ .ReadingTime }} Min. zum Lesen"
+
+[table_of_contents]
+other = "Auf dieser Seite"
+
+[color_mode]
+other = "Nacht-Modus"
+
+[color_mode_lit]
+other = "Licht an"
+
+[color_mode_dim]
+other = "Licht aus"
+
+[read_more_about]
+other = "Mehr dazu lesen"
+
+[private-data-requires-javascript]
+other = "Bitte JavaScript aktivieren"
+
+#
+# Additional translations for theme claris-vitae
+#
+[skill]
+one = "Skill"
+other = "Skills"
+
+[period-until-present]
+other = "Heute"
+
+[period-duration-years]
+one = "1 Jahr"
+other = "{{ .Count }} Jahre"
+
+[period-duration-months]
+one = "1 Monat"
+other = "{{ .Count }} Monate"
+
+[period-duration-days]
+one = "1 Tag"
+other = "{{ .Count }} Tag"
+
+[grade-point-average]
+other = "Notenschnitt"
+
+[section-contact]
+other = "Kontakt"
+
+[section-connect]
+other = "Vernetzen"
+
+[section-experience]
+other = "Erfahrung"
+
+[section-education]
+other = "Ausbildung"
+
+[section-language-skills]
+other = "Sprachkenntnisse"
+
+[screen-view]
+other = "Webseitenansicht"
+
+[print-view]
+other = "Druckansicht"
+
+[share-link-page]
+other = "Diese Seite teilen"
+
+[selflink-application]
+other = "Bewerbung auf Ihrem Smartphone anschauen"
+
+[share-link-resume]
+other = "Lebenslauf auf Ihrem Smartphone anschauen"
+
+[application-for-position]
+other = "Bewerbung für die Position"
+
+[connect-on-linkedin]
+other = "Auf LinkedIn vernetzen"
+
+[section-patents]
+other = "Patente"
+
+[section-publications]
+other = "Publikationen"
+
+[publication_link_further-info]
+other = "Weitere Infos zu"

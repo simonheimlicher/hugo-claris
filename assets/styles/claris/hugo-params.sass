@@ -1,0 +1,59 @@
+{{- $page := .Page }}
+$contentType: '{{ .ContentType }}'
+$mediaType: '{{ .MediaType }}'
+/* File='styles/claris/hugo-params.sass': .Page='{{ .Page }}' .MediaType='{{ .MediaType }}' */
+
+$themeColorLit: {{ default "hsl(47, 20%, 98%)" ($page.Param "themeColorLit") }}
+$themeColorDim: {{ default "hsl(47, 20%, 17%)" ($page.Param "themeColorDim") }}
+
+$fontFamilySans: '{{ default "Cabin" ($page.Param "fontFamilySans") }}'
+$fontFamilySerif: '{{ default "Merriweather" ($page.Param "fontFamilySerif") }}'
+$fontFamilyMono: '{{ default "DM Mono" ($page.Param "fontFamilyMono") }}'
+
+// Adapt to width of screen
+// Maximum width for anything the user is supposed
+// to interact with (the "page chrome")
+$screenViewWidthChrome: {{ default "96rem" ($page.Param "screenViewWidthChrome") }}
+
+// Padding around body up to narrow breakpoint
+$screenViewBodyPaddingNarrow: {{ default "0.75rem" ($page.Param "screenViewBodyPaddingNarrow") }}
+
+// From this width upward, the mobile menu is hidden
+// and the full menu bar is shown
+$screenViewBreakpointWidthMobile: {{ default "20rem" ($page.Param "screenViewBreakpointWidthMobile") }}
+// Reset font size to regular size
+$screenViewBreakpointWidthNarrow: {{ default "36rem" ($page.Param "screenViewBreakpointWidthNarrow") }}
+
+// Fit content to iPad in portrait orientation: 768px = 48rem
+$screenViewBreakpointWidthOneColumn: {{ default "48rem" ($page.Param "screenViewBreakpointWidthOneColumn") }}
+
+// Layout with one aside
+$screenViewBreakpointWidthTwoColumn: {{ default "61rem" ($page.Param "screenViewBreakpointWidthTwoColumn") }}
+
+// Layout with two asides
+$screenViewBreakpointWidthWide: {{ default "84rem" ($page.Param "screenViewBreakpointWidthWide") }}
+
+// Layout with two asides and wider sections in main column, e.g., for code or figures
+$screenViewBreakpointWidthUltrawide: {{ default "96rem" ($page.Param "screenViewBreakpointWidthUltrawide") }}
+
+// Parameters for layout with one columne
+// Padding around body from narrow breakpoint upward
+$screenViewBodyPadding: {{ default "1.5rem" ($page.Param "screenViewBodyPadding") }}
+
+$screenViewWidthAsideMin: {{ default "12rem" ($page.Param "screenViewWidthAsideMin") }}
+
+// Parameters for layout with one aside
+$screenViewColumnWidthMin: calc(#{$screenViewBreakpointWidthOneColumn} - 2 * #{$screenViewBodyPadding});
+$screenViewColumnWidthMax: calc(#{$screenViewBreakpointWidthTwoColumn} - 2 * #{$screenViewBodyPadding});
+
+// Parameters for layout with two asides
+$screenViewColumnWidthWideMin: #{$screenViewColumnWidthMin};
+$screenViewColumnWidthWideMax: {{ default "80rem" ($page.Param "screenViewColumnWidthWideMax") }}
+$screenViewWidthWideAsideMin: {{ default "14rem" ($page.Param "screenViewWidthWideAsideMin") }}
+$screenViewWidthWideAsideMax: {{ default "24rem" ($page.Param "screenViewWidthWideAsideMax") }}
+
+// Parameters for layout with two asides and wider sections in main column, e.g., for code or figures
+$screenViewWidthUltrawide: {{ default "57rem" ($page.Param "screenViewWidthUltrawide") }}
+
+$screenViewBreakpointHeightTall: {{ default "48rem" ($page.Param "tall-breakpoint") }}
+$screenViewBreakpointHeightShallow: {{ default "42rem" ($page.Param "shallow-breakpoint") }}

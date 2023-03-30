@@ -1,0 +1,22 @@
+{{- $page := .Page }}
+{{- $template := "partials/hero-image" }}
+{{- $heroImage := .Page.Param "heroImage" }}
+{{- $style := "" }}
+{{- $resource := $heroImage }}
+{{- if reflect.IsMap $heroImage }}
+  {{- with $heroImage.style }}
+    {{- $style = printf "_%s" . }}
+  {{- end }}
+  {{- with $heroImage.images }}
+    {{- $resource = . }}
+  {{- else }}
+    {{- errorf "%s[%s]: Invalid page parameter 'heroImage': %v'" $page $template $heroImage }}
+  {{- end }}
+{{- end }}
+{{/* {{- warnf "%s[%s]: .heroImage: %v Calling responsive-image with .Resource:%v'" $page $template (.Page.Param "heroImage") $resource }} */}}
+{{- partial "responsive-image" (dict
+  "Page" $page
+  "Resource" $resource
+  "FigureClass" (printf "hero-image%s_figure" $style)
+  "ImgClass" (printf "hero-image%s_img" $style)
+  "LazyLoad" true) }}

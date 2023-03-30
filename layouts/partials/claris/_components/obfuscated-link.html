@@ -1,0 +1,16 @@
+{{- $page := .Page }}
+{{- $template := "claris/_components/obfuscated-link" }}
+{{- $plain := .Plain }}
+{{- $noScript := .NoScript }}
+{{- $obfuscated := partial "claris/_functions/obfuscate-link" (dict "Page" $page "Plain" $plain "NoScript" $noScript) }}
+{{- with $obfuscated }}
+  {{/* {{- partial "html-comment" (printf "[%s]: Plain: '%s'. Result:\n%s"
+      $template $plain (jsonify (dict "indent" "  ") $obfuscated) ) }} */}}
+  {{- $noScript = default $noScript .NoScript }}
+  <span data-obfuscated-link-scheme="{{ .Scheme }}"
+    data-obfuscated-link-title="{{ T (printf "obfuscated-link-%s" (urlize .Scheme)) }} OBFUSCATED"
+    data-obfuscated-link-encrypted="{{ .Encrypted }}"
+    data-obfuscated-link-one-time-password="{{ .OneTimePassword }}">{{- $noScript -}}</span>
+{{- else }}
+  {{ errorf "%s[%s]: Failed to encode plain text '%s'" $page $template $plain }}
+{{- end }}

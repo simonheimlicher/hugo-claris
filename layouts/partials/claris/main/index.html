@@ -1,0 +1,43 @@
+{{- $page := .Page }}
+{{- $template := "partials/claris/main/index" }}
+{{- $itemType := "article" }}
+{{- $type := "claris" }}
+{{- $kindMap := (dict
+    "page" "page"
+    "home" "section"
+    "section" "section"
+    "taxonomy" "section"
+    "term" "section"
+) }}
+{{- $kind := default "page" (index $kindMap .Kind) }}
+
+{{- $s := .Site.Params }}
+{{- $p := .Params }}
+{{- $title := .Title | markdownify }}
+
+{{- $mainInnerClassList := (slice "main_inner" "wrap") }}
+{{ if (and (eq $kind "page") (not (or (eq $p.singleColumn true) (eq $p.sidebar false) ) ) ) }}
+  {{- $mainInnerClassList = append (slice "grid-main-single") $mainInnerClassList }}
+{{- end }}
+
+{{- $componentParams := (dict
+  "Page" $page
+  "Title" $title
+  "ItemType" $itemType
+  "HeadingLevel" 2
+) }}
+
+{{- $sidebar := default true ($page.Param "sidebar") }}
+{{- if (in (slice "section" "taxonomy" "home") $kind) }}
+  {{- $sidebar = default false ($page.Param "sidebar") }}
+{{- end }}
+
+{{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
+{{ partial (printf "%s/_components/feature-image" $type) $componentParams }}
+<div class="{{ delimit $mainInnerClassList " " }}" id="contentContainer">
+  {{ partial (printf "%s/main/%s" $type $kind) $componentParams }}
+  {{- if $sidebar }}
+    {{ partial "claris/_components/sidebar" (dict "Page" $page "ItemType" $itemType) }}
+  {{- end }}
+</div>
+{{ partial "html-comment" (printf "[%s]: END" $template) }}

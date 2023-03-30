@@ -1,0 +1,17 @@
+{{- $page := .Page }}
+{{- $template := "shortcodes/responsive-image" }}
+{{- $args := (dict
+  "Page" $.Page
+  "Resource" (.Get "src")
+  "Caption" (.Get "caption")
+  "Title" (.Get "title")
+  "Alt" (.Get "alt")
+  "Float" (.Get "float")
+  "Shape" (.Get "shape")
+  "Background" (.Get "background")
+  "LazyLoad" (.Get "lazy")
+  "FigureClass" (printf "shortcode_responsive-figure shortcode_responsive-figure_image %s" (default "" (.Get "figure_class")) )
+  "ImgClass" (printf "shortcode_responsive-figure_img %s" (default "" (.Get "img_class")) )
+) }}
+{{/* {{- warnf "%s[%s]: %#v" $page $template $args -}} */}}
+{{- partialCached "responsive-image" $args .Page $args }}

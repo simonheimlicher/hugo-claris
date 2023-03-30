@@ -1,0 +1,11 @@
+{{- /* partial outputFormat
+Returns the [OutputFormat](https://gohugo.io/templates/output-formats/)
+of the page passed as argument in the current context.
+USAGE: use as a function in the context of a page, as follows:
+  {{- outputFormat := partial "claris/_functions/output-format" . }}
+*/ -}}
+{{- $outputFormat := false }}
+{{- with (complement $.AlternativeOutputFormats $.OutputFormats) }}
+  {{- $outputFormat = index . 0 }}
+{{- end }}
+{{- return $outputFormat }}

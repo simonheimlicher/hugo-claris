@@ -1,0 +1,17 @@
+{{- $page := .Page }}
+{{- $p := .Page.Params }}
+{{- $title := .Title }}
+  {{- with $p.featureImage }}
+    {{- /* warnf "single: %#v" $page */ -}}
+    {{- $featureImageArgs := (dict
+        "Page" $page
+        "Resource" .
+        "FigureClass" "hero-image_above-main"
+        "ImgClass" "hero-image_above-main_img"
+        "Alt" ($title | plainify)
+        "LazyLoad" false) }}
+    {{- with $p.featureImagePosition }}
+      {{- $featureImageArgs = merge $featureImageArgs (dict "ImgPosition" . ) }}
+    {{- end }}
+    {{- partial "responsive-image" $featureImageArgs . }}
+  {{- end }}

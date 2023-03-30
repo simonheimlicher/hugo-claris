@@ -1,0 +1,66 @@
+{{- $page := .Page }}
+{{- with $page }}
+  {{- $recentMaxYears := default 5 ($page.Param "recentMaxYears") }}
+  {{- $relatedIndices := default (slice "tags" "keywords") ($page.Param "relatedIndices") }}
+  {{- $numRelated := default 3 ($page.Param "numberOfRelatedArticles") }}
+  {{- /* The below is only supported from hugo version 0.111.0 onwards
+      See: https://gohugo.io/content-management/related/
+  {{ $relatedOpts := (dict
+    "indices" $relatedIndices
+    "document" $page
+  ) }}
+  */ -}}
+  {{ if (ne ($page.Param "sidebar") false) }}
+    <aside class="sidebar">
+      <div class="sidebar_inner">
+        <h2>{{ T "read_on" }}</h2>
+        {{- $articles := where (where .Site.RegularPages "Permalink" "!=" .Permalink) "Type" "in" ($page.Param "mainSections") }}
+        {{- /* The below is only supported from hugo version 0.111.0 onwards
+        {{ $relatedArticles := .Site.RegularPages.Related $relatedOpts }}
+        */ -}}
+        {{- $relatedArticles := .Site.RegularPages.RelatedIndices . "categories" "tags" "keywords" "date" }}
+        {{- $freshRelatedArticles := (where
+            (where $relatedArticles "PublishDate" "ge" (now.AddDate (int (sub 0 $recentMaxYears)) 0 0))
+            "Params.featured" "<>" true) }}
+        {{- if (gt (len $freshRelatedArticles) 1 )}}
+          {{- $relatedArticles = $freshRelatedArticles}}
+        {{- end }}
+        {{- with first $numRelated $relatedArticles }}
+        <h3>{{ T "related_articles" (len $relatedArticles) }}</h3>
+        <ul class="flex-column">
+          {{- range . }}
+          <li>
+            <a href="{{ .Permalink }}" class="nav-link" title="{{ .Title }}">{{ .Title }}</a>
+          </li>
+          {{- end }}
+        </ul>
+        {{- end }}
+        {{- $featuredArticles := (where $articles "Params.featured" true) }}
+        {{- $numFeatured := default 0 ($.Page.Param "numberOfFeaturedArticles") }}
+        {{- with first $numFeatured $featuredArticles }}
+        <h3>{{ T "featured_articles" (len $featuredArticles) }}</h3>
+        <ul>
+          {{- range . }}
+          <li>
+            <a href="{{ .Permalink }}" class="nav-link" title="{{ .Title }}">{{ .Title }}</a>
+          </li>
+          {{- end }}
+        </ul>
+        {{- end }}
+        {{- $recentArticles := (where (where $articles "PublishDate" "ge" (now.AddDate (int (sub 0 $recentMaxYears)) 0 0)) "Params.featured" "<>" true) }}
+        {{- $numRecent := default 0 ($.Page.Param "numberOfRecentArticles") }}
+        {{- with first $numRecent $recentArticles }}
+        <h3>{{ T "recent_articles" (len $recentArticles) }}</h3>
+        <ul class="flex-column">
+          {{- range . }}
+          <li>
+            <a href="{{ .Permalink }}" class="nav-link" title="{{ .Title }}">{{ .Title }}</a>
+          </li>
+          {{- end }}
+        </ul>
+        {{- end }}
+        {{- partialCached "claris/_components/taxonomy" (dict "Page" . "HeadingLevel" "3") }}
+      </div>
+    </aside>
+  {{- end }}
+{{- end }}

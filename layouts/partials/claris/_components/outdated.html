@@ -1,0 +1,14 @@
+{{- $ageYears := div (sub now.Unix .Date.Unix) 31556952 }}
+<div class="outdated_wrap">
+  <div class="outdated">
+    <h2>Beyond best before date...</h2>
+    <p>
+    This article was first published more than {{ $ageYears }} years ago
+    {{- if (ne .Lastmod .Date) }}
+    and was last updated in {{ ( .Lastmod.Format (default "2006" $.Site.Params.dateFormat)) }}
+    {{- end -}}.</p>
+    <p>
+    The article is no longer being maintained and remains available for people visiting this page from external links.
+    </p>
+  </div>
+</div>

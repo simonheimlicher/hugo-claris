@@ -1,0 +1,196 @@
+{{- $page := .Page }}
+{{- /* warnf "responsive-image: $page %#v" $page */ -}}
+{{- $template := "partials/responsive-image" }}
+{{- $imageResourceArgs := . }}
+{{- $resourceSpec := .Resource -}}
+{{- $caption := default "" .Caption -}}
+{{- $alt := default $caption .Alt -}}
+{{- $imgProcess := .Process -}}
+{{- $imgClass := .ImgClass -}}
+{{- $imgPosition := default "center center" .ImgPosition -}}
+{{- $figureClass := cond (ne "" $caption) "figcaption" "" -}}
+{{- with .FigureClass -}}
+  {{- $figureClass = . -}}
+{{- end }}
+{{- with .float -}}
+  {{- if $figureClass -}}
+    {{- $figureClass = printf "%s float-%s" $figureClass . -}}
+  {{- else }}
+    {{- $imgClass = printf "%s float-%s" . }}
+  {{- end }}
+{{- end -}}
+{{- $shape := default false .Shape -}}
+{{- with $shape }}
+  {{- $imgClass = printf "%s shape-%s" $imgClass . }}
+{{- end }}
+{{- $background := default false .Background -}}
+{{- with $background }}
+  {{- if $figureClass -}}
+    {{- $figureClass = printf "%s background-%s" $figureClass . -}}
+  {{- else }}
+    {{- $imgClass = printf "%s background-%s" $imgClass . }}
+  {{- end }}
+{{- end }}
+
+{{- $lightbox := default false .Lightbox -}}
+{{- $lazy := default true .Lazy -}}
+
+{{- $defaultMedia := "default" }}
+
+{{- $figureInlineStyle := "" }}
+
+{{- $imgInlineStyleSlice := slice -}}
+{{- range $attr, $value := (dict
+  "width" $imageResourceArgs.Width
+  "height" $imageResourceArgs.Height
+  "aspect-ratio" $imageResourceArgs.AspectRatio
+  "border-radius" $imageResourceArgs.BorderRadius
+  "min-width" $imageResourceArgs.MinWidth
+  "max-width" $imageResourceArgs.MaxWidth
+  "min-height" $imageResourceArgs.MinHeight
+  "max-height" $imageResourceArgs.MaxHeight) -}}
+  {{- if $value -}}
+    {{- /* printf "<h6>style='%s' attr='%s' value='%s'</h6>" $imgInlineStyle $attr $value | safeHTML */ -}}
+    {{- $imgInlineStyleSlice = append $imgInlineStyleSlice (slice (printf "%s: %s" $attr $value) ) -}}
+  {{- end -}}
+{{- end }}
+{{- $imgInlineStyle := delimit $imgInlineStyleSlice "; " -}}
+{{- /* printf "<span class='hugo_debug'>style='%s'</span>" $imgInlineStyle | safeHTML */ -}}
+{{- $imgInlineStyle_attr := "" -}}
+{{- with $imgPosition }}
+  {{ $imgInlineStyle_attr = (printf " style=%q" (printf "object-fit: cover; object-position: %s; font-family: 'object-fit: cover; object-position: %s;'; %s" $imgPosition $imgPosition $imgInlineStyle | safeCSS)) }}
+  {{- /* warnf "responsive-image: $imgPosition='%#v'" $imgPosition */ -}}
+  {{- /* warnf "responsive-image: $imgInlineStyle='%#v'" $imgInlineStyle */ -}}
+{{- end }}
+
+{{- with $page }}<!-- Restore "." to refer to page context fromw hich the partial was called -->
+  {{- $pictureResources := slice }}
+  {{- if reflect.IsSlice $resourceSpec }}
+    {{- range $resourceSpec }}
+      {{- $media := .media }}
+      {{- $imageResourceArgs = merge $imageResourceArgs (dict "Resource" .src ) }}
+      {{- with (partialCached "claris/_functions/image-srcset" $imageResourceArgs $imageResourceArgs) }}
+        {{- $pictureResources = append $pictureResources (slice (dict "Media" $media "ImageResource" . ) ) }}
+      {{- else }}
+        {{- warnf "%s[%s]: failed to get srcSet with %s" $page $template $imageResourceArgs -}}
+      {{- end }}
+    {{- end }}
+    {{- /* If none of the .Media values match $defaultMedia, take the first image as the default */ -}}
+    {{- if (not (where $pictureResources "Media" $defaultMedia) ) }}
+      {{- with (index $resourceSpec 0) }}
+        {{- $imageResourceArgs = merge $imageResourceArgs (dict "Resource" .src ) }}
+        {{- with (partialCached "claris/_functions/image-srcset" $imageResourceArgs $imageResourceArgs) }}
+          {{- $pictureResources = append $pictureResources (slice (dict "Media" $defaultMedia "ImageResource" . ) ) }}
+        {{- else }}
+          {{- warnf "%s[%s]: failed to get srcSet with %s" $page $template $imageResourceArgs -}}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- else }}
+    {{- with (partialCached "claris/_functions/image-srcset" $imageResourceArgs $imageResourceArgs) }}
+      {{- $pictureResources = append $pictureResources (slice (dict "Media" $defaultMedia "ImageResource" . ) ) }}
+    {{- else }}
+      {{- warnf "%s[%s]: .Resource: %v failed to get srcSet with %s" $page $template $resourceSpec $imageResourceArgs -}}
+    {{- end }}
+  {{- end }}
+  {{/* {{- warnf "%s[%s]: .Resource: %v $pictureResources: %v with $imageResourceArgs: %s" $page $template $resourceSpec $pictureResources $imageResourceArgs -}} */}}
+
+  {{- with $pictureResources }}
+    {{- $defaultSrcURL := "" }}
+    {{/* {{- with (where . "Media" "eq" $defaultMedia) }}
+      {{- $defaultSrcURL = .ImageResource.Img.RelPermalink }}
+    {{- end }} */}}
+    {{- if $lazy }}
+      <noscript>
+      {{- if $figureClass }}
+        <figure class="{{ $figureClass }}"
+          {{- with $figureInlineStyle -}}
+          {{ printf " style=%q" (. | safeCSS) | safeHTMLAttr }}
+          {{- end -}}
+        >
+      {{- end -}}
+      {{- if $lightbox -}}
+        <a href='{{ $defaultSrcURL }}'>
+      {{- end -}}
+          <picture>
+          {{- range where $pictureResources "Media" "ne" $defaultMedia}}
+            {{- $srcURL := .ImageResource.Img.RelPermalink }}
+            {{- $imgWidth := default .ImageResource.Img.Width $imageResourceArgs.Width }}
+            {{- $imgHeight := default .ImageResource.Img.Height $imageResourceArgs.Height }}
+            <source srcset="{{ .ImageResource.SrcSet }}" media="{{ .Media }}">
+          {{- end }}
+          {{- range where $pictureResources "Media" "eq" $defaultMedia}}
+            {{- $srcURL := .ImageResource.Img.RelPermalink }}
+            {{- $imgWidth := default .ImageResource.Img.Width $imageResourceArgs.Width }}
+            {{- $imgHeight := default .ImageResource.Img.Height $imageResourceArgs.Height }}
+            <img class="{{ with $imgClass }}{{ . }}{{ end }}" src="{{ $srcURL }}"
+              width="{{ $imgWidth }}" height="{{ $imgHeight }}"
+              alt="{{ $alt }}"
+              {{- with $imgInlineStyle_attr -}}
+              {{ $imgInlineStyle_attr | safeHTMLAttr }}
+              {{- end -}}
+            >
+          {{- end }}
+          </picture>
+      {{- if $lightbox -}}
+        </a>
+      {{- end -}}
+      {{- if $figureClass -}}
+        {{- with $caption -}}
+          <figcaption>
+            {{- . | markdownify -}}
+          </figcaption>
+        {{- end }}
+        </figure>
+      {{- end }}
+      </noscript>
+    {{- end }}
+    {{- if $figureClass }}
+      <figure class="{{ $figureClass }}{{ if $lazy }} lazyload{{ end }}">
+      {{- /* Would prefer to use NPM module medium-zoom to zoom in on the figure including the caption
+      but doing this by adding the following attribute appears not to work: */ -}}
+      {{- /* with $lightbox }} data-zoomable="{{ . | safeHTMLAttr }}"{{- end -}} */ -}}
+    {{- end }}
+        <picture>
+        {{- range where $pictureResources "Media" "ne" $defaultMedia}}
+          {{- $srcURL := .ImageResource.Img.RelPermalink }}
+          {{- $imgWidth := default .ImageResource.Img.Width $imageResourceArgs.Width }}
+          {{- $imgHeight := default .ImageResource.Img.Height $imageResourceArgs.Height }}
+          {{- $placeholderInlineImg := .ImageResource.Placeholder }}
+          {{- $srcSet := .ImageResource.SrcSet }}
+          <source srcset="{{ $srcSet }}" media="{{ .Media }}">
+        {{- end }}
+        {{- range where $pictureResources "Media" "eq" $defaultMedia}}
+          {{- $srcURL := .ImageResource.Img.RelPermalink }}
+          {{- $imgWidth := default .ImageResource.Img.Width $imageResourceArgs.Width }}
+          {{- $imgHeight := default .ImageResource.Img.Height $imageResourceArgs.Height }}
+          {{- $placeholderInlineImg := .ImageResource.Placeholder }}
+          {{- $srcSet := .ImageResource.SrcSet }}
+          <img class="{{ with $imgClass }}{{ . }}{{ end }}{{ if $lazy }} lazyload{{ end }}" src="{{ $srcURL }}"
+            {{- with $lightbox }} data-zoomable="{{ . | safeHTMLAttr }}"{{- end -}}
+            {{- if $lazy }}
+            data-sizes="auto"
+            {{ printf " srcset=%q" $placeholderInlineImg | safeHTMLAttr }} data-src="{{ $srcURL }}" data-srcset="{{ $srcSet }}"
+            {{- else }}
+            srcset="{{ $srcSet }}"
+            {{- end }}
+            width="{{ $imgWidth }}" height="{{ $imgHeight }}"
+            alt="{{ $alt }}"
+            {{- with $imgInlineStyle_attr -}}
+            {{ $imgInlineStyle_attr | safeHTMLAttr }}
+            {{- end -}}
+          >
+        {{- end }}
+        </picture>
+    {{- if $figureClass -}}
+        {{- with $caption -}}
+        <figcaption>
+          {{- . | markdownify -}}
+        </figcaption>
+        {{- end }}
+      </figure>
+    {{- end }}
+  {{- else }}
+    {{- warnf "%s[%s]: failed to get srcSet with param .Resource=%s" $page $template $resourceSpec -}}
+  {{- end }}
+{{- end }}

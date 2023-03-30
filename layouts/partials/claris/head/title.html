@@ -1,0 +1,14 @@
+{{- $title := .Title | markdownify | plainify }}
+{{- if and $title (ne (trim (lower .Site.Title) "") (trim (lower $title) "")) }}
+  {{- if eq .Kind "taxonomy" }}
+    {{- $title = default $title ( T (lower $title) ) }}
+  {{- end }}
+{{- end }}
+{{- if $title }}
+  {{- with .Page.Param "titleSeparator" }}
+    {{ $title = printf "%s %s %s" $title (safeHTML .) .Site.Title }}
+  {{- end }}
+{{- else }}
+  {{- $title = .Site.Title }}
+{{- end }}
+{{- return $title }}

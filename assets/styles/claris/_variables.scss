@@ -1,0 +1,659 @@
+/* Style sheet for content type '#{$contentType}' and media type '#{$mediaType}'
+ * File='styles/claris/_variables.scss'
+ */
+
+$list-excerpt-width: 20rem;
+$list-style-indent: 1.25em;
+$list-style-ul-indent: $list-style-indent;
+$list-style-ol-indent: $list-style-indent;
+
+$nav-height: 3rem;
+$nav-height-narrow: 2.5rem;
+
+$screenViewBodyPadding-list: 0.5rem;
+
+$heading-padding-top: 0.5rem;
+$heading-margin-top: 1.5rem;
+
+$icons: '{{ printf "../%s" (default "icons/" .Site.Params.iconsDir) }}';
+$images: '/images/';
+
+$main-z-index: 1;
+
+// $theme-hue: 207;
+
+// $theme-hue-lit: $theme-hue;
+// $theme-hue-dim: $theme-hue;
+
+// $theme-sat-lit: 50%;
+// $theme-sat-dim: 50%;
+
+// $bg-sat-lit: 10%;
+// $bg-sat-dim: 5%;
+
+// $haze-sat-lit: 50%;
+// $haze-sat-dim: 20%;
+
+// $theme-text-inv-lit: hsl($theme-hue-lit, $theme-sat-lit, 99%);
+// $theme-text-lit: hsl($theme-hue-lit, $bg-sat-lit, 10%);
+
+// $bg-lit: hsl($theme-hue-lit, $bg-sat-lit, 98%);
+// $bg-hover-lit: lighten($bg-lit, 3%);
+
+// $haze-lit: hsl($theme-hue-lit, $haze-sat-lit, 94%);
+// $xhaze-lit: darken($haze-lit, 5%);
+// $xxhaze-lit: darken($xhaze-lit, 10%);
+
+// $theme-lit: hsl($theme-hue-lit, $theme-sat-lit, 27%);
+// $theme-lit-hover: darken($theme-lit, 20%);
+// $theme-lit-bg: lighten($theme-lit, 60%);
+// $theme-lit-bg-hover: darken($theme-lit-bg, 20%);
+
+// $highlight-bg-yellow-lit: hsl(60, 100%, 77%);
+
+// $bg-dim: hsl($theme-hue-dim, $bg-sat-dim, 15%);
+// $bg-hover-dim: lighten($bg-dim, 3%);
+
+// $haze-dim: hsl($theme-hue-dim, $haze-sat-dim, 20%);
+// $xhaze-dim: lighten($haze-dim, 5%);
+// $xxhaze-dim: lighten($xhaze-dim, 10%);
+
+// $theme-dim: hsl($theme-hue-dim, $theme-sat-dim, 50%);
+// $theme-dim-hover: lighten($theme-dim, 20%);
+// $theme-dim-bg:  darken($theme-dim, 30%);
+// $theme-dim-bg-hover: lighten($theme-dim-bg, 30%);
+
+// $highlight-bg-yellow-dim: hsl(60, 100%, 20%);
+
+// $colors-lit: (
+//   light: $theme-text-inv-lit,
+//   xlight: darken($theme-text-inv-lit, 10%),
+//   dark: $theme-text-lit,
+//   xdark: lighten($theme-text-lit, 5%),
+
+//   // theme: hsl(200, 100%, 27%),
+//   theme: $theme-lit,
+//   // theme-hover: hsl(200, 100%, 12%),
+//   theme-hover: $theme-lit-hover,
+//   theme-bg: $theme-lit-bg,
+//   theme-bg-hover: $theme-lit-bg-hover,
+//   theme-text: var(--theme-text-lit),
+//   neutral-theme: hsl(0, 0%, 13%),
+//   accent: hsl(20, 100%, 40%),
+//   xaccent: hsl(20, 100%, 25%),
+//   haze: $haze-lit,
+//   xhaze: $xhaze-lit,
+//   xxhaze: $xxhaze-lit,
+//   neutral-haze: hsl(0, 0%, 87%),
+//   text: hsl(0, 0%, 34%),
+//   text-hover: var(--theme),
+//   bg: $bg-lit,
+//   bg-hover: $bg-hover-lit,
+//   initial: hsl(0, 100%, 30%),
+//   header-text: var(--theme-text-lit),
+//   code-bg: var(--xdark),
+//   code-scrollbar-track: hsla(0, 0%, 20%, 1),
+//   code-scrollbar-thumb: hsla(0, 0%, 50%, 0.5),
+//   code-scrollbar-thumb-border: hsla(0, 0%, 60%, 0.5),
+//   table-bg: var(--theme-bg-lit),
+//   table-haze: var(--haze),
+//   table-border: var(--neutral-haze),
+//   footer-bg: var(--haze),
+//   shadow: hsla(0, 0%, 0%, 0.12),
+//   translucent-lit: hsla(0, 0%, 0%, 0.05),
+//   translucent: var(--translucent-lit),
+//   article-bg: var(--bg),
+//   article-bg-hover: var(--bg-hover),
+//   choice-bg: var(--bg),
+//   highlight-bg-yellow: $highlight-bg-yellow-lit,
+// );
+
+// $colors-dim: (
+//   theme: $theme-dim,
+//   theme-hover: $theme-dim-hover,
+//   theme-bg: $theme-dim-bg,
+//   theme-bg-hover: $theme-dim-bg-hover,
+//   theme-text: var(--theme-text-inv-dim),
+//   neutral-theme: hsl(0, 0%, 80%),
+//   accent: hsl(20, 100%, 40%),
+//   xaccent: hsl(20, 100%, 65%),
+//   light: hsla(0, 0%, 100%, 0.87),
+//   dark-hover: hsla(0,0%,20%,1),
+//   bg: $bg-dim,
+//   bg-hover: $bg-hover-dim,
+//   initial: hsl(0, 100%, 60%),
+//   haze: $haze-dim,
+//   xhaze: $xhaze-dim,
+//   xxhaze: $xxhaze-dim,
+//   neutral-haze: hsl(0, 0%, 20%),
+//   text: var(--theme-text-dim),
+//   shadow: hsla(0, 100%, 100%, 0.12),
+//   code-bg: var(--xdark),
+//   code-scrollbar-track: hsla(0, 0%, 20%, 1),
+//   code-scrollbar-thumb: hsla(0, 0%, 50%, 0.5),
+//   code-scrollbar-thumb-border: hsla(0, 0%, 80%, 0.5),
+//   header-text: var(--theme-text-dim),
+//   table-bg: var(--code-bg),
+//   table-haze: hsla(0, 0%, 100%, 0.1),
+//   table-border: var(--code-bg),
+//   footer-bg: var(--bg),
+//   translucent-dim: hsla(0, 0%, 100%, 0.05),
+//   translucent: var(--translucent-dim),
+//   article-bg: var(--bg),
+//   article-bg-hover: var(--bg-hover),
+//   choice-bg: var(--bg),
+//   highlight-bg-yellow: $highlight-bg-yellow-dim,
+// );
+
+
+// @mixin generate_colors($colors) {
+//   // Colors, RGB Colors
+//   @each $color, $value in $colors {
+//     --#{$color}: #{$value};
+//     --RGB_#{$color}: #{mapColorVarToRGB($colors, $value)};
+//   }
+// }
+
+@mixin generate_colors($colors) {
+  // Add RGB / RGBA color definitions
+  @each $color, $value in $colors {
+    --#{$color}: #{$value};
+    --RGB_#{$color}: #{mapColorVarToRGB($colors, $value)};
+  }
+}
+
+@mixin wrap() {
+  padding: 0 $screenViewBodyPaddingNarrow;
+  padding: env(safe-area-inset-top) calc(#{$screenViewBodyPaddingNarrow} + env(safe-area-inset-right)) env(safe-area-inset-bottom) calc(#{$screenViewBodyPaddingNarrow} + env(safe-area-inset-left));
+  @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
+    padding: 0 $screenViewBodyPadding;
+    padding: env(safe-area-inset-top) calc(#{$screenViewBodyPadding} + env(safe-area-inset-right)) env(safe-area-inset-bottom) calc(#{$screenViewBodyPadding} + env(safe-area-inset-left));
+  }
+}
+
+@mixin content_base() {
+  clear: both;
+}
+
+@mixin content_base_centered() {
+  @include content_base();
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@mixin content() {
+  // Do nothing
+}
+
+@mixin content_singlecolumn() {
+  @include content_base_centered();
+  max-width: calc(min(100%, var(--content_max-width)));
+}
+
+// Content that has multiple columns
+@mixin content_multicolumn() {
+  @include content_base_centered();
+  max-width: calc(min(100%, var(--content_multicolumn_max-width)));
+}
+
+// Limit width of chrome, i.e. header and footer
+@mixin chrome() {
+  max-width: var(--screenViewWidthChrome);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@mixin footer() {
+  @include content_base_centered();
+  max-width: var(--screenViewWidthChrome);
+}
+
+@mixin content_wide() {
+  @include content_base();
+  max-width: var(--content_wide_max-width);
+}
+
+@mixin content_chrome-width() {
+  @include content_base();
+  max-width: var(--screenViewWidthChrome);
+}
+
+@mixin content_ultrawide() {
+  @include content_base();
+  max-width: var(--screenViewWidthUltrawide);
+}
+
+@mixin aside() {
+  @include content_base();
+  /*
+  h1, h2 {
+    font-size: 150%;
+  }
+  h3 {
+    font-size: 130%;
+  }
+  h4, h5, h6 {
+    font-size: 110%;
+  }
+  */
+}
+
+@mixin aside-meta() {
+  font-size: var(--font-size-meta);
+  h1, h2 {
+    font-size: 150%;
+  }
+  h3 {
+    font-size: 130%;
+  }
+  h4, h5, h6 {
+    font-size: 110%;
+  }
+}
+
+@mixin list-style($padding-vertical: $screenViewBodyPaddingNarrow / 2, $indent: $list-style-indent) {
+  ul, ol {
+    list-style: disc outside none; // initial;
+    padding: $padding-vertical 0;
+    margin: 0 0 0 $indent;
+    li {
+      padding: ($padding-vertical / 2) 0 ($padding-vertical / 2) 0.25em;
+    }
+  }
+  ul li {
+    list-style: disc outside;
+    li {
+      list-style-type: none;
+      &::before {
+        content: '–';
+        float: left;
+        margin-left: -1em;
+      }
+      li {
+        list-style-type: circle;
+        &::before {
+          content: none;
+        }
+      }
+    }
+  }
+  ol {
+    list-style: decimal;
+  }
+}
+
+@mixin viewport($width: 1024px, $margin: 25px) {
+  max-width: $width;
+  margin: $margin auto;
+  @content;
+}
+
+@mixin shadow($opacity: 0.17) {
+  box-shadow: 0 0 3rem rgba(0,0,0,$opacity);
+  &:hover {
+    box-shadow: 0 0 5rem rgba(0,0,0, (1.5 * $opacity));
+  }
+}
+
+@mixin drop-shadow($dist: 3rem, $opacity: 0.2, $hover-opacity: 0.4) {
+  box-shadow: 0 0 $dist rgba(0, 0, 0, $opacity);
+  &:hover {
+    box-shadow: 0 0 $dist rgba(0, 0, 0, $hover-opacity);
+  }
+}
+
+@mixin drop-shadow-offset($x: 0, $y: 0, $dist: 3rem, $opacity: 0.2, $hover-opacity: 0.4) {
+  box-shadow: $x $y $dist rgba(0, 0, 0, $opacity);
+  &:hover {
+    box-shadow: $x $y $dist rgba(0, 0, 0, $hover-opacity);
+  }
+}
+
+@mixin background-gradient-choice-haze($direction, $alpha) {
+  background: linear-gradient(#{$direction},
+    rgba(var(--RGB_choice-bg), #{$alpha}) 0%,
+    rgba(var(--RGB_choice-bg), #{$alpha}) 20%,
+    rgba(var(--RGB_xhaze), #{$alpha}) 90%,
+    rgba(var(--RGB_xhaze), #{$alpha}) 100%);
+}
+
+@mixin background-gradient-translucent($direction, $alpha: 0.9, $alpha-blur: 0.6) {
+  @include background-gradient-choice-haze($direction, $alpha);
+  @if $alpha-blur > 0 {
+    @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+      @include background-gradient-choice-haze($direction, $alpha-blur);
+      backdrop-filter: blur(50px);
+      -webkit-backdrop-filter: blur(50px);
+    }
+  }
+}
+
+/*
+ *   Ensure headings with ids (e.g. /about#experience) are not hidden by sticky header
+ */
+// https://stackoverflow.com/q/4086107/617559
+// Other ideas: https://css-tricks.com/hash-tag-links-padding/, e.g.
+//   https://codepen.io/kirkgleffe/pen/DfvuE
+// Approach based on CSS property does not work with IE 11 and cannot be overridden with Autoprefixer
+// html {
+//   --navigation-header-height: #{$offset};
+// }
+// .main {
+//   padding-top: #{$offset}; // For IE11 with postCSS Autoprefixer
+//   padding-top: var(--navigation-header-height);
+// }
+// Note: the CSS below must be applied to all elements with an id, such as footnotes,
+// not only headings
+@mixin nav-bar-offset($offset: $nav-height) {
+  $anchor-offset: 1rem;
+  .main {
+    padding-top: $offset;
+    margin-top: 0;
+  }
+  main {
+    [id]:target {
+      -webkit-background-clip: content-box;
+      background-clip: content-box;
+      padding-top: $offset + $anchor-offset;
+      margin-top: - $offset - $anchor-offset;
+      &.article_title {
+        padding-top: calc(#{$offset} + #{$heading-padding-top});
+        margin-top: - $offset;
+      }
+      &#contentContainer {
+        padding-top: $offset;
+        margin-top: - $offset;
+      }
+    }
+    h1, h2, h3, h4, h5, h6 {
+      $heading-offset: -1rem;
+      &[id]:target {
+        padding-top: calc( #{$offset} + #{$heading-offset} + #{$heading-margin-top} + #{$heading-padding-top} );
+        margin-top: - $offset - $heading-offset;
+      }
+    }
+  }
+  .content {
+    // Required as height of header pushes content down when position: sticky vs. position: fixed
+    padding-top: inherit;
+  }
+}
+
+@mixin nav-bar-anchor-offset {
+  @include nav-bar-offset($nav-height-narrow);
+  @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
+    @include nav-bar-offset($nav-height);
+  }
+}
+
+// Alternative from web.dev
+// FIXME: Does not work the same. The heaadings do not expand despite containing the ::before
+/*
+html {
+  scroll-padding-top:calc(#{$nav-height}+ #{$heading-padding-top})}
+
+[id]:not([href]) {
+  h1, h2, h3, h4, h5, h6 {
+    &::before {
+      content: " ";
+      display: block;
+      height: calc(#{$nav-height} + #{$heading-padding-top});
+      margin-top: calc(-#{$nav-height} - #{$heading-padding-top});
+      pointer-events: none;
+      visibility: hidden;
+    }
+  }
+}
+*/
+
+html {
+  --dim-image-filter: grayscale(30%);
+}
+
+@mixin dim_colors() {
+  @include generate_colors( map-merge($colors-lit, $colors-dim) );
+  --choice-bg-menu: var(--xxhaze);
+  --choice-bg-menu-active: var(--xhaze);
+  &:not(.kind-page) {
+    --choice-bg: var(--haze);
+    --RGB_choice-bg: var(--RGB_haze);
+    --choice-bg-menu: var(--xhaze);
+    --choice-bg-menu-active: rgba(var(--RGB_light), 0.05);
+    }
+
+  img:not([src*=".svg"]) {
+    filter: var(--dim-image-filter);
+  }
+}
+
+html {
+  --font-sans: "#{$fontFamilySans}", "Helvetica Neue", "Helvetica", "Verdana", sans-serif;
+  --font-serif: "#{$fontFamilySerif}", "Georgia", "Palatino", serif;
+  --font-mono: "#{$fontFamilyMono}", "Inconsolata", "Menlo", "Lucida Sans Typewriter", "Monaco", "Courier New", "Courier", monospace;
+  --font: var(--font-sans);
+  --font-article: var(--font-serif);
+  --font-code: var(--font-mono);
+  --font-size: 100%;
+  --font-size-meta: 87.5%;
+  --font-weight-strong: 600;
+  --font-weight-code: 400;
+  --line-height: 1.6;
+  --line-height-heading: 1.35;
+  --line-height-label: 1.2;
+
+  --icont-height: 1.1rem;
+  --icon-height-meta: 0.9rem;
+
+  // --ease: cubic-bezier(.19,1,.22,1);
+  --ease: cubic-bezier(0.39, 0.575, 0.565, 1);
+  --easing: cubic-bezier(0.19, 1, 0.22, 1);
+
+  --color-mode: 'lit';
+
+  // --theme-text-lit: hsl(0, 0%, 100%);
+  // --theme-text-lit: hsl(0, 0%, 0%);
+  // --bg: $bg-dim;
+  // --haze: #f2f2f2;
+  // --gray: hsl(0, 0%, 1%);
+  // --accent: var(--gray);
+  // --text: hsl(0, 0%, 34%);
+  // --header-text: var(--theme-text-lit);
+  // --theme: hsl(201, 100%, 36%);
+  // --code-bg: var(--bg);
+  // --table-bg: var(--theme-bg-lit);
+  // --table-haze: var(--haze);
+  // --table-border: hsl(0, 0%, 87%);
+  // --footer-bg: var(--haze);
+  // --shadow: hsla(0, 0%, 0%, 0.12);
+  // --translucent-lit hsla(0, 0%, 0%, 0.05);
+  // --translucent-dim: hsla(0, 0%, 100%, 0.05);
+  // --article-bg: var(--theme-bg-lit);
+  // --choice-bg: var(--haze);
+
+  // https://web.dev/prefers-color-scheme/#activating-dark-mode-in-the-operating-system
+  --darkmode-duration: 0.7s;
+  --darkmode-timing: ease;
+
+  --screenViewWidthChrome: #{$screenViewWidthChrome};
+  --content_multicolumn_max-width: #{$screenViewWidthChrome};
+  --content_max-width: #{$screenViewColumnWidthMax};
+  --content_wide_max-width: #{$screenViewColumnWidthWideMax};
+  --screenViewWidthUltrawide: #{$screenViewWidthUltrawide};
+
+  --screenViewBodyPadding-horizontal: #{$screenViewBodyPadding};
+  --screenViewBodyPadding-vertical: #{$screenViewBodyPadding};
+  --navigation-header-height: 0;
+
+  @include generate_colors($colors-lit);
+  --choice-bg-menu: var(--xhaze);
+  --choice-bg-menu-active: rgba(var(--RGB_bg-dark), 0.5);
+
+  &:not(.kind-page) {
+    --choice-bg: var(--theme-xxhaze);
+    --RGB_choice-bg: var(--RGB_theme-xxhaze);
+    --choice-bg-menu: var(--theme-xxxhaze);
+    --choice-bg-menu-active: rgba(var(--RGB_theme-xxxhaze), 0.05);
+  }
+
+  @mixin darkmode {
+    --theme-text-dim: hsla(0,0%,100%,0.87);
+    --color-mode: 'dim';
+    --text: var(--theme-text-dim);
+    --accent: var(--bubble);
+    --choice-bg: var(--bg);
+    --code-bg: var(--translucent);
+    --header-text: var(--theme-text-dim);
+    --table-bg: var(--code-bg);
+    --table-haze: hsla(0, 0%, 100%, 0.1);
+    --table-border: var(--code-bg);
+    --footer-bg: var(--bg);
+    // * {
+    //   box-shadow: none !important;
+    // }
+  }
+
+  &[data-mode="dim"] {
+    @include darkmode;
+    /*
+    blockquote {
+      background: var(--translucent);
+      color: #dedede;
+    }
+    */
+    svg.icon {
+      fill: var(--theme-text);
+    }
+    .icon {
+      img {
+        background: none;
+      }
+      svg {
+        fill: #fafafa;
+      }
+    }
+    /**
+     *
+    .sidebar {
+      &_inner {
+        &:before {
+          display: none;
+        }
+      }
+    }
+     */
+    .color {
+      &_choice {
+        &:after {
+          // background-image: url("#{$images}night-moon.jpg");
+          background-image: url("#{$images}moon-mono.svg");
+          transform: translateX(1.4rem);
+        }
+      }
+    }
+    // &.image-background {
+    //   .main {
+    //     .content_item {
+    //       &::after {
+    //         content: '';
+    //         position: absolute;
+    //         top: 0;
+    //         right: 0;
+    //         bottom: 0;
+    //         left: 0;
+    //         z-index: -2;
+    //         border-radius: 0.25rem;
+    //         background: hsla(0, 0%, 5%, 0.8);
+    //         box-shadow: 0 0 1.5rem 1.2rem hsla(0deg, 0%, 5%, 0.9) !important;
+    //       }
+    //     }
+    //   }
+    // }
+    @include dim_colors();
+  }
+
+  @media screen and (prefers-color-scheme: dark) {
+    &:not([data-mode="lit"]) {
+      @include darkmode;
+      /*
+      blockquote {
+        background: var(--translucent);
+        color: #dedede;
+      }
+      */
+       svg.icon {
+        fill: var(--text);
+      }
+      .icon {
+        img {
+          background: none;
+        }
+        svg {
+          fill: #fafafa;
+        }
+      }
+      .sidebar {
+        &_inner {
+          &:before {
+            display: none;
+          }
+        }
+      }
+      .color {
+        &_choice {
+          &:after {
+            // background-image: url("#{$images}night-moon.jpg");
+            background-image: url("#{$images}moon-mono.svg");
+            transform: translateX(1.4rem);
+          }
+        }
+      }
+      // &.image-background {
+      //   .main {
+      //     .content_item {
+      //       &::after {
+      //         content: '';
+      //         position: absolute;
+      //         top: 0;
+      //         right: 0;
+      //         bottom: 0;
+      //         left: 0;
+      //         z-index: -2;
+      //         border-radius: 0.25rem;
+      //         background: hsla(0, 0%, 5%, 0.8);
+      //         box-shadow: 0 0 1.5rem 1.2rem hsla(0deg, 0%, 5%, 0.9) !important;
+      //       }
+      //     }
+      //   }
+      // }
+      @include dim_colors();
+      // transition: color var(--darkmode-duration) var(--darkmode-timing), background-color var(--darkmode-duration) var(--darkmode-timing)
+      body {
+        transition: none;
+      }
+    }
+  }
+}
+
+/*
+@mixin background-mode {
+  &:before {
+    content: "";
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    background: var(--choice-bg);
+    transform: translateX(-100%);
+    transition: transform var(--darkmode-duration) var(--darkmode-timing);
+  }
+  &[data-mode="dim"]:before {
+    transform: translateX(0);
+  }
+}
+
+html {
+  @include background-mode;
+  .main {
+    @include background-mode;
+  }
+}
+*/

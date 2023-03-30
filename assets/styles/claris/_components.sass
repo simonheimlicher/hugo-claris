@@ -1,0 +1,1180 @@
+.main
+  background: var(--choice-bg)
+  z-index: $main-z-index
+  @media only screen
+    // Ensure .main is under nav_header when nav_header is position: relative
+    padding-top: #{$nav-height}
+    margin-top: - #{$nav-height}
+    min-height: 100vh
+    // Ensure main covers whole width of footer
+    width: 100%
+
+  @media screen and ( min-width: $screenViewBreakpointWidthWide)
+    min-height: 100vh
+    padding-bottom: 1.5rem
+  &_inner
+    @include chrome
+    &.wrap
+      // FIXME: Some space appears to be in order
+      margin-top: 2rem
+
+  .content + .content,
+  .content + .content_grid,
+  .content_grid + .content,
+  .content_grid + .content_grid
+    padding-top: $screenViewBodyPadding
+
+.wrap
+  @include wrap
+
+.content
+  @include content
+  &_singlecolumn
+    // padding-top: inherit
+    @include content_singlecolumn
+  &_multicolumn
+    // padding-top: inherit
+    @include content_multicolumn
+
+.footer
+  font-size: 0.9rem
+  h2, h3, h4, h5, h6
+    margin: 0
+    padding: 0
+  h2
+    font-size: 150%
+
+  // border-top: 1px solid $xhaze
+  // background: var(--footer-bg)
+  padding-top: $screenViewBodyPadding
+  // padding-bottom: $screenViewBodyPadding
+  background: rgba(var(--choice-bg), 1)
+  @include background-gradient-translucent("to top", 1, 0)
+  // @include shadow-centered-narrow
+  @include list-style
+  z-index: ($main-z-index  - 1)
+
+  @media screen and (min-height: $screenViewBreakpointHeightTall)
+    font-size: 1.1rem
+    h2, h3, h4
+      padding: $heading-padding-top 0 calc(#{$heading-padding-top} * 0.25) 0
+      margin: $heading-margin-top 0 calc(#{$heading-margin-top} * 0.25) 0
+    h2
+      font-size: 180%
+    h3
+      font-size: 120%
+
+  @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+    .grid-footer
+      display: grid
+      grid-column-gap: 0 // Use padding instead for IE 11
+      grid-template-columns: repeat(auto-fit, minmax(min-content, max-content))
+      grid-template-rows: 1fr
+      .footer_page
+        padding: $screenViewBodyPadding
+        margin: auto
+      .grid-id-2
+        grid-column: 2
+      .grid-id-3
+        grid-column: 3
+      .grid-id-4
+        grid-column: 4
+      .footer_page
+        *:first-child
+          margin-top: 0
+          padding-top: 0
+
+  p
+    padding: 0.5rem 0
+
+  &_inner
+    @include footer
+    // position: relative
+    // display: grid
+    // grid-template-columns: 4rem 1fr
+    // align-items: center
+
+  &_copyright
+    @include footer
+    padding-top: $screenViewBodyPadding
+    padding-bottom: $screenViewBodyPadding
+    font-size: 0.9rem
+
+.button
+  background-color: var(--theme-bg)
+  color: var(--theme-text)
+  display: inline-flex
+  padding: 0.5rem 1.5rem
+  // text-transform: uppercase
+  text-transform: none
+  border: 1px solid var(--theme-opa-20)
+  border-radius: 1.5rem
+  font-size: 0.9rem
+  align-items: center
+  user-select: none
+
+  &:hover, &:focus
+    background-color: var(--theme-bg-hover)
+    color: var(--theme-text-hover)
+    border: 1px solid var(--theme-bg-hover)
+
+  &_translucent
+    background-color: var(--theme-bg)
+    // color: var(--theme)
+    // Ensure contrast ration meets Chrome / Lighthouse requirements
+    color: var(--text)
+    // border: 1px solid transparent
+    border: 1px solid rgba(var(--RGB_theme), 0.1)
+
+  &_tally
+      padding: 0 0.75rem
+      border-radius: 0.5rem
+      background-color: var(--choice-bg)
+      display: inline-flex
+      justify-content: center
+      align-items: center
+      // Ensure constrast ratio requirements are met
+      // color: var(--theme-text)
+      color: var(--text)
+      margin: 0.1rem 0 0.1rem 0.2rem
+      font-size: 0.75rem // Minitmal size for mobile users
+
+  &:hover, &:focus, .article_content &:hover, .article_content &:focus, .sidebar &:hover, .sidebar &:focus
+    @media (any-hover: hover)
+      background-color: var(--theme-bg-hover)
+      border: 1px solid var(--theme-text-hover)
+
+  &_translucent, .article_content &_translucent, .sidebar &_translucent
+      background-color: var(--text-opa-10)
+      // color: var(--theme)
+      // Ensure constrast ratio requirements are met
+      color: var(--text)
+      // border: 1px solid transparent
+      border: 1px solid var(--text-opa-20)
+      &:hover, &:focus
+        @media (any-hover: hover)
+          color: var(--text-hover)
+          background-color: var(--bg-hover)
+          border: 1px solid var(--text-hover)
+
+.article
+  &_link, &_title
+    margin-top: 0
+    margin-bottom: 0
+  &s
+    margin-top: 2rem
+  &_link.grid
+    // FIXME: Height 100% required for Safari
+    height: 100%
+  &_item
+    margin-bottom: 1rem
+    border-radius: 0.25rem
+    background: var(--bg)
+    @include drop-shadow(3rem, 0.1, 0.3)
+    @media (any-hover: hover)
+      &:hover, &:focus, a, a:hover, a:focus
+        color: var(--text-hover)
+        background: var(--bg-hover)
+    &.grid
+      height: 100%
+      margin-bottom: 0
+    &_featured
+      grid-column: auto / span 2
+      @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+        .excerpt, .content-excerpt
+          font-size: 125%
+  &_tag
+    padding: 0 0.5rem
+    font-size: 0.9rem
+    &s
+      display: none
+      &.jswidgetopen
+        display: block // initial
+        position: fixed
+        top: 0
+        left: 0
+        height: 100vh
+        overflow-y: auto
+        width: 100vw
+        padding: 5rem 1.5rem
+        background: var(--translucent)
+        cursor: pointer
+        z-index: 999
+        overflow-y: auto
+      &_toggle
+        margin-top: 0.5rem
+        margin-left: 0.5rem
+        cursor: pointer
+  &_tag, &_share
+    margin: 0.5rem
+  &_share
+    display: inline-flex
+  &_meta
+    align-items: stretch
+    font-family: var(--font)
+    font-size: 0.9rem
+    &, span
+      display: inline-flex
+      flex-flow: row wrap
+    span
+      align-items: center
+    .button
+      margin: 0.125rem 0.25rem
+    .icon
+      width: 0.9rem;
+      height: 0.9rem;
+      &:first-child
+        margin-left: 0
+
+  &_date, &_time
+    margin: 0.125rem
+
+  &_content
+    @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+      font-size: 1.3rem
+    @include list-style
+    background: var(--choice-bg)
+    font-family: var(--font-article)
+    margin-top: calc( (1 - var(--line-height-heading) ) * 1em)
+
+.article_aside
+  display: none
+  position: sticky
+  margin: 0.8rem 0 1rem auto
+  // top: calc(#{$nav-height} + 5vh)
+  top: calc(#{$nav-height} + #{$screenViewBodyPadding})
+  align-self: start
+  border-radius: 0.25rem
+  // padding: 0.5rem 1rem 0 1rem
+  font-family: var(--font)
+  // background: rgba(var(--RGB_bg), 0.9)
+  // https://stackoverflow.com/a/66962139/617559
+  // width: fit-content
+  // display: flex
+  // align-items: center
+  // @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none))
+  //   background: linear-gradient(180deg, rgba(var(--RGB_bg), 0.8) 0%, rgba(var(--RGB_bg), 0.8) 80%, rgba(var(--RGB_bg), 0.8) 100%)
+  //   backdrop-filter: blur(50px)
+  //   -webkit-backdrop-filter: blur(50px)
+  &:after
+    content: ""
+    padding: 0.5px
+    top: 0
+    bottom: 0
+    background: var(--xhaze)
+    background: linear-gradient(to bottom, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze))
+    position: absolute
+    // right: 1px
+    right: calc(-0.5 * var(--column-gap))
+  @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+    display: block
+
+.content
+  &_link, &_title
+    margin-top: 0
+    margin-bottom: 0
+  &s
+    margin-top: 2rem
+  &_link.grid
+    // FIXME: Height 100% required for Safari
+    height: 100%
+  &_item
+    margin-bottom: 1rem
+    border-radius: 0.25rem
+    background: var(--bg)
+    @include drop-shadow(3rem, 0.1, 0.3)
+    @media (any-hover: hover)
+      &:hover, &:focus, a, a:hover, a:focus
+        color: var(--text-hover)
+        background: var(--bg-hover)
+    &.grid
+      height: 100%
+      margin-bottom: 0
+    &_featured
+      grid-column: auto / span 2
+      @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+        .excerpt, .content-excerpt
+          font-size: 125%
+  &_tag, &_meta_tag
+    padding: 0 0.5rem
+    font-size: 0.9rem
+    &s
+      display: none
+      &.jswidgetopen
+        display: block // initial
+        position: fixed
+        top: 0
+        left: 0
+        height: 100vh
+        overflow-y: auto
+        width: 100vw
+        padding: 5rem 1.5rem
+        background: var(--translucent)
+        cursor: pointer
+        z-index: 999
+        overflow-y: auto
+      &_toggle
+        margin-top: 0.5rem
+        margin-left: 0.5rem
+        cursor: pointer
+  &_tag, &_share
+    margin: 0.5rem
+  &_share
+    display: inline-flex
+  &_meta
+    margin: 0.5rem 0
+    align-items: stretch
+    color: var(--text-faint)
+    font-family: var(--font)
+    font-size: var(--font-size-meta)
+    // padding: 0.75rem 0  0.5rem 0
+    &, span
+      display: inline-flex
+      flex-flow: row wrap
+      align-items: baseline
+      row-gap: 0.5rem
+    span
+      align-items: center
+    .button
+      margin: 0 0.25rem
+    .icon
+      width: var(--icon-height-meta);
+      height: var(--icon-height-meta);
+      &:first-child
+        margin-left: 0
+    &_tag-list
+      // margin-left: 0.5rem
+      gap: 0.5rem
+    &_date, &_time
+      margin: 0 0.125rem
+
+  &_content
+    @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+      font-size: 1.3rem
+    @include list-style
+    background: var(--choice-bg)
+    font-family: var(--font-article)
+    margin-top: calc( (1 - var(--line-height-heading) ) * 1em)
+
+.content_aside
+  display: none
+  position: sticky
+  margin: 0.8rem 0 1rem auto
+  // top: calc(#{$nav-height} + 5vh)
+  top: calc(#{$nav-height} + #{$screenViewBodyPadding}
+  align-self: start
+  border-radius: 0.25rem
+  // padding: 0.5rem 1rem 0 1rem
+  font-family: var(--font)
+  // background: rgba(var(--RGB_bg), 0.9)
+  // https://stackoverflow.com/a/66962139/617559
+  // width: fit-content
+  // display: flex
+  // align-items: center
+  // @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none))
+  //   background: linear-gradient(180deg, rgba(var(--RGB_bg), 0.8) 0%, rgba(var(--RGB_bg), 0.8) 80%, rgba(var(--RGB_bg), 0.8) 100%)
+  //   backdrop-filter: blur(50px)
+  //   -webkit-backdrop-filter: blur(50px)
+  &:after
+    content: ""
+    padding: 0.5px
+    top: 0
+    bottom: 0
+    background: var(--xhaze)
+    background: linear-gradient(to bottom, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze))
+    position: absolute
+    // right: 1px
+    right: calc(-0.5 * var(--column-gap))
+  @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+    display: block
+
+.table_of_contents
+  visibility: hidden
+
+.outdated
+  &_wrap
+    background: none
+    padding: 2em 0 0 0
+    position: relative
+    z-index: 1
+    font-family: var(--font)
+
+    h2
+      font-size: 150%
+      font-weight: 600
+
+    h3
+      font-size: 120%
+      font-weight: 600
+
+    h4
+      font-size: 100%
+      font-weight: 600
+
+    h2, h3, h4, h5
+      margin: 0
+      padding: 0
+
+    p
+      margin: 0
+
+  &
+    width: 80%
+    padding: 0.5rem 1.5rem 1rem 1.5rem
+    margin: 0 auto 1.5rem auto
+    position: relative
+    background-color: var(--haze)
+
+.supertitle
+  display: block
+  font-size: 40%
+  padding: 1.5rem 0 0.25rem 0
+  text-align: start
+  // font-variant: small-caps
+  text-transform: uppercase
+  font-weight: 600
+
+.subtitle
+  display: block
+  font-size: 60%
+  padding: 0.5rem 0
+  text-align: end
+
+.scrollable
+  display: grid
+  width: 100%
+  max-width: 100%
+  overflow-x: auto
+
+.tag
+  &s
+    &_list
+      cursor: auto // initial
+      background: var(--bg-hover)
+      padding: 4.5rem 1.5rem 1.5rem 1.5rem
+      border-radius: 1rem
+      max-width: 40rem
+      margin: 0 auto
+      box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.12)
+      position: relative
+      display: flex
+      flex-flow: row wrap
+    &_nav
+      position: relative
+    &_hide
+      position: absolute
+      top: 1rem
+      right: 1.5rem
+      padding: 0.5rem
+      border-radius: 50%
+      cursor: pointer
+    &_sort
+      font-size: 1rem
+      color: var(--text)
+      background: var(--theme-bg)
+      position: absolute
+      top: 1.5rem
+      left: 1.5rem
+      border-radius: 1.5rem
+      padding: 0.1rem
+      &, span
+        user-select: none
+      span
+        display: inline-flex
+        justify-content: center
+        align-items: center
+        height: 2rem
+        position: relative
+        z-index: 5
+        cursor: pointer
+        width: 5rem
+        font-weight: 600
+      &:before
+        content: ""
+        position: absolute
+        width: 4.5rem
+        top: 0.25rem
+        bottom: 0.25rem
+        left: 0.25rem
+        z-index: 3
+        background: var(--theme-bg-hover)
+        opacity: 0.5
+        border: 1px solid var(--bg);
+        border-radius: 1.5rem
+        transition: 0.25s transform var(--ease)
+      &.sorted
+        &:before
+          transform: translateX(5rem)
+  &-title
+    border-bottom: none !important
+    display: inline-block !important
+    position: relative
+    font-size: 2rem
+    margin-bottom: -1rem
+    &:after
+      content: attr(data-count)
+      margin-left: 1.5rem
+      background-color: #eee
+      padding: 0.25rem 1rem
+      border-radius: 15%
+      font-size: 1.5rem
+
+.icon
+  display: inline-flex
+  justify-content: center
+  align-items: center
+  margin: 0 0.5rem
+  &, img, svg
+    width: calc(var(--icont-height))
+    height: calc(var(--icont-height))
+  &_2
+    width: calc(2 * var(--icont-height))
+    height: calc(2 * var(--icont-height))
+
+.fa-icon
+  // width: 1em
+  height: auto
+  display: inline-flex
+  justify-content: center
+  align-items: center
+  margin: 0
+  // margin: 0 0.5rem
+  width: 1.2em
+  // height: 1.2em
+  flex: none
+  &-large
+    width: 2.4em
+    // height: 2.4em
+
+.qrcode-svg
+  min-width: 48px
+  width: 80%
+  max-width: 100%
+  height: auto
+
+.link
+  opacity: 0
+  position: relative
+  &_yank
+    opacity: 1
+    &ed
+      position: absolute
+      right: -1rem
+      top: -2rem
+      background-color: var(--theme-hover)
+      color: var(--theme-text)
+      font-family: var(--font)
+      width: 7rem
+      padding: 0.25rem 0.5rem
+      font-size: 0.9rem
+      border-radius: 1rem
+      text-align: center
+      &:after
+        position: absolute
+        top: 1rem
+        content: ""
+        border-color: var(--theme-hover) transparent
+        border-style: solid
+        border-width: 1rem 1rem 0 1rem
+        height: 0
+        width: 0
+        transform-origin: 50% 50%
+        transform: rotate(145deg)
+        right: 0.45rem
+
+.excerpt
+  padding: ($screenViewBodyPadding / 1.5) $screenViewBodyPadding
+  height: 100%
+  &:after
+    content: ''
+    display: table;
+    clear: both
+  &_header, &_footer
+    padding: 0
+  &_title
+    margin: 0
+    padding-top: 0
+  &_thumbnail
+    // min-height: 10rem
+    display: none
+    @media screen and (min-width: $screenViewBreakpointWidthMobile)
+      display: block
+      border-radius: 0.5rem
+
+  &_footer
+    &.partition
+      .excerpt_thumbnail
+        float: left
+        margin: 0.35em 1em 0.2em 0
+        max-width: 40%
+        // max-width: 128px
+        max-height: 100%
+      img
+          margin: 0
+
+  &_grid
+    display: flex
+    flex-wrap: wrap
+    flex-direction: column
+    justify-content: space-between
+    // margin: 0 0 -1rem -1rem
+    gap: 1rem
+
+    @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+      .content_item
+        flex-grow: 1
+        flex-basis: calc((#{$screenViewBreakpointWidthOneColumn} - 2 * #{$screenViewBodyPadding} - 2rem) / 2)
+
+    @supports (display: grid)
+      @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+        &
+          display: grid
+          grid-gap: 1rem
+          margin: 0
+          /* Auto-fit as many items on a row as possible without going under $list-excerpt-width */
+          // grid-template-columns: repeat(auto-fit, minmax(#{$list-excerpt-width}, 1fr))
+          // grid-auto-flow: dense
+          grid-template-columns: repeat(2, minmax(#{$list-excerpt-width}, 1fr))
+          grid-auto-flow: dense
+          .content_item
+            margin: 0
+      @media screen and (min-width: $screenViewBreakpointWidthUltrawide)
+        &
+          grid-template-columns: repeat(4, minmax(#{$list-excerpt-width}, 1fr))
+          grid-gap: $screenViewBodyPadding
+
+.content-excerpt
+  padding: ($screenViewBodyPadding / 1.5) $screenViewBodyPadding
+  height: 100%
+  &:after
+    content: ''
+    display: table;
+    clear: both
+  &_header, &_footer
+    padding: 0
+  &_title
+    margin: calc(-#{$screenViewBodyPadding} / 1.5) calc(-1 * #{$screenViewBodyPadding})
+    padding: ($screenViewBodyPadding / 1.5) $screenViewBodyPadding
+    @extend h3
+  &_thumbnail
+    // display: none
+    img
+      aspect-ratio: 1.618033988749894 // golden ratio
+    @media screen and (min-width: $screenViewBreakpointWidthMobile)
+      // display: block
+      // min-height: 10rem
+      border-radius: 0.5rem
+    @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+      img
+        aspect-ratio: 1
+
+  &_read-on
+    display: none
+    .read-on
+      &::before
+        content: "↳  "
+    // text-align: right
+    margin-top: $screenViewBodyPadding
+    @media screen and (min-width: $screenViewBreakpointWidthNarrow)
+      display: block
+  &_footer
+    overflow: auto
+    // margin: calc(#{$screenViewBodyPadding} / 1.5) 0
+    &.partition
+      .content-excerpt_thumbnail
+        margin: calc(#{$screenViewBodyPadding} / 1.5) 0
+    img
+      margin: 0
+    @media screen and (min-width: $screenViewBreakpointWidthMobile)
+      margin: 0 calc(-1 * #{$screenViewBodyPadding}) calc(-#{$screenViewBodyPadding} / 1.5) calc(-1 * #{$screenViewBodyPadding})
+      padding: ($screenViewBodyPadding / 1.5) $screenViewBodyPadding
+      &.partition
+        .content-excerpt_thumbnail
+          float: left
+          margin: 0.35em 1em 0.2em 0
+          max-width: 40%
+          // max-width: 128px
+          max-height: 100%
+
+  &_grid
+    display: flex
+    flex-wrap: wrap
+    flex-direction: row
+    justify-content: space-between
+    margin: 0 0 -1rem -1rem
+    .content_item
+      margin: 0 0 1rem 1rem
+      padding: 0.5rem 1rem
+    @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+      .content_item
+        flex-grow: 1
+        flex-basis: calc((#{$screenViewBreakpointWidthOneColumn} - 2 * #{$screenViewBodyPadding} - 2rem) / 2)
+      @supports (display: grid)
+        &
+          /* Auto-fit as many items on a row as possible without going under $list-excerpt-width */
+          display: grid
+          grid-template-columns: repeat(auto-fit, minmax(#{$list-excerpt-width}, 1fr))
+          grid-auto-flow: dense
+          grid-gap: 1rem
+          margin: 0
+          .content_item
+            margin: 0
+
+    @media screen and (min-width: $screenViewBreakpointWidthWide)
+      @supports (display: grid)
+        &
+          grid-gap: $screenViewBodyPadding
+
+.sidebar
+  @include aside
+  &_inner
+    position: relative
+    margin-top: calc(#{$screenViewBodyPadding})
+    padding-top: 1rem
+    padding-bottom: 3rem
+    &:after
+      position: absolute
+      content: ""
+      padding: 2px
+      top: 0
+      left: 0
+      right: 0
+      background: var(--xhaze)
+      background: linear-gradient(to right, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze))
+
+    @media screen and (min-width: $screenViewBreakpointWidthWide)
+      // @include wrap
+      padding-top: 0
+      padding-bottom: 0
+      h1, h2
+        &:first-of-type
+          margin-top: 0
+          padding-top: 0
+      &:after
+        position: absolute
+        content: ""
+        padding: 0.5px
+        top: 0
+        bottom: 0
+        // left: 1px
+        left: calc(-0.5 * var(--column-gap))
+        right: auto
+        background: var(--xhaze)
+        background: linear-gradient(to bottom, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze))
+
+.author
+  &_header
+    display: grid
+    grid-template-columns: 3rem 1fr
+    grid-gap: 1rem
+  &_bio
+    a
+      color: var(--theme)
+
+.pagination
+  display: flex
+  margin: calc(1 * #{$screenViewBodyPadding}) 0
+
+.page
+  &-item
+    padding: 0.2rem
+    &.disabled
+      opacity: 0.7
+    &:first-child, &:last-child
+      display: none
+    &.active a
+      background-color: var(--theme-hover)
+  &-link
+    padding: 0.25rem 0.75rem
+    background-color: var(--theme)
+    color: var(--theme-text)
+    border-radius: 1rem
+  &_only
+    display: none !important
+  & &_only
+    display: inline !important // initial !important
+
+.round
+  border-radius: 50%
+  max-width: 100%
+  height: auto
+  padding: 0
+  vertical-align: middle
+
+.float
+  &_left
+    float: left
+    margin-right: 1rem
+    + p
+      padding-top: 0
+  &_right
+    float: right
+    margin-left: 1rem
+  &_left, &_right
+    &:after
+      clear: both
+
+.follow
+  display: flex
+  align-items: center
+  flex: 1
+  justify-content: flex-end
+  svg
+    margin-left: 0.75rem
+    fill: var(--text)
+
+.img
+  &_alt
+    font-style: italic
+    padding-top: 0rem
+    opacity: 0.67
+    font-size: 0.9rem
+
+.terms-of-use
+  display: block
+  position: fixed
+  bottom: 0
+  left: 0
+  right: 0
+  visibility: hidden
+  margin: 0
+  pointer-events: none
+  z-index: ($main-z-index  + 10)
+  font-size: 0.75rem // Minitmal size for mobile users
+  @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+    left: $screenViewBodyPadding / 2
+    bottom: $screenViewBodyPadding / 2
+    max-width: ($screenViewBreakpointWidthOneColumn / 2)
+  @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+    left: $screenViewBodyPadding
+    bottom: $screenViewBodyPadding
+    max-width: ($screenViewWidthAsideMin)
+  &__surface
+    display: flex
+    flex-direction: column
+    align-items: flex-start
+    padding: ($screenViewBodyPadding / 1.5) ($screenViewBodyPadding)
+    background: rgba(var(--RGB_choice-bg), 0.98)
+    @include background-gradient-translucent("to top", 0.9)
+  &__label
+    padding-bottom: ($screenViewBodyPadding / 3)
+
+  &__actions
+    a, button
+      pointer-events: auto
+      padding: 0.125rem 0.5rem
+      margin-left: 1rem
+      margin-top: 0.5rem
+      cursor: pointer
+      &:first-child
+        margin-left: 0
+
+.image
+  &-scale
+    position: fixed
+    z-index: 999999
+    left: 0
+    right: 0
+    height: 100vh
+    top: 0
+    padding: 1.5rem
+    background-color: var(--bg)
+    display: grid
+    align-items: center
+    overflow: auto // initial
+  &-scale &-scalable
+    background-color: var(--text)
+  &-scalable
+    cursor: pointer
+    transition: transform 0.3s var(--ease)
+  &_featured
+    display: block
+    margin-left: auto !important // initial
+    margin-right: auto !important // initial
+
+.video
+  overflow: hidden
+  padding-bottom: 56.25%
+  position: relative
+  height: 0
+  margin: 1.5rem 0
+  border-radius: 0.6rem
+  background-color: var(--bg)
+  box-shadow: 0 1rem 2rem rgba(0,0,0,0.17)
+  iframe
+    left: 0
+    top: 0
+    height: 100%
+    width: 100%
+    border: none
+    position: absolute
+    transform: scale(1.02)
+
+kbd
+    display: inline-block
+    margin: 0 0.1rem
+    padding: 0.1rem 0.6rem
+    font-family: var(--font)
+    background-clip: padding-box
+    border: 1px solid rgba(var(--RGB_text), 0.2)
+    border-radius: 0.25rem
+    box-shadow: 0 1px 0.2rem rgba(0, 0, 0, 0.1), inset 0 1px 0 0 #fff
+    overflow-wrap: break-word
+
+    kbd
+        box-shadow: none
+        border: none
+// https://jsfiddle.net/dkaufmanjs/nq63nr6L/
+
+$note-bg-yellow-lit: hsl(60, 100%, 77%)
+$note-bg-orange-lit: hsl(25, 100%, 77%)
+$note-bg-red-lit: hsl(0, 100%, 77%)
+$note-bg-green-lit: hsl(160, 100%, 77%)
+$note-bg-blue-lit: hsl(210, 100%, 77%)
+
+$note-bg-yellow-dim: hsl(60, 100%, 10%)
+$note-bg-orange-dim: hsl(25, 100%, 10%)
+$note-bg-red-dim: hsl(0, 100%, 10%)
+$note-bg-green-dim: hsl(160, 100%, 10%)
+$note-bg-blue-dim: hsl(210, 100%, 10%)
+
+@mixin note-dim-colors
+  --note-bg-yellow: #{$note-bg-yellow-dim}
+  --note-bg-yellow-light: #{scale-color($note-bg-yellow-dim, $lightness: -53)}
+  --note-bg-yellow-top: #{scale-color($note-bg-yellow-dim, $saturation: -3, $lightness: -2)}
+  --note-border-yellow: #{scale-color($note-bg-yellow-dim, $saturation: -100, $lightness: 20)}
+  --note-bg-orange: #{$note-bg-orange-dim}
+  --note-bg-orange-light: #{scale-color($note-bg-orange-dim, $lightness: -53)}
+  --note-bg-orange-top: #{scale-color($note-bg-orange-dim, $saturation: -3, $lightness: -2)}
+  --note-border-orange: #{scale-color($note-bg-orange-dim, $saturation: -100, $lightness: 20)}
+  --note-bg-red: #{$note-bg-red-dim}
+  --note-bg-red-light: #{scale-color($note-bg-red-dim, $lightness: -53)}
+  --note-bg-red-top: #{scale-color($note-bg-red-dim, $saturation: -3, $lightness: -2)}
+  --note-border-red: #{scale-color($note-bg-red-dim, $saturation: -100, $lightness: 20)}
+  --note-bg-green: #{$note-bg-green-dim}
+  --note-bg-green-light: #{scale-color($note-bg-green-dim, $lightness: -53)}
+  --note-bg-green-top: #{scale-color($note-bg-green-dim, $saturation: -3, $lightness: -2)}
+  --note-border-green: #{scale-color($note-bg-green-dim, $saturation: -100, $lightness: 20)}
+  --note-bg-blue: #{$note-bg-blue-dim}
+  --note-bg-blue-light: #{scale-color($note-bg-blue-dim, $lightness: -53)}
+  --note-bg-blue-top: #{scale-color($note-bg-blue-dim, $saturation: -3, $lightness: -2)}
+  --note-border-blue: #{scale-color($note-bg-blue-dim, $saturation: -100, $lightness: 20)}
+
+.note
+  margin: 1rem 5% 1rem 5%
+  padding: 0.5rem 1rem
+  position: relative
+  // z-index: ($main-z-index  + 1)
+  background: var(--neutral-haze)
+  color: var(--text)
+  font-family: var(--font)
+  position: relative
+  display: inline-block
+  background: transparent
+  width: 90%
+  height: 100%
+  border: 0.0625rem solid var(--note-border-yellow)
+  border-bottom-right-radius: 4rem 0.5rem
+  // background: rgb(255, 255, 136)
+  // background: linear-gradient(135deg, rgb(255, 255, 136) 81%,rgb(255, 255, 136) 82%,rgb(255, 255, 136) 82%,rgb(255, 255, 198) 100%)
+  // --note-bg-yellow: hsl(60, 100%, 77%)
+  // --note-bg-yellow-light: hsl(60, 100%, 89%)
+  // --note-bg-yellow-top: hsl(60, 97%, 69%)
+  // --note-border-yellow: hsl(0, 0%, 91%)
+  --note-bg-yellow: #{$note-bg-yellow-lit}
+  --note-bg-yellow-light: #{scale-color($note-bg-yellow-lit, $lightness: 53)}
+  --note-bg-yellow-top: #{scale-color($note-bg-yellow-lit, $saturation: -3, $lightness: -10)}
+  --note-border-yellow: #{scale-color($note-bg-yellow-lit, $saturation: -100, $lightness: 60)}
+
+  --note-bg-orange: #{$note-bg-orange-lit}
+  --note-bg-orange-light: #{scale-color($note-bg-orange-lit, $lightness: 53)}
+  --note-bg-orange-top: #{scale-color($note-bg-orange-lit, $saturation: -3, $lightness: -3)}
+  --note-border-orange: #{scale-color($note-bg-orange-lit, $saturation: -100, $lightness: 60)}
+
+  --note-bg-red: #{$note-bg-red-lit}
+  --note-bg-red-light: #{scale-color($note-bg-red-lit, $lightness: 53)}
+  --note-bg-red-top: #{scale-color($note-bg-red-lit, $saturation: -3, $lightness: -3)}
+  --note-border-red: #{scale-color($note-bg-red-lit, $saturation: -100, $lightness: 60)}
+
+  --note-bg-green: #{$note-bg-green-lit}
+  --note-bg-green-light: #{scale-color($note-bg-green-lit, $lightness: 53)}
+  --note-bg-green-top: #{scale-color($note-bg-green-lit, $saturation: -3, $lightness: -3)}
+  --note-border-green: #{scale-color($note-bg-green-lit, $saturation: -100, $lightness: 60)}
+
+  --note-bg-blue: #{$note-bg-blue-lit}
+  --note-bg-blue-light: #{scale-color($note-bg-blue-lit, $lightness: 53)}
+  --note-bg-blue-top: #{scale-color($note-bg-blue-lit, $saturation: -3, $lightness: -3)}
+  --note-border-blue: #{scale-color($note-bg-blue-lit, $saturation: -100, $lightness: 60)}
+
+  --note-bg: var(--note-bg-yellow)
+  --note-bg-light: var(--note-bg-yellow-light)
+  --note-bg-top: var(--note-bg-yellow-top)
+  --note-border: var(--note-bg-yellow-border)
+
+  &.important, &.orange
+    --note-bg: var(--note-bg-orange)
+    --note-bg-light: var(--note-bg-orange-light)
+    --note-bg-top: var(--note-bg-orange-top)
+    --note-border: var(--note-bg-orange-border)
+
+  &.red
+    --note-bg: var(--note-bg-red)
+    --note-bg-light: var(--note-bg-red-light)
+    --note-bg-top: var(--note-bg-red-top)
+    --note-border: var(--note-bg-red-border)
+
+  &.green
+    --note-bg: var(--note-bg-green)
+    --note-bg-light: var(--note-bg-green-light)
+    --note-bg-top: var(--note-bg-green-top)
+    --note-border: var(--note-bg-green-border)
+
+  &.blue
+    --note-bg: var(--note-bg-blue)
+    --note-bg-light: var(--note-bg-blue-light)
+    --note-bg-top: var(--note-bg-blue-top)
+    --note-border: var(--note-bg-blue-border)
+
+  background: rgb(255, 255, 136)
+  background: linear-gradient(135deg, var(--note-bg) 80%, var(--note-bg) 85%, var(--note-bg-light) 100%)
+
+  html:not(no-css-prop) &:before
+      content: ""
+      position: absolute
+      z-index: ($main-z-index  - 2)
+      left: 0
+      top: -3rem
+      margin-top: 3rem
+      width: 100%
+      height: calc(100% - 3rem)
+      border-top: 3rem solid var(--note-bg-top)
+      border-bottom-right-radius: 4rem 0.5rem
+      display: inline-block
+      background: rgb(255, 255, 136)
+      background: linear-gradient(135deg, var(--note-bg) 80%, var(--note-bg) 85%, var(--note-bg-light) 100%)
+
+  html:not(no-css-prop) &:after
+      content: ""
+      position: absolute
+      z-index: ($main-z-index  - 3)
+      right: 0
+      bottom: 1rem
+      width: 8rem
+      height: 4rem
+      background: rgba(0, 0, 0, 0.2)
+      box-shadow: 2px 15px 5px rgba(0, 0, 0, 0.40)
+      transform: matrix(-1, -0.1, 0, 1, 0, 0)
+      // -moz-transform: matrix(-1, -0.1, 0, 1, 0, 0)
+      // -webkit-transform: matrix(-1, -0.1, 0, 1, 0, 0)
+      // -o-transform: matrix(-1, -0.1, 0, 1, 0, 0)
+      // -ms-transform: matrix(-1, -0.1, 0, 1, 0, 0)
+
+  &_wrap
+    position: relative
+    z-index: ($main-z-index  + 1)
+
+  + .highlight_wrap
+    margin-top: 2.25rem
+
+  h2
+    font-size: 150%
+    font-weight: 600
+  h3
+    font-size: 120%
+    font-weight: 600
+  h4
+    font-size: 100%
+    font-weight: 600
+  h2, h3, h4, h5
+    color: var(--text)
+    margin: 0
+    padding: 0
+  // p
+  //   padding: 0.8rem 0
+
+html[data-mode="dim"]
+  .note
+    @include note-dim-colors
+@media (prefers-color-scheme: dark)
+  html:not([data-mode="lit"])
+    .note
+      @include note-dim-colors
+
+.shortcode_responsive-figure
+  background: var(--figure-bg)
+  @at-root figure#{&}
+    margin: calc(#{$screenViewBodyPadding}) auto
+    padding: calc(#{$screenViewBodyPadding}) calc(#{$screenViewBodyPadding})
+    border-radius: 0.125rem
+  & > *
+    margin: 0
+  &_img
+    border-radius: 0.125rem
+    // height: auto
+    max-width: 100%
+    max-height: 100%
+    padding: 0
+  figcaption
+    color: var(--text)
+    font-family: var(--font)
+    // text-align: center
+
+  &.background-light
+    background: var(--bg-light)
+    figcaption
+      color: var(--text-light)
+      padding: calc(#{$screenViewBodyPadding} / 1.5) calc(#{$screenViewBodyPadding} / 2)
+
+  &.background-dark
+    background: var(--bg-dark)
+    figcaption
+      color: var(--text-dark)
+      padding: calc(#{$screenViewBodyPadding} / 1.5) calc(#{$screenViewBodyPadding} / 2)
+
+  &_img &.shape-round
+    border-radius: 50%
+
+  &.float-left, &.float-right
+    float: none
+    // max-width: 80%
+    max-width: calc(0.8 * (#{$screenViewBreakpointWidthMobile} - 2 * var(--screenViewBodyPadding-horizontal) ) )
+    margin: 0.25rem auto
+
+  @media screen and (min-width: $screenViewBreakpointWidthMobile)
+    &.float-left, &.float-right
+      max-width: calc(0.4 * (#{$screenViewBreakpointWidthOneColumn} - 2 * var(--screenViewBodyPadding-horizontal) ) )
+
+  @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+    &.float-left, &.float-right
+      max-width: 40%
+    &.float-left
+      float: left
+      margin: 0 $screenViewBodyPadding 1rem 0
+      img
+        margin: 0.25rem auto 0.25rem 0
+
+      // Keep remaining column at leat 50% wide for readability
+      // https://stackoverflow.com/a/32324732/617559
+      & ~ *:not(figure):before
+        height: 0
+        content: ''
+        min-width: 50%
+        display: block
+        overflow: hidden
+        clear: right
+
+    &.float-right
+      float: right
+      margin: 0 0 1rem $screenViewBodyPadding
+      img
+        margin: 0.25rem 0 0.25rem auto
+
+      // Keep remaining column at leat 50% wide for readability
+      // https://stackoverflow.com/a/32324732/617559
+      & + *:not(figure):before
+        height: 0
+        content: ''
+        min-width: 50%
+        display: block
+        overflow: hidden
+        clear: left   //use clear:right if img is float:left

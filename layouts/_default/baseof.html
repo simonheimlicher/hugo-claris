@@ -1,0 +1,136 @@
+{{- /* # https://gohugo.io/templates/template-debugging/ */ -}}
+{{- $page := . }}
+{{- $s := .Site.Params }}
+{{- $p := .Params }}
+{{- $template := "_default/baseof" }}
+
+{{- $outputFormat := partial "claris/_functions/output-format" . }}
+{{- $printViewScript := "pagination_preview" }}
+{{- $printView := default false ($page.Param "PrintView") }}
+
+{{- $htmlClasses := "no-js" }}
+{{- if .Params.heroImage }}
+  {{- if (eq .Params.heroImageStyle "cover") }}
+    {{- $htmlClasses = printf "%s %s" $htmlClasses "content-above-header" }}
+  {{- else if (eq .Params.heroImageStyle "background") }}
+    {{- $htmlClasses = printf "%s %s" $htmlClasses "image-background" }}
+  {{- end -}}
+{{- end -}}
+{{- $forceColorScheme := false }}
+{{- with default false (default $p.enforceLightMode $s.enforceLightMode) }}
+  {{- $forceColorScheme = " data-mode=\"lit\"" }}
+{{- else }}
+  {{- with default false (default $p.enforceDarkMode $s.enforceDarkMode) }}
+    {{- $forceColorScheme = " data-mode=\"dim\"" }}
+  {{- else }}
+    {{- if (and $outputFormat (strings.Contains $outputFormat.Name "print") ) }}
+      {{- $forceColorScheme = " data-mode=\"lit\"" }}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+<!DOCTYPE html>
+{{ partial "html-comment" (printf "BASEOF %s[%s]: BEGIN" $page $template) }}
+<html lang="{{ .Lang }}"
+{{- with $p.figurePositionShow }} data-figures="{{ . }}"{{ end -}}
+  {{- with .Type }}{{ $htmlClasses = (printf "%s type-%s" $htmlClasses .) }}{{ end -}}
+  {{- with .Kind }}{{ $htmlClasses = (printf "%s kind-%s" $htmlClasses .) }}{{ end -}}
+  {{- with (default .Layout .Params.layout) }}{{ $htmlClasses = (printf "%s layout-%s" $htmlClasses .) }}{{ end -}}
+  {{/* {{- if (in .Type ($page.Param "mainSections")) }}{{ $htmlClasses = (printf "%s %s" $htmlClasses "main") }}{{ end -}} */}}
+  {{- with $htmlClasses }}{{ printf " class=%q" $htmlClasses | safeHTMLAttr }}{{ end -}}
+  {{- with $forceColorScheme }}{{ safeHTMLAttr . }}{{ end -}}
+>
+<head>
+  {{ partial "html-comment" (printf "[%s]: .Type=%s .Layout=%s .MediaType=%s $outputFormat=%s]" $template .Type .Layout .MediaType $outputFormat.Name ) }}
+  {{- partial "claris/head/index" . }}
+  {{- partial "claris/_hooks/head-end/index" . }}
+</head>
+{{ partial "html-comment" (printf "BASEOF [%s]: BEGIN body" $template) }}
+<body id="documentContainer" {{- block "body-data" . -}} {{- end -}}>
+  {{ partial "html-comment" (printf "BASEOF [%s]: BEGIN block body" $template) }}
+  {{ block "body" . -}}{{ end }}
+  {{ partial "html-comment" (printf "BASEOF [%s]:   END block body" $template) }}
+  {{- with $s.customJS }}
+    {{- range . -}}
+      <script src="{{ relURL . }}" ></script>
+    {{- end }}
+  {{- end }}
+  {{- /* FIXME: The below code should be removed. The script "pagination_preview" should
+        be added to the modern-late script bundle and determine at runtime if it
+        should do something */ -}}
+  {{/* {{- if or $printView (eq $outputFormat.Name "print") }}
+    {{- $assets := "" -}}
+    {{- with partial "claris/_functions/assets" . }}
+      {{- $assets = . -}}
+    {{- end }}
+    {{ warnf "%s[%s] BASEOF: outputFormat=%s: load printViewScript=%s" $page $template $outputFormat.Name $printViewScript }}
+    {{- with (index $assets.scripts $printViewScript ) }}
+      <script type="module" src="{{ .Permalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
+    {{- else }}
+      {{- errorf "%s[%s]: scriptID '%s' not found" $page $template .script }}
+    {{- end }}
+  {{- end }} */}}
+  {{- partial "claris/_hooks/body-end/index" . }}
+</body>
+{{ partial "html-comment" (printf "BASEOF [%s]: END  body" $template) }}
+</html>
+
+{{- define "body-data" }}
+  {{- $s := .Site.Params }}
+  {{- $p := .Params }}
+  {{- $maxCodeLines := 100 }}
+  {{- with $s.codeMaxLines }}
+    {{- $maxCodeLines = . }}
+  {{- end }}
+  {{- with $p.codeMaxLines }}
+    {{- $maxCodeLines = . }}
+  {{- end }}
+  {{- $codeLineNumbers := false }}
+  {{- with $s.codeLineNumbers }}
+    {{- $codeLineNumbers = . }}
+  {{- end }}
+  {{- with $p.codeLineNumbers }}
+    {{- $codeLineNumbers = . }}
+    {{- else }}
+    {{- if eq $p.codeLineNumbers false }}
+      {{- $codeLineNumbers = false }}
+    {{- end }}
+  {{- end }}
+  data-code="{{ $maxCodeLines }}" data-lines="{{ $codeLineNumbers }}"
+{{- end }}
+
+{{- define "body" }}
+  {{- $page := . }}
+  {{- $template := "_default/baseof" }}
+  {{- $heroImage := default "" ($page.Param "heroImage") }}
+  {{- $mainClassList := slice "main" }}
+  {{- $mainPartial := "main" }}
+
+  {{- with partial "claris/_functions/alternative-type" . }}
+    {{- $mainClassList = append (slice .) $mainClassList }}
+    {{- $mainPartial = printf "main/%s" . }}
+  {{- end }}
+
+  {{- with $heroImage }}
+    {{- $mainClassList = append (slice (printf "hero-image_%s_main" .style) ) $mainClassList }}
+  {{- end }}
+  {{- /* FIXME: to top button needs to be rebuilt as it currently is not responsive */ -}}
+  {{- $showToTopButton := default false ($page.Param "showToTopButton") }}
+  {{- /* {{- warnf "BASEOF        [%s] .Section=%s .Layout=%s" $page $template .Section .Layout -}} */ -}}
+  {{ partial "html-comment" (printf "BASEOF [%s]: BEGIN define body" $template) }}
+    {{- with $heroImage }}
+      {{ partial "claris/_components/hero-image" $page }}
+    {{- end }}
+    {{- partial "claris/header/index" . }}
+    <main id="mainContainer" class="{{ delimit $mainClassList " " }}">
+      {{- block "main" . -}}{{ end }}
+      {{- with $heroImage }}
+        {{ partial "claris/_components/hero-image" $page }}
+      {{- end }}
+      {{- if $showToTopButton -}}
+        {{- partialCached "claris/_components/top" . }}
+      {{- end }}
+    </main>
+    {{ partialCached "claris/footer/index" . .IsHome }}
+  {{ partial "html-comment" (printf "BASEOF [%s]: END   define body" $template) }}
+{{ end -}}

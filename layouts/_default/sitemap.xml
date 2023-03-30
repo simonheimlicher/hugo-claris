@@ -1,0 +1,36 @@
+{{- $hiddenSections := default (slice "error" "home" "footer") site.Params.hiddenSections -}}
+{{- $hiddenPages := slice }}
+{{- range $hiddenSections }}
+{{- $hiddenPages = append $hiddenPages (slice (printf "/%s/" .) ) }}
+{{- end }}
+{{- $hiddenMedia := default (slice "print") site.Params.hiddenMedia -}}
+{{ printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\" ?>" | safeHTML }}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  {{- $notHiddenSections := where .Data.Pages "Section" "not in" $hiddenSections }}
+  {{- $notHiddenPages := where .Data.Pages "RelPermalink" "not in" $hiddenPages -}}
+  {{- /* range $notHiddenPages }}
+  {{ .RelPermalink }}
+  {{- end */ -}}
+  {{- $notHiddenMedia := where .Data.Pages "Params.media" "not in" $hiddenMedia -}}
+  {{- $notHiddenMedia = (append $notHiddenMedia (where .Data.Pages "Params.media" "=" nil) ) -}}
+  {{- $filtered := $notHiddenSections | intersect $notHiddenPages | intersect $notHiddenMedia }}
+  {{- range $filtered }}
+  <url>
+    <loc>{{ .Permalink }}</loc>{{ if not .Lastmod.IsZero }}
+    <lastmod>{{ safeHTML ( .Lastmod.Format "2006-01-02T15:04:05-07:00" ) }}</lastmod>{{ end }}{{ with .Sitemap.ChangeFreq }}
+    <changefreq>{{ . }}</changefreq>{{ end }}{{ if ge .Sitemap.Priority 0.0 }}
+    <priority>{{ .Sitemap.Priority }}</priority>{{ end }}{{ if .IsTranslated }}{{ range .Translations }}
+    <xhtml:link
+                rel="alternate"
+                hreflang="{{ .Lang }}"
+                href="{{ .Permalink }}"
+                />{{ end }}
+    <xhtml:link
+                rel="alternate"
+                hreflang="{{ .Lang }}"
+                href="{{ .Permalink }}"
+                />{{ end }}
+  </url>
+  {{ end }}
+</urlset>

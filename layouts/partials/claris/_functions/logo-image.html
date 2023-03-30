@@ -1,0 +1,6 @@
+{{- $sizeSpec := . -}}
+{{- $logoImageResource := resources.Get site.Params.logo -}}
+{{- with $logoImageResource }}
+  {{ $logoImageResource = $logoImageResource.Resize $sizeSpec }}
+{{- end }}
+{{- return $logoImageResource -}}

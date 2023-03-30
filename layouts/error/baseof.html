@@ -1,0 +1,16 @@
+{{- $page := . }}
+{{- $s := .Site.Params }}
+{{- $p := .Params }}
+<!DOCTYPE html>
+<html lang="{{ .Lang }}" data-figures="{{ $p.figurePositionShow }}"{{ if .IsPage }} class="page"{{ end }}{{ if .IsHome }} class="home"{{ end }}{{ with $s.enforceLightMode }} data-mode="lit"{{ end }}{{ with $s.enforceDarkMode }} data-mode="dim"{{ end }}>
+  <head>
+    {{- partial "claris/head/index" . -}}
+    {{- partial "claris/_hooks/head-end/index" . }}
+  </head>
+  <body id="documentContainer">
+    <main>
+      {{- block "main" . }}{{ end }}
+    </main>
+    {{- partial "claris/_hooks/body-end/index" . }}
+  </body>
+</html>

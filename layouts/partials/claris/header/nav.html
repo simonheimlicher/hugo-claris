@@ -1,0 +1,198 @@
+{{- $page := .Page }}
+{{- $currentPage := .Page }}
+{{- $menu := .Menu }}
+{{- $s := site.Params }}
+{{- $template := "partials/claris/header/nav" }}
+{{- $hideSubMenus := eq $currentPage.Site.Params.hideSubMenus true }}
+{{- $menuData := $currentPage.Site.Data.menu }}
+{{- $link := $currentPage.Permalink }}
+{{- $url := "" }}
+{{- $name := "" }}
+{{- $children := false }}
+{{- $elementIdPrefix := "nav-menu-item" }}
+{{- $id := "undefined" }}
+{{- /* partial "html-comment" (printf "BEGIN %v" $template) */ -}}
+{{- range $menu }}
+  {{- with .Identifier }}
+    {{- $id = printf "%s-%s" $elementIdPrefix (. | plainify) }}
+  {{- end }}
+  {{- /* partial "html-comment" ( . | jsonify (dict "indent" "  " "prefix" "      ") ) */ -}}
+  {{- if eq $menu $menuData }}
+    {{- /* partial "html-comment" (printf "        %v =  %v" $menu $menuData) */ -}}
+    {{- $children = .submenu }}
+    {{- $name = .name }}
+    {{- $url = absURL .link }}
+    {{- /* partial "html-comment" (printf "Page menu.    .URL:%s absURL:%s absLangURL:%s" .URL (absURL .URL) (absLangURL .URL) ) */ -}}
+  {{- else }}
+    {{- $children = .Children }}
+    {{- $name = .Name }}
+    {{- $url = absURL .URL }}
+    {{- $permalink := (site.GetPage (printf "%s" .URL)) }}
+    {{- /* partial "html-comment" (printf "site.GetPage '/resume/print':'%s' site.GetPage '%s':%s .Permalink:%s"
+        (site.GetPage "/resume/print") (printf "%s" .URL) (site.GetPage (printf "%s" .URL)) $permalink ) */ -}}
+    {{- /* FIXME: site.GetPage seems to expect URLs without trailing slash */ -}}
+    {{- if site.GetPage (strings.TrimRight "/" (printf "%s" .URL)) }}
+      {{- $url = absLangURL .URL }}
+    {{- end }}
+  {{- end }}
+  {{- $url = printf "%s/" (strings.TrimRight "/" $url) }}
+    {{/* {{- partial "html-comment" (printf ".URL:%s $url:%s $link:%s currentPage.Section:%s currentPage.Permalink:%s" .URL $url $link $currentPage.Section $currentPage.Permalink ) -}} */}}
+          <div class="nav_parent">
+            <a href="{{ $url }}" id="{{ $id }}" class="nav_menu nav_item
+    {{- if (and (not .HasChildren) (eq $url $link)) }} nav_active{{ end -}}
+    {{- if eq $currentPage.Permalink .URL }} nav_active_page{{ end -}}
+    {{- if ( $currentPage.IsMenuCurrent .Menu . ) }} nav_active_is_menu{{ end -}}
+    {{- if ( $currentPage.HasMenuCurrent .Menu . ) }} nav_active_has_menu{{ end -}}
+    {{- if (site.GetPage .URL).InSection $currentPage }} nav_active_in_section{{ end -}}
+    {{- if $currentPage.Parent -}}
+      {{- if $currentPage.Parent.IsMenuCurrent .Menu . }} nav_active_parent_is_menu{{ end -}}
+      {{- if $currentPage.Parent.HasMenuCurrent .Menu . }} nav_active_parent_has_menu{{ end -}}
+      {{- if $currentPage.Parent.Parent -}}
+        {{- if $currentPage.Parent.Parent.IsMenuCurrent .Menu . }} nav_active_parent_parent_is_menu{{ end -}}
+        {{- if $currentPage.Parent.Parent.HasMenuCurrent .Menu . }} nav_active_parent_parent_has_menu{{ end -}}
+      {{- end -}}
+    {{- end -}}" title="{{ $name }}">{{ $name }} {{- if not $hideSubMenus }}{{ with $children }}<img src='{{ absURL "icons/caret-icon.svg" }}' alt="icon" class="nav_icon">{{ end }}{{ end }}</a>
+    {{- if not $hideSubMenus }}
+    {{- with $children }}
+            <div class="nav_sub">
+              <span class="nav_child"></span>
+      {{- range . }}
+        {{- with .Identifier }}
+          {{- $id = printf "%s-%s" $elementIdPrefix (. | plainify) }}
+        {{- end }}
+        {{- if eq $menu $menuData }}
+          {{- $name = .name }}
+          {{- $url = absURL .link }}
+        {{- else }}
+          {{- $name = .Name }}
+          {{- $url = absLangURL .URL }}
+        {{- end }}
+                <a href="{{ $url }}" id="{{ $id }}" class="nav_child nav_item
+        {{- if eq $currentPage.Permalink $url }} nav_active_page{{ end -}}
+        {{- if ( $currentPage.IsMenuCurrent .Menu . ) }} nav_active_is_menu{{ end -}}
+        {{- if ( $currentPage.HasMenuCurrent .Menu . ) }} nav_active_has_menu{{ end -}}
+        {{- if (site.GetPage .URL).InSection $currentPage }} nav_active_in_section{{ end -}}
+        {{- if $currentPage.Parent -}}
+          {{- if $currentPage.Parent.IsMenuCurrent .Menu . }} nav_active_parent_is_menu{{ end -}}
+          {{- if $currentPage.Parent.HasMenuCurrent .Menu . }} nav_active_parent_has_menu{{ end -}}
+          {{- if $currentPage.Parent.Parent -}}
+            {{- if $currentPage.Parent.Parent.IsMenuCurrent .Menu . }} nav_active_parent_parent_is_menu{{ end -}}
+            {{- if $currentPage.Parent.Parent.HasMenuCurrent .Menu . }} nav_active_parent_parent_has_menu{{ end -}}
+          {{- end -}}
+        {{- end -}}" title="{{ $name }}">{{ $name }}</a>
+      {{- end }}
+            </div>
+    {{- end }}
+    {{- end }}
+          </div>
+{{- end }}
+{{- with $page }}
+{{/* {{- partial "html-comment" (printf "%s[%s]: Listing related pages if .Type=%v in %v and .Section=%v in %v"
+    $template . .Type (.Param "navListCurrentSectionForTypes")  .Section (.Param "navListCurrentSectionInSection")) -}} */}}
+  {{- $hiddenSections := site.Params.hiddenSections }}
+  {{- if (and (in (.Param "navListCurrentSectionForTypes") .Type)
+  (in (.Param "navListCurrentSectionInSection") .Section) ) }}
+    {{- /* Exclude sections that are in site.Params.hiddenSections but
+    still list pages if the current page is in a hidden section */ -}}
+    {{- $excludeSections := complement (slice (printf "%s" .Section)) $hiddenSections }}
+    {{/* {{- partial "html-comment" (printf "%s[%s]: .Section=%v .CurrentSection=%v $excludeSections=%v" $page $template .Section .CurrentSection $excludeSections) }} */}}
+    {{- with .CurrentSection }}
+      {{- $menuTitle := default .Title .Params.MenuTitle }}
+          <div class="nav_parent nav_parent_section">
+            {{- $activeClass := cond (eq $page.Permalink .Permalink) " nav_active" "" }}
+            <a href="{{ .Permalink }}" class="nav_item{{ $activeClass }}" title="{{ .Title }}">{{ $menuTitle }}</a>
+          </div>
+    {{- end }}
+    {{- with .Pages }}
+      {{- range (sort (where . "Section" "not in" $excludeSections) "Weight" "desc") -}}
+        {{- $menuTitle := default .Title .Params.MenuTitle }}
+          <div class="nav_parent nav_parent_section pages">
+            {{- $activeClass := cond (eq $page.Permalink .Permalink) " nav_active" "" }}
+            <a href="{{ .Permalink }}" class="nav_item{{ $activeClass }}" title="{{ .Title }}">{{ $menuTitle }}</a>
+          </div>
+      {{- end }}
+    {{- else }}
+      {{- with .Parent -}}
+        {{/* {{- partial "html-comment" (printf "[%s]: Determine listing .Parent: .Parent.Section=%v $hiddenSections=%v" $template .Section $hiddenSections) }} */}}
+        {{- if (in $hiddenSections .Section) }}
+        {{- else }}
+          {{- with .Pages -}}
+            {{- range (sort (where . "Section" "not in" $excludeSections) "Weight" "desc") -}}
+            {{- $menuTitle := default .Title .Params.MenuTitle }}
+          <div class="nav_parent nav_parent_section parent_pages">
+              {{- $activeClass := cond (eq $page.Permalink .Permalink) " nav_active" "" }}
+            <a href="{{ .Permalink }}" class="nav_item{{ $activeClass }}" title="{{ .Title }}">{{ $menuTitle }}</a>
+          </div>
+            {{- end }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+
+  {{- with .AlternativeOutputFormats.Get "print" -}}
+          <div class="nav_parent nav_parent_print">
+            <a href="{{ .Permalink }}" class="nav_item" title="{{ T "print-view" }}">{{ partial "sprite" (dict "icon" "print") }}</a>
+          </div>
+  {{- end }}
+  {{- with .AlternativeOutputFormats.Get "html" -}}
+          <div class="nav_parent nav_parent_print">
+            <a href="{{ .Permalink }}" class="nav_item" title="{{ T "screen-view" }}">{{ partial "sprite" (dict "icon" "arrow") }}</a>
+          </div>
+  {{- end }}
+
+  {{- with $currentPage.Param "assetDownloadFolders" }}
+    {{/* {{- partial "html-comment" (printf "%s[%s]: Resources.ByType=%v" $page $template ($currentPage.Resources.ByType "application") ) }} */}}
+    {{- range $downloadFolder := . }}
+      {{- with $currentPage.Param "downloadBaseNames" }}
+        {{- range $fileBaseName := . }}
+          {{- $fileGlob := (printf "assets/%s/*%s*.pdf" $downloadFolder $fileBaseName) }}
+          {{- with $currentPage.Resources.GetMatch $fileGlob }}
+          <div class="nav_parent nav_parent_download">
+            <a href="{{ .Permalink }}" class="nav_item" title="{{ T "download-pdf" }} {{ .Title }}">{{ partial "sprite" (dict "icon" "file-pdf") }}</a>
+          </div>
+          {{- else }}
+          {{/* {{- partial "html-comment" (printf "%s[%s]: fileGlob=%v" $page $template $fileGlob ) }} */}}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+
+  {{- if .IsTranslated }}
+          <div class="nav_parent nav_parent_language">
+            <a href="#" class="nav_item">{{ partial "sprite" (dict "icon" "language-icon") }}</a>
+            <div class="nav_sub">
+              <span class="nav_child"></span>
+    {{- /* partial "html-comment" (printf "%s: available translations: %v" $template $page.Translations) */ -}}
+    {{- range sort site.Languages "Weight" "asc" }}
+      {{/* {{- range .Translations }} */}}
+    {{/* {{- partial "html-comment" (printf "%s: ctx.Lang:%v translation: %v" $template $page.Lang . ) -}} */}}
+      {{- if (eq (printf "%s" $page.Lang) (printf "%s" .)) }}
+              <a href="{{ $page.Permalink }}" class="nav_child nav_item nav_active">{{ $page.Language.LanguageName }}</a>
+      {{- else }}
+        {{- $matchingTranslation := where $page.Translations "Lang" .Lang }}
+        {{- with $matchingTranslation }}
+          {{- with (index . 0) }}
+            {{- $languageName := .Language.LanguageName }}
+              <a href="{{ .Permalink }}" class="nav_child nav_item">{{ $languageName }}</a>
+            {{- end }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+            </div>
+          </div>
+    {{- end }}
+    {{- if (and false .Site.IsMultiLingual) }}
+          <div class="nav_parent nav_parent_language">
+            <a href="#" class="nav_item">{{ $s.languageMenuName }}</a>
+            <div class="nav_sub">
+              <span class="nav_child"></span>
+      {{ range .Site.Home.AllTranslations }}
+              <a href="{{ .Permalink }}" class="nav_child nav_item">{{ .Language.LanguageName }}</a>
+      {{ end }}
+            </div>
+          </div>
+  {{- end }}
+{{- end }}
+{{/* {{ partial "html-comment" (printf "END   %v" $template) }} */}}

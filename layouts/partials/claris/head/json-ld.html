@@ -1,0 +1,111 @@
+{{- $author :=  or (.Params.author) (.Site.Author.name) }}
+{{- $logoImageHeight := 128 }}
+{{- $sizeSpec := printf "x%d" (int $logoImageHeight) }}
+{{- /* By specifying a second argument to partialCached "claris/_functions/logo-image",
+    we ensure that it creates a new version with the specified size */ -}}
+{{- $logoImage := partialCached "claris/_functions/logo-image" $sizeSpec $sizeSpec -}}
+{{- $logoImageURL := partialCached "claris/_functions/canonical-url" $logoImage -}}
+{{- if .IsHome -}}
+{{- $copyright := "" }}
+{{- with .Site.Params.since }}
+{{- $copyright = printf "%s %s–%s %s. %s" (T "copyright") (string .) (string now.Year) $author (T "all_rights" )}}
+{{- end }}
+    <script type="application/ld+json">
+      {{
+        (
+            dict "@context" "http://schema.org"
+            "@type" "WebSite"
+            "name" ( .Site.Title | markdownify | plainify )
+            "headline" ( .Title | markdownify | plainify )
+            "alternativeHeadline" ( .Params.lead | markdownify | plainify )
+            "description" ( .Site.Params.description | markdownify | plainify )
+            "thumbnailUrl" $logoImageURL
+            "license" ( $copyright )
+            "url" ( .Site.Params.canonicalBaseURL | default .Site.Params.BaseURL )
+        )
+        | jsonify (dict "indent" "  " "prefix" "      ") | safeJS
+      }}
+    </script>
+{{- end }}
+{{- $organization := .Site.Title }}
+{{- $description := "" }}
+{{- with .Description }}
+    {{ $description = . }}
+{{- else }}
+    {{if .IsPage}}
+        {{ $description = .Summary }}
+    {{- end }}
+{{- end }}
+{{- $description = $description | markdownify | plainify }}
+{{- $imageSet := slice }}
+{{- if .Params.images }}
+    {{- range .Params.images }}
+        {{- $imageSet = $imageSet | append (absURL .) }}
+    {{- end }}
+{{- else}}
+    {{- $imageSet = $imageSet | append ( .Site.Params.logo | absURL ) }}
+{{- end }}
+{{- $mainEntityOfPage := (dict "@type" "WebPage" "@id" (partial "claris/_functions/canonical-url" .) ) }}
+{{- if (and .Type (eq .Type "vitae") ) }}
+    {{- $mainEntityOfPage = (dict "@type" "Person" "name" $author) }}
+{{- end }}
+    <script type="application/ld+json">
+        {{
+            (
+                dict "@context" "http://schema.org"
+                "@type" "BlogPosting"
+                "articleSection" ( humanize .Section )
+                "name" ( .Title | markdownify | plainify )
+                "headline" ( .Title | markdownify | plainify )
+                "alternativeHeadline" ( .Params.lead | markdownify | plainify )
+                "description" ( $description )
+                "inLanguage" ( .Site.LanguageCode | default "en-us" )
+                "isFamilyFriendly" "true"
+                "mainEntityOfPage" $mainEntityOfPage
+                "author" (dict
+                    "@type" "Person"
+                    "name" ( $author )
+                    "url" ( .Site.Params.canonicalBaseURL )
+                    "logo" (dict
+                        "@type" "ImageObject"
+                        "url" $logoImageURL
+                        "width" "32"
+                        "height" "32"
+                    )
+                )
+                "creator" (dict
+                    "@type" "Person"
+                    "name" $author
+                )
+                "accountablePerson" (dict
+                    "@type" "Person"
+                    "name" $author
+                )
+                "copyrightHolder" (dict
+                    "@type" "Person"
+                    "name" $author
+                )
+                "copyrightYear" ( .Date.Format "2006" )
+                "dateCreated" ( .Date.Format "2006-01-02T15:04:05.00Z" | safeHTML )
+                "datePublished" ( .PublishDate.Format "2006-01-02T15:04:05.00Z" | safeHTML )
+                "dateModified" ( .Lastmod.Format "2006-01-02T15:04:05.00Z" | safeHTML )
+                "publisher" (dict
+                    "@type" "Person"
+                    "name" ( $author )
+                    "url" ( .Site.Params.canonicalBaseURL )
+                    "logo" (dict
+                        "@type" "ImageObject"
+                        "url" $logoImageURL
+                        "width" "32"
+                        "height" "32"
+                    )
+                )
+                "image" $imageSet
+                "url" .Site.Params.canonicalBaseURL
+                "wordCount" .WordCount
+                "genre" ( .Params.tags | default slice )
+                "keywords" ( ( default .Params.tags .Params.keywords ) | default slice )
+            )
+        | jsonify (dict "indent" "  " "prefix" "      ") | safeJS
+        }}
+    </script>

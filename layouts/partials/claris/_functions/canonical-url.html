@@ -1,0 +1,21 @@
+{{- $canonicalURL := false -}}
+{{- with . -}}
+  {{- $canonicalURL = .Permalink -}}
+  {{- $s := site.Params -}}
+  {{- if $s.canonicalBaseURL -}}
+    {{- if ne $s.canonicalBaseURL $s.BaseURL -}}
+      {{- $canonicalURL = (printf "%s%s" $s.canonicalBaseURL .RelPermalink)}}
+    {{- end -}}
+  {{- end -}}
+  {{- with .Params.canonicalURL -}}
+    {{- $canonicalURL = .Params.canonicalURL -}}
+  {{- end -}}
+  {{- $canonicalURL = (printf "%s" $canonicalURL | safeURL) -}}
+  {{- if not (hasPrefix $canonicalURL "http") -}}
+    {{- warnf "%s: partial '_functions/canonical-url': invalid canonicalURL='%s' based on:\nsite.Params.canonicalBaseURL:\n    %s\n.Params.canonicalURL:\n    %s\nsite.BaseURL:\n    %s\n.Permalink:\n    %s\n.RelPermalink:\n    %s"
+    .Page $canonicalURL site.Params.canonicalBaseURL .Params.canonicalURL site.BaseURL .Permalink .RelPermalink }}
+    {{- errorf "%s: Fatal configuration error: canonicalURL does not start with 'http'. Please ensure configuration for the following values includes the scheme ('http' or 'https'): \nsite.Params.canonicalBaseURL:\n    %s\n.Params.canonicalURL:\n    %s\nsite.BaseURL:\n    %s"
+    .Page site.Params.canonicalBaseURL .Params.canonicalURL site.BaseURL }}
+  {{- end -}}
+{{- end -}}
+{{- return $canonicalURL -}}

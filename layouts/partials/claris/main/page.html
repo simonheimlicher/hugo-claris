@@ -1,0 +1,6 @@
+{{- $page := .Page }}
+{{- $template := "partials/claris/main/page" }}
+
+{{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
+{{- partial "claris/_components/content" . }}
+{{ partial "html-comment" (printf "[%s]:   END" $template) }}
