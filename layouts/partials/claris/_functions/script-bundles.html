@@ -96,10 +96,10 @@
       {{- end }}
     {{- end }}
 
-    {{- warnf "%s[%s]: Contents of scriptResourceList for resourceID %s:" $page $template $resourceID }}
+    {{/* {{- warnf "%s[%s]: Contents of scriptResourceList for resourceID %s:" $page $template $resourceID }}
     {{- range $idx, $resource := $scriptResourceList }}
       {{- warnf "%s[%s]: %d --> %v .Name:%v .MediaType:%v" $page $template $idx $resource $resource.Name $resource.MediaType }}
-    {{- end }}
+    {{- end }} */}}
 
     {{/* {{- $bundle = (slice $hugoParams $bundle) | resources.Concat $bundleFile }}
     {{- if (and $supportIE11 $params.supportIE11 ) }}

@@ -8,8 +8,12 @@
   {{ $img = resources.GetRemote (absURL $resourceSpec) }}
 {{- else }}
   {{/* {{- $img = $page.Resources.GetMatch (printf "%s*" $resourceSpec) -}} */}}
+  {{/* {{- warnf "%s[%s]: Looking for image resource %v in page bundle"
+      $page $template $resourceSpec }} */}}
   {{- $img = partial "claris/_functions/resources" $imageResourceArgs -}}
   {{- if not $img }}
+    {{- warnf "%s[%s]: No resource found in page bundle; looking for resource matching %v in site resources"
+        $page $template $resourceSpec }}
     {{- $img = resources.GetMatch (printf "%s*" $resourceSpec) -}}
   {{- end }}
   {{- /* FIXME: Don't look for images in directory of page }}

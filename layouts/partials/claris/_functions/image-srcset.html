@@ -9,7 +9,13 @@
 {{- $processingHint := default false .Hint -}}
 {{- $includeOriginalImage := default false ($page.Param "responsiveImageIncludeOriginal") }}
 
-{{- with $img := partial "claris/_functions/image-resource" $imageResourceArgs }}
+{{/* {{- warnf "%s[%s]: resourceSpec:%v[%T]" $page $template $resourceSpec $resourceSpec }} */}}
+{{- $img := $resourceSpec }}
+{{- if not (strings.Contains (printf "%T" $img) "resources.resourceAdapter") }}
+  {{- $img = partial "claris/_functions/image-resource" $imageResourceArgs }}
+{{- end }}
+
+{{- with $img }}
   {{ $maxWidth := $img.Width }}
   {{- $placeholderSvg := printf "<svg xmlns=%q viewBox=%q></svg>" "http://www.w3.org/2000/svg" (printf "0 0 %d %d" $img.Width $img.Height) | safeHTML }}
   {{- $placeholderInlineImg := printf "data:image/svg+xml,%s" $placeholderSvg | replaceRE " " "%20" | replaceRE "<" "%3c" | replaceRE ">" "%3e" | replaceRE "\"" "'" | safeURL }}
