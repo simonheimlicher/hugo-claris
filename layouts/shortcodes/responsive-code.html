@@ -10,7 +10,7 @@
 
      { { < /codecaption > } } -->
 
-<figure class="shortcode_responsive-figure shortcode_responsive-figure_code">
+<figure class="shortcode_responsive-figure shortcode_responsive-figure_code caption">
   {{ highlight (trim .Inner "\n\r") (.Get "lang") "linenos=true" }}
   <figcaption>
     <span>{{ .Get "title" | $.Page.RenderString }}</span>

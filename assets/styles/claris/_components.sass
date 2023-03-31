@@ -1003,24 +1003,28 @@ html[data-mode="dim"]
       @include note-dim-colors
 
 .shortcode_responsive-figure
-  @at-root figure#{&}
-    margin: calc(#{$screenViewBodyPadding}) auto
-    padding: calc(#{$screenViewBodyPadding}) calc(#{$screenViewBodyPadding})
-    border-radius: 0.125rem
-  & > *
-    margin: 0
+  display: flex;
+  flex-direction: column
+  flex-wrap: nowrap
+  align-content: center
+  justify-content: center
+  align-items: center
   &_img
+    margin: 0
+    padding: 0
     border-radius: 0.125rem
     // height: auto
     max-width: 100%
     max-height: 100%
-    padding: 0
   &.caption
     background: var(--figure-bg)
     padding: calc(#{$screenViewBodyPadding} / 1.5) calc(#{$screenViewBodyPadding} / 2)
     color: var(--text)
     font-family: var(--font)
-    // text-align: center
+    @at-root figure#{&}
+      margin: calc(#{$screenViewBodyPadding}) auto
+      padding: calc(#{$screenViewBodyPadding}) calc(#{$screenViewBodyPadding})
+      border-radius: 0.125rem
 
   &.background-light
     background: var(--bg-light)
