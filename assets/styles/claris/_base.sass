@@ -30,6 +30,7 @@ html:focus-within
 
 body
   font-family: var(--font)
+  font-weight: var(--font-weight)
   background: var(--choice-bg)
   // FIXME: Allow transition of background
   // background: transparent
@@ -100,7 +101,7 @@ a
 
 h1,h2,h3,h4,h5,h6
   font-family: inherit
-  font-weight: 400
+  font-weight: var(--font-weight-heading)
   // padding: 5px 0
   // margin: 15px 0
   padding: $heading-padding-top 0 calc(#{$heading-padding-top} * 0.25) 0
@@ -150,10 +151,10 @@ ul
   -moz-padding-start: 0
 
 em
-  font-weight: 400
+  font-weight: var(--font-weight)
 
 b, strong
-  font-weight: 600
+  font-weight: var(--font-weight-strong)
 
 hr
   border: none
@@ -188,12 +189,12 @@ td, th
 td,
 th
   padding: 0.5rem 1rem
-  font-weight: 400
+  font-weight: var(--font-weight)
   &:not(:first-child)
     padding-left: 1.5rem
 
 th
-  font-weight: 600
+  font-weight: var(--font-weight-strong)
 
 tbody
   padding: 0
@@ -282,7 +283,7 @@ blockquote
     margin: 0
     cite
       display: block
-      font-weight: 200
+      font-weight: var(--font-weight-light)
       opacity: 0.8
       font-style: italic
 
@@ -304,13 +305,10 @@ blockquote
 
       h2
         font-size: 150%
-        font-weight: 600
       h3
         font-size: 120%
-        font-weight: 600
       h4
         font-size: 100%
-        font-weight: 600
       h2, h3, h4, h5
         color: var(--text)
         margin: 0

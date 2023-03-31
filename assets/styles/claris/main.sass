@@ -18,9 +18,13 @@
 {{- $fontsSelfHosted := default false ($page.Param "fontsSelfHosted") }}
 {{- $customFonts := default false ($page.Param "customFonts") }}
 {{- if and $fontsSelfHosted (not $customFonts) -}}
-  {{- $themeFontPath := default "/fonts" ($page.Param "fontPath") }}
-$themeFontPath: '{{ $themeFontPath }}'
-@import 'fonts'
+{{- $fontFamilySans := default "Source Sans 3" ($page.Param "fontFamilySans") }}
+{{- $fontFamilySerif := default "Merriweather" ($page.Param "fontFamilySerif") }}
+{{- $fontFamilyMono := default "DM Mono" ($page.Param "fontFamilyMono") }}
+{{- $fontFamilies := (slice $fontFamilySans $fontFamilySerif $fontFamilyMono) }}
+{{- range $fontFamilies }}
+@import 'fonts/{{ urlize . }}'
+{{- end }}
 {{- end }}
 
 // Additional stylesheets

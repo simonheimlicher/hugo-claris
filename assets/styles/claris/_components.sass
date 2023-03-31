@@ -323,15 +323,12 @@
 
     h2
       font-size: 150%
-      font-weight: 600
 
     h3
       font-size: 120%
-      font-weight: 600
 
     h4
       font-size: 100%
-      font-weight: 600
 
     h2, h3, h4, h5
       margin: 0
@@ -354,13 +351,14 @@
   text-align: start
   // font-variant: small-caps
   text-transform: uppercase
-  font-weight: 600
+  font-weight: var(--font-weight-supertitle)
 
 .subtitle
   display: block
   font-size: 60%
   padding: 0.5rem 0
   text-align: end
+  font-weight: var(--font-weight-subtitle)
 
 .scrollable
   display: grid
@@ -410,7 +408,7 @@
         z-index: 5
         cursor: pointer
         width: 5rem
-        font-weight: 600
+        font-weight: var(--font-weight-strong)
       &:before
         content: ""
         position: absolute
@@ -985,13 +983,10 @@ $note-bg-blue-dim: hsl(210, 100%, 10%)
 
   h2
     font-size: 150%
-    font-weight: 600
   h3
     font-size: 120%
-    font-weight: 600
   h4
     font-size: 100%
-    font-weight: 600
   h2, h3, h4, h5
     color: var(--text)
     margin: 0
