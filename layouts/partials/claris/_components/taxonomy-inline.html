@@ -1,0 +1,20 @@
+{{- $page := . }}
+{{- $taxonomy := default "tags" .Taxonomy }}
+{{- $relativeDates := false }}
+{{- $showTags := true }}
+{{- if reflect.IsMap . }}
+  {{- with .Page }}
+    {{- $page = . }}
+  {{- end }}
+  {{- $relativeDates = default $relativeDates .RelativeDates }}
+  {{- $showTags = default $showTags .ShowTags }}
+{{- end }}
+{{- with $page -}}<!-- Restore "." to refer to page context from which the partial was called -->
+{{ if .Param $taxonomy }}
+  {{ range $index, $value := (.GetTerms $taxonomy) }}
+    <a href="{{ .RelPermalink }}" title="{{ . }}" title="{{ .LinkTitle }}" class="article_meta_tag button button_translucent">
+      {{- .LinkTitle -}}
+    </a>
+  {{ end }}
+{{ end }}
+{{ end }}

@@ -38,8 +38,9 @@
       (dict "relationship" "featured" "length" (len $featuredArticles))
       (dict "relationship" "recent" "length" (len $recentArticles)) ) }}
     {{- $numRelationshipTypes := (len (where $numAvailableArticles "length" "gt" 0) ) }}
-    {{- warnf "%s[%s]: numAvailableArticles:%v numRelationshipTypes:%d [related:%d featured:%d recent:%d]"
-        $page $template $numAvailableArticles $numRelationshipTypes $relatedArticles $featuredArticles $recentArticles }}
+
+    {{/* {{- warnf "%s[%s]: numAvailableArticles:%v numRelationshipTypes:%d [related:%d featured:%d recent:%d]"
+        $page $template $numAvailableArticles $numRelationshipTypes $relatedArticles $featuredArticles $recentArticles }} */}}
 
     {{- if (gt $numRelationshipTypes 0) }}
     <aside class="sidebar">
