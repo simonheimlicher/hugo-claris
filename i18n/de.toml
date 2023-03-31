@@ -2,7 +2,7 @@
 # Theme: claris
 #
 [read_more]
-other = "Mehr lesen"
+other = "Weiterlesen"
 
 [read_on]
 other = "Weiterlesen"
@@ -16,38 +16,47 @@ other = "Alle Rechte vorbehalten"
 [share_on]
 other = "Teilen"
 
-[article]
-other = "Artikel"
-
 [articles]
+one = "Artikel"
 other = "Artikel"
 
 [featured_articles]
+one = "Ausgewählter Artikel"
 other = "Ausgewählte Artikel"
 
 [recent_articles]
+one = "Neuer Artikel"
 other = "Neue Artikel"
 
 [related_articles]
+one = "Verwandter Artikel"
 other = "Verwandte Artikel"
 
 [articles_in_taxonomy]
+one = "Artikel in"
 other = "Artikel in"
 
 [articles_with_taxonomy]
+one = "Artikel mit"
 other = "Artikel mit"
 
+[category_list_title]
+other = "Kategorien"
+
+[tag_list_title]
+other = "Tags"
+
 [404_title]
-other = "Verirrt"
+other = "Verirrt?"
 
 [could_not_find]
-other = "Wir konnten die Seite nicht finden"
+other = "Keine Seite unter dieser Adresse gefunden"
 
 [go_back]
 other = "Zurück"
 
 [translations]
-other = "Übersetzungen"
+other = "Sprache"
 
 [categories]
 other = "Kategorien"
@@ -88,75 +97,46 @@ other = "Licht aus"
 [read_more_about]
 other = "Mehr dazu lesen"
 
+[meta_date_updated]
+other = "aktualisiert"
+
+[meta_date_published]
+other = "veröffentlicht"
+
+[meta_date_first_published]
+other = "erstmals veröffentlicht"
+
+[meta_date_lastmonth]
+other = "letzten Monat"
+
+
+[meta_date_month]
+other = "Monat"
+
+[meta_date_months]
+other = "Monate"
+
+[meta_date_years]
+one = "Jahr"
+other = "Jahre"
+
+[meta_date_ago_prefix]
+other = "vor"
+
+[note_title_default]
+other = "Hinweis"
+
+[note_title_important]
+other = "Wichtiger Hinweis"
+
+[note_title_tip]
+other = "Tipp"
+
+[note_title_update]
+other = "Update"
+
+[anchor_link_title]
+other = "Link zu diesem Abschnitt kopieren"
+
 [private-data-requires-javascript]
-other = "Bitte JavaScript aktivieren"
-
-#
-# Additional translations for theme claris-vitae
-#
-[skill]
-one = "Skill"
-other = "Skills"
-
-[period-until-present]
-other = "Heute"
-
-[period-duration-years]
-one = "1 Jahr"
-other = "{{ .Count }} Jahre"
-
-[period-duration-months]
-one = "1 Monat"
-other = "{{ .Count }} Monate"
-
-[period-duration-days]
-one = "1 Tag"
-other = "{{ .Count }} Tag"
-
-[grade-point-average]
-other = "Notenschnitt"
-
-[section-contact]
-other = "Kontakt"
-
-[section-connect]
-other = "Vernetzen"
-
-[section-experience]
-other = "Erfahrung"
-
-[section-education]
-other = "Ausbildung"
-
-[section-language-skills]
-other = "Sprachkenntnisse"
-
-[screen-view]
-other = "Webseitenansicht"
-
-[print-view]
-other = "Druckansicht"
-
-[share-link-page]
-other = "Diese Seite teilen"
-
-[selflink-application]
-other = "Bewerbung auf Ihrem Smartphone anschauen"
-
-[share-link-resume]
-other = "Lebenslauf auf Ihrem Smartphone anschauen"
-
-[application-for-position]
-other = "Bewerbung für die Position"
-
-[connect-on-linkedin]
-other = "Auf LinkedIn vernetzen"
-
-[section-patents]
-other = "Patente"
-
-[section-publications]
-other = "Publikationen"
-
-[publication_link_further-info]
-other = "Weitere Infos zu"
+other = "Persönlich: Zugriff erfordert JavaScript"

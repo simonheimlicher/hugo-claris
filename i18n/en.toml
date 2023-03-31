@@ -41,22 +41,22 @@ one = "article with"
 other = "articles with"
 
 [category_list_title]
-other = "articles by category"
+other = "categories"
 
 [tag_list_title]
-other = "articles by tag"
+other = "tags"
 
 [404_title]
-other = "Lost"
+other = "Lost?"
 
 [could_not_find]
-other = "We couldn't find the page you're looking for"
+other = "No page found at this address"
 
 [go_back]
 other = "Go back"
 
 [translations]
-other = "Translations"
+other = "Language"
 
 [categories]
 other = "Categories"
@@ -95,10 +95,10 @@ other = "Lights on"
 other = "Lights out"
 
 [read_more_about]
-other = "Read more about"
+other = "read more about"
 
 [meta_date_updated]
-other = "Updated"
+other = "updated"
 
 [meta_date_published]
 other = "published"
@@ -116,13 +116,11 @@ other = "month"
 [meta_date_months]
 other = "months"
 
-[meta_date_year]
-other = "year"
-
 [meta_date_years]
+one = "year"
 other = "years"
 
-[meta_date_ago]
+[meta_date_ago_suffix]
 other = "ago"
 
 [note_title_default]
@@ -141,75 +139,4 @@ other = "update"
 other = "copy direct link to section"
 
 [private-data-requires-javascript]
-other = "Please enable JavaScript"
-
-#
-# Additional translations for theme vitae
-#
-
-[skill]
-one = "Skill"
-other = "Skills"
-
-[period-until-present]
-other = "Present"
-
-[period-duration-years]
-one = "1 year"
-other = "{{ .Count }} years"
-
-[period-duration-months]
-one = "1 month"
-other = "{{ .Count }} months"
-
-[period-duration-days]
-one = "1 day"
-other = "{{ .Count }} days"
-
-[grade-point-average]
-other = "GPA"
-
-[section-experience]
-other = "Experience"
-
-[section-education]
-other = "Education"
-
-[section-language-skills]
-other = "Languages"
-
-[section-contact]
-other = "Contact"
-
-[section-connect]
-other = "Connect"
-
-[screen-view]
-other = "Website view"
-
-[print-view]
-other = "Print view"
-
-[share-link-page]
-other = "Share this page"
-
-[selflink-application]
-other = "View this application on your phone"
-
-[share-link-resume]
-other = "View this resume on your phone"
-
-[application-for-position]
-other = "Application for position"
-
-[connect-on-linkedin]
-other = "Connect on LinkedIn"
-
-[section-patents]
-other = "Patents"
-
-[section-publications]
-other = "Publications"
-
-[publication_link_further-info]
-other = "Futher info on"
+other = "Private: access requires JavaScript"

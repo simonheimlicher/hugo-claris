@@ -547,17 +547,17 @@
       aspect-ratio: 1.618033988749894 // golden ratio
     @media screen and (min-width: $screenViewBreakpointWidthMobile)
       border-radius: 0.5rem
-    @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+    @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
       img
         aspect-ratio: 1
   &_footer
     // padding-bottom: ($screenViewBodyPadding / 1.5)
-    &_read-on
-      display: none
-      // margin: auto 0 0 auto
-      padding: $screenViewBodyPadding $screenViewBodyPadding ($screenViewBodyPadding / 1.5) $screenViewBodyPadding
+    &_read-on, &_page-count
+      padding: 0 $screenViewBodyPadding ($screenViewBodyPadding / 1.5) $screenViewBodyPadding
       margin: 0
       width: 100%
+    &_read-on
+      display: none
       .read-on
         &::before
           content: "↳  "
