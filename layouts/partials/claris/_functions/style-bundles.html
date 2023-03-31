@@ -49,8 +49,8 @@
 {{- range $resourceID, $params := $styleResources }}
   {{- $mediaType := default "all" $params.media }}
   {{- if (in $mediaTypeList $mediaType) }}
-    {{/* {{- warnf "%s[%s]: Generating style bundle for MediaType=%s in MediaTypeList=%v"
-    $page $template $mediaType $mediaTypeList }} */}}
+    {{/* {{- warnf "%s[%s]: Generating style bundle with contentTypeList=%s contentTypeListID=%s for MediaType=%s in MediaTypeList=%v"
+    $page $template $contentTypeList $contentTypeListID $mediaType $mediaTypeList }} */}}
     <!-- Parameters to pass to the hugoParamsFile and other top-level style files
       that are executed as templates -->
     {{- $tplParams := (dict "Page" $page "ContentType" $contentTypeListID "MediaType" $mediaType) }}
@@ -107,9 +107,12 @@
       {{- end -}}
     {{- end }}
 
-    {{/* {{- warnf "%s[%s]: Contents of CSSResourceList:" $page $template }}
-    {{- range $idx, $resource := $CSSResourceList }}
-      {{- warnf "%s[%s]: %d --> %v .Name:%v .MediaType:%v" $page $template $idx $resource $resource.Name $resource.MediaType }}
+    {{/* {{- if (gt (len $contentTypeList) 1) }}
+      {{- warnf "%s[%s]: Multiple types=%v ID=%v resourceID=%s CSSResourceList: "
+          $page $template $contentTypeList $contentTypeListID $resourceID }}
+      {{- range $idx, $resource := $CSSResourceList }}
+        {{- warnf "%s[%s]: %d --> %v .Name:%v .MediaType:%v" $page $template $idx $resource $resource.Name $resource.MediaType }}
+      {{- end }}
     {{- end }} */}}
 
     {{- $concatResource := "" }}

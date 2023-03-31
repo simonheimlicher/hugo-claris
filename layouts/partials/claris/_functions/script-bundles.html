@@ -25,11 +25,13 @@
   {{- $legacyTargetVersion = "es5" }}
 {{- end }}
 
+  <!-- Note on source maps. Only "inline" seems to work but let's keep "external" for prod -->
 {{- $jsBuildOptionsBase := (dict
     "target" $targetVersion
-    "sourceMap" "inline"
+    "sourceMap" (cond $envProd "external" "inline")
     "minify" $minifyBundle
-    ) }}
+  ) }}
+
 
 {{- $scriptResources := (dict
   "polyfills" (dict
