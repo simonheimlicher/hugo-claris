@@ -12,7 +12,7 @@
 {{- end }}
 
 {{- with .Page }}
-  {{- $thumbnail := default .Params.featureImage }}
+  {{- $thumbnail := default .Params.featureImage .Params.thumbnail }}
   {{- $thumbnailResource := false }}
   {{- if $thumbnail }}
     {{- $thumbnailResource = partial "claris/_functions/image-resource" (dict
@@ -29,7 +29,9 @@
       {{/* {{- warnf "%s[%s]: Rendering excerpt of page with thumbnail of the most recent page %v in .Pages:%v"
           $page $template . $pages }} */}}
         {{- $thumbnail = default .Params.featureImage .Params.thumbnail }}
-        {{- $thumbnailResource = partial "claris/_functions/image-resource" (dict "Page" . "Resource" $thumbnail "Size" $thumbnailSizeSpec) }}
+        {{- if $thumbnail }}
+          {{- $thumbnailResource = partial "claris/_functions/image-resource" (dict "Page" . "Resource" $thumbnail "Size" $thumbnailSizeSpec) }}
+        {{- end }}
       {{- end }}
     {{- end }}
   {{- end }}
