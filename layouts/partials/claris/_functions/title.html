@@ -9,9 +9,10 @@
   {{- partial "html-comment" (printf "[%s]: .Kind:%s .Singular:%s .Plural:%s .Section:%s .Title:%s" $template .Kind .Data.Singular .Data.Plural .Section .Title) }}
   {{- $title = default .Data.Singular $title }}
   {{- $titlePrefix := T "articles_in_taxonomy" }}
-  {{ if in (slice "tag") .Data.Singular}}
+  {{ if in (slice "tag") .Data.Singular }}
     {{ $titlePrefix = T "articles_with_taxonomy" }}
   {{- end }}
   {{- $title = printf "%s %s %s" (humanize $titlePrefix) .Data.Singular ($page.RenderString (printf "*%s*" .Title) ) | safeHTML }}
 {{- end }}
+{{/* {{- warnf "%s[%s]: .Kind=%s .Data.Singular=%s: title=%v" $page $template .Kind .Data.Singular $title }} */}}
 {{- return $title }}

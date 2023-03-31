@@ -96,21 +96,13 @@
       {{- end }}
     {{- end }}
 
-    {{/* {{- warnf "%s[%s]: Contents of scriptResourceList for resourceID %s:" $page $template $resourceID }}
-    {{- range $idx, $resource := $scriptResourceList }}
-      {{- warnf "%s[%s]: %d --> %v .Name:%v .MediaType:%v" $page $template $idx $resource $resource.Name $resource.MediaType }}
-    {{- end }} */}}
-
-    {{/* {{- $bundle = (slice $hugoParams $bundle) | resources.Concat $bundleFile }}
-    {{- if (and $supportIE11 $params.supportIE11 ) }}
-      {{- $bundle = $bundle | js.Build (dict "target" $targetVersion "minify" false) -}}
-      {{- $bundle = $bundle | babel -}}
-      {{- $bundle = $bundle | js.Build (dict "target" $params.target "minify" $minifyBundle) -}}
-    {{- else }}
-      {{- $bundle = $bundle | js.Build (dict "target" $params.target "minify" $minifyBundle) -}}
+    {{/* {{- if (gt (len $contentTypeList) 1) }}
+      {{- warnf "%s[%s]: Multiple types=%v ID=%v resourceID=%s scriptResourceList: "
+          $page $template $contentTypeList $contentTypeListID $resourceID }}
+      {{- range $idx, $resource := $scriptResourceList }}
+        {{- warnf "%s[%s]: %d --> %v .Name:%v .MediaType:%v" $page $template $idx $resource $resource.Name $resource.MediaType }}
       {{- end }}
-    {{- $bundle = $bundle | resources.Fingerprint $fingerprintOptions -}}
-    {{- $scriptBundles = merge $scriptBundles (dict $resourceID $bundle) }} */}}
+    {{- end }} */}}
 
     {{- $concatResource := "" }}
     {{- $bundle := "" }}

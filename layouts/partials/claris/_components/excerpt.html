@@ -4,7 +4,7 @@
 {{- $showTags := default true .ShowTags }}
 {{- $thumbnailSizeSpec := "256x256 Smart" }}
 {{- $headerPartial := default "" .HeaderPartial }}
-{{- $itemType := default "pages" .ItemType }}
+{{- $itemType := default "page" .ItemType }}
 {{- $headingLevel := default 3 .HeadingLevel }}
 
 {{- if (eq $itemType "article") }}
@@ -83,20 +83,19 @@
                           {{- . -}}
                         </p>
                       {{- end }}
-                      {{/* {{- $pageCount := len .Pages }}
-                      {{- if (gt $pageCount 0) }} */}}
-                      {{- if (in .Kind (slice "taxonomy" "terms") ) }}
-                        {{- $pageCount := len .Pages }}
-                        <p class="excerpt_page-count">
-                          {{ $pageCount }} {{ T "articles" $pageCount }}
-                        </p>
-                      {{- end }}
                       </div>
                     </div>
                     <div class="excerpt_footer">
+                      {{- $pageCount := len .Pages }}
+                      {{- if (gt $pageCount 0) }}
+                        <p class="excerpt_footer_page-count">
+                          {{ $pageCount }} {{ T "articles" $pageCount }}
+                        </p>
+                      {{- else }}
                       <div class="excerpt_footer_read-on">
                         <span class="read-on">{{- T "read_on" }}</span>
                       </div>
+                      {{- end }}
                     </div>
                   {{- if $headerPartial }}
                   </a>

@@ -1,4 +1,14 @@
-  {{- partialCached "claris/_hooks/body-end/icons" . }}
-  {{- partialCached "claris/_hooks/body-end/scripts" . }}
-  {{- partialCached "claris/_hooks/body-end/math" . }}
-  {{- partialCached "claris/_hooks/body-end/google-analytics" . }}
+{{- $page := .Page }}
+{{- $template := "claris/_hoos/body-end/scripts" }}
+{{- $scriptVariant := (dict
+  "OnlyMediaType" ($page.Param "onlyMediaType")
+  "ContentTypeList" (partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) .Type)
+) }}
+
+{{- with $assets := partialCached "claris/_functions/asset-bundles" . $scriptVariant -}}
+  {{- partialCached "claris/_hooks/body-end/scripts" (dict "Assets" .) $scriptVariant }}
+{{- end }}
+
+{{- partialCached "claris/_hooks/body-end/math" . }}
+{{- partialCached "claris/_hooks/body-end/google-analytics" . }}
+{{- partialCached "claris/_hooks/body-end/icons" . }}

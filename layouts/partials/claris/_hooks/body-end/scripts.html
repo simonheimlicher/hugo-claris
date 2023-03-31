@@ -1,4 +1,6 @@
-{{- with $assets := partial "claris/_functions/asset-bundles" . -}}
+{{- $page := .Page }}
+{{- $template := "claris/_hoos/body-end/scripts" }}
+{{- with .Assets -}}
 <!-- Include legacy JS -->
   {{- with .Scripts.polyfills }}
     <script nomodule src="{{ .Permalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>

@@ -17,9 +17,10 @@ Once this is set up, you can call this function in the context of a page:
 {{- $page := .Page }}
 {{- $template := "claris/_functions/alternative-type" }}
 {{- $alternativeType := false }}
+{{- $defaultType := "claris" }}
 {{- $pageType := $page.Type }}
-{{- $resourceGlob := (printf "/styles/%s/main.*" .Type) }}
-{{- if (ne $pageType "claris") }}
+{{- $resourceGlob := (printf "/styles/%s/main.*" $pageType) }}
+{{- if (ne $pageType $defaultType) }}
   {{- with (resources.GetMatch $resourceGlob ) }}
     {{/* {{- warnf "%s[%s]: Returning '%s' as alternative content type: Got resource '%s' matching '%s'"
         $page $template $pageType . $resourceGlob }} */}}
@@ -27,6 +28,15 @@ Once this is set up, you can call this function in the context of a page:
   {{/* {{- else }}
     {{- warnf "%s[%s]: Not considering '%s' as an alternative content type: No resource matching '%s'"
         $page $template $pageType $resourceGlob }} */}}
+  {{- end }}
+{{- end }}
+{{- if reflect.IsMap . }}
+  {{- with .All }}
+    {{- with $alternativeType }}
+      {{- $alternativeType = uniq (slice $defaultType .) }}
+    {{- else }}
+      {{- $alternativeType = (slice $defaultType) }}
+    {{- end }}
   {{- end }}
 {{- end }}
 {{- return $alternativeType }}

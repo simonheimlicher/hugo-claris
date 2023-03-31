@@ -2,10 +2,7 @@
 {{- $template := "claris/_functions/asset-bundles" }}
 {{- $assets := dict }}
 
-{{- $contentTypeList := slice "claris" }}
-{{- with partial "claris/_functions/alternative-type" . }}
-  {{- $contentTypeList = append (slice .) $contentTypeList }}
-{{- end -}}
+{{- $contentTypeList := partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) .Type }}
 
 {{- $onlyMediaType := default "all" ($page.Param "onlyMediaType") }}
 {{- $mediaTypeList := (slice "all" "screen" "print") }}
@@ -20,7 +17,7 @@
 {{- $supportIE11 := default false (and $envProd .Site.Params.supportIE11) }}
 {{- $minifyBundles := $envProd }}
 
-{{/* {{- warnf "%s[%s]: RelPermalink=%s.Type=%s .Layout=%s $contentTypeList=%s $mediaTypeList=%s" .Page $template .Page.RelPermalink .Type .Layout $contentTypeList $mediaTypeList -}} */}}
+{{/* {{- warnf "%s[%s]: RelPermalink=%s .Type=%s .Layout=%s $contentTypeList=%s $mediaTypeList=%s" .Page $template .Page.RelPermalink .Type .Layout $contentTypeList $mediaTypeList -}} */}}
 
 {{- $bundleParams := (dict
     "MediaTypeList" $mediaTypeList

@@ -131,6 +131,6 @@
         {{- partialCached "claris/_components/top" . }}
       {{- end }}
     </main>
-    {{ partialCached "claris/footer/index" . .IsHome }}
+    {{ partialCached "claris/footer/index" . .Kind .Type }}
   {{ partial "html-comment" (printf "BASEOF [%s]: END   define body" $template) }}
 {{ end -}}
