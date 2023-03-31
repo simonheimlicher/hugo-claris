@@ -57,13 +57,12 @@
 {{- $imgInlineStyle := delimit $imgInlineStyleSlice "; " -}}
 {{- /* printf "<span class='hugo_debug'>style='%s'</span>" $imgInlineStyle | safeHTML */ -}}
 {{- $imgInlineStyle_attr := "" -}}
-{{- with $imgPosition }}
-  {{ $imgInlineStyle_attr = (printf " style=%q" (printf "object-fit: cover; object-position: %s; font-family: 'object-fit: cover; object-position: %s;'; %s" $imgPosition $imgPosition $imgInlineStyle | safeCSS)) }}
-  {{- /* warnf "responsive-image: $imgPosition='%#v'" $imgPosition */ -}}
-  {{- /* warnf "responsive-image: $imgInlineStyle='%#v'" $imgInlineStyle */ -}}
-{{- end }}
+{{ $imgInlineStyle_attr = (printf " style=%q" (printf "object-fit: cover; object-position: %s; font-family: 'object-fit: cover; object-position: %s;'; %s"
+    $imgPosition $imgPosition $imgInlineStyle | safeCSS)) }}
+{{- /* warnf "responsive-image: $imgPosition='%#v'" $imgPosition */ -}}
+{{- /* warnf "responsive-image: $imgInlineStyle='%#v'" $imgInlineStyle */ -}}
 
-{{- with $page }}<!-- Restore "." to refer to page context fromw hich the partial was called -->
+{{- with $page }}<!-- Restore "." to refer to page context from which the partial was called -->
   {{- $pictureResources := slice }}
   {{- if reflect.IsSlice $resourceSpec }}
     {{- range $resourceSpec }}
@@ -112,7 +111,11 @@
       {{- if $lightbox -}}
         <a href='{{ $defaultSrcURL }}'>
       {{- end -}}
-          <picture>
+          <picture
+            {{- with $imgInlineStyle_attr -}}
+              {{ $imgInlineStyle_attr | safeHTMLAttr }}
+            {{- end -}}
+          >
           {{- range where $pictureResources "Media" "ne" $defaultMedia}}
             {{- $srcURL := .ImageResource.Img.RelPermalink }}
             {{- $imgWidth := default .ImageResource.Img.Width $imageResourceArgs.Width }}
@@ -151,7 +154,11 @@
       but doing this by adding the following attribute appears not to work: */ -}}
       {{- /* with $lightbox }} data-zoomable="{{ . | safeHTMLAttr }}"{{- end -}} */ -}}
     {{- end }}
-        <picture>
+        <picture
+          {{- with $imgInlineStyle_attr -}}
+            {{ $imgInlineStyle_attr | safeHTMLAttr }}
+          {{- end -}}
+        >
         {{- range where $pictureResources "Media" "ne" $defaultMedia}}
           {{- $srcURL := .ImageResource.Img.RelPermalink }}
           {{- $imgWidth := default .ImageResource.Img.Width $imageResourceArgs.Width }}
