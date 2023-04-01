@@ -139,4 +139,4 @@ other = "update"
 other = "copy direct link to section"
 
 [private-data-requires-javascript]
-other = "Private: access requires JavaScript"
+other = "Private data hidden (requires JavaScript)"

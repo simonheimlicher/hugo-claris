@@ -139,4 +139,4 @@ other = "Update"
 other = "Link zu diesem Abschnitt kopieren"
 
 [private-data-requires-javascript]
-other = "Persönlich: Zugriff erfordert JavaScript"
+other = "Persönlich Daten verborgen (erfordert JavaScript)"
