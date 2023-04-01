@@ -1,8 +1,21 @@
 {{- $res := dict }}
 {{- $page := .Page }}
-{{- $plain := default "john.doe+private@example.net" .Plain }}
+{{- $plain := .Plain }}
 {{- $oneTimePassword := default "" .OneTimePassword }}
+{{- $noScript := default (T "private-data-requires-javascript") .NoScript }}
 {{- $template := "claris/_functions/obfuscate-link" }}
+
+{{- $url := urls.Parse $plain }}
+{{- if (le (len $url.Scheme) 1) }}
+  {{- if (strings.FindRE `.+` $plain) }}
+    {{- $url = urls.Parse (printf "mailto:%s" $url) }}
+  {{- else }}
+    {{- errorf "%s[%s]: Invalid link: .Plain=%v $plain=%v $url=%v .Scheme=%v .Host=%v .RequestURI=%v" $page $template .Plain $plain $url $url.Scheme $url.Host $url.RequestURI }}
+  {{- end }}
+{{- end }}
+{{- $plain = printf "%s" $url }}
+{{/* {{- warnf "%s[%s]: .Plain=%v $plain=%v $url=%v .Scheme=%v .Host=%v .RequestURI=%v" $page $template .Plain $plain $url  $url.Scheme $url.Host $url.RequestURI }} */}}
+
 {{- $asciiToInt := (dict
   "+" 43
   "/" 47
@@ -337,7 +350,6 @@ Since we can only shuffle and iterate over slices, we work with slices -->
   {{/* {{- warnf "[%s]: otpChar:'%s' otpCharInt:%d encodedChar:'%s' encodedCharInt:%d encryptedCharInt:%d encryptedChar:'%s' decryptedCharInt:%d decryptedChar:'%s'"
       $template $otpChar $otpCharInt $encodedChar $encodedCharInt $encryptedCharInt $encryptedChar $decryptedCharInt $decryptedChar }} */}}
 {{- end }}
-{{- $noScript := T "private-data-requires-javascript" }}
 
 {{- $encrypted := delimit $encryptedSlice "" }}
 {{- $decrypted := delimit $decryptedSlice "" }}
