@@ -131,6 +131,11 @@
         {{- partialCached "claris/_components/top" . }}
       {{- end }}
     </main>
-    {{ partialCached "claris/footer/index" . .Kind .Type }}
+    {{- block "footer" . }}
+    {{- end }}
   {{ partial "html-comment" (printf "BASEOF [%s]: END   define body" $template) }}
 {{ end -}}
+
+{{- define "footer" }}
+{{ partialCached "claris/footer/index" . .Kind .Type }}
+{{- end }}

@@ -1,6 +1,6 @@
 {{- $page := .Page }}
 {{- $title := site.Title }}
-{{- $siteAuthor := site.Author.displayname }}
+{{- $siteAuthor := site.Author.name }}
 {{- $recentMaxYears := default 5 ($page.Param "recentMaxYears") }}
 {{- $footerPages := where site.RegularPages.ByWeight "Type" "in" .Site.Params.footerSection }}
 {{- /* $defaultFooterLogo := printf "%s%s" $iconsDir "apple-touch-icon.png" */ -}}
