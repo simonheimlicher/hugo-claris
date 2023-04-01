@@ -25,7 +25,7 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
 {{- end }}
 {{- $resourcePage := $page }}
 {{ if $debug }}{{ warnf "%s[%s]: Looking for resource matching '%s' [originalPage=%s]"
-    $page $template $pageBundleResourceGlob $originalPage.RelPermalink }}{{ end -}}
+    $page $template $pageBundleResourceGlob $originalPage }}{{ end -}}
 {{- with $page }}
   {{- $splitRes := path.Split $pageBundleResourceGlob }}
   {{- if $splitRes.Dir }}
@@ -33,45 +33,78 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
       {{- if $debug }}{{ warnf "%s[%s]: LEAF: Looking for resource in page bundle matching %s"
           $page $template $pageBundleResourceGlob }}{{ end -}}
     {{- else }}
-      {{- /* We are in a branch bundle. Hence, no resources will be available in any subfolders
-      Instead, we check if there is a headless bundle as a descendant of this branch bundle */ -}}
+      <!-- NOTE: We are in a branch bundle. Hence, only files at the top-level are available.
+      Given that we are here, this implies that the above call to
+        $splitRes := path.Split $pageBundleResourceGlob
+      returned a non-empty folder name as the first part of $pageBundleResourceGlob
+      Calling .CurrentSection.Resources.Match will return nothing as we are in a branch bundle
+
+      To find those resources, we check if there is a headless bundle as a descendant of this branch bundle.
+      If we are on a translated page, we will consider as a second attempt the headless page bundle
+      of the default language.
+
+      We proceed as follows:
+        1. We split $pageBundleResourceGlob into the root folder and the remainder
+        2. We look for the page that matches the root folder and then look for resources matching the remainder
+        3. If this fails, we iterate through all translations and if there is one without a language prefix,
+           we check if it has a matching child page
+      -->
 
       {{- $resPathParts := split $pageBundleResourceGlob "/" }}
       {{- $resPathRoot := (index (first 1 $resPathParts) 0) }}
       {{- $resPathRemains := delimit (last (sub (len $resPathParts) 1) $resPathParts) "/" }}
 
-      {{/*
-      {{- $currentSection := strings.TrimRight "/" $page.CurrentSection.RelPermalink }}
+      {{- $resPathRoot2 := (index (first 1 (split $pageBundleResourceGlob "/") ) 0) }}
+      {{- $resPathRemains2 := strings.TrimPrefix $resPathRoot2 $pageBundleResourceGlob }}
 
-      {{- $resourcePagePath := path.Join $currentSection $resPathRoot }}
-      {{- $resourcePagePath = printf "/%s" (strings.TrimLeft "/" (path.Join $currentSection $resPathRoot)) }}
+      {{- if (ne $resPathRoot $resPathRoot2) }}
+        {{- errorf "%s[%s]: BRANCH: split resource path %v into root=%v != root2=%v"
+          $page $template $pageBundleResourceGlob $resPathRoot $resPathRoot2 -}}
+      {{- end }}
+      {{- if (ne $resPathRoot $resPathRoot2) }}
+        {{- errorf "%s[%s]: BRANCH: split resource path %v into remain=%v != remain2=%v"
+          $page $template $pageBundleResourceGlob $resPathRemains $resPathRemains2 -}}
+      {{- end }}
+
       {{- if $debug }}
-        {{- if (or false (eq $currentSection "")) }}
-        {{- warnf "%s[%s]: resource page bundle at root '%s' contains: \nresources.Match *\n%s\nresources.Match ** / *:\n%s"
-          $page $template $resourcePagePath
-          (sort (resources.Match $resourcePagePath) "Name")
-          (sort (resources.Match (printf "%s/%s/%s" (strings.TrimRight "*" $resourcePagePath) "**" "*")) "Name") -}}
-        {{- end }}
+        {{- warnf "%s[%s]: BRANCH: split resource path %v into root=%v and remains=%v"
+          $page $template $pageBundleResourceGlob $resPathRoot $resPathRemains -}}
       {{- end }}
-      {{- if (or true $debug) }}{{ warnf "%s[%s]: BRANCH: calling site.GetPage '%s'"
-        $page $template $resourcePagePath }}{{ end -}}
-      {{- $resourcePage = site.GetPage $resourcePagePath }}
-      */}}
 
-      {{- $parent := "" }}
-      {{- with .Parent }}
-        {{- $parent = .RelPermalink }}
-      {{- end }}
       {{- with .GetPage $resPathRoot }}
         {{- $resourcePage = . }}
         {{- if $debug }}
-          {{- warnf "%s[%s]: Found resource page bundle at resPathRoot=%s: %s. CurrentSection=%s .Section=%s .Parent=%s"
-              $page $template $resPathRoot $resourcePage .CurrentSection.RelPermalink .Section $parent }}
+          {{- warnf "%s[%s]: Use resourcePage %v from current language '%v' with prefix='%v']"
+              $page $template $resourcePage .Language .Site.LanguagePrefix -}}
         {{- end }}
+
       {{- else }}
+
         {{- if $debug }}
-          {{- warnf "%s[%s]: Could not find resource page bundle at resPathRoot=%s. .CurrentSection=%s .Section=%s .Parent=%s"
-              $page $template $resPathRoot .CurrentSection.RelPermalink .Section $parent }}
+          {{- warnf "%s[%s]: .GetPage '%v' returned nothing. " $page $template $resPathRoot -}}
+        {{- end }}
+
+        {{- range .Translations }}
+          {{- $translatedPage := . }}
+          {{- with .GetPage $resPathRoot }}
+            {{- if (eq $translatedPage.Site.LanguagePrefix "") }}
+              {{- $resourcePage = . }}
+              {{- if $debug }}
+                {{- warnf "%s[%s]: Use resourcePage %v from default language '%v' with prefix='%v']"
+                    $page $template $resourcePage $translatedPage.Language $translatedPage.Site.LanguagePrefix -}}
+              {{- end }}
+            {{- else }}
+              {{- if $debug }}
+                {{- warnf "%s[%s]: Skip resourcePage %v from default language '%v' with prefix='%v']"
+                    $page $template $resourcePage $translatedPage.Language $translatedPage.Site.LanguagePrefix -}}
+              {{- end }}
+            {{- end }}
+          {{- else }}
+            {{- if $debug }}
+              {{- warnf "%s[%s]: .GetPage '%v' in translation '%v' with .LanguagePrefix='%v' returned nothing"
+                  $page $template $resPathRoot  $translatedPage.Language $translatedPage.Site.LanguagePrefix -}}
+            {{- end }}
+          {{- end }}
         {{- end }}
       {{- end }}
 
@@ -117,7 +150,7 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
     {{- if $page.Parent }}
       {{- $parentArgs := (merge $imageResourceArgs (dict "OriginalPage" $originalPage "Page" $page.Parent)) }}
       {{- if $debug }}{{ warnf "%s[%s]: Calling %s with parent=%s RelPermalink=%s with parentArgs=%s"
-          $page $template $template $page.Parent $page.Parent.RelPermalink $parentArgs }}{{ end -}}
+          $page $template $template $page.Parent $page.Parent $parentArgs }}{{ end -}}
       {{- $res = partial $template $parentArgs }}
       {{- with $res }}
         {{/* NOTICE: Returning the $res as a reference to the ResourceAdapter appears to work,
@@ -137,7 +170,7 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
   {{- end }}
 {{- end }}
 {{- with $res }}
-  {{- if $debug }}
+  {{- if (and false $debug) }}
     {{- warnf "%s[%s]: originalPage=%s Returning resource of type %s resource:\n'%s'"
         $page $template $originalPage $res.MediaType ($res | transform.Unmarshal) -}}
   {{- end }}
