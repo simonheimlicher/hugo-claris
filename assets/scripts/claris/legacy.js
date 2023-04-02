@@ -13,7 +13,7 @@ function initializeObjectFitImages() {
 }
 window.addEventListener("DOMContentLoaded", initializeObjectFitImages);
 
-import lazySizes from 'lazysizes';
+import 'lazysizes';
 import 'lazysizes/plugins/parent-fit/ls.parent-fit';
 
 // polyfills
