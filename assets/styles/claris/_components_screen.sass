@@ -99,7 +99,7 @@
       &::after
         content: none
   &_active
-    z-index: calc(#{$main-z-index} + 1)
+    z-index: ($main-z-index + 1)
     color: var(--theme-text-hover)
     &::after
       z-index: -1
@@ -195,7 +195,7 @@
   &_item, &_follow
     @media (any-hover: hover)
       &:hover
-        z-index: calc(#{$main-z-index} + 1)
+        z-index: ($main-z-index + 1)
         color: var(--theme-text-hover)
         // Cut off top-right corner
         &::after
@@ -382,7 +382,7 @@
     .icon
       margin: 0
     img
-      height: calc(#{$nav-height-narrow} - 0.5rem)
+      height: ($nav-height-narrow - 0.5rem)
   &_center
     display: none
     @media screen and (min-width: $screenViewBreakpointWidthMobile)
@@ -479,9 +479,9 @@
     &_figure
       margin: 0
       padding: 0
-      z-index: calc(#{$main-z-index} + 1)
+      z-index: ($main-z-index + 1)
       // FIXME: Let's not push the image under the navigation bar
-      // margin-top: calc(-1 * #{$nav-height})
+      // margin-top: (-1 * #{$nav-height})
     &_img
       margin: 0
       padding: 0
@@ -489,11 +489,13 @@
       max-height: unset
       width: 100%
       height: auto
+      max-height: 50vh
       max-height: calc(min(50vh, 70vw))
       object-fit: cover
       object-position: center center
       border-radius: 0
       @media screen and (min-height: $screenViewBreakpointHeightTall)
+        max-height: 40vh
         max-height: calc(min(40vh, 50vw))
 
   &_background
@@ -515,16 +517,18 @@
         display: flex
         flex-direction: column
         justify-content: flex-end
+        min-height: 100vh
         min-height: calc(100vh - #{$nav-height} - 3 * #{$screenViewBodyPadding})
         min-height: calc(100lvh - #{$nav-height} - 3 * #{$screenViewBodyPadding})
+        margin-bottom: (#{$nav-height} - 100vh)
         margin-bottom: calc(#{$nav-height} - 100vh)
         margin-bottom: calc(#{$nav-height} - 100lvh)
         padding-bottom: calc(#{$screenViewBodyPadding})
-        z-index: calc(#{$main-z-index} + 2)
+        z-index: ($main-z-index + 2)
       & ~ .footer
         position: sticky
         bottom: 0
-        padding-top: calc(#{$screenViewBodyPadding})
+        padding-top: ($screenViewBodyPadding)
         background: var(--bg-dark)
         color: var(--text-dark)
         h1, h2, h3, a
@@ -537,8 +541,8 @@
       bottom: 0
       margin: 0
       padding: 0
-      z-index: calc(#{$main-z-index} + 1)
-      margin-top: calc(-1 * #{$nav-height})
+      z-index: ($main-z-index + 1)
+      margin-top: (-1 * $nav-height)
     &_img
       margin: 0
       padding: 0
@@ -585,7 +589,7 @@
 @supports (-webkit-touch-callout: none)
   .footer
     position: relative
-    z-index: calc(#{$main-z-index} + 1)
+    z-index: ($main-z-index + 1)
   .hero-image_background
     &_main &_figure
       display: none
@@ -593,12 +597,12 @@
   .hero-image_background
     &_figure
       display: block
-      z-index: calc(#{$main-z-index} - 1)
+      z-index: ($main-z-index - 1)
       position: fixed
       top: 0
     &_img
       height: 100vh
-      height: calc(100lvh + 100px)
+      height: calc(100lvh)
     &_main
       background: transparent
       height: auto
@@ -606,7 +610,7 @@
         margin: 0
       & ~ .footer
         position: relative
-        z-index: calc(#{$main-z-index} + 1)
+        z-index: ($main-z-index + 1)
 
 @media screen and (max-width: #{$screenViewBreakpointWidthMobile - 0.01})
   html.jsopen
@@ -635,7 +639,7 @@
       &_parent
         width: 100%
         &:first-child
-          margin-top: calc(#{$nav-height-narrow} + #{$screenViewBodyPadding})
+          margin-top: ($nav-height-narrow + $screenViewBodyPadding)
         &_follow_mode
           // justify-content: flex-start
           justify-content: flex-end
@@ -713,7 +717,7 @@
     & &_brand
       padding: 0 0.5rem 0 $screenViewBodyPadding
       img
-        height: calc(#{$nav-height-narrow})
+        height: $nav-height-narrow
         width: auto
         max-width: unset
         background: transparent !important
@@ -1067,12 +1071,12 @@ p sup[id^=fnref]
 .medium-zoom-image
     margin-top: var(--navigation-header-height)
     // z-index: $main-z-index
-    z-index: calc(#{$main-z-index} + 100)
+    z-index: ($main-z-index + 100)
     &--opened
       // @include drop-shadow-offset(0.5rem, 0.5rem, 1rem, 0.2, 0.2)
-      z-index: calc(#{$main-z-index} + 101)
+      z-index: ($main-z-index + 101)
       // background: var(--bg-light)
 .medium-zoom
   &--opened
     .medium-zoom-overlay
-      z-index: calc(#{$main-z-index} + 100)
+      z-index: ($main-z-index + 100)
