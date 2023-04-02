@@ -1009,6 +1009,9 @@ html[data-mode="dim"]
   align-content: center
   justify-content: center
   align-items: center
+  & > div, & > picture, & > img
+    margin: 0
+    padding: 0
   &_img
     margin: 0
     padding: 0
@@ -1025,6 +1028,9 @@ html[data-mode="dim"]
       margin: calc(#{$screenViewBodyPadding}) auto
       padding: calc(#{$screenViewBodyPadding}) calc(#{$screenViewBodyPadding})
       border-radius: 0.125rem
+    & > figcaption
+      width: 100%
+      padding: calc(#{$screenViewBodyPadding}) 0 0 0
 
   &.background-light
     background: var(--bg-light)
