@@ -1,5 +1,5 @@
 {{- $summary := .Summary }}
-{{- $s := .Site.Params }}
+{{- $s := site.Params }}
 {{- $p := .Params }}
 {{- if .IsHome }}
   {{- with $s.description }}
@@ -10,7 +10,7 @@
   {{- $summary = . }}
 {{- end }}
 {{- $summary = truncate 160 $summary -}}
-{{- $site := .Site.Title }}
+{{- $siteTitle := site.Title }}
 {{- $title := .Title }}
 {{- $permalink := .Permalink }}
 {{- $logo := absURL $s.logo }}
@@ -56,7 +56,7 @@
       "@context": "http://schema.org",
       "@type": "BlogPosting",
       "mainEntityOfPage":"{{ $permalink }}",
-      "name": "{{ $site }}",
+      "name": "{{ $siteTitle }}",
       "headline": {{ $title }},
       "description": {{ $summary }},
       "url": "{{ $permalink }}",
@@ -76,7 +76,7 @@
           "@type":"ImageObject",
           "url": "{{ $logo }}"
         },
-        "name": "{{ $site }}"
+        "name": "{{ $siteTitle }}"
       }
     }
   </script>

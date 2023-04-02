@@ -2,7 +2,7 @@
 {{- $title := site.Title }}
 {{- $siteAuthor := site.Author.name }}
 {{- $recentMaxYears := default 5 ($page.Param "recentMaxYears") }}
-{{- $footerPages := where site.RegularPages.ByWeight "Type" "in" .Site.Params.footerSection }}
+{{- $footerPages := where site.RegularPages.ByWeight "Type" "in" site.Params.footerSection }}
 {{- /* $defaultFooterLogo := printf "%s%s" $iconsDir "apple-touch-icon.png" */ -}}
 {{- /* Generate favicons with https://realfavicongenerator.net/favicon_result?file_id=p1f4mdr89t5lsk11g8au6b165q6#.YI6Qim6xUmo */}}
 <footer class="footer">

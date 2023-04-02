@@ -1,6 +1,6 @@
 {{- /* # https://gohugo.io/templates/template-debugging/ */ -}}
 {{- $page := . }}
-{{- $s := .Site.Params }}
+{{- $s := site.Params }}
 {{- $p := .Params }}
 {{- $template := "_default/baseof" }}
 
@@ -76,7 +76,7 @@
 </html>
 
 {{- define "body-data" }}
-  {{- $s := .Site.Params }}
+  {{- $s := site.Params }}
   {{- $p := .Params }}
   {{- $maxCodeLines := 100 }}
   {{- with $s.codeMaxLines }}

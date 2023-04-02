@@ -3,7 +3,7 @@
 {{- $menu := .Menu }}
 {{- $s := site.Params }}
 {{- $template := "partials/claris/header/nav" }}
-{{- $hideSubMenus := eq $currentPage.Site.Params.hideSubMenus true }}
+{{- $hideSubMenus := eq site.Params.hideSubMenus true }}
 {{- $menuData := $currentPage.Site.Data.menu }}
 {{- $link := $currentPage.Permalink }}
 {{- $url := "" }}

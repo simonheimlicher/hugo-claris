@@ -18,7 +18,7 @@
     {{ hugo.Generator }}
     {{- partial "claris/head/json-ld" . }}
     {{/* {{ partial "claris/head/opengraph" . }} */}}
-    <meta name="description" content="{{ .Description | default $.Site.Params.description }}">
+    <meta name="description" content="{{ .Description | default site.Params.description }}">
     {{ template "_internal/opengraph.html" . }}
     {{ template "_internal/twitter_cards.html" . }}
     {{ partial "claris/head/robots" . }}

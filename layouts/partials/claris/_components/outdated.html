@@ -5,7 +5,7 @@
     <p>
     This article was first published more than {{ $ageYears }} years ago
     {{- if (ne .Lastmod .Date) }}
-    and was last updated in {{ ( .Lastmod.Format (default "2006" $.Site.Params.dateFormat)) }}
+    and was last updated in {{ ( .Lastmod.Format (default "2006" site.Params.dateFormat)) }}
     {{- end -}}.</p>
     <p>
     The article is no longer being maintained and remains available for people visiting this page from external links.

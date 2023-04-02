@@ -7,7 +7,7 @@
 {{- $logoImageURL := partialCached "claris/_functions/canonical-url" $logoImage -}}
 {{- if .IsHome -}}
 {{- $copyright := "" }}
-{{- with .Site.Params.since }}
+{{- with site.Params.since }}
 {{- $copyright = printf "%s %s–%s %s. %s" (T "copyright") (string .) (string now.Year) $author (T "all_rights" )}}
 {{- end }}
     <script type="application/ld+json">
@@ -18,10 +18,10 @@
             "name" ( .Site.Title | markdownify | plainify )
             "headline" ( .Title | markdownify | plainify )
             "alternativeHeadline" ( .Params.lead | markdownify | plainify )
-            "description" ( .Site.Params.description | markdownify | plainify )
+            "description" ( site.Params.description | markdownify | plainify )
             "thumbnailUrl" $logoImageURL
             "license" ( $copyright )
-            "url" ( .Site.Params.canonicalBaseURL | default .Site.Params.BaseURL )
+            "url" ( site.Params.canonicalBaseURL | default site.Params.BaseURL )
         )
         | jsonify (dict "indent" "  " "prefix" "      ") | safeJS
       }}
@@ -43,7 +43,7 @@
         {{- $imageSet = $imageSet | append (absURL .) }}
     {{- end }}
 {{- else}}
-    {{- $imageSet = $imageSet | append ( .Site.Params.logo | absURL ) }}
+    {{- $imageSet = $imageSet | append ( site.Params.logo | absURL ) }}
 {{- end }}
 {{- $mainEntityOfPage := (dict "@type" "WebPage" "@id" (partial "claris/_functions/canonical-url" .) ) }}
 {{- if (and .Type (eq .Type "vitae") ) }}
@@ -65,7 +65,7 @@
                 "author" (dict
                     "@type" "Person"
                     "name" ( $author )
-                    "url" ( .Site.Params.canonicalBaseURL )
+                    "url" ( site.Params.canonicalBaseURL )
                     "logo" (dict
                         "@type" "ImageObject"
                         "url" $logoImageURL
@@ -92,7 +92,7 @@
                 "publisher" (dict
                     "@type" "Person"
                     "name" ( $author )
-                    "url" ( .Site.Params.canonicalBaseURL )
+                    "url" ( site.Params.canonicalBaseURL )
                     "logo" (dict
                         "@type" "ImageObject"
                         "url" $logoImageURL
@@ -101,7 +101,7 @@
                     )
                 )
                 "image" $imageSet
-                "url" .Site.Params.canonicalBaseURL
+                "url" site.Params.canonicalBaseURL
                 "wordCount" .WordCount
                 "genre" ( .Params.tags | default slice )
                 "keywords" ( ( default .Params.tags .Params.keywords ) | default slice )

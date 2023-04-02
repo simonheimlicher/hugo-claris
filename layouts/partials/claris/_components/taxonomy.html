@@ -4,10 +4,10 @@
 {{- end }}
 {{- $headingLevel := default 3 .HeadingLevel }}
 {{- with $page -}}<!-- Restore "." to refer to page context from which the partial was called -->
-{{- $tagsLimit := (default 100 .Site.Params.numberOfTagsShown) }}
-{{- $taxonomyMaxYears := (default 10 .Site.Params.taxonomyMaxYears) }}
+{{- $tagsLimit := (default 100 site.Params.numberOfTagsShown) }}
+{{- $taxonomyMaxYears := (default 10 site.Params.taxonomyMaxYears) }}
 {{- $sidebarTaxonomies := .Site.Taxonomies }}
-{{- with .Site.Params.sidebarTaxonomies }}
+{{- with site.Params.sidebarTaxonomies }}
   {{- $sidebarTaxonomies = . }}
 {{- end }}
 {{- range $key, $taxonomy := .Site.Taxonomies }}

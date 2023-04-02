@@ -11,7 +11,7 @@
 ) }}
 {{- $kind := default "page" (index $kindMap .Kind) }}
 
-{{- $s := .Site.Params }}
+{{- $s := site.Params }}
 {{- $p := .Params }}
 
 {{- $mainInnerClassList := (slice "main_inner" "wrap") }}

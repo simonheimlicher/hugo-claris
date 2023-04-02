@@ -6,7 +6,7 @@
 
 {{- $contentTypeListID := delimit $contentTypeList "-" }}
 {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" site.Params }}
-{{- $supportIE11 := default false (and $envProd .Site.Params.supportIE11) }}
+{{- $supportIE11 := default false (and $envProd site.Params.supportIE11) }}
 {{- $minifyBundle := $envProd }}
 {{/* {{- warnf "%s[%s]: $contentTypeList:%s $supportIE11:%v" $page $template $contentTypeList $supportIE11 -}} */}}
 <!-- https://www.hackification.io/software-development/hugo/html/asset-bundling/ */ -->
