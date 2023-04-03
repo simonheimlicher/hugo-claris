@@ -72,7 +72,13 @@
                       <div class="excerpt_thumbnail">
                         {{- partial "html-comment" (printf "[%s]: processing thumbnail:%v spec:%v"
                           $template $thumbnailResource $thumbnailSizeSpec)}}
-                        {{- partial "responsive-image" (dict "Page" $page "Resource" $thumbnailResource "Alt" $title "Size" $thumbnailSizeSpec) $page $thumbnailResource }}
+                        {{- partial "responsive-image" (dict
+                            "Page" $page
+                            "Resource" $thumbnailResource
+                            "Alt" $title
+                            "Size" $thumbnailSizeSpec
+                            "LazyLoad" true)
+                            $page $thumbnailResource }}
                       </div>
                 {{- else }}
                     <div class="excerpt_main">
