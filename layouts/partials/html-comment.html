@@ -1,5 +1,5 @@
 {{ $commentStr := "" }}
-{{ if not (partialCached "claris/_functions/is-build-environment" "prod" site.Params) }}
+{{ if not (partialCached "claris/_functions/is-build-environment" "prod" hugo.Environment site.Params) }}
 {{ with . }}
 {{ $commentStr = (printf "<!-- %s -->" .) | safeHTML }}
 {{ end }}
