@@ -4,19 +4,19 @@
 {{- if isset $.Params "robots" -}}
 {{-     if or (isset $.Params.robots "index") (isset $.Params.robots "follow") }}
 {{-         $robotsGenerate = true -}}
-{{-     else if or (isset $.Site.Params.robots "index") (isset $.Site.Params.robots "follow") -}}
+{{-     else if or (isset site.Params.robots "index") (isset site.Params.robots "follow") -}}
 {{-         $robotsGenerate = true -}}
 {{-     end -}}
 {{- end -}}
 {{- if eq $robotsGenerate true -}}
 {{-     $robotsIndex := true -}}
 {{-     $robotsFollow := true -}}
-{{-     if isset $.Site.Params "robots" -}}
-{{-         if isset $.Site.Params.robots "index" -}}
-{{-             $robotsIndex = $.Site.Params.robots.index -}}
+{{-     if isset site.Params "robots" -}}
+{{-         if isset site.Params.robots "index" -}}
+{{-             $robotsIndex = site.Params.robots.index -}}
 {{-         end -}}
-{{-         if isset $.Site.Params.robots "follow" -}}
-{{-             $robotsFollow = $.Site.Params.robots.follow -}}
+{{-         if isset site.Params.robots "follow" -}}
+{{-             $robotsFollow = site.Params.robots.follow -}}
 {{-         end -}}
 {{-     end -}}
 {{-     if isset $.Params "robots" -}}
