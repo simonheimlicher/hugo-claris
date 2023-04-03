@@ -32,8 +32,10 @@
   {{- end }}
 {{- end }}
 
+{{ $supportIE11 := site.Params.supportIE11 }}
+
 {{- $lightbox := default false .Lightbox -}}
-{{- $lazy := default true .Lazy -}}
+{{- $lazy := default true .LazyLoad -}}
 
 {{- $defaultMedia := "default" }}
 
@@ -57,8 +59,18 @@
 {{- $imgInlineStyle := delimit $imgInlineStyleSlice "; " -}}
 {{- /* printf "<span class='hugo_debug'>style='%s'</span>" $imgInlineStyle | safeHTML */ -}}
 {{- $imgInlineStyle_attr := "" -}}
-{{ $imgInlineStyle_attr = (printf " style=%q" (printf "object-fit: cover; object-position: %s; font-family: 'object-fit: cover; object-position: %s;'; %s"
-    $imgPosition $imgPosition $imgInlineStyle | safeCSS)) }}
+<!-- PostCSS plugin is used for stylesheets but it obviuosly does not
+  work with inline styles.
+  We need inline styles for the CSS property `object-position`,
+  which may differ between responsive images -->
+{{- if $supportIE11 }}
+  {{- $imgClass = printf "%s object-fit-cover" $imgClass }}
+  {{ $imgInlineStyle_attr = (printf " style=%q" (printf "object-fit: cover; object-position: %s; font-family: 'object-fit: cover; object-position: %s;'; %s"
+      $imgPosition $imgPosition $imgInlineStyle | safeCSS)) }}
+{{- else }}
+  {{ $imgInlineStyle_attr = (printf " style=%q" (printf "object-fit: cover; object-position: %s; %s"
+      $imgPosition $imgInlineStyle | safeCSS)) }}
+{{- end }}
 {{- /* warnf "responsive-image: $imgPosition='%#v'" $imgPosition */ -}}
 {{- /* warnf "responsive-image: $imgInlineStyle='%#v'" $imgInlineStyle */ -}}
 
