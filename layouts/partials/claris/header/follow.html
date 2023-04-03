@@ -15,8 +15,8 @@
   {{- if and (eq (hasPrefix $url $base) false) (eq (hasPrefix $url "http") false) }}
     {{- $url = absLangURL $url }}
   {{- end }}
-            <div class='nav_follow'>
-              <a href="{{ $url }}"  title="{{ $name }}">
+            <div class="nav_parent">
+              <a href="{{ $url }}" class="nav_follow" title="{{ $name }}">
               {{ partial "sprite" (dict "icon" $label) }}
               </a>
             </div>

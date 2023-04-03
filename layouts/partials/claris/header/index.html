@@ -23,11 +23,9 @@
           {{- if $centerLogo }}
             {{ partial "claris/header/logo" (dict "logo" $logo "class" "nav_center") }}
           {{- end }}
-          {{- if (ne .Type "vitae") }}
-          <div class="nav_parent nav_parent_follow_mode">
-          {{- partialCached "claris/header/follow" . }}
-          {{- partialCached "claris/header/mode" . }}
-          {{- end }}
+          <div class="nav_parent_follow_mode">
+          {{- partialCached "claris/header/follow" . .Type }}
+          {{- partialCached "claris/header/mode" . .Type }}
           </div>
         </div>
       </nav>

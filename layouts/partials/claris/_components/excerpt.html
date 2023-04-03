@@ -16,18 +16,17 @@
   {{- $thumbnailResource := false }}
   {{- if $thumbnail }}
     {{- $thumbnailResource = partial "claris/_functions/image-resource" (dict
-      "Page" $page
-      "Resource" $thumbnail) }}
+    "Page" $page
+    "Resource" $thumbnail) }}
     {{/* {{- warnf "%s[%s]: Rendering excerpt of page with thumbnail:%v resource:%v"
-        $page $template $thumbnail $thumbnailResource.Permalink }} */}}
+    $page $template $thumbnail $thumbnailResource.Permalink }} */}}
   {{- else }}
-    <!-- If the page is a taxonomoy term page, we use the thumbnail
-      from the most recently modified page that has one -->
+    <!-- If the page is a taxonomoy term page, we use the thumbnail from the most recently modified page that has one -->
     {{- $pages := .Pages.ByLastmod.Reverse }}
     {{- range $pages }}
       {{- if not $thumbnail }}
-      {{/* {{- warnf "%s[%s]: Rendering excerpt of page with thumbnail of the most recent page %v in .Pages:%v"
-          $page $template . $pages }} */}}
+        {{/* {{- warnf "%s[%s]: Rendering excerpt of page with thumbnail of the most recent page %v in .Pages:%v"
+        $page $template . $pages }} */}}
         {{- $thumbnail = default .Params.featureImage .Params.thumbnail }}
         {{- if $thumbnail }}
           {{- $thumbnailResource = partial "claris/_functions/image-resource" (dict "Page" . "Resource" $thumbnail "Size" $thumbnailSizeSpec) }}
@@ -43,71 +42,59 @@
     {{- end }}
   {{- end }}
   {{- $title := .Title -}}
-  {{- $plainTitle := $title | plainify -}}
-
-              {{- if not $headerPartial }}
-                <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
-              {{- end }}
-                <div class="excerpt">
-                  <div class="excerpt_header">
-                  {{- if $headerPartial }}
-                    <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
-                  {{- end }}
-                      <h{{ $headingLevel }} class="excerpt_title">
-                        {{ $title | markdownify }}
-                      </h{{ $headingLevel }}>
-                  {{- if $headerPartial }}
-                    </a>
-                  {{- end }}
-                {{- with $headerPartial }}
-                  {{- partial $headerPartial (dict "Page" $page "relativeDates" $relativeDates "showTags" $showTags) }}
-                {{- end }}
-                  </div>
-                {{- if $headerPartial }}
-                  <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
-                {{- end }}
-
-                {{- if $thumbnailResource }}
-                    <div class="excerpt_main{{ if $summary }} partition{{ end }}">
-                      <div class="excerpt_thumbnail">
-                        {{- partial "html-comment" (printf "[%s]: processing thumbnail:%v spec:%v"
-                          $template $thumbnailResource $thumbnailSizeSpec)}}
-                        {{- partial "responsive-image" (dict
-                            "Page" $page
-                            "Resource" $thumbnailResource
-                            "Alt" $title
-                            "Size" $thumbnailSizeSpec
-                            "LazyLoad" true)
-                            $page $thumbnailResource }}
-                      </div>
-                {{- else }}
-                    <div class="excerpt_main">
-                {{- end }}
-                      <div class="excerpt_content">
-                      {{- with $summary }}
-                        <p>
-                          {{- . -}}
-                        </p>
-                      {{- end }}
-                      </div>
-                    </div>
-                    <div class="excerpt_footer">
-                      {{- $pageCount := len .Pages }}
-                      {{- if (gt $pageCount 0) }}
-                        <p class="excerpt_footer_page-count">
-                          {{ $pageCount }} {{ T "articles" $pageCount }}
-                        </p>
-                      {{- else }}
-                      <div class="excerpt_footer_read-on">
-                        <span class="read-on">{{- T "read_on" }}</span>
-                      </div>
-                      {{- end }}
-                    </div>
-                  {{- if $headerPartial }}
-                  </a>
-                  {{- end }}
-                </div>
-                {{- if not $headerPartial }}
-                </a>
-                {{- end }}
+  {{- $plainTitle := $title | plainify }}
+  <div class="excerpt {{ if .Params.featured }} featured{{ end }}">
+    <div class="excerpt_header">
+      <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
+        <h{{ $headingLevel }} class="excerpt_title">
+        {{ $title | markdownify }}
+        </h{{ $headingLevel }}>
+      </a>
+      {{- with $headerPartial }}
+        {{- partial $headerPartial (dict "Page" $page "relativeDates" $relativeDates "showTags" $showTags) }}
+      {{- end }}
+    </div>
+    {{- if $thumbnailResource }}
+    <div class="excerpt_main{{ if $summary }} partition{{ end }}">
+      <div class="excerpt_thumbnail">
+          {{- partial "html-comment" (printf "[%s]: processing thumbnail:%v spec:%v"
+          $template $thumbnailResource $thumbnailSizeSpec)}}
+        <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
+          {{- partial "responsive-image" (dict
+          "Page" $page
+          "Resource" $thumbnailResource
+          "Alt" $title
+          "Size" $thumbnailSizeSpec
+          "LazyLoad" true)
+          $page $thumbnailResource }}
+        </a>
+      </div>
+    {{- else }}
+    <div class="excerpt_main">
+    {{- end }}
+      <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
+        <div class="excerpt_content">
+        {{- with $summary }}
+          <p>
+          {{- . -}}
+          </p>
+        {{- end }}
+        </div>
+      </a>
+    </div>
+    <div class="excerpt_footer">
+      <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
+        {{- $pageCount := len .Pages }}
+        {{- if (gt $pageCount 0) }}
+        <p class="excerpt_footer_page-count">
+        {{ $pageCount }} {{ T "articles" $pageCount }}
+        </p>
+        {{- else }}
+        <div class="excerpt_footer_read-on">
+          <span class="read-on">{{- T "read_on" }}</span>
+        </div>
+        {{- end }}
+      </a>
+    </div>
+  </div>
 {{- end }}

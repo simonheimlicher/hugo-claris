@@ -7,6 +7,54 @@
   top: -0.5rem
   left: 1rem
 
+@mixin hover-background($color: var(--text-hover), $background: var(--theme-bg-hover), $top-left: 0, $top-right: 0, $bottom-left: 0, $bottom-right: 0)
+  z-index: -1
+  content: ''
+  position: absolute
+  color: var(--theme-text-hover)
+  top: 0
+  right: 0
+  bottom: 0
+  left: 0
+  background-size: 100% 100%
+  background-image: linear-gradient(to top, $background 0, $background 100%)
+  background-repeat: repeat-x
+  background-position-y: bottom
+  height: unset
+  margin: 0
+  border-radius: 0
+  --all: 0
+  --top-left: #{$top-left}
+  --top-right: #{$top-right}
+  --bottom-left: #{$bottom-left}
+  --bottom-right: #{$bottom-right}
+  -webkit-mask: linear-gradient(45deg, transparent 0 var(--bottom-left,var(--all)) ,#fff 0) bottom left, linear-gradient( -45deg, transparent 0 var(--bottom-right,var(--all)),#fff 0) bottom right, linear-gradient( 135deg, transparent 0 var(--top-left,var(--all)) ,#fff 0) top left, linear-gradient(-135deg, transparent 0 var(--top-right,var(--all)) ,#fff 0) top right
+  -webkit-mask-size: 50.5% 50.5%
+  -webkit-mask-repeat: no-repeat
+
+@mixin cut-off-corner($color: var(--text-hover), $background: var(--theme-bg-hover))
+  z-index: -1
+  content: ''
+  position: absolute
+  color: var(--theme-text-hover)
+  top: 0
+  right: 0
+  bottom: 0
+  left: 0
+  background-size: 100% 100%
+  background-image: linear-gradient(to top, $background 0, $background 100%)
+  background-repeat: repeat-x
+  background-position-y: bottom
+  height: unset
+  margin: 0.25rem 0 0 0
+  border-radius: 0.125rem 0.8rem 0 0
+  --all: 0
+  // --top-left: 0.5rem
+  --top-right: 0.5rem
+  -webkit-mask: linear-gradient(45deg, transparent 0 var(--bottom-left,var(--all)) ,#fff 0) bottom left, linear-gradient( -45deg, transparent 0 var(--bottom-right,var(--all)),#fff 0) bottom right, linear-gradient( 135deg, transparent 0 var(--top-left,var(--all)) ,#fff 0) top left, linear-gradient(-135deg, transparent 0 var(--top-right,var(--all)) ,#fff 0) top right
+  -webkit-mask-size: 50.5% 50.5%
+  -webkit-mask-repeat: no-repeat
+
 @media screen
   .to_top
     background-color: var(--theme)
@@ -194,50 +242,44 @@
     // border-radius: 0.25rem
     border-radius: 0
     align-items: center
-  &_item, &_follow
-    @media (any-hover: hover)
+  @media (any-hover: hover)
+    &_parent > &_item
       &:hover
         z-index: ($main-z-index + 1)
         color: var(--theme-text-hover)
-        // Cut off top-right corner
         &::after
-          z-index: -1
-          content: ''
-          position: absolute
-          color: var(--theme-text-hover)
-          top: 0
-          right: 0
-          bottom: 0
-          left: 0
-          background-size: 100% 100%
-          background-image: linear-gradient(to top, var(--theme-bg-hover) 0, var(--theme-bg-hover) 100%)
-          background-repeat: repeat-x
-          background-position-y: bottom
-          height: unset
+          // Cut off top-right corner
+          // @include cut-off-corner()
+          @include hover-background(var(--theme-text-hover), var(--theme-bg-hover), 0, 0.5rem, 0, 0)
           margin: 0.25rem 0 0 0
-          border-radius: 0.125rem 0.8rem 0 0
-          --all: 0
-          // --top-left: 0.5rem
-          --top-right: 0.5rem
-          -webkit-mask: linear-gradient(45deg, transparent 0 var(--bottom-left,var(--all)) ,#fff 0) bottom left, linear-gradient( -45deg, transparent 0 var(--bottom-right,var(--all)),#fff 0) bottom right, linear-gradient( 135deg, transparent 0 var(--top-left,var(--all)) ,#fff 0) top left, linear-gradient(-135deg, transparent 0 var(--top-right,var(--all)) ,#fff 0) top right
-          -webkit-mask-size: 50.5% 50.5%
-          -webkit-mask-repeat: no-repeat
+          border-radius: 0.25rem 1rem 0 0
           svg
             filter: invert(100%)
-        // No cut off corner on site logo (nav_brand) and mobile menu (nav_close)
-        &.nav_brand, &.nav_close
-          &::after
-            --top-right: unset
-            margin-top: 0
-            border-radius: 0 0.125rem 0 0.125rem
+    &_parent > &_follow
+      &:hover
+        z-index: ($main-z-index + 1)
+        color: var(--theme-text-hover)
+        &::after
+          @include hover-background(var(--theme-text-hover), var(--theme-bg-hover), 0, 0, 0, 0)
+          margin: 0.25rem -0.125rem
+          border-radius: 0.25rem
+          svg
+            filter: invert(100%)
+  &_item
+    &.nav_brand, &.nav_mobile_toggle
+      &:hover
+        z-index: ($main-z-index + 1)
+        color: var(--theme-text-hover)
+        &::after
+          @include hover-background()
 
   &_follow
     margin: 0 0.25rem
     line-height: 1.25rem
     .icon
       margin: 0
-    &:first-child
-      margin-left: 0
+    // &:first-child
+    //   margin-left: 0
     a
       padding: 0.5rem
     svg
@@ -283,7 +325,7 @@
     & + a
       @media screen and (min-width: $screenViewBreakpointWidthMobile)
         padding-top: 0.5rem
-        border-radius: 0.5rem
+        // border-radius: 0.5rem
     &:not(:first-child)
       position: relative
     &:first-child:before

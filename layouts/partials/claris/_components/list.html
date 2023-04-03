@@ -10,9 +10,7 @@
           <div class="excerpt_grid">
           {{- range ($page.Paginate $items).Pages }}
             {{/* {{- warnf "%s[%s]: Listing page:%v with .Params:%v" $page $template . .Params }} */}}
-            <article class="content_item{{ if .Params.featured }} content_item_featured{{ end }} grid">
-              {{ partial $excerptPartial (dict "Page" . "HeadingLevel" $headingLevel "RelativeDates" false "ShowTags" false) }}
-            </article>
+            {{ partial $excerptPartial (dict "Page" . "HeadingLevel" $headingLevel "RelativeDates" false "ShowTags" false) }}
           {{- end }}
           </div>
           {{- if gt (len $items) ($page.Param "paginate") }}
