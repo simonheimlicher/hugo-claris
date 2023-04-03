@@ -12,11 +12,11 @@
 {{- with .FigureClass -}}
   {{- $figureClass = printf "%s %s" $figureClass . -}}
 {{- end }}
-{{- with .float -}}
+{{- with .Float -}}
   {{- if $figureClass -}}
     {{- $figureClass = printf "%s float-%s" $figureClass . -}}
   {{- else }}
-    {{- $imgClass = printf "%s float-%s" . }}
+    {{- $imgClass = printf "%s float-%s" $imgClass . }}
   {{- end }}
 {{- end -}}
 {{- $shape := default false .Shape -}}
@@ -34,7 +34,7 @@
 
 {{ $supportIE11 := site.Params.supportIE11 }}
 
-{{- $lightbox := default false .Lightbox -}}
+{{- $lightbox := default false .LightBox -}}
 {{- $lazy := default true .LazyLoad -}}
 
 {{- $defaultMedia := "default" }}
@@ -64,7 +64,6 @@
   We need inline styles for the CSS property `object-position`,
   which may differ between responsive images -->
 {{- if $supportIE11 }}
-  {{- $imgClass = printf "%s object-fit-cover" $imgClass }}
   {{ $imgInlineStyle_attr = (printf " style=%q" (printf "object-fit: cover; object-position: %s; font-family: 'object-fit: cover; object-position: %s;'; %s"
       $imgPosition $imgPosition $imgInlineStyle | safeCSS)) }}
 {{- else }}

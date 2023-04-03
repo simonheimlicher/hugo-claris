@@ -2,7 +2,7 @@
 {{- $template := "shortcodes/responsive-image" }}
 {{- $args := (dict
   "Page" $.Page
-  "Resource" (.Get "src")
+  "Resource" (.Get "resource")
   "Caption" (.Get "caption")
   "Title" (.Get "title")
   "Alt" (.Get "alt")
@@ -14,6 +14,7 @@
   "MaxHeight" (.Get "max-height")
   "Background" (.Get "background")
   "LazyLoad" (.Get "lazy")
+  "LightBox" (.Get "lightbox")
   "FigureClass" (printf "shortcode_responsive-figure shortcode_responsive-figure_image %s" (default "" (.Get "figure_class")) )
   "ImgClass" (printf "shortcode_responsive-figure_img %s" (default "" (.Get "img_class")) )
 ) }}
