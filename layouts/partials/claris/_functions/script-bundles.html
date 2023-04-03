@@ -2,12 +2,11 @@
 {{- $page := .Page }}
 {{- $mediaTypeList := .MediaTypeList }}
 {{- $contentTypeList := .ContentTypeList }}
+{{- $supportIE11 := default false .SupportIE11 }}
+{{- $minifyBundles := default false .minifyBundless }}
 {{- $template := "claris/_functions/script-bundles" }}
 
 {{- $contentTypeListID := delimit $contentTypeList "-" }}
-{{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" site.Params }}
-{{- $supportIE11 := default false (and $envProd site.Params.supportIE11) }}
-{{- $minifyBundle := $envProd }}
 {{/* {{- warnf "%s[%s]: $contentTypeList:%s $supportIE11:%v" $page $template $contentTypeList $supportIE11 -}} */}}
 <!-- https://www.hackification.io/software-development/hugo/html/asset-bundling/ */ -->
 {{- $sourceExt := "js" }}
@@ -28,8 +27,8 @@
   <!-- Note on source maps. Only "inline" seems to work but let's keep "external" for prod -->
 {{- $jsBuildOptionsBase := (dict
     "target" $targetVersion
-    "sourceMap" (cond $envProd "external" "inline")
-    "minify" $minifyBundle
+    "sourceMap" (cond $minifyBundles "external" "inline")
+    "minify" $minifyBundles
   ) }}
 
 
@@ -134,7 +133,7 @@
     {{- if (and $supportIE11 $params.supportIE11) }}
       {{- $legacyResourceID := printf "%s%s" $resourceID $legacySuffix }}
       {{- $legacyExecutedFile := printf "%s.%s" $legacyResourceID $sourceExt }}
-      {{- $legacyBundle := $concatResource js.Build (merge $jsBuildOptionsBase (dict "target" $targetVersion "minify" false) ) -}}
+      {{- $legacyBundle := $concatResource | js.Build (merge $jsBuildOptionsBase (dict "target" $targetVersion "minify" false) ) -}}
       {{- $legacyBundle = $bundle | babel -}}
       {{- $legacyBundle = $legacyBundle | js.Build (merge $jsBuildOptionsBase (dict "target" $params.target) ) -}}
       {{- $scriptBundles = merge $scriptBundles (dict $legacyResourceID $legacyBundle) -}}

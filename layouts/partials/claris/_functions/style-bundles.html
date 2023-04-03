@@ -2,12 +2,11 @@
 {{- $page := .Page }}
 {{- $mediaTypeList := .MediaTypeList }}
 {{- $contentTypeList := .ContentTypeList }}
+{{- $supportIE11 := default false .SupportIE11 }}
+{{- $minifyBundles := default false .minifyBundless }}
 {{- $template := "claris/_functions/style-bundles" }}
 
 {{- $contentTypeListID := delimit $contentTypeList "-" }}
-{{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" site.Params }}
-{{- $supportIE11 := default false (and $envProd .Site.Params.supportIE11) }}
-{{/* {{- warnf "%s[%s]: $contentTypeList:%s $supportIE11:%v" $page $template $contentTypeList $supportIE11 -}} */}}
 <!-- https://www.hackification.io/software-development/hugo/html/asset-bundling/ */ -->
 {{- $sourceExt := "sass" }}
 {{- $targetExt := "css" -}}
@@ -15,7 +14,7 @@
 {{- $fingerprintOptions := default "sha256" site.Params.resourceFingerprintOptions }}
 
 {{- $toCSSoptionsBase := dict }}
-{{- if $envProd }}
+{{- if $minifyBundles }}
   {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "compressed" "enableSourceMap" "false") -}}
 {{- else }}
   {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "expanded" "enableSourceMap" "true") -}}
@@ -26,6 +25,9 @@
 {{- end }}
 {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "includePaths" $toCSSIncludePaths)}}
 {{- $postCSSoptions := (dict "config" "postcss.config.js" "noMap" false) -}}
+
+{{/* {{- warnf "%s[%s]: contentTypeList:%s supportIE11=%v minifyBundles=%v site.Params.supportIE11=%v toCSSoptionsBase=%v postCSSoptions=%v "
+    $page $template $contentTypeList $supportIE11 $minifyBundles site.Params.supportIE11 $toCSSoptionsBase $postCSSoptions -}} */}}
 
 {{- $styleResources := (dict
   "all" (dict
@@ -44,7 +46,7 @@
   )
 ) -}}
 
-{{- $concatSASS := false }}
+{{- $concatSASS := true }}
 
 {{- range $resourceID, $params := $styleResources }}
   {{- $mediaType := default "all" $params.media }}
@@ -54,7 +56,7 @@
     <!-- Parameters to pass to the hugoParamsFile and other top-level style files
       that are executed as templates -->
     {{- $tplParams := (dict "Page" $page "ContentType" $contentTypeListID "MediaType" $mediaType) }}
-    {{/* {{- warnf "%s[%s]: resourceID:%v params:%v $tplParams:%v" $page $template $resourceID $params $tplParams }} */}}
+    {{/* {{- warnf "%s[%s]: resourceID=%v params=%v $tplParams=%v" $page $template $resourceID $params $tplParams }} */}}
 
     <!-- Concat CSS -->
     {{- $CSSResourceList := slice }}
@@ -102,7 +104,7 @@
         {{- $toCSSoptions := merge $toCSSoptionsBase (dict "targetPath" $contentTypeTargetFile) -}}
         {{- $contentTypeCSSResource := $contentTypeConcatResource | resources.ToCSS $toCSSoptions }}
         {{- $CSSResourceList = append (slice $contentTypeCSSResource) $CSSResourceList }}
-        {{/* {{- warnf "%s[%s]: Add contentTypeCSSResource .MediaType %#v to CSSResourceList:%v"
+        {{/* {{- warnf "%s[%s]: Add contentTypeCSSResource .MediaType %#v to CSSResourceList=%v"
             $page $template $contentTypeCSSResource.MediaType $CSSResourceList }} */}}
       {{- end -}}
     {{- end }}
@@ -111,7 +113,7 @@
       {{- warnf "%s[%s]: Multiple types=%v ID=%v resourceID=%s CSSResourceList: "
           $page $template $contentTypeList $contentTypeListID $resourceID }}
       {{- range $idx, $resource := $CSSResourceList }}
-        {{- warnf "%s[%s]: %d --> %v .Name:%v .MediaType:%v" $page $template $idx $resource $resource.Name $resource.MediaType }}
+        {{- warnf "%s[%s]: %d --> %v .Name=%v .MediaType=%v" $page $template $idx $resource $resource.Name $resource.MediaType }}
       {{- end }}
     {{- end }} */}}
 
@@ -140,8 +142,8 @@
     {{- if (and $supportIE11 $params.supportIE11) }}
       {{- $legacyResourceID := printf "%s%s" $resourceID $legacySuffix }}
       {{- $legacyExecutedFile := printf "%s.sass" $legacyResourceID }}
-      {{- $toCSSoptions := merge $toCSSoptionsBase (dict "targetPath" (printf "%s/%s.%s" $targetPathPrefix $legacyResourceID $targetExt) ) -}}
-      {{- $legacyBundle := . | resources.ExecuteAsTemplate $legacyExecutedFile $tplParams | resources.ToCSS $toCSSoptions | resources.PostCSS $postCSSoptions | resources.Fingerprint $fingerprintOptions -}}
+      {{- $legactToCSSoptions := merge $toCSSoptionsBase (dict "targetPath" (printf "%s/%s.%s" $targetPathPrefix $legacyResourceID $targetExt) ) -}}
+      {{- $legacyBundle := $concatResource | resources.ToCSS $legactToCSSoptions | resources.PostCSS $postCSSoptions | resources.Fingerprint $fingerprintOptions -}}
       {{- $styleBundles = merge $styleBundles (dict $legacyResourceID $legacyBundle) -}}
     {{- end -}}
   {{/* {{- else }}
