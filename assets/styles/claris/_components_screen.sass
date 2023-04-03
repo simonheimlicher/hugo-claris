@@ -142,11 +142,13 @@
     background: inherit
     transition: transform 0.3s var(--easing)
     &_right
+      transform: translateX(100%) // IE11
       transform: translateX(calc(100% + 100vw))
       right: 0
       .color_mode .color_mode_label
         padding-right: 0.5rem
     &_left
+      transform: translateX(-100%) // IE11
       transform: translateX(calc(-100% - 100vw))
       left: 0
       .color_mode .color_mode_label
@@ -454,163 +456,136 @@
       will-change: transform
 
 .main
-  // Ensure .main extends padding to reach under nav_header
-  // when nav_header is position: relative
-  // padding-top: 0
-  padding: #{$nav-height-narrow} 0 $screenViewBodyPadding 0
-  margin: - #{$nav-height-narrow} auto 0 auto
-  @media screen and (min-width: $screenViewBreakpointWidthWide)
+  @media only screen
+    // Ensure .main is under nav_header when nav_header is position: relative
+    padding-top: #{$nav-height}
+    margin-top: - #{$nav-height}
+    min-height: 100vh
+    // Ensure main covers whole width of footer
+    width: 100%
+    // Ensure .main extends padding to reach under nav_header
+    // when nav_header is position: relative
+    // padding-top: 0
+    padding: #{$nav-height-narrow} 0 $screenViewBodyPadding 0
+    margin: - #{$nav-height-narrow} auto 0 auto
     min-height: 100vh
     min-height: 100lvh
-    padding-bottom: 1.5rem
-  &_inner
-    @include chrome
 
 .footer
   // Footer shall stick to the bottom and reveal when body scrolls up
-  @media screen and (min-height: $screenViewBreakpointHeightShallow)
-    position: sticky
-    bottom: 0
-    left: 0
-    width: 100%
-
-.hero-image
-  &_above-main
-    &_figure
-      margin: 0
-      padding: 0
-      z-index: ($main-z-index + 1)
-      // FIXME: Let's not push the image under the navigation bar
-      // margin-top: (-1 * #{$nav-height})
-    &_img
-      margin: 0
-      padding: 0
-      max-width: unset
-      max-height: unset
+  // But only if positions: sticky is fully supported
+  // FIXME: Mobile Safari gets confused with position: sticky on footer
+  // Exclude mobile Safari with ''@supports (not (-webkit-touch-callout: none)'
+  // https://browserstrangeness.bitbucket.io/css_hacks.html#safari
+  // https://syntaxfix.com/question/5666/css-media-query-to-target-only-ios-devices
+  // Exclude any version of IE or other browsers that don't support @supports with '@supports (position: sticky)'
+  @supports (position: sticky) and (not (-webkit-touch-callout: none))
+    @media screen and (min-height: $screenViewBreakpointHeightShallow)
+      position: sticky
+      bottom: 0
+      left: 0
       width: 100%
-      height: auto
-      max-height: 50vh
-      max-height: calc(min(50vh, 70vw))
-      object-fit: cover
-      object-position: center center
-      border-radius: 0
-      @media screen and (min-height: $screenViewBreakpointHeightTall)
-        max-height: 40vh
-        max-height: calc(min(40vh, 50vw))
 
-  &_background
-    &_main
+
+.hero-image_above-main
+  &_figure
+    margin: 0
+    padding: 0
+    z-index: ($main-z-index + 1)
+    // FIXME: Let's not push the image under the navigation bar
+    // margin-top: (-1 * #{$nav-height})
+  &_img
+    margin: 0
+    padding: 0
+    max-width: unset
+    max-height: unset
+    width: 100%
+    height: auto
+    max-height: 50vh
+    max-height: calc(min(50vh, 70vw))
+    object-fit: cover
+    object-position: center center
+    border-radius: 0
+    @media screen and (min-height: $screenViewBreakpointHeightTall)
+      max-height: 40vh
+      max-height: calc(min(40vh, 50vw))
+
+.hero-image_background
+  &_main
+    position: relative
+    // display: flex
+    // flex-direction: column
+    // justify-content: flex-end
+    padding-bottom: 0
+    .main_inner
       position: relative
       display: flex
       flex-direction: column
       justify-content: flex-end
-      padding-bottom: 0
-      .content-title
-        color: white
-        text-shadow: 1.5px 1.5px 1.5px black
-        font-size: 4rem
-        text-align: center
-        position: relative
-        margin-bottom: 3rem
+      min-height: 100vh
+      padding-bottom: $screenViewBodyPadding
+      z-index: ($main-z-index + 2)
+    .content-title
+      color: white
+      text-shadow: 1.5px 1.5px 1.5px black
+      font-size: 4rem
+      text-align: center
+      position: relative
+      margin-bottom: 3rem
+    &_figure
+      display: none
+    & ~ .footer
+      position: relative
+      z-index: ($main-z-index + 1)
+      // padding-top: ($screenViewBodyPadding)
+      background: var(--bg-dark)
+      color: var(--text-dark)
+      h1, h2, h3, a
+        color: var(--text-dark)
+  &_figure
+    display: block
+    position: fixed
+    top: 0
+    z-index: ($main-z-index - 1)
+    width: 100%
+  &_img
+    margin: 0
+    padding: 0
+    border-radius: 0
+    width: 100%
+    height: 100vh
+    height: 100lvh
+
+// FIXME: Mobile Safari gets confused with position: sticky on footer
+// https://browserstrangeness.bitbucket.io/css_hacks.html#safari
+// https://syntaxfix.com/question/5666/css-media-query-to-target-only-ios-devices
+@supports (position: sticky) and (not (-webkit-touch-callout: none))
+  .hero-image_background
+    &_main
       .main_inner
-        position: relative
-        display: flex
-        flex-direction: column
-        justify-content: flex-end
         min-height: 100vh
-        min-height: calc(100vh - #{$nav-height} - 3 * #{$screenViewBodyPadding})
-        min-height: calc(100lvh - #{$nav-height} - 3 * #{$screenViewBodyPadding})
-        margin-bottom: (#{$nav-height} - 100vh)
-        margin-bottom: calc(#{$nav-height} - 100vh)
-        margin-bottom: calc(#{$nav-height} - 100lvh)
-        padding-bottom: calc(#{$screenViewBodyPadding})
+        // min-height: calc(100vh - #{$nav-height})
+        // min-height: calc(100lvh - #{$nav-height})
+        // padding: 3rem 0 0 0
+        padding-top: 3rem
+        margin: -3rem 0 -100vh 0
+        margin-bottom: -100lvh
+        // padding-bottom: calc(#{$screenViewBodyPadding})
         z-index: ($main-z-index + 2)
       & ~ .footer
         position: sticky
         bottom: 0
-        padding-top: ($screenViewBodyPadding)
-        background: var(--bg-dark)
-        color: var(--text-dark)
-        h1, h2, h3, a
-          color: var(--text-dark)
+        z-index: ($main-z-index - 1)
     &_figure
       display: none
     &_main &_figure
-      display: initial
+      display: block
       position: sticky
       bottom: 0
       margin: 0
       padding: 0
       z-index: ($main-z-index + 1)
       margin-top: (-1 * $nav-height)
-    &_img
-      margin: 0
-      padding: 0
-      border-radius: 0
-      width: 100%
-      height: 100vh
-      height: 100lvh
-
-// FIXME: Testing of settings for iOS devices below
-// .footer
-//   position: relative
-//   z-index: calc(#{$main-z-index} + 1)
-// .hero-image_background
-//   &_main &_figure
-//     display: none
-
-// .hero-image_background
-//   &_figure
-//     display: block
-//     z-index: calc(#{$main-z-index} - 1)
-//     position: fixed
-//     top: 0
-//   &_img
-//     height: 100vh
-//     height: calc(100lvh + 100px)
-//   &_main
-//     background: transparent
-//     height: auto
-//     .main_inner
-//       margin: 0
-//     & ~ .footer
-//       position: relative
-//       z-index: calc(#{$main-z-index} + 1)
-
-
-// FIXME: Mobile Safari gets confused with position: sticky on footer
-// https://browserstrangeness.bitbucket.io/css_hacks.html#safari
-// https://stackoverflow.com/a/25975282/617559
-// _::-webkit-full-page-media, _:future, :root .footer
-//   @media screen and (min-height: $screenViewBreakpointHeightShallow)
-//     position: relative
-//     z-index: -1
-// https://syntaxfix.com/question/5666/css-media-query-to-target-only-ios-devices
-@supports (-webkit-touch-callout: none)
-  .footer
-    position: relative
-    z-index: ($main-z-index + 1)
-  .hero-image_background
-    &_main &_figure
-      display: none
-
-  .hero-image_background
-    &_figure
-      display: block
-      z-index: ($main-z-index - 1)
-      position: fixed
-      top: 0
-    &_img
-      height: 100vh
-      height: calc(100lvh)
-    &_main
-      background: transparent
-      height: auto
-      .main_inner
-        margin: 0
-      & ~ .footer
-        position: relative
-        z-index: ($main-z-index + 1)
 
 @media screen and (max-width: #{$screenViewBreakpointWidthMobile - 0.01})
   html.jsopen

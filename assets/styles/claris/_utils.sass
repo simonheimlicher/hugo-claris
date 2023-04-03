@@ -21,79 +21,80 @@
 .shadow
   box-shadow: 0 0 60px rgba(0, 0, 0, 0.17)
 
-@media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
-  %grid
-    display: grid
-    grid-template-columns: 1fr
+@supports (display: grid)
+  @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+    %grid
+      display: grid
+      grid-template-columns: 1fr
 
-  [class*='grid-']
-    grid-gap: 2rem
+    [class*='grid-']
+      grid-gap: 2rem
 
-  .grid-2, .grid-3, .grid-4, .grid-auto, .grid-inverse
-    @extend %grid
-  .grid-inverse
-    grid-template-columns: 70% 1fr
-    grid-column-gap: 4rem
-  .grid-2
-    grid-template-columns: 1fr 1fr
-  .grid-3
-    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr))
-  .grid-4
-    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))
+    .grid-2, .grid-3, .grid-4, .grid-auto, .grid-inverse
+      @extend %grid
+    .grid-inverse
+      grid-template-columns: 70% 1fr
+      grid-column-gap: 4rem
+    .grid-2
+      grid-template-columns: 1fr 1fr
+    .grid-3
+      grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr))
+    .grid-4
+      grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))
 
-@media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
-  .grid-main-single
-    display: grid
-    --column-gap: 1rem
-    // https://css-tricks.com/preventing-a-grid-blowout/
-    // Avoid code column (pre element) from busting the grid by setting
-    // a min width of 0 via minmax
-    grid-template-columns: minmax(#{$screenViewWidthAsideMin}, 1fr) minmax(#{$screenViewColumnWidthMin}, 10fr) minmax(#{$screenViewBodyPadding}, 1fr)
-    grid-column-gap: var(--column-gap)
-    grid-template-rows: minmax(min-content, min-content) minmax(min-content, min-content)
+  @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+    .grid-main-single
+      display: grid
+      --column-gap: 1rem
+      // https://css-tricks.com/preventing-a-grid-blowout/
+      // Avoid code column (pre element) from busting the grid by setting
+      // a min width of 0 via minmax
+      grid-template-columns: minmax(#{$screenViewWidthAsideMin}, 1fr) minmax(#{$screenViewColumnWidthMin}, 10fr) minmax(#{$screenViewBodyPadding}, 1fr)
+      grid-column-gap: var(--column-gap)
+      grid-template-rows: minmax(min-content, min-content) minmax(min-content, min-content)
 
-    .article_aside
-      grid-column: 1
-    .content
-      grid-column: 2
-    .sidebar
-      grid-row: 2
-      grid-column: 2
+      .article_aside
+        grid-column: 1
+      .content
+        grid-column: 2
+      .sidebar
+        grid-row: 2
+        grid-column: 2
 
-@media screen and (min-width: $screenViewBreakpointWidthWide)
-  .grid-main-single
-    --column-gap: 2rem
-    // grid-template-columns: 1fr minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax}) #{$screenViewColumnWidthWideMax} minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax}) 1fr
-    // // grid-gap: 0 2rem
-    // .article_aside
-    //   grid-column: 2
-    // .content
-    //   grid-column: 3
-    // .sidebar
-    //   grid-row: 1
-    //   grid-column: 4
-    grid-template-columns: 1fr minmax(#{$screenViewColumnWidthWideMin}, #{$screenViewColumnWidthWideMax}) 1fr
-    grid-template-columns: minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax}) minmax(#{$screenViewColumnWidthMin}, #{$screenViewColumnWidthWideMax}) minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax})
-    grid-template-columns: minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax}) minmax(#{$screenViewColumnWidthWideMin}, #{$screenViewColumnWidthWideMax}) minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax})
-    .article_aside
-      grid-column: 1
-    .content
-      grid-column: 2
-    .sidebar
-      grid-row: 1
-      grid-column: 3
+  @media screen and (min-width: $screenViewBreakpointWidthWide)
+    .grid-main-single
+      --column-gap: 2rem
+      // grid-template-columns: 1fr minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax}) #{$screenViewColumnWidthWideMax} minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax}) 1fr
+      // // grid-gap: 0 2rem
+      // .article_aside
+      //   grid-column: 2
+      // .content
+      //   grid-column: 3
+      // .sidebar
+      //   grid-row: 1
+      //   grid-column: 4
+      grid-template-columns: 1fr minmax(#{$screenViewColumnWidthWideMin}, #{$screenViewColumnWidthWideMax}) 1fr
+      grid-template-columns: minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax}) minmax(#{$screenViewColumnWidthMin}, #{$screenViewColumnWidthWideMax}) minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax})
+      grid-template-columns: minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax}) minmax(#{$screenViewColumnWidthWideMin}, #{$screenViewColumnWidthWideMax}) minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax})
+      .article_aside
+        grid-column: 1
+      .content
+        grid-column: 2
+      .sidebar
+        grid-row: 1
+        grid-column: 3
 
-// @media screen and (min-width: $screenViewBreakpointWidthUltrawide)
-//   .grid-main-single
-//     --column-gap: 2rem
-//     grid-template-columns: minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax}) #{$screenViewWidthUltrawide} minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax})
-//     .article_aside
-//       grid-column: 1
-//     .content
-//       grid-column: 2
-//     .sidebar
-//       grid-row: 1
-//       grid-column: 3
+  // @media screen and (min-width: $screenViewBreakpointWidthUltrawide)
+  //   .grid-main-single
+  //     --column-gap: 2rem
+  //     grid-template-columns: minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax}) #{$screenViewWidthUltrawide} minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax})
+  //     .article_aside
+  //       grid-column: 1
+  //     .content
+  //       grid-column: 2
+  //     .sidebar
+  //       grid-row: 1
+  //       grid-column: 3
 
 $sites: ("facebook": #325c94, "twitter": #00abdc,"linkedin": #007bb6)
 

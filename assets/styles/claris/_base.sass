@@ -254,28 +254,30 @@ blockquote
 
   min-height: calc(1.25 * var(--quotation-mark-close-height))
 
-  &:before
-    font-family: var(--font-serif), Georgia, serif
-    content: "“"
-    position: absolute
-    top: calc(var(--box-padding-top) + 2 * var(--quotation-mark-open-height))
-    left: calc(var(--box-padding-left) - 1.5 * var(--quotation-mark-open-height))
-    line-height: calc(var(--quotation-mark-open-line-height))
-    font-size: 5em
-    font-size: calc(var(--quotation-mark-open-font-size))
-    color: $blockquote-quotation-color-open
-    font-weight: normal
+  // Only render the below if the browser supports CSS properties
+  @supports (color: var(--text))
+    &:before
+      font-family: var(--font-serif), Georgia, serif
+      content: "“"
+      position: absolute
+      top: calc(var(--box-padding-top) + 2 * var(--quotation-mark-open-height))
+      left: calc(var(--box-padding-left) - 1.5 * var(--quotation-mark-open-height))
+      line-height: calc(var(--quotation-mark-open-line-height))
+      font-size: 5em
+      font-size: calc(var(--quotation-mark-open-font-size))
+      color: $blockquote-quotation-color-open
+      font-weight: normal
 
-  &:after
-    font-family: var(--font-serif), Georgia, serif
-    content: "”"
-    position: absolute
-    bottom: calc(-0.8 * var(--quotation-mark-close-height))
-    right: calc( var(--box-padding-right) - 0.5 * var(--quotation-mark-close-height))
-    line-height: calc(var(--quotation-mark-close-line-height))
-    font-size: calc(var(--quotation-mark-close-font-size))
-    color: $blockquote-quotation-color-close
-    font-weight: normal
+    &:after
+      font-family: var(--font-serif), Georgia, serif
+      content: "”"
+      position: absolute
+      bottom: calc(-0.8 * var(--quotation-mark-close-height))
+      right: calc( var(--box-padding-right) - 0.5 * var(--quotation-mark-close-height))
+      line-height: calc(var(--quotation-mark-close-line-height))
+      font-size: calc(var(--quotation-mark-close-font-size))
+      color: $blockquote-quotation-color-close
+      font-weight: normal
 
   footer
     text-align: right
