@@ -829,6 +829,15 @@ kbd
     kbd
         box-shadow: none
         border: none
+
+
+/* ----- SHORTCODES ------- */
+
+// Shortcode note
+// Purpose: Insert notes in the style of sticky notes
+// Usage:
+// {{ <note important> }} {{ </note> }}
+
 // https://jsfiddle.net/dkaufmanjs/nq63nr6L/
 
 $note-bg-yellow-lit: hsl(60, 100%, 77%)
@@ -842,28 +851,6 @@ $note-bg-orange-dim: hsl(25, 100%, 10%)
 $note-bg-red-dim: hsl(0, 100%, 10%)
 $note-bg-green-dim: hsl(160, 100%, 10%)
 $note-bg-blue-dim: hsl(210, 100%, 10%)
-
-@mixin note-dim-colors
-  --note-bg-yellow: #{$note-bg-yellow-dim}
-  --note-bg-yellow-light: #{scale-color($note-bg-yellow-dim, $lightness: -53)}
-  --note-bg-yellow-top: #{scale-color($note-bg-yellow-dim, $saturation: -3, $lightness: -2)}
-  --note-border-yellow: #{scale-color($note-bg-yellow-dim, $saturation: -100, $lightness: 20)}
-  --note-bg-orange: #{$note-bg-orange-dim}
-  --note-bg-orange-light: #{scale-color($note-bg-orange-dim, $lightness: -53)}
-  --note-bg-orange-top: #{scale-color($note-bg-orange-dim, $saturation: -3, $lightness: -2)}
-  --note-border-orange: #{scale-color($note-bg-orange-dim, $saturation: -100, $lightness: 20)}
-  --note-bg-red: #{$note-bg-red-dim}
-  --note-bg-red-light: #{scale-color($note-bg-red-dim, $lightness: -53)}
-  --note-bg-red-top: #{scale-color($note-bg-red-dim, $saturation: -3, $lightness: -2)}
-  --note-border-red: #{scale-color($note-bg-red-dim, $saturation: -100, $lightness: 20)}
-  --note-bg-green: #{$note-bg-green-dim}
-  --note-bg-green-light: #{scale-color($note-bg-green-dim, $lightness: -53)}
-  --note-bg-green-top: #{scale-color($note-bg-green-dim, $saturation: -3, $lightness: -2)}
-  --note-border-green: #{scale-color($note-bg-green-dim, $saturation: -100, $lightness: 20)}
-  --note-bg-blue: #{$note-bg-blue-dim}
-  --note-bg-blue-light: #{scale-color($note-bg-blue-dim, $lightness: -53)}
-  --note-bg-blue-top: #{scale-color($note-bg-blue-dim, $saturation: -3, $lightness: -2)}
-  --note-border-blue: #{scale-color($note-bg-blue-dim, $saturation: -100, $lightness: 20)}
 
 .note
   margin: 1rem 5% 1rem 5%
@@ -991,8 +978,28 @@ $note-bg-blue-dim: hsl(210, 100%, 10%)
     color: var(--text)
     margin: 0
     padding: 0
-  // p
-  //   padding: 0.8rem 0
+
+@mixin note-dim-colors
+  --note-bg-yellow: #{$note-bg-yellow-dim}
+  --note-bg-yellow-light: #{scale-color($note-bg-yellow-dim, $lightness: -53)}
+  --note-bg-yellow-top: #{scale-color($note-bg-yellow-dim, $saturation: -3, $lightness: -2)}
+  --note-border-yellow: #{scale-color($note-bg-yellow-dim, $saturation: -100, $lightness: 20)}
+  --note-bg-orange: #{$note-bg-orange-dim}
+  --note-bg-orange-light: #{scale-color($note-bg-orange-dim, $lightness: -53)}
+  --note-bg-orange-top: #{scale-color($note-bg-orange-dim, $saturation: -3, $lightness: -2)}
+  --note-border-orange: #{scale-color($note-bg-orange-dim, $saturation: -100, $lightness: 20)}
+  --note-bg-red: #{$note-bg-red-dim}
+  --note-bg-red-light: #{scale-color($note-bg-red-dim, $lightness: -53)}
+  --note-bg-red-top: #{scale-color($note-bg-red-dim, $saturation: -3, $lightness: -2)}
+  --note-border-red: #{scale-color($note-bg-red-dim, $saturation: -100, $lightness: 20)}
+  --note-bg-green: #{$note-bg-green-dim}
+  --note-bg-green-light: #{scale-color($note-bg-green-dim, $lightness: -53)}
+  --note-bg-green-top: #{scale-color($note-bg-green-dim, $saturation: -3, $lightness: -2)}
+  --note-border-green: #{scale-color($note-bg-green-dim, $saturation: -100, $lightness: 20)}
+  --note-bg-blue: #{$note-bg-blue-dim}
+  --note-bg-blue-light: #{scale-color($note-bg-blue-dim, $lightness: -53)}
+  --note-bg-blue-top: #{scale-color($note-bg-blue-dim, $saturation: -3, $lightness: -2)}
+  --note-border-blue: #{scale-color($note-bg-blue-dim, $saturation: -100, $lightness: 20)}
 
 html[data-mode="dim"]
   .note
@@ -1001,6 +1008,14 @@ html[data-mode="dim"]
   html:not([data-mode="lit"])
     .note
       @include note-dim-colors
+
+// Shortcode responsive-figure
+// Purpose: Insert images and code blocks that respond to screen size
+// Usage:
+// {{ <responsive-image src="/images/picture" caption="This is the picture"> }}
+
+// {{ <responsive-code caption="Example code"> }}
+// {{ </responsive-code> }}
 
 .shortcode_responsive-figure
   display: flex;
