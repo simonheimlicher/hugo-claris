@@ -1,5 +1,6 @@
 import {
   isObj,
+  eventTarget,
   createEl,
   elem,
   elems,
@@ -264,7 +265,7 @@ const blocks = codeBlocks();
 
   doc.addEventListener('click', function (event) {
     // copy code block
-    const target = event.target;
+    const target = eventTarget(event);
     const isCopyIcon = isItem(target, copyId);
     const isWrapIcon = isItem(target, wrapId);
     const isLinesIcon = isItem(target, linesId);

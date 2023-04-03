@@ -37,6 +37,7 @@ export const inline = ":inline";
 
 import {
   isObj,
+  eventTarget,
   createEl,
   elem,
   elems,
@@ -188,7 +189,7 @@ function fileClosure() {
     if(deeplinks) {
       document.addEventListener('click', function(event)
       {
-        target = event.target;
+        target = eventTarget(event);
         // linkNode = target.parentNode;
         linkNode = target.closest(`.${deeplink}`)
         if (target && containsClass(target, deeplink) || containsClass(linkNode, deeplink)) {
@@ -210,7 +211,7 @@ function fileClosure() {
     articleLink = 'article_card';
 
     doc.addEventListener('click', function(event) {
-      target = event.target;
+      target = eventTarget(event);
       isCopyIcon = containsClass(target, copy);
       let isWithinCopyIcon = target.closest(`.${copy}`);
       if (isCopyIcon || isWithinCopyIcon) {
@@ -355,7 +356,7 @@ function fileClosure() {
   })();
 
   doc.addEventListener('click', function(event) {
-    let target = event.target;
+    let target = eventTarget(event);
     isClickableImage = target.matches('.image-scalable');
 
     let isFigure = target.matches('figure');
@@ -414,7 +415,7 @@ function fileClosure() {
   (function shareViaLinkedin() {
     doc.addEventListener('click', function(event){
       const linkedin = '.linkedin';
-      const target = event.target;
+      const target = eventTarget(event);
       if(target.matches(linkedin) || target.closest(linkedin)) {
         window.open('http://www.linkedin.com/shareArticle?mini=true&url='+encodeURIComponent(window.location.href), '', 'left=0,top=0,width=650,height=420,personalbar=0,toolbar=0,scrollbars=0,resizable=0');
       }

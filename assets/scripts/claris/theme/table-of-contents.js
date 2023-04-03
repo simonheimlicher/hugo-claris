@@ -1,5 +1,6 @@
 import {
     isObj,
+    eventTarget,
     createEl,
     elem,
     elems,
@@ -133,7 +134,7 @@ function injectTableOfContents() {
     }
 
     const navigationClickHandler = function (event) {
-        let target = event.target.querySelector('a') || event.target;
+        let target = eventTarget(event).querySelector('a') || eventTarget(event);
         setActiveNavigationElement(target.parentNode);
         target.click();
     };

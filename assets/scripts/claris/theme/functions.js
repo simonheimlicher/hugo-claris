@@ -4,6 +4,58 @@ export function isObj(obj) {
   return (obj && typeof obj === 'object' && obj !== null) ? true : false;
 }
 
+// FIXME: This function is supposed to get the corresponding DOM element
+// from event.target in the case that event.target is an SVG icon.
+// However, it turns out this does not work in IE 11.
+// What worked is to put a DIV around the SVG and disable pointer events
+// on the SVG using the following CSS
+// svg {
+//   pointer-events: none
+// }
+export function eventTarget(event) {
+  return event.target;
+  // The remainder of this function does not appear to be able to get the
+  // proper DOM element form a click event
+  if (!isObj(event)) {
+    return event;
+  }
+  const target = getDOMElement(event.target);
+  if (isObj(target) && typeof target.matches === 'function') {
+    return target;
+  }
+  if (event.currentTarget !== undefined) {
+    return getDOMElement(event.currentTarget);
+  }
+  return event.target;
+}
+
+export function getDOMElement(element) {
+  if (!isObj(element)) {
+    return element;
+  }
+  if (typeof element.matches !== 'function') {
+    if (isObj(element.correspondingElement)) {
+      if (typeof element.correspondingElement.matches === 'function') {
+        return element.correspondingElement;
+      }
+      // return getDOMElement(element.correspondingElement);
+    }
+    else if (isObj(element.parentElement)) {
+      if (typeof element.parentElement.matches === 'function') {
+        return element.parentElement;
+      }
+      // return getDOMElement(element.parentElement);
+    }
+    else if (isObj(element.parentNode)) {
+      if (typeof element.parentNode.matches === 'function') {
+        return element.parentNode;
+      }
+      // return getDOMElement(element.parentNode);
+    }
+  }
+  return element;
+}
+
 export function createEl(element) {
   return document.createElement(element);
 }

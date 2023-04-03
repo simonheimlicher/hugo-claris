@@ -3,6 +3,7 @@ import {
   htmlRootElement,
   htmlRootClassNoCSSProperties,
   // isObj,
+  eventTarget,
   // createEl,
   elem,
   // elems,
@@ -163,7 +164,7 @@ import {
   setUserColorMode();
 
   doc.addEventListener('click', function (event) {
-    let target = event.target;
+    let target = eventTarget(event);
     let modeClass = 'color_choice';
     let animateClass = 'color_animate';
     let isModeToggle = containsClass(target, modeClass);

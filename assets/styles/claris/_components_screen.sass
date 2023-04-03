@@ -356,7 +356,7 @@
       // padding-left: 0
       img
         background: transparent !important
-  &_close
+  &_mobile_toggle
     position: absolute
     right: 0
     top: 0
@@ -373,13 +373,22 @@
       width: 1.25rem
       fill: var(--text)
       height: 1.25rem
+      pointer-events: none
+      // position: relative
+      // z-index: -1
+    // &_open, &_close
+    //   position: relative
+    //   z-index: 1
+    //   background: red
+    &_open
+      display: block
+    &_close
       display: none
-      &:first-child
-        display: block // initial
-      &.isopen
+    &.isopen
+      .nav_mobile_toggle_open
         display: none
-        + svg
-          display: block // initial
+      .nav_mobile_toggle_close
+        display: block
 
     .icon
       margin: 0
@@ -703,7 +712,7 @@
       justify-content: center
       + .follow
         flex: 0 1 auto // initial
-    &_hide, &_close
+    &_hide, &_mobile_toggle
       display: none
 
   .color_mode

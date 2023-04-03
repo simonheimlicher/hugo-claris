@@ -1,6 +1,7 @@
 
 import {
   isObj,
+  eventTarget,
   createEl,
   elem,
   elems,
@@ -68,7 +69,7 @@ const injectTagControl = function() {
 
   (function showAllArticleTags(){
     doc.addEventListener('click', function(event){
-      const target = event.target;
+      const target = eventTarget(event);
       toggleTags(target)
     });
 
@@ -80,7 +81,7 @@ const injectTagControl = function() {
     // console.log("sortTags: add click event listener");
     doc.addEventListener('click', function(event){
       const active = 'active';
-      const target = event.target;
+      const target = eventTarget(event);
       const isSortButton = target.matches('.tags_sort') || target.matches('.tags_sort span');
       // console.log('sortTags(): isSortButton=' + isSortButton + ' target=', target);
       if(isSortButton) {
