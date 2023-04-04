@@ -1,0 +1,39 @@
+{{- $page := .Page }}
+{{- $mediaType := .MediaType }}
+/* File='styles/claris.sass': .Page='{{ .Page }}' $contentType='#{$contentType}' $mediaType='#{$mediaType}' */
+
+// Core stylesheets that are included for all media types
+@import 'claris/functions'
+
+@import 'claris/colors'
+{{- $themeColorSchemePath := default "colors" ($page.Param "themeColorSchemePath") }}
+{{- with (default false ($page.Param "themeColorScheme") ) }}
+{{- $themeColorSchemeFile := printf "%s/%s" }}
+@import 'claris/{{ $themeColorSchemeFile }}'
+{{- end }}
+
+@import 'claris/variables'
+@import 'claris/override'
+
+{{- $fontsSelfHosted := default false ($page.Param "fontsSelfHosted") }}
+{{- $customFonts := default false ($page.Param "customFonts") }}
+{{- if and $fontsSelfHosted (not $customFonts) -}}
+{{- $fontFamilySans := default "Source Sans 3" ($page.Param "fontFamilySans") }}
+{{- $fontFamilySerif := default "Merriweather" ($page.Param "fontFamilySerif") }}
+{{- $fontFamilyMono := default "DM Mono" ($page.Param "fontFamilyMono") }}
+{{- $fontFamilies := (slice $fontFamilySans $fontFamilySerif $fontFamilyMono) }}
+{{- range $fontFamilies }}
+@import 'claris/fonts/{{ urlize . }}'
+{{- end }}
+{{- end }}
+
+// Additional stylesheets
+@import 'claris/base'
+@import 'claris/components'
+{{- if (in (slice "all" "screen") $mediaType) }}
+@import 'claris/components_screen'
+{{- else if (in (slice "all" "print") $mediaType) }}
+@import 'claris/components_print'
+{{- end }}
+@import 'claris/utils'
+@import 'claris/syntax'

@@ -73,6 +73,9 @@
       <!-- Get the main SASS/SCSS file resource and execute it as a Go Template -->
       {{- $resourceFileBaseName := (default $resourceID $params.file) }}
       {{- $styleMainFile := printf "%s/%s" $resourcePathPrefix $resourceFileBaseName }}
+      {{- if not $concatSASS }}
+        {{- $styleMainFile = $resourcePathPrefix }}
+      {{- end }}
       {{- $styleFileTemplates := (slice $hugoParamsFile $styleMainFile) }}
 
       {{- $contentTypeExecutedResources := slice }}
@@ -92,13 +95,13 @@
       {{- end -}}
       {{- if not $concatSASS }}
         {{- $contentTypeTargetPathPrefix := printf "styles/%s" $contentType -}}
-        {{- $contentTypeConcatFile := printf "%s/%s.%s" $contentTypeTargetPathPrefix $resourceID $sourceExt }}
+        {{- $contentTypeConcatFile := printf "%s-%s.%s" $contentTypeTargetPathPrefix $resourceID $sourceExt }}
         {{- $contentTypeConcatResource := $contentTypeExecutedResources | resources.Concat $contentTypeConcatFile }}
 
         {{/* {{- warnf "%s[%s]: $contentTypeConcatResource .MediaType:%s .Content:\n%v\n...\n%v"
             $page $template $contentTypeConcatResource.MediaType
-            (substr $contentTypeConcatResource.Content 0 100)
-            (substr $contentTypeConcatResource.Content -100) }} */}}
+            (substr $contentTypeConcatResource.Content 0 200)
+            (substr $contentTypeConcatResource.Content -200) }} */}}
 
         {{- $contentTypeTargetFile := printf "%s/%s.%s" $contentTypeTargetPathPrefix $resourceID $targetExt }}
         {{- $toCSSoptions := merge $toCSSoptionsBase (dict "targetPath" $contentTypeTargetFile) -}}
