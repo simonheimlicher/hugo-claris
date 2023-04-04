@@ -140,3 +140,9 @@ other = "Link zu diesem Abschnitt kopieren"
 
 [private-data-requires-javascript]
 other = "Persönlich Daten verborgen (erfordert JavaScript)"
+
+[switch_language_page]
+other = "Sprache dieser Seite wählen"
+
+[switch_language_site]
+other = "Sprache der Website wählen"

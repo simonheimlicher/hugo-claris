@@ -161,7 +161,7 @@
 
   {{- if .IsTranslated }}
           <div class="nav_parent nav_parent_language">
-            <a href="#" class="nav_item">{{ partial "sprite" (dict "icon" "language-icon") }}</a>
+            <a href="#" title="{{ T "switch_language_page" }}" class="nav_item">{{ partial "sprite" (dict "icon" "language-icon") }}</a>
             <div class="nav_sub">
               <span class="nav_child"></span>
     {{- /* partial "html-comment" (printf "%s: available translations: %v" $template $page.Translations) */ -}}
@@ -189,7 +189,7 @@
             <div class="nav_sub">
               <span class="nav_child"></span>
       {{ range .Site.Home.AllTranslations }}
-              <a href="{{ .Permalink }}" class="nav_child nav_item">{{ .Language.LanguageName }}</a>
+              <a href="{{ .Permalink }}" title="{{ T "switch_language_site" }}" class="nav_child nav_item">{{ .Language.LanguageName }}</a>
       {{ end }}
             </div>
           </div>

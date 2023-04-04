@@ -140,3 +140,9 @@ other = "copy direct link to section"
 
 [private-data-requires-javascript]
 other = "Private data hidden (requires JavaScript)"
+
+[switch_language_page]
+other = "View page in another language"
+
+[switch_language_site]
+other = "View website in another language"
