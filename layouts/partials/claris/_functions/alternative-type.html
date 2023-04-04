@@ -19,7 +19,7 @@ Once this is set up, you can call this function in the context of a page:
 {{- $alternativeType := false }}
 {{- $defaultType := "claris" }}
 {{- $pageType := $page.Type }}
-{{- $resourceGlob := (printf "/styles/%s/main.*" $pageType) }}
+{{- $resourceGlob := (printf "/styles/%s.*" $pageType) }}
 {{- if (ne $pageType $defaultType) }}
   {{- with (resources.GetMatch $resourceGlob ) }}
     {{/* {{- warnf "%s[%s]: Returning '%s' as alternative content type: Got resource '%s' matching '%s'"
