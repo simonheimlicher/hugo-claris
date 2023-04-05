@@ -75,7 +75,7 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
         {{- $resourcePage = . }}
         {{- if $debug }}
           {{- warnf "%s[%s]: Use resourcePage %v from current language '%v' with prefix='%v']"
-              $page $template $resourcePage .Language .Site.LanguagePrefix -}}
+              $page $template $resourcePage .Language site.LanguagePrefix -}}
         {{- end }}
 
       {{- else }}

@@ -1,6 +1,6 @@
 {{- $base := absURL "" }}
-{{- $items := .Site.Data.social }}
-{{- $social := .Site.Menus.social }}
+{{- $items := site.Data.social }}
+{{- $social := site.Menus.social }}
 {{- with $social }}
   {{- $items = . }}
 {{- end }}

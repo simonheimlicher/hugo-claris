@@ -5,7 +5,7 @@
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="{{- $themeColorLit -}}">
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="{{- $themeColorDim -}}">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    {{- $title := .Site.Title }}
+    {{- $title := site.Title }}
     {{- $contentType := default "claris" (partialCached "claris/_functions/alternative-type" . . .Type) }}
     {{- $partialHeadTitle := printf "%s/head/title" $contentType }}
     {{ partial "html-comment"
@@ -28,7 +28,7 @@
 {{- end }}
 {{- range .AlternativeOutputFormats -}}
   {{- if (ne .Rel "canonical" )}}
-    {{ printf `<link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML }}
+    {{ printf `<link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .Permalink site.Title | safeHTML }}
   {{- end }}
 {{- end }}
     <link rel="canonical" type="text/html" href="{{ partial "claris/_functions/canonical-url" . }}" title="{{ $title }}">

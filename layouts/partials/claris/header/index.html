@@ -14,11 +14,11 @@
           {{- partialCached "claris/header/logo" (dict "logo" $logo "logoURL" $logoURL ) }}
         {{- end }}
         <div class='nav_body nav_body_{{ $s.mobileNavigation }}'>
-          {{- $menuData := .Site.Data.menu }}
+          {{- $menuData := site.Data.menu }}
           {{- with $menuData }}
             {{ partial "claris/header/nav" (dict "ctx" $page "Page" $page "Menu" $menuData) }}
           {{- else }}
-            {{ partial "claris/header/nav" (dict "ctx" $page "Page" . "Menu" .Site.Menus.main) }}
+            {{ partial "claris/header/nav" (dict "ctx" $page "Page" . "Menu" site.Menus.main) }}
           {{- end }}
           {{- if $centerLogo }}
             {{ partial "claris/header/logo" (dict "logo" $logo "class" "nav_center") }}

@@ -183,12 +183,12 @@
             </div>
           </div>
     {{- end }}
-    {{- if (and false .Site.IsMultiLingual) }}
+    {{- if (and false site.IsMultiLingual) }}
           <div class="nav_parent nav_parent_language">
             <a href="#" class="nav_item">{{ $s.languageMenuName }}</a>
             <div class="nav_sub">
               <span class="nav_child"></span>
-      {{ range .Site.Home.AllTranslations }}
+      {{ range site.Home.AllTranslations }}
               <a href="{{ .Permalink }}" title="{{ T "switch_language_site" }}" class="nav_child nav_item">{{ .Language.LanguageName }}</a>
       {{ end }}
             </div>

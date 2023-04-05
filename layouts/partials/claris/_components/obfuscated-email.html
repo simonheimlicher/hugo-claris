@@ -15,8 +15,8 @@
   {{- if (strings.FindRE `.+@.+` $plain) }}
     {{- $url = urls.Parse (printf "mailto:%s" $url) }}
   {{- else }}
-    {{/* {{- warnf "%s[%s]: site.Author=%#v .Site.Author=%#v .Site.Author.email=%#v"
-        $page $template site.Author .Site.Author .Site.Author.email }} */}}
+    {{/* {{- warnf "%s[%s]: site.Author=%#v site.Author=%#v site.Author.email=%#v"
+        $page $template site.Author site.Author site.Author.email }} */}}
     {{- errorf "%s[%s]: Invalid email address: .Plain=%v $plain=%v $url=%v .Scheme=%v .Host=%v .RequestURI=%v"
         $page $template .Plain $plain $url $url.Scheme $url.Host $url.RequestURI }}
   {{- end }}

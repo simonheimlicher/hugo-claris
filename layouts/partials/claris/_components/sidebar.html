@@ -7,16 +7,16 @@
   {{- $numRelated := default 3 ($page.Param "numberOfRelatedArticles") }}
   {{ if (ne ($page.Param "sidebar") false) }}
 
-    {{- $articles := where (where .Site.RegularPages "Permalink" "!=" .Permalink) "Type" "in" ($page.Param "mainSections") }}
+    {{- $articles := where (where site.RegularPages "Permalink" "!=" .Permalink) "Type" "in" ($page.Param "mainSections") }}
     {{- /* The below is only supported from hugo version 0.111.0 onwards
         See: https://gohugo.io/content-management/related/
     {{ $relatedOpts := (dict
       "indices" $relatedIndices
       "document" $page
     ) }}
-    {{ $relatedArticles := .Site.RegularPages.Related $relatedOpts }}
+    {{ $relatedArticles := site.RegularPages.Related $relatedOpts }}
     */ -}}
-    {{- $relatedArticles := .Site.RegularPages.RelatedIndices . "categories" "tags" "keywords" "date" }}
+    {{- $relatedArticles := site.RegularPages.RelatedIndices . "categories" "tags" "keywords" "date" }}
     {{- $freshRelatedArticles := (where
         (where $relatedArticles "PublishDate" "ge" (now.AddDate (int (sub 0 $recentMaxYears)) 0 0))
         "Params.featured" "<>" true) }}
