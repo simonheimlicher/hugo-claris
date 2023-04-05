@@ -1,46 +1,46 @@
 {{- $page := .Page }}
 {{- $template := "claris/head/robots" }}
-{{  $robotsGenerate := false -}}
-{{- if isset $.Params "robots" -}}
-{{-     if or (isset $.Params.robots "index") (isset $.Params.robots "follow") }}
-{{-         $robotsGenerate = true -}}
-{{-     else if or (isset site.Params.robots "index") (isset site.Params.robots "follow") -}}
-{{-         $robotsGenerate = true -}}
-{{-     end -}}
-{{- end -}}
-{{- if eq $robotsGenerate true -}}
-{{-     $robotsIndex := true -}}
-{{-     $robotsFollow := true -}}
-{{-     if isset site.Params "robots" -}}
-{{-         if isset site.Params.robots "index" -}}
-{{-             $robotsIndex = site.Params.robots.index -}}
-{{-         end -}}
-{{-         if isset site.Params.robots "follow" -}}
-{{-             $robotsFollow = site.Params.robots.follow -}}
-{{-         end -}}
-{{-     end -}}
-{{-     if isset $.Params "robots" -}}
-{{-         if isset $.Params.robots "index" -}}
-{{-             $robotsIndex = $.Params.robots.index -}}
-{{-         end -}}
-{{-         if isset $.Params.robots "follow" -}}
-{{-             $robotsFollow = $.Params.robots.follow -}}
-{{-         end -}}
-{{-     end -}}
-{{- $outputFormat := partial "_functions/output-format" . }}
-{{- $outputFormatsRobotsExcluded := default (slice "print") $.Page.Param "outputFormatsRobotsExcluded" }}
-{{- warnf "%s[%s]: %s %s" $page $template $outputFormat $outputFormatsRobotsExcluded }}
-{{- if in $outputFormatsRobotsExcluded $outputFormat.Name }}
-  {{- $robotsIndex = false }}
-  {{- $robotsFollow = false }}
-{{ end -}}
-{{-     if and (eq $robotsIndex true) (eq $robotsFollow true) }}
-    <meta name="robots" content="index, follow" />
-{{-     else if and (eq $robotsIndex true) (eq $robotsFollow false) }}
-    <meta name="robots" content="index, nofollow" />
-{{-     else if and (eq $robotsIndex false) (eq $robotsFollow true) }}
-    <meta name="robots" content="noindex, follow" />
-{{-     else if and (eq $robotsIndex false) (eq $robotsFollow false) }}
-    <meta name="robots" content="noindex, nofollow" />
-{{-     end -}}
+{{- $robotsGenerate := false -}}
+{{- if (or (isset $.Params "robots") (isset site.Params "robots") ) -}}
+  {{/* {{- warnf "%s[%s]: $.Params.robots=%v site.Params.robots=%v" $page $template $.Params.robots site.Params.robots }} */}}
+  {{- $robotsIndex := true -}}
+  {{- $robotsFollow := true -}}
+  {{- if isset site.Params "robots" -}}
+    {{- if isset site.Params.robots "index" -}}
+      {{- $robotsIndex = site.Params.robots.index -}}
+    {{- end -}}
+    {{- if isset site.Params.robots "follow" -}}
+      {{- $robotsFollow = site.Params.robots.follow -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if isset $.Params "robots" -}}
+    {{- if isset $.Params.robots "index" -}}
+      {{- $robotsIndex = $.Params.robots.index -}}
+    {{- end -}}
+    {{- if isset $.Params.robots "follow" -}}
+      {{- $robotsFollow = $.Params.robots.follow -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $outputFormat := partial "claris/_functions/output-format" . }}
+  {{- $outputFormatsRobotsExcluded := default (slice "print") ($.Page.Param "outputFormatsRobotsExcluded") }}
+  {{- if in $outputFormatsRobotsExcluded $outputFormat.Name }}
+    {{- $robotsIndex = false }}
+    {{- $robotsFollow = false }}
+    {{/* {{- warnf "%s[%s]: $outputFormatsRobotsExcluded=%v outputFormat=%v: index=%v follow=%v" $page $template $outputFormatsRobotsExcluded $outputFormat.Name $robotsIndex $robotsFollow }} */}}
+  {{ end -}}
+  {{- $noIndexSections := site.Params.robots.noIndexSections }}
+  {{- if in $noIndexSections $page.Section }}
+    {{- $robotsIndex = false }}
+    {{- $robotsFollow = false }}
+    {{/* {{- warnf "%s[%s]: noIndexSections=%v: index=%v follow=%v" $page $template $noIndexSections $robotsIndex $robotsFollow }} */}}
+  {{ end -}}
+  {{- if and (eq $robotsIndex true) (eq $robotsFollow true) }}
+  <meta name="robots" content="index, follow" />
+  {{- else if and (eq $robotsIndex true) (eq $robotsFollow false) }}
+  <meta name="robots" content="index, nofollow" />
+  {{- else if and (eq $robotsIndex false) (eq $robotsFollow true) }}
+  <meta name="robots" content="noindex, follow" />
+  {{- else if and (eq $robotsIndex false) (eq $robotsFollow false) }}
+  <meta name="robots" content="noindex, nofollow" />
+  {{- end -}}
 {{- end -}}

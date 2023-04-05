@@ -1,6 +1,6 @@
-{{- $hiddenSections := default (slice "error" "home" "footer") site.Params.hiddenSections }}
+{{- $robotsTxtHiddenSections := default (slice "error" "home" "footer") site.Params.robots.robotsTxtHiddenSections }}
 Sitemap: {{ absURL "/sitemap.xml" }}
 User-agent: *
-{{ range $hiddenSections -}}
+{{ range $robotsTxtHiddenSections -}}
 {{ printf "Disallow: /%s/" (replaceRE "^/*(.+)/*$" "$1" . )}}
 {{ end -}}

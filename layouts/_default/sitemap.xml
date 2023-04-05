@@ -1,13 +1,19 @@
-{{- $hiddenSections := default (slice "error" "home" "footer") site.Params.hiddenSections -}}
+{{- $noIndexSections := slice }}
+{{- with site.Params.robots.noIndexSections }}
+  {{- $noIndexSections = append . $noIndexSections }}
+{{- end }}
+{{- with site.Params.robots.robotsTxtDisallowSections }}
+  {{- $noIndexSections = append . $noIndexSections }}
+{{- end }}
 {{- $hiddenPages := slice }}
-{{- range $hiddenSections }}
-{{- $hiddenPages = append $hiddenPages (slice (printf "/%s/" .) ) }}
+{{- range $noIndexSections }}
+  {{- $hiddenPages = append $hiddenPages (slice (printf "/%s/" .) ) }}
 {{- end }}
 {{- $hiddenMedia := default (slice "print") site.Params.hiddenMedia -}}
 {{ printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\" ?>" | safeHTML }}
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  {{- $notHiddenSections := where .Data.Pages "Section" "not in" $hiddenSections }}
+  {{- $notHiddenSections := where .Data.Pages "Section" "not in" $noIndexSections }}
   {{- $notHiddenPages := where .Data.Pages "RelPermalink" "not in" $hiddenPages -}}
   {{- /* range $notHiddenPages }}
   {{ .RelPermalink }}

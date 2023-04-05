@@ -22,7 +22,14 @@
     <meta name="description" content="{{ .Description | default site.Params.description }}">
     {{ template "_internal/opengraph.html" . }}
     {{ template "_internal/twitter_cards.html" . }}
-    {{ partial "claris/head/robots" . }}
+    {{- $partialHeadRobots := printf "%s/head/robots" $contentType }}
+    {{ partial "html-comment"
+        (printf "BASEOF: Looking for %s" (printf "partials/%s" $partialHeadRobots) ) }}
+    {{- if (templates.Exists (printf "partials/%s.html" $partialHeadRobots) ) }}
+      {{- partial $partialHeadRobots . }}
+    {{- else }}
+      {{ partial "claris/head/robots" . }}
+    {{- end }}
 {{- with .Page.Param "googleSiteVerification" }}
     <meta name="google-site-verification" content="{{ . }}">
 {{- end }}
