@@ -2,7 +2,7 @@
 {{- $template := "claris/_hoos/body-end/scripts" }}
 {{- $scriptVariant := (dict
   "OnlyMediaType" ($page.Param "onlyMediaType")
-  "ContentTypeList" (partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) .Type)
+  "ContentTypeList" (partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type)
 ) }}
 
 {{/* {{- warnf "[%s]: $scriptVariant=%v" $template $scriptVariant }} */}}

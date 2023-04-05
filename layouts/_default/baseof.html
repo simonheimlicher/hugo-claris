@@ -106,7 +106,7 @@
   {{- $mainClassList := slice "main" }}
   {{- $mainPartial := "main" }}
 
-  {{- with partial "claris/_functions/alternative-type" . }}
+  {{- with partialCached "claris/_functions/alternative-type" . "Alternative" .Type }}
     {{- $mainClassList = append (slice .) $mainClassList }}
     {{- $mainPartial = printf "main/%s" . }}
   {{- end }}

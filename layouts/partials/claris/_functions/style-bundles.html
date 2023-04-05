@@ -81,13 +81,13 @@
       {{- end -}}
     {{- end }}
 
-    {{- if (gt (len $contentTypeList) 1) }}
+    {{/* {{- if (gt (len $contentTypeList) 1) }}
       {{- warnf "%s[%s]: Multiple types=%v ID=%v resourceID=%s produced executedResourceList: "
           $page $template $contentTypeList $contentTypeListID $resourceID }}
       {{- range $idx, $resource := $executedResourceList }}
         {{- warnf "%s[%s]: %d --> %v .Name=%v .MediaType=%v" $page $template $idx $resource $resource.Name $resource.MediaType }}
       {{- end }}
-    {{- end }}
+    {{- end }} */}}
 
     {{- $concatResource := "" }}
     {{- $bundle := "" }}
@@ -96,14 +96,15 @@
 
     {{- $sassImportFile := printf "styles/%s-%s.%s" $contentTypeListID $resourceID $sourceExt }}
     {{- $concatResource = $executedResourceList | resources.Concat $sassImportFile }}
-    {{- warnf "%s[%s]: $concatResource '%s'.Content:\n%v\n...\n%v"
-        $page $template $concatResource (substr $concatResource.Content 0 100) (substr $concatResource.Content -100) }}
+    {{/* {{- warnf "%s[%s]: $concatResource '%s'.Content:\n%v\n...\n%v"
+        $page $template $concatResource (substr $concatResource.Content 0 100) (substr $concatResource.Content -100) }} */}}
 
     {{- $toCSSoptions := merge $toCSSoptionsBase (dict "targetPath" $targetFile) -}}
     {{- $bundle = $concatResource | resources.ToCSS $toCSSoptions | resources.Fingerprint $fingerprintOptions }}
 
-    {{- warnf "%s[%s]: $bundle[%s] %#v: MediaType:%s Content:\n%v\n...\n%v"
-        $page $template $bundle $resourceID $bundle.MediaType (substr $bundle.Content 0 100) (substr $bundle.Content -100) }}
+    {{/* {{- warnf "%s[%s]: $bundle[%s] %#v: MediaType:%s Content:\n%v\n...\n%v"
+        $page $template $bundle $resourceID $bundle.MediaType (substr $bundle.Content 0 100) (substr $bundle.Content -100) }} */}}
+
     {{- $styleBundles = merge $styleBundles (dict $resourceID $bundle) -}}
 
     {{- if (and $supportIE11 $params.supportIE11) }}
