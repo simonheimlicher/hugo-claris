@@ -6,10 +6,11 @@
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="{{- $themeColorDim -}}">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     {{- $title := .Site.Title }}
-    {{- $partialHeadTitle := printf "%s/head/title" (default "claris" .Type) }}
+    {{- $contentType := default "claris" (partialCached "claris/_functions/alternative-type" . . .Type) }}
+    {{- $partialHeadTitle := printf "%s/head/title" $contentType }}
     {{ partial "html-comment"
         (printf "BASEOF: Looking for %s" (printf "partials/%s" $partialHeadTitle) ) }}
-    {{- if (or false (templates.Exists (printf "partials/%s.html" $partialHeadTitle) ) ) }}
+    {{- if (templates.Exists (printf "partials/%s.html" $partialHeadTitle) ) }}
       {{- $title = partial $partialHeadTitle . }}
     {{- else }}
       {{- $title = partial "claris/head/title" . }}
