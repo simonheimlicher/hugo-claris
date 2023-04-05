@@ -73,14 +73,16 @@
       position: absolute
       bottom: 0.75rem
       right: 0
-    &:hover
-      background-color: var(--theme)
+    @media (any-hover: hover)
+      &:hover
+        background-color: var(--theme)
     svg
       fill: var(--theme-text)
       opacity: 0.5
       transition: 0.3s opacity var(--ease)
-    &:hover svg
-      opacity: 1
+    @media (any-hover: hover)
+      &:hover svg
+        opacity: 1
 
 @media screen
   .nav
@@ -265,13 +267,13 @@
           border-radius: 0.25rem
           svg
             filter: invert(100%)
-  &_item
-    &.nav_brand, &.nav_mobile_toggle
-      &:hover
-        z-index: ($main-z-index + 1)
-        color: var(--theme-text-hover)
-        &::after
-          @include hover-background()
+    &_item
+      &.nav_brand, &.nav_mobile_toggle
+        &:hover
+          z-index: ($main-z-index + 1)
+          color: var(--theme-text-hover)
+          &::after
+            @include hover-background()
 
   &_follow
     margin: 0 0.25rem
@@ -484,8 +486,9 @@
     overflow: hidden
     // box-shadow: 0 0.25rem 1rem rgba(0,0,0,0.15)
     @include drop-shadow-offset(0, 0.25rem, 1rem, 0.25, 0.35)
-    &:hover
-      background-color: var(--translucent-hover)
+    @media (any-hover: hover)
+      &:hover
+        background-color: var(--translucent-hover)
     &:after
       content: ""
       position: absolute
