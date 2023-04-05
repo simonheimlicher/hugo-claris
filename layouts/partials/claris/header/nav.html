@@ -89,12 +89,18 @@
 {{- with $page }}
 {{/* {{- partial "html-comment" (printf "%s[%s]: Listing related pages if .Type=%v in %v and .Section=%v in %v"
     $template . .Type (.Param "navListCurrentSectionForTypes")  .Section (.Param "navListCurrentSectionInSection")) -}} */}}
-  {{- $hiddenSections := site.Params.hiddenSections }}
+  {{- $noIndexSections := slice }}
+  {{- with site.Params.robots.noIndexSections }}
+    {{- $noIndexSections = append . $noIndexSections }}
+  {{- end }}
+  {{- with site.Params.robots.robotsTxtDisallowSections }}
+    {{- $noIndexSections = append . $noIndexSections }}
+  {{- end }}
   {{- if (and (in (.Param "navListCurrentSectionForTypes") .Type)
   (in (.Param "navListCurrentSectionInSection") .Section) ) }}
-    {{- /* Exclude sections that are in site.Params.hiddenSections but
+    {{- /* Exclude sections that are in site.Params.robots.noIndexSections but
     still list pages if the current page is in a hidden section */ -}}
-    {{- $excludeSections := complement (slice (printf "%s" .Section)) $hiddenSections }}
+    {{- $excludeSections := complement (slice (printf "%s" .Section)) $noIndexSections }}
     {{/* {{- partial "html-comment" (printf "%s[%s]: .Section=%v .CurrentSection=%v $excludeSections=%v" $page $template .Section .CurrentSection $excludeSections) }} */}}
     {{- with .CurrentSection }}
       {{- $menuTitle := default .Title .Params.MenuTitle }}
@@ -113,8 +119,8 @@
       {{- end }}
     {{- else }}
       {{- with .Parent -}}
-        {{/* {{- partial "html-comment" (printf "[%s]: Determine listing .Parent: .Parent.Section=%v $hiddenSections=%v" $template .Section $hiddenSections) }} */}}
-        {{- if (in $hiddenSections .Section) }}
+        {{/* {{- partial "html-comment" (printf "[%s]: Determine listing .Parent: .Parent.Section=%v $noIndexSections=%v" $template .Section $noIndexSections) }} */}}
+        {{- if (in $noIndexSections .Section) }}
         {{- else }}
           {{- with .Pages -}}
             {{- range (sort (where . "Section" "not in" $excludeSections) "Weight" "desc") -}}
