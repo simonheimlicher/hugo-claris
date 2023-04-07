@@ -82,4 +82,3 @@
   # Sections to be listed in robots.txt as being excluded from indexing
   # CAUTION: This will cause attackers to look at these sections in particular, so do not use this parameter to hide a section
   robotsTxtDisallowSections = ["error", "home", "footer"]
-
