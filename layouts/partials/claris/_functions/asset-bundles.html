@@ -15,7 +15,7 @@
 {{- $contentTypeListID := delimit $contentTypeList "-" }}
 {{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
 {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
-{{- $supportIE11 := default false (site.Params.supportIE11 | and (not $envDevel) ) }}
+{{- $supportIE11 := default true (site.Params.supportIE11 | and (not $envDevel) ) }}
 {{- $minifyBundles := $envProd }}
 {{/* {{- warnf "%s[%s]: contentTypeList:%s hugo.Environment=%v envDevel=%v envProd=%v Params.supportIE11=%v supportIE11:%v minifyBundles:%v"
     $page $template $contentTypeList hugo.Environment $envDevel $envProd site.Params.supportIE11 $supportIE11 $minifyBundles -}} */}}
