@@ -1,21 +1,59 @@
 {{- $page := .Page }}
 {{- $items := .Items }}
 {{- $itemType := default "section" .ItemType }}
+{{- $limit := default 0 .Limit }}
+{{- $excerptPartial := default false .Partial }}
+{{- $listLayout := default "grid" .ListLayout }}
 {{- $headingLevel := default 2 .HeadingLevel }}
-{{- $excerptPartial := default "claris/_components/excerpt" .Partial }}
+{{- $containerClass := default "content_multicolumn content" .ContainerClass }}
 {{- $template := "claris/_components/list" }}
 {{- $mainSection := (in ($page.Param "mainSections") .Section) -}}
 
-        <div class="content_multicolumn content{{ if $mainSection }} main-section{{ end }}">
-          <div class="excerpt_grid">
-          {{- range ($page.Paginate $items).Pages }}
-            {{/* {{- warnf "%s[%s]: Listing page:%v with .Params:%v" $page $template . .Params }} */}}
-            {{ partial $excerptPartial (dict "Page" . "HeadingLevel" $headingLevel "RelativeDates" false "ShowTags" false) }}
-          {{- end }}
-          </div>
-          {{- if gt (len $items) ($page.Param "paginate") }}
-          <div class="pagination_grid">
-            {{- template "_internal/pagination.html" $page }}
-          </div>
-          {{- end }}
-        </div>
+{{/* {{- warnf "%s[%s]: items=%v itemType=%v limit=%v excerptpartial=%v listLayout=%v headingLevel=%v containerClass=%v"
+    $page $template $items $itemType $limit $excerptPartial $listLayout $headingLevel $containerClass }} */}}
+
+{{- if (eq $listLayout "grid") }}
+  {{- $excerptPartial = default $excerptPartial "claris/_components/excerpt" }}
+  <div class="{{ $containerClass }}{{ if $mainSection }} main-section{{ end }}">
+    <div class="excerpt_grid">
+{{- else if (eq $listLayout "list") }}
+  <ul class="content_list">
+{{- else }}
+  {{- errorf "%s[%s]: Invalid .ListLayout=%v" $page $template $listLayout }}
+{{- end }}
+
+  {{- with $limit }}
+    {{- $items = first . $items }}
+  {{- end }}
+
+  {{- $paginated := $items }}
+  <!-- Paginator is only supported if kind is section or taxonomy
+      https://gohugo.io/templates/pagination/#list-paginator-pages -->
+  {{- if (in (slice "section" "taxonomy") $page.Kind) }}
+    {{- $paginated = ($page.Paginate $items).Pages }}
+  {{- end }}
+  {{- with $paginated }}
+    {{- range . }}
+      {{/* {{- warnf "%s[%s]: Listing page:%v with .Params:%v" $page $template . .Params }} */}}
+      {{- if $excerptPartial }}
+        {{ partial $excerptPartial (dict "Page" . "HeadingLevel" $headingLevel "RelativeDates" false "ShowTags" false) }}
+      {{- else }}
+        <li><a href="{{ .Permalink }}" title="{{ .Title }}">{{ .Title }}</a></li>
+      {{- end }}
+    {{- end }}
+    {{- if (eq $listLayout "grid") }}
+    </div>
+    {{- end }}
+    {{- if and (in (slice "section" "taxonomy") $page.Kind) (gt (len $items) ($page.Param "paginate") ) }}
+    <div class="pagination_grid">
+      {{- template "_internal/pagination.html" $page }}
+    </div>
+    {{- end }}
+  {{- else }}
+    {{- errorf "%s[%s]: page.Paginate returned %v. $items=%v" $page $template $paginated $items }}
+  {{- end }}
+{{- if (eq $listLayout "grid") }}
+  </div>
+{{- else if (eq $listLayout "list") }}
+  </ul>
+{{- end }}

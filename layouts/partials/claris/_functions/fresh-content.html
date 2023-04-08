@@ -7,15 +7,25 @@
   {{- $recentMaxYears = . }}
 {{- end }}
 {{- $items := slice }}
-{{- with .Items }}
-  {{- $items = . }}
-{{- else }}
-  {{- with .Section }}
-    {{- $items = where site.RegularPages.ByLastmod.Reverse "Section" "eq" . }}
+{{- if reflect.IsMap . }}
+  {{- with .Items }}
+    {{- $items = . }}
   {{- else }}
-    {{ $items = where site.RegularPages.ByLastmod.Reverse "Section" "in" ($page.Param "mainSections") }}
+    {{- with .Section }}
+      {{- $items = where site.RegularPages.ByLastmod.Reverse "Section" "eq" . }}
+    {{- end }}
+    {{- with .Sections }}
+      {{- $items = where site.RegularPages.ByLastmod.Reverse "Section" "in" . }}
+    {{- end }}
+    {{- with .Limit }}
+      {{- $items = first . $items }}
+    {{- end }}
   {{- end }}
 {{- end }}
+{{- if not $items }}
+  {{ $items = where site.RegularPages.ByLastmod.Reverse "Section" "in" ($page.Param "mainSections") }}
+{{- end }}
+
 <!-- Limit list of articles in main sections (e.g. /articles) to last n years -->
 {{- $content_recent := where $items "Lastmod" "ge" (now.AddDate (int (sub 0 $recentMaxYears)) 0 0) }}
 {{/*  {{- warnf "content_recent: %#v" $content_recent }}  */}}

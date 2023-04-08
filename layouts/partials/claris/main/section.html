@@ -18,7 +18,12 @@
     {{- if in ($page.Param "mainSections") .Section }}
       {{- $items = partialCached "claris/_functions/fresh-content" (dict "Page" . "Section" .Section) . }}
       {{/* {{- partial "html-comment" (printf "[%s]: listing fresh-content: %v" $template $items) }} */}}
-    {{/* {{- warnf "%s[%s]: listing fresh-content: %v" $page $template $items }} */}}
+      {{/* {{- warnf "%s[%s]: main-section: listing fresh-content: %v" $page $template $items }} */}}
+    {{- else }}
+      {{/* {{- partial "html-comment" (printf "[%s]: not main-section: listing $items=%v from .Pages.ByLastmod.Reverse=%v"
+          $page $template $items .Pages.ByLastmod.Reverse }} */}}
+      {{/* {{- warnf "%s[%s]: not main-section: listing $items=%v from .Pages.ByLastmod.Reverse=%v"
+          $page $template $items .Pages.ByLastmod.Reverse }} */}}
     {{- end }}
   {{- end }}
 
@@ -29,11 +34,13 @@
     {{ partial "claris/_components/title" (dict "Page" $page "HeadingLevel" $headingLevel) }}
   {{- end }}
 
-  {{ partial "claris/_components/list" (dict
-      "Page" $page
-      "Items" $items
-      "ItemType" $itemType
-      "HeadingLevel" $headingLevel) }}
+  {{- with $items }}
+    {{ partial "claris/_components/list" (dict
+        "Page" $page
+        "Items" $items
+        "ItemType" $itemType
+        "HeadingLevel" $headingLevel) }}
 
+  {{- end }}
   {{ partial "html-comment" (printf "[%s]:   END" $template) }}
 {{- end }}
