@@ -3,7 +3,8 @@
  */
 
 $list-excerpt-width: 20rem;
-$list-style-indent: 1.25em;
+// $list-style-indent: 1.25em;
+$list-style-indent: 0;
 $list-style-ul-indent: $list-style-indent;
 $list-style-ol-indent: $list-style-indent;
 
@@ -260,23 +261,29 @@ $main-z-index: 1;
 
 @mixin list-style($padding-vertical: $screenViewBodyPaddingNarrow / 2, $indent: $list-style-indent) {
   ul, ol {
-    list-style: disc outside none; // initial;
+    // list-style: disc outside none; // initial;
     padding: $padding-vertical 0;
     margin: 0 0 0 $indent;
     li {
-      padding: ($padding-vertical / 2) 0 ($padding-vertical / 2) 0.25em;
+      padding: ($padding-vertical / 2) 0;
     }
   }
-  ul li {
+  ul > li {
     list-style: disc outside;
-    li {
+    margin-left: 1em;
+    padding-left: 0.5em;
+    & > ul li {
       list-style-type: none;
+      margin-left: 0;
+      padding-left: 0.5em;
       &::before {
         content: '–';
         float: left;
-        margin-left: -1em;
+        margin-left: -1.75em;
       }
-      li {
+      & > ul li  {
+        margin-left: -0.25em;
+        padding-left: 0.75em;
         list-style-type: circle;
         &::before {
           content: none;
@@ -284,8 +291,13 @@ $main-z-index: 1;
       }
     }
   }
-  ol {
-    list-style: decimal;
+  ol li {
+    list-style: decimal outside;
+    margin-left: 1em;
+    padding-left: 0.5em;
+  }
+  li ul, li ol {
+    padding-left: 1.25em;
   }
 }
 
