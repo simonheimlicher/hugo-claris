@@ -2,6 +2,7 @@
 {{- $p := .Params }}
 {{- $s := site.Params }}
 {{- $template := "partials/header" }}
+{{- $contentType := default "claris" (partialCached "claris/_functions/alternative-type" . .Kind .Type) }}
 {{- $centerLogo := $s.centerLogo }}
 {{- $logo := $s.logo }}
 {{- $logoURL := $s.logoURL }}
@@ -24,8 +25,8 @@
             {{ partial "claris/header/logo" (dict "logo" $logo "class" "nav_center") }}
           {{- end }}
           <div class="nav_parent_follow_mode">
-          {{- partialCached "claris/header/follow" . .Type }}
-          {{- partialCached "claris/header/mode" . .Type }}
+          {{- partialCached "claris/header/follow" . $contentType }}
+          {{- partialCached "claris/header/mode" . $contentType }}
           </div>
         </div>
       </nav>
