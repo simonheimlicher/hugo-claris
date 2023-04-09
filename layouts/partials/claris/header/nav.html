@@ -12,7 +12,6 @@
 {{- $elementIdPrefix := "nav-menu-item" }}
 {{- /* partial "html-comment" (printf "BEGIN %v" $template) */ -}}
 {{- range $menu }}
-  {{- $parentID := default "" (printf "%s-%s" $elementIdPrefix (.Identifier | plainify | urlize) ) }}
   {{- /* partial "html-comment" ( . | jsonify (dict "indent" "  " "prefix" "      ") ) */ -}}
   {{- if eq $menu $menuData }}
     {{- /* partial "html-comment" (printf "        %v =  %v" $menu $menuData) */ -}}
@@ -33,6 +32,7 @@
     {{- end }}
   {{- end }}
   {{- $url = printf "%s/" (strings.TrimRight "/" $url) }}
+  {{- $parentID := default "" (printf "%s-%s" $elementIdPrefix (default $name .Identifier) | plainify | urlize) }}
     {{/* {{- partial "html-comment" (printf ".URL:%s $url:%s $link:%s currentPage.Section:%s currentPage.Permalink:%s" .URL $url $link $currentPage.Section $currentPage.Permalink ) -}} */}}
           <div class="nav_parent">
             <a href="{{ $url }}" id="{{ $parentID }}" class="nav_menu nav_item
@@ -54,7 +54,6 @@
             <div class="nav_sub">
               <span class="nav_child"></span>
       {{- range . }}
-        {{- $cchildID := default "" (printf "%s-%s" $parentID ( (default .Name .Identifier) | plainify | urlize) ) }}
         {{- if eq $menu $menuData }}
           {{- $name = .name }}
           {{- $url = absURL .link }}
@@ -62,7 +61,8 @@
           {{- $name = .Name }}
           {{- $url = absLangURL .URL }}
         {{- end }}
-                <a href="{{ $url }}" id="{{ $cchildID }}" class="nav_child nav_item
+        {{- $childID := default "" (printf "%s-%s" $parentID ( (default $name .Identifier) | plainify | urlize) ) }}
+                <a href="{{ $url }}" id="{{ $childID }}" class="nav_child nav_item
         {{- if eq $currentPage.Permalink $url }} nav_active_page{{ end -}}
         {{- if ( $currentPage.IsMenuCurrent .Menu . ) }} nav_active_is_menu{{ end -}}
         {{- if ( $currentPage.HasMenuCurrent .Menu . ) }} nav_active_has_menu{{ end -}}
