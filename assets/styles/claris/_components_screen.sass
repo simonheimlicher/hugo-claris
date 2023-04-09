@@ -515,6 +515,7 @@
     padding-top: #{$nav-height}
     margin-top: - #{$nav-height}
     min-height: 100vh
+    min-height: 100lvh
     // Ensure main covers whole width of footer
     width: 100%
     // Ensure .main extends padding to reach under nav_header
@@ -522,8 +523,6 @@
     // padding-top: 0
     padding: #{$nav-height-narrow} 0 $screenViewBodyPadding 0
     margin: - #{$nav-height-narrow} auto 0 auto
-    min-height: 100vh
-    min-height: 100lvh
 
 .footer
   // Footer shall stick to the bottom and reveal when body scrolls up
@@ -577,6 +576,7 @@
       flex-direction: column
       justify-content: flex-end
       min-height: 100vh
+      min-height: 100lvh
       padding-bottom: $screenViewBodyPadding
       z-index: ($main-z-index + 2)
     .content-title
@@ -618,6 +618,7 @@
     &_main
       .main_inner
         min-height: 100vh
+        min-height: 100lvh
         // min-height: calc(100vh - #{$nav-height})
         // min-height: calc(100lvh - #{$nav-height})
         // padding: 3rem 0 0 0
