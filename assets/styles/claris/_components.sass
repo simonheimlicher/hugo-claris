@@ -476,11 +476,6 @@
   &_main
     width: 100%
     padding: 0
-    &.partition
-      clear: both
-      min-height: 10rem // For IE 11
-      // .excerpt_thumbnail
-      //   padding-bottom: var(--screenViewBodyPadding-vertical)
     @media screen and (min-width: $screenViewBreakpointWidthNarrow)
       &.partition
         .excerpt_thumbnail
@@ -508,6 +503,7 @@
     height: 100% // Ensure the entire excerpt div is covered by <a> tags
     padding: var(--screenViewBodyPadding-half-vertical) var(--screenViewBodyPadding-horizontal)
   &_footer
+    clear: both
     &_read-on, &_page-count
       padding: var(--screenViewBodyPadding-half-vertical) var(--screenViewBodyPadding-horizontal) var(--screenViewBodyPadding-vertical) var(--screenViewBodyPadding-horizontal)
       margin: 0
