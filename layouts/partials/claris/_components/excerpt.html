@@ -54,25 +54,20 @@
         {{- partial $headerPartial (dict "Page" $page "relativeDates" $relativeDates "showTags" $showTags) }}
       {{- end }}
     </div>
-    {{- if $thumbnailResource }}
     <div class="excerpt_main{{ if $summary }} partition{{ end }}">
-      <div class="excerpt_thumbnail">
-          {{- partial "html-comment" (printf "[%s]: processing thumbnail:%v spec:%v"
-          $template $thumbnailResource $thumbnailSizeSpec)}}
-        <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
-          {{- partial "responsive-image" (dict
-          "Page" $page
-          "Resource" $thumbnailResource
-          "Alt" $title
-          "Size" $thumbnailSizeSpec
-          "LazyLoad" true)
-          $page $thumbnailResource }}
-        </a>
-      </div>
-    {{- else }}
-    <div class="excerpt_main">
-    {{- end }}
       <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
+        {{- with $thumbnailResource }}
+        <div class="excerpt_thumbnail">
+            {{- partial "html-comment" (printf "[%s]: processing thumbnail:%v spec:%v"
+            $template . $thumbnailSizeSpec)}}
+            {{- partial "responsive-image" (dict
+            "Page" $page
+            "Resource" .
+            "Alt" $title
+            "Size" $thumbnailSizeSpec
+            "LazyLoad" true) }}
+        </div>
+      {{- end }}
         <div class="excerpt_content">
         {{- with $summary }}
           <p>
