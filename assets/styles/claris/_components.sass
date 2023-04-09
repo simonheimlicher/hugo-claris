@@ -23,7 +23,12 @@
     @include content_multicolumn
 
 .footer
-  font-size: 0.9rem
+  font-size: 0.8rem
+  // FIXME: IE 11 bug
+  // https://github.com/philipwalton/flexbugs/issues/75
+  // Setting a min-height on the container (body does not work)
+  // avoids scaled images taking up as much space as they would if not scaled
+  min-height: 1px // For IE 11
   h2, h3, h4, h5, h6
     margin: 0
     padding: 0
@@ -41,7 +46,6 @@
   z-index: ($main-z-index  - 1)
 
   @media screen and (min-height: $screenViewBreakpointHeightTall)
-    font-size: 1.1rem
     h2, h3, h4
       padding: $heading-padding-top 0 calc(#{$heading-padding-top} * 0.25) 0
       margin: $heading-margin-top 0 calc(#{$heading-margin-top} * 0.25) 0
@@ -51,6 +55,7 @@
       font-size: 120%
 
   @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+    font-size: 0.9rem
     @supports (display: grid)
       .grid-footer
         display: grid
@@ -470,10 +475,10 @@
     margin: 0
   &_main
     width: 100%
-    min-height: 10rem // For IE 11
     padding: 0
     &.partition
       clear: both
+      min-height: 10rem // For IE 11
       // .excerpt_thumbnail
       //   padding-bottom: var(--screenViewBodyPadding-vertical)
     @media screen and (min-width: $screenViewBreakpointWidthNarrow)
@@ -959,18 +964,26 @@ html[data-mode="dim"]
 // {{ </responsive-code> }}
 
 .shortcode_responsive-figure
-  display: flex;
-  flex-direction: column
-  flex-wrap: nowrap
-  align-content: center
-  justify-content: center
-  align-items: center
-  & > div, & > picture, & > img
+  display: block
+  margin: calc(#{$screenViewBodyPadding}) auto
+  // padding: calc(#{$screenViewBodyPadding}) calc(#{$screenViewBodyPadding})
+  border-radius: 0.125rem
+  & > picture
+    display: block
+    max-width: 100% // IE 11
+    max-height: 100% // IE 11
+  @supports (display: flex)
+    display: flex;
+    flex-direction: column
+    flex-wrap: nowrap
+    align-content: center
+    justify-content: center
+    align-items: center
+  // Remove any surrounding margins and padding from elements
+  // within the figure
+  & > div
     margin: 0
     padding: 0
-  & > picture
-    width: 100% // IE 11
-    height: 100% // IE 11
   &_img
     margin: 0
     padding: 0
@@ -980,16 +993,12 @@ html[data-mode="dim"]
     max-height: 100%
   &.caption
     background: var(--figure-bg)
-    padding: var(--screenViewBodyPadding-vertical) calc(#{$screenViewBodyPadding} / 2)
+    padding: var(--screenViewBodyPadding-vertical)  var(--screenViewBodyPadding-horizontal)
     color: var(--text)
     font-family: var(--font)
-    @at-root figure#{&}
-      margin: calc(#{$screenViewBodyPadding}) auto
-      padding: calc(#{$screenViewBodyPadding}) calc(#{$screenViewBodyPadding})
-      border-radius: 0.125rem
     & > figcaption
       width: 100%
-      padding: calc(#{$screenViewBodyPadding}) 0 0 0
+      padding: var(--screenViewBodyPadding-vertical) 0 0 0
 
   &.background-light
     background: var(--bg-light)
@@ -1005,45 +1014,75 @@ html[data-mode="dim"]
 
   &.float-left, &.float-right
     float: none
-    // max-width: 80%
-    max-width: calc(0.8 * (#{$screenViewBreakpointWidthMobile} - 2 * var(--screenViewBodyPadding-horizontal) ) )
-    margin: 0.25rem auto
+    max-width: 80%
+    // max-width: calc(0.8 * (#{$screenViewBreakpointWidthMobile} - 2 * var(--screenViewBodyPadding-horizontal) ) )
+    margin: 0 auto
+  *:not(figure) + &
+    clear: both
+
+  &.relative-width-20
+    max-width: 30%
+  &.relative-width-30
+    max-width: 40%
+  &.relative-width-40
+    max-width: 60%
+  &.relative-width-50
+    max-width: 70%
 
   @media screen and (min-width: $screenViewBreakpointWidthMobile)
-    &.float-left, &.float-right
-      max-width: calc(0.4 * (#{$screenViewBreakpointWidthOneColumn} - 2 * var(--screenViewBodyPadding-horizontal) ) )
+    &.relative-width-20
+      &.float-left
+        float: left
+        margin: 0 $screenViewBodyPadding 1rem 0
+    &.relative-width-20
+      &.float-right
+        float: right
+        margin: 0 0 1rem $screenViewBodyPadding
+    &.relative-width-20
+      max-width: 40%
+    &.relative-width-30
+      max-width: 60%
+    &.relative-width-40
+      max-width: 80%
+
+  @media screen and (min-width: $screenViewBreakpointWidthNarrow)
+    &.relative-width-30
+      &.float-left
+        float: left
+        margin: 0 $screenViewBodyPadding 1rem 0
+    &.relative-width-30
+      &.float-right
+        float: right
+        margin: 0 0 1rem $screenViewBodyPadding
+    &.relative-width-20
+      max-width: 30%
+    &.relative-width-30
+      max-width: 40%
+    &.relative-width-40
+      max-width: 50%
+    &.relative-width-50
+      max-width: 60%
 
   @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
-    &.float-left, &.float-right
+    &.relative-width-40,
+    &.relative-width-50,
+    &.relative-width-60
+      &.float-left
+        float: left
+        margin: 0 $screenViewBodyPadding 1rem 0
+    &.relative-width-40,
+    &.relative-width-50,
+    &.relative-width-60
+      &.float-right
+        float: right
+        margin: 0 0 1rem $screenViewBodyPadding
+    &.relative-width-20
+      max-width: 20%
+    &.relative-width-30
+      max-width: 30%
+    &.relative-width-40
       max-width: 40%
-    &.float-left
-      float: left
-      margin: 0 $screenViewBodyPadding 1rem 0
-      img
-        margin: 0.25rem auto 0.25rem 0
-
-      // Keep remaining column at leat 50% wide for readability
-      // https://stackoverflow.com/a/32324732/617559
-      & ~ *:not(figure):before
-        height: 0
-        content: ''
-        min-width: 50%
-        display: block
-        overflow: hidden
-        clear: right
-
-    &.float-right
-      float: right
-      margin: 0 0 1rem $screenViewBodyPadding
-      img
-        margin: 0.25rem 0 0.25rem auto
-
-      // Keep remaining column at leat 50% wide for readability
-      // https://stackoverflow.com/a/32324732/617559
-      & + *:not(figure):before
-        height: 0
-        content: ''
-        min-width: 50%
-        display: block
-        overflow: hidden
-        clear: left   //use clear:right if img is float:left
+    &.relative-width-50
+      max-width: 50%
+    &.relative-width-60
+      max-width: 60%

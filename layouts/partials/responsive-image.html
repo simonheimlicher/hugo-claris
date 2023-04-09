@@ -5,34 +5,41 @@
 {{- $resourceSpec := .Resource -}}
 {{- $caption := default "" .Caption -}}
 {{- $alt := default $caption .Alt -}}
-{{- $imgProcess := .Process -}}
-{{- $imgClass := .ImgClass -}}
+{{- $imgClass := default "" .ImgClass -}}
 {{- $imgPosition := default "center center" .ImgPosition -}}
 {{- $figureClass := cond (ne "" $caption) "caption" "" -}}
 {{- with .FigureClass -}}
   {{- $figureClass = printf "%s %s" $figureClass . -}}
 {{- end }}
+{{- $containerClass := "" }}
+
 {{- with .Float -}}
-  {{- if $figureClass -}}
-    {{- $figureClass = printf "%s float-%s" $figureClass . -}}
-  {{- else }}
-    {{- $imgClass = printf "%s float-%s" $imgClass . }}
-  {{- end }}
+  {{- $containerClass = printf "%s float-%s" $containerClass . -}}
 {{- end -}}
+
+{{- with .RelativeWidth -}}
+  {{- $containerClass = printf "%s relative-width-%s" $containerClass . -}}
+{{- end -}}
+
+{{- $background := default false .Background -}}
+{{- with $background }}
+  {{- $containerClass = printf "%s background-%s" $containerClass . -}}
+{{- end }}
+
+{{- with $containerClass }}
+  {{- if $figureClass -}}
+    {{- $figureClass = printf "%s %s" $figureClass . -}}
+  {{- else }}
+    {{- $imgClass = printf "%s %s" $imgClass . }}
+  {{- end }}
+{{- end }}
+
 {{- $shape := default false .Shape -}}
 {{- with $shape }}
   {{- $imgClass = printf "%s shape-%s" $imgClass . }}
 {{- end }}
-{{- $background := default false .Background -}}
-{{- with $background }}
-  {{- if $figureClass -}}
-    {{- $figureClass = printf "%s background-%s" $figureClass . -}}
-  {{- else }}
-    {{- $imgClass = printf "%s background-%s" $imgClass . }}
-  {{- end }}
-{{- end }}
 
-{{ $supportIE11 := site.Params.supportIE11 }}
+{{ $supportIE11 := default true site.Params.supportIE11 }}
 
 {{- $lightbox := default false .LightBox -}}
 {{- $lazy := default true .LazyLoad -}}
@@ -122,11 +129,7 @@
       {{- if $lightbox -}}
         <a href='{{ $defaultSrcURL }}'>
       {{- end -}}
-          <picture
-            {{- with $imgInlineStyle_attr -}}
-              {{ $imgInlineStyle_attr | safeHTMLAttr }}
-            {{- end -}}
-          >
+          <picture>
           {{- range where $pictureResources "Media" "ne" $defaultMedia}}
             {{- $srcURL := .ImageResource.Img.RelPermalink }}
             {{- $imgWidth := default .ImageResource.Img.Width $imageResourceArgs.Width }}
@@ -161,15 +164,12 @@
     {{- end }}
     {{- if $figureClass }}
       <figure class="{{ $figureClass }}{{ if $lazy }} lazyload{{ end }}">
-      {{- /* Would prefer to use NPM module medium-zoom to zoom in on the figure including the caption
-      but doing this by adding the following attribute appears not to work: */ -}}
+      <!-- Would prefer to use NPM module medium-zoom to zoom in on the figure including the caption
+      but doing this by adding the following attribute appears not to work: -->
       {{- /* with $lightbox }} data-zoomable="{{ . | safeHTMLAttr }}"{{- end -}} */ -}}
     {{- end }}
-        <picture
-          {{- with $imgInlineStyle_attr -}}
-            {{ $imgInlineStyle_attr | safeHTMLAttr }}
-          {{- end -}}
-        >
+        <!-- HTML element is a grouping element and must not contain any styles -->
+        <picture>
         {{- range where $pictureResources "Media" "ne" $defaultMedia}}
           {{- $srcURL := .ImageResource.Img.RelPermalink }}
           {{- $imgWidth := default .ImageResource.Img.Width $imageResourceArgs.Width }}
