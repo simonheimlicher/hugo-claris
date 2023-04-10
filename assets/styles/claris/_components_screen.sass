@@ -7,7 +7,7 @@
   top: -0.5rem
   left: 1rem
 
-@mixin hover-background($color: var(--text-hover), $background: var(--theme-bg-hover), $top-left: 0, $top-right: 0, $bottom-left: 0, $bottom-right: 0)
+@mixin hover-background($color: var(--text-hover), $background: var(--theme-bg-hover), $top-left: 0, $top-right: 0, $bottom-right: 0, $bottom-left: 0)
   z-index: -1
   content: ''
   position: absolute
@@ -26,8 +26,8 @@
   --all: 0
   --top-left: #{$top-left}
   --top-right: #{$top-right}
-  --bottom-left: #{$bottom-left}
   --bottom-right: #{$bottom-right}
+  --bottom-left: #{$bottom-left}
   -webkit-mask: linear-gradient(45deg, transparent 0 var(--bottom-left,var(--all)) ,#fff 0) bottom left, linear-gradient( -45deg, transparent 0 var(--bottom-right,var(--all)),#fff 0) bottom right, linear-gradient( 135deg, transparent 0 var(--top-left,var(--all)) ,#fff 0) top left, linear-gradient(-135deg, transparent 0 var(--top-right,var(--all)) ,#fff 0) top right
   -webkit-mask-size: 50.5% 50.5%
   -webkit-mask-repeat: no-repeat
@@ -54,6 +54,38 @@
   -webkit-mask: linear-gradient(45deg, transparent 0 var(--bottom-left,var(--all)) ,#fff 0) bottom left, linear-gradient( -45deg, transparent 0 var(--bottom-right,var(--all)),#fff 0) bottom right, linear-gradient( 135deg, transparent 0 var(--top-left,var(--all)) ,#fff 0) top left, linear-gradient(-135deg, transparent 0 var(--top-right,var(--all)) ,#fff 0) top right
   -webkit-mask-size: 50.5% 50.5%
   -webkit-mask-repeat: no-repeat
+
+@mixin nav-background($color: var(--text-active), $background: var(--theme-bg-active), $border: var(--theme-bg-active), $top-left: 0.5rem, $top-right: 0.5rem, $bottom-right: 0, $bottom-left: 0)
+  z-index: -1
+  content: ''
+  position: absolute
+  color: var(--theme-text-hover)
+  top: 0
+  right: 0
+  bottom: 0
+  left: 0
+  background-size: 100% 100%
+  background: $background
+  border: 1px solid $border
+  border-bottom: none
+  height: unset
+  // margin: 0.25rem -0.125rem
+  border-radius: 0.25rem
+  @media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
+    border-radius: $top-left $top-right $bottom-right $bottom-left
+    margin: 0.25rem 0 0 0
+
+@mixin nav-active-background($color: var(--text-active), $background: var(--theme-bg-active), $border: var(--theme-bg-active), $top-left: 0.5rem, $top-right: 0.5rem, $bottom-right: 0, $bottom-left: 0)
+  @include nav-background($color, $background, $border, $top-left, $top-right, $bottom-right, $bottom-left)
+
+@mixin nav-active-section-background($color: var(--text), $background: var(--bg), $border: var(--theme-bg-active))
+  @include nav-background($color, $background, $border)
+
+@mixin nav-hover-background($color: var(--text-hover), $background: var(--theme-bg-hover), $border: var(--theme-bg-hover))
+  @include nav-background($color, $background, $border)
+
+@mixin nav-open-background($color: var(--text), $background: var(--theme-bg), $border: var(--theme-bg-active))
+  @include nav-background($color, $background, $border)
 
 @media screen
   .to_top
@@ -98,14 +130,14 @@
   // https://stackoverflow.com/q/6421966/617559
   // overflow-x: auto
   // overflow-y: visible
-  img
-    margin: auto 0
+  // img
+  //   margin: auto 0
 
   &_active
     padding: 0
     border-radius: 0.125rem
     // &, &_is_menu.nav_menu, &_has_menu:not(.nav_open), &_parent_is_menu.nav_menu, &_parent_has_menu, .nav_open_sub &_is_menu, .nav_open_sub &_parent_is_menu, .nav_open_sub &_parent_parent_is_menu
-    &, &_is_menu.nav_menu, &_has_menu:not(.nav_open), &_parent_is_menu.nav_menu, &_parent_has_menu, &_in_section
+    &, &_is_menu.nav_menu, &_has_menu:not(.nav_open), &_parent_is_menu.nav_menu, &_parent_has_menu
       // background-color: var(--choice-bg-menu-active)
       // color: var(--text)
       // text-decoration: none
@@ -116,65 +148,74 @@
       // svg
       //   filter: invert(100%);
       &::after
-        position: absolute
-        content: ''
-        top: 0
-        bottom: 0.25rem
-        left: 0
-        right: 0
-        margin: 0 0.5rem
+        // position: absolute
+        // content: ''
+        // top: 0
+        // bottom: 0.25rem
+        // left: 0
+        // right: 0
+        // margin: 0 0.5rem
         // height: 100%
         // background-image: linear-gradient(to right, var(--theme-hover) 0, var(--theme) 20%, var(--theme) 80%, var(--theme-hover) 100%)
         // background-image: linear-gradient(to right, var(--theme) 0, var(--theme) 100%)
         // background-image: linear-gradient(to right, var(--xxhaze) 0, var(--xhaze) 50%, var(--xxhaze) 100%)
-        background-image: linear-gradient(to right, var(--xxxhaze) 0, var(--xxhaze) 50%, var(--xxxhaze) 100%)
-        background-size: 100% 8%
-        background-repeat: repeat-x
-        background-position-y: bottom
+        // background-image: linear-gradient(to right, var(--xxxhaze) 0, var(--xxhaze) 50%, var(--xxxhaze) 100%)
+        // background-size: 100% 8%
+        // background-repeat: repeat-x
+        // background-position-y: bottom
+        @include nav-active-background
+
       &:active
         color: var(--xaccent)
       &:focus
         outline: var(--accent)
+    &_in_section
+      z-index: ($main-z-index + 1)
+      color: var(--theme-text-active)
+      cursor: default
+      &::after
+        z-index: -1
+        // color: var(--theme-text-active)
+        // bottom: 0
+        // background-size: 100% 100%
+        // background: var(--theme-bg-active)
+        // @include nav-active-section-background(var(--theme-text-active), var(--theme-bg), var(--theme-bg-active), 0, 0.5rem, 0, 0)
+        @include nav-active-section-background
+        // margin: 0.25rem 0 0 0
+        // border-radius: 0.25rem 1rem 0 0
+        // .icon
+        //   filter: invert(100%)
+
   &_open_sub
     .nav_active.nav_child.nav_item
       color: var(--text)
       text-decoration: none
-      background-repeat: repeat-x
-      background-position: bottom
-      background-size: 100% 100%
-      background-image: linear-gradient(to top, var(--xhaze) 0,  var(--xxhaze) 50%, var(--xhaze) 100%)
-      border: 1px solid var(--xxxhaze)
-      svg
+      .icon
         filter: invert(100%);
       &::after
         content: none
   &_active
+    // FIXME: Do not use position relative, otherwise alignment gets out of shape
+    // position: relative
     z-index: ($main-z-index + 1)
-    color: var(--theme-text-hover)
+    color: var(--theme-text-active)
+    cursor: default
     &::after
       z-index: -1
-      color: var(--theme-text-hover)
-      bottom: 0
-      background-size: 100% 100%
-      background: var(--theme-bg-active)
-      // background-image: linear-gradient(to right, var(--xxhaze) 0, var(--xxxhaze) 10%, var(--xxhaze) 30%, var(--xxhaze) 50%, var(--xxxhaze) 70%, var(--xxhaze) 90%)
-      background-repeat: repeat-x
-      background-position-y: bottom
-      height: unset
-      margin: 0.25rem 0 0 0
-      border-radius: 0.125rem 0.8rem 0 0
-      --all: 0
-      // --top-left: 0.5rem
-      --top-right: 0.5rem
-      -webkit-mask: linear-gradient(45deg, transparent 0 var(--bottom-left,var(--all)) ,#fff 0) bottom left, linear-gradient( -45deg, transparent 0 var(--bottom-right,var(--all)),#fff 0) bottom right, linear-gradient( 135deg, transparent 0 var(--top-left,var(--all)) ,#fff 0) top left, linear-gradient(-135deg, transparent 0 var(--top-right,var(--all)) ,#fff 0) top right
-      -webkit-mask-size: 50.5% 50.5%
-      -webkit-mask-repeat: no-repeat
-      svg
-        filter: invert(100%)
+      // color: var(--theme-text-active)
+      // bottom: 0
+      // background-size: 100% 100%
+      // background: var(--theme-bg-active)
+      // @include hover-background(var(--theme-text-active), var(--theme-bg-active), 0, 0.5rem, 0, 0)
+      // margin: 0.25rem 0 0 0
+      // border-radius: 0.25rem 1rem 0 0
+      @include nav-active-background
+      // .icon
+      //   filter: invert(100%)
 
   &_icon
     width: 0.7rem
-    margin-left: 0.33rem
+    margin: auto 0.5rem auto 0.5rem
     transition: transform 0.3s var(--ease)
     transform-origin: 50% 50%
   &, &_body
@@ -183,23 +224,27 @@
     // FIXME: Overflow-y leads to scroll bars
     // overflow-x: auto
     position: fixed
-    width: 90%
-    max-width: 16.5rem
+    // width: 90%
+    // max-width: 16.5rem
+    width: 100%
+    max-width: unset
     top: 0
     bottom: 0
     display: flex
     flex: 1
     background: inherit
-    transition: transform 0.3s var(--easing)
+    transition: transform 0.5s var(--easing)
     &_right
       transform: translateX(100%) // IE11
       transform: translateX(calc(100% + 100vw))
+      transition: transform 0.5s var(--easing)
       right: 0
       .color_mode .color_mode_label
         padding-right: 0.5rem
     &_left
       transform: translateX(-100%) // IE11
       transform: translateX(calc(-100% - 100vw))
+      transition: transform 0.5s var(--easing)
       left: 0
       .color_mode .color_mode_label
         padding-left: 0.5rem
@@ -233,7 +278,8 @@
       left: 0
       width: 100%
       height: 100%
-      z-index: -1
+      // IE requires this z-index to be -2
+      z-index: -2
       background: rgba(var(--RGB_choice-bg), 0.98)
       @include background-gradient-translucent("to top", 0.9)
       // @include shadow-centered-narrow
@@ -249,31 +295,25 @@
       &:hover
         z-index: ($main-z-index + 1)
         color: var(--theme-text-hover)
-        &::after
-          // Cut off top-right corner
-          // @include cut-off-corner()
-          @include hover-background(var(--theme-text-hover), var(--theme-bg-hover), 0, 0.5rem, 0, 0)
-          margin: 0.25rem 0 0 0
-          border-radius: 0.25rem 1rem 0 0
-          svg
-            filter: invert(100%)
+        &:not(.nav_active)::after
+          @include nav-hover-background
+        .icon
+          filter: invert(100%)
     &_parent > &_follow
       &:hover
         z-index: ($main-z-index + 1)
         color: var(--theme-text-hover)
         &::after
-          @include hover-background(var(--theme-text-hover), var(--theme-bg-hover), 0, 0, 0, 0)
-          margin: 0.25rem -0.125rem
-          border-radius: 0.25rem
-          svg
-            filter: invert(100%)
+          @include nav-hover-background
+        .icon
+          filter: invert(100%)
     &_item
       &.nav_brand, &.nav_mobile_toggle
         &:hover
           z-index: ($main-z-index + 1)
           color: var(--theme-text-hover)
           &::after
-            @include hover-background()
+            @include nav-hover-background
 
   &_follow
     margin: 0 0.25rem
@@ -284,9 +324,13 @@
     //   margin-left: 0
     a
       padding: 0.5rem
-    svg
-      width: 1.5rem
-      height: 1.5rem
+
+  &_group
+    &_follow_mode
+      display: flex
+      align-content: center
+      justify-content: space-between
+      flex: 0 0 auto
 
   &_sub
     width: 100%
@@ -310,22 +354,35 @@
 
   &_parent
     display: grid
-    &_follow_mode
+    &_follow, &_mode
       display: flex
-      align-content: center
-      justify-content: space-between;
-      width: 100%
-      // margin: 1.5rem 0
-      .color_mode
-        margin-right: 0
-        margin-left: auto
+      flex-wrap: wrap
+      width: auto
+    &_mode
+      // .color_mode
+      margin-right: 0
+      margin-left: auto
+
+  &_open
+    z-index: ($main-z-index + 1)
+    // color: var(--theme-text-hover)
+    &::after
+      // @include hover-background(var(--theme-text-hover), var(--theme-bg-active), 0, 0, 0, 0)
+      // margin: 0.25rem -0.125rem
+      // border-radius: 0.25rem
+      // @media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
+      //   // Cut off top-right corner
+      //   @include hover-background(var(--theme-text-hover), var(--theme-bg-active), 0, 0.5rem, 0, 0)
+      //   margin: 0.25rem 0 0 0
+      //   border-radius: 0.25rem 1rem 0 0
+      @include nav-open-background
 
   &_open + &_sub &_child
     padding-top: 0.5rem
     padding-bottom: 0.5rem
     z-index: 3
     & + a
-      @media screen and (min-width: $screenViewBreakpointWidthMobile)
+      @media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
         padding-top: 0.5rem
         // border-radius: 0.5rem
     &:not(:first-child)
@@ -343,7 +400,7 @@
     border-radius: 0.5rem
     padding-bottom: 0.5rem
     padding: 0
-    @media screen and (min-width: $screenViewBreakpointWidthMobile)
+    @media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
       color: var(--text)
       background: transparent
       width: auto
@@ -355,7 +412,7 @@
     &:before
       @extend %upcaret
       z-index: 1
-      @media screen and (min-width: $screenViewBreakpointWidthMobile)
+      @media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
         border-bottom: 0.5rem solid var(--choice-bg-menu)
     &:after
       top: 0
@@ -365,11 +422,12 @@
       border-radius: 0.5rem
       background: var(--choice-bg-menu)
       box-shadow: 0.25rem 0.25rem 3rem var(--shadow)
-      @media screen and (min-width: $screenViewBreakpointWidthMobile)
+      @media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
         background: var(--choice-bg-menu)
         width: auto
         white-space: nowrap
   &_open &_icon
+    color: var(--theme-text-hover)
     transform: rotate(180deg)
 
   &_sub &_item
@@ -382,48 +440,53 @@
     padding-bottom: 0.75rem
     transition: background 0.3s ease-out
     margin: 0
+    @media (any-hover: hover)
+      &:hover
+        color: var(--theme-text-hover)
+        &:not(.nav_active)::after
+          @include nav-hover-background
+          margin: 0
+          border-radius: 0.5rem
+        .icon
+          filter: invert(100%)
 
-  & &_brand
+  &_brand
     position: relative
-    margin-left: (-1 * $screenViewBodyPadding)
+    margin-left: (-1 * $screenViewBodyPaddingMobile)
     margin-right: 0rem
-    padding: 0 $screenViewBodyPadding 0 $screenViewBodyPadding
+    padding-left: $screenViewBodyPaddingMobile
+    padding-right: $screenViewBodyPaddingMobile
     z-index: 999
     width: min-content
-    /* Required to avoid nav bar incl. burger menu icon from disappearing */
-    min-height: 1rem
+    // Setting min-height is required to avoid nav bar incl. burger menu icon from collapsing
+    min-height: $nav-height-narrow
+    // height: $nav-height-narrow
+    // font-size: 1.5rem
     img
       height: $nav-height-narrow
       width: auto
       max-width: unset
-    @media screen and (min-width: $screenViewBreakpointWidthMobile)
-      // padding-left: 0
-      img
-        background: transparent !important
+      background: transparent !important
+    // @media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
+    //   // padding-left: 0
+    //   img
+    //     background: transparent !important
   &_mobile_toggle
     position: absolute
     right: 0
     top: 0
     bottom: 0
     height: 100%
-    padding-left: 1.5rem
-    padding-right: $screenViewBodyPaddingNarrow
+    padding-left: $screenViewBodyPaddingMobile
+    padding-right: $screenViewBodyPaddingMobile
     cursor: pointer
     z-index: 1000
     display: flex
     justify-content: center
     align-items: center
-    svg
-      width: 1.25rem
+    .icon
       fill: var(--text)
-      height: 1.25rem
       pointer-events: none
-      // position: relative
-      // z-index: -1
-    // &_open, &_close
-    //   position: relative
-    //   z-index: 1
-    //   background: red
     &_open
       display: block
     &_close
@@ -434,13 +497,11 @@
       .nav_mobile_toggle_close
         display: block
 
-    .icon
-      margin: 0
     img
       height: ($nav-height-narrow - 0.5rem)
   &_center
     display: none
-    @media screen and (min-width: $screenViewBreakpointWidthMobile)
+    @media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
       display: flex
       flex: 1
       align-items: center
@@ -642,7 +703,7 @@
       z-index: ($main-z-index + 1)
       margin-top: (-1 * $nav-height)
 
-@media screen and (max-width: #{$screenViewBreakpointWidthMobile - 0.01})
+@media screen and (max-width: #{$screenViewBreakpointWidthMobileMenu - 0.01})
   html.jsopen
     @include nav-bar-anchor-offset
     .nav_header
@@ -657,7 +718,7 @@
       left: 0
       right: 0
       bottom: 0
-    .nav_body .nav_item, .nav_body .nav_item.nav_menu
+    .nav_body .nav_item, .nav_body .nav_item.nav_menu, .nav_follow
       border-radius: 0.5rem
       padding-top: 0.5rem
       padding-bottom: 0.5rem
@@ -666,38 +727,20 @@
         transform: translateX(0)
         padding-left: 1.5rem
         padding-right: 1.5rem
-      &_parent
-        width: 100%
-        &:first-child
-          margin-top: ($nav-height-narrow + $screenViewBodyPadding)
-        &_follow_mode
-          // justify-content: flex-start
-          justify-content: flex-end
-          flex: 0 1 auto // initial
-          margin-top: 0.75rem
+        & > .nav_group
+          width: 100%
+          &:first-child
+            margin-top: ($nav-height-narrow + $screenViewBodyPadding)
+      &_group_follow_mode
+        flex-wrap: wrap
+        justify-content: space-between
+        margin-top: $screenViewBodyPadding
+        margin-left: -0.5rem
       &_active
         &, &_is_menu.nav_menu, &_has_menu:not(.nav_open), &_parent_is_menu.nav_menu, &_parent_has_menu, .nav_open_sub &_is_menu, .nav_open_sub &_parent_is_menu, .nav_open_sub &_parent_parent_is_menu
-          // background-color: var(--choice-bg-menu-active)
-          color: var(--text)
-          text-decoration: none
-          background-repeat: repeat-x
-          background-position: bottom
-          background-size: 100% 100%
-          background-image: linear-gradient(to top, var(--xxhaze) 0, var(--xxxhaze) 100%)
-          svg
-            filter: invert(100%);
-          // &::after
-          //   top: calc(#{$nav-height-narrow} - 0.125rem)
-          //   height: 0.125rem
-          //   background-image: linear-gradient(to right, var(--theme-hover) 0, var(--theme) 20%, var(--theme) 80%, var(--theme-hover) 100%)
-          //   background-size: 100%
-          //   background-position-y: top
-          //   background-origin: padding-box
-          &::after
-            content: none
 
 // Narrow navigation menu bar
-@media screen and (min-width: $screenViewBreakpointWidthMobile)
+@media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
   .nav
     &_header
       font-size: 0.9rem
@@ -713,12 +756,10 @@
       transition: none
       &:after
         content: none
-    &_parent
+    &_group
       position: relative
       display: flex
       align-items: center
-      // margin: 0.25rem 0
-      padding: 0.25rem 0
       &_follow_mode
         margin-left: auto
         display: flex
@@ -731,10 +772,16 @@
       &:first-child
         a
           margin-left: 0
-    &_follow, &_parent
-      svg
-        width: 1.25rem
-        height: 1.25rem
+    &_group
+      position: relative
+      display: flex
+      align-items: center
+      // padding: 0.25rem 0
+    &_parent
+      padding: 0.25rem 0
+    .icon
+      width: 1.25rem
+      height: 1.25rem
 
     &_sub
       position: absolute
@@ -744,13 +791,6 @@
       height: 0
       z-index: 20
       padding: 0.96rem 0 0
-    & &_brand
-      padding: 0 0.5rem 0 $screenViewBodyPadding
-      img
-        height: $nav-height-narrow
-        width: auto
-        max-width: unset
-        background: transparent !important
     &_center
       display: flex
       flex: 1
@@ -778,19 +818,29 @@
       line-height: 1.5rem
     &_item, &_follow
       padding: 0.5rem 0.5rem
-    &_follow, &_parent
-      svg
-        width: 1.5rem
-        height: 1.5rem
-
-    & &_brand
-      // padding: 0.25rem 1.5rem
+    &_brand
+      height: $nav-height
+      font-size: 1.5rem
+      margin-left: (-1 * $screenViewBodyPadding)
+      margin-right: 0rem
+      padding-left: $screenViewBodyPadding
+      padding-right: $screenViewBodyPadding
       img
         height: $nav-height
+    &_mobile_toggle
+      padding-left: $screenViewBodyPadding
+      padding-right: $screenViewBodyPadding
 
     .color_mode_label
       display: flex
       line-height: 1.25rem
+    .icon
+      width: 1.5rem
+      height: 1.5rem
+    &_body
+      &::after
+        top: $nav-height
+
 
 // If the homepage contains a hero element, we want to be able to scroll
 // directly to the beginning of the content, without smooth scrolling
@@ -992,9 +1042,6 @@ body:not(.modern-js) .article_aside .table_of_contents
         text-decoration: none
         background-size: 50% 100%
         border-radius: 0.125rem
-        // FIXME: May lead to shifts
-        // padding: 0 0.25rem 0 0.25rem
-        // margin: 0 -0.25rem
     &:active
       color: var(--xaccent)
     &:focus

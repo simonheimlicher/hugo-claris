@@ -11,6 +11,8 @@
 {{- $children := false }}
 {{- $elementIdPrefix := "nav-menu-item" }}
 {{- /* partial "html-comment" (printf "BEGIN %v" $template) */ -}}
+{{- with $menu }}
+        <div class="nav_group nav_group_menu">
 {{- range $menu }}
   {{- /* partial "html-comment" ( . | jsonify (dict "indent" "  " "prefix" "      ") ) */ -}}
   {{- if eq $menu $menuData }}
@@ -195,5 +197,7 @@
             </div>
           </div>
   {{- end }}
+{{- end }}
+        </div>
 {{- end }}
 {{/* {{ partial "html-comment" (printf "END   %v" $template) }} */}}
