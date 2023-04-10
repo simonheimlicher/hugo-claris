@@ -136,33 +136,8 @@
   &_active
     padding: 0
     border-radius: 0.125rem
-    // &, &_is_menu.nav_menu, &_has_menu:not(.nav_open), &_parent_is_menu.nav_menu, &_parent_has_menu, .nav_open_sub &_is_menu, .nav_open_sub &_parent_is_menu, .nav_open_sub &_parent_parent_is_menu
     &, &_is_menu.nav_menu, &_has_menu:not(.nav_open), &_parent_is_menu.nav_menu, &_parent_has_menu
-      // background-color: var(--choice-bg-menu-active)
-      // color: var(--text)
-      // text-decoration: none
-      // background-repeat: repeat-x
-      // background-position: bottom
-      // background-size: 100% 100%
-      // background-image: linear-gradient(to top, var(--xxhaze) 0, var(--xxxhaze) 100%)
-      // svg
-      //   filter: invert(100%);
       &::after
-        // position: absolute
-        // content: ''
-        // top: 0
-        // bottom: 0.25rem
-        // left: 0
-        // right: 0
-        // margin: 0 0.5rem
-        // height: 100%
-        // background-image: linear-gradient(to right, var(--theme-hover) 0, var(--theme) 20%, var(--theme) 80%, var(--theme-hover) 100%)
-        // background-image: linear-gradient(to right, var(--theme) 0, var(--theme) 100%)
-        // background-image: linear-gradient(to right, var(--xxhaze) 0, var(--xhaze) 50%, var(--xxhaze) 100%)
-        // background-image: linear-gradient(to right, var(--xxxhaze) 0, var(--xxhaze) 50%, var(--xxxhaze) 100%)
-        // background-size: 100% 8%
-        // background-repeat: repeat-x
-        // background-position-y: bottom
         @include nav-active-background
 
       &:active
@@ -345,16 +320,7 @@
 
   &_open
     z-index: ($main-z-index + 1)
-    // color: var(--theme-text-hover)
     &::after
-      // @include hover-background(var(--theme-text-hover), var(--theme-bg-active), 0, 0, 0, 0)
-      // margin: 0.25rem -0.125rem
-      // border-radius: 0.25rem
-      // @media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
-      //   // Cut off top-right corner
-      //   @include hover-background(var(--theme-text-hover), var(--theme-bg-active), 0, 0.5rem, 0, 0)
-      //   margin: 0.25rem 0 0 0
-      //   border-radius: 0.25rem 1rem 0 0
       @include nav-open-background
 
   &_open + &_sub &_child
@@ -440,17 +406,11 @@
     width: min-content
     // Setting min-height is required to avoid nav bar incl. burger menu icon from collapsing
     min-height: $nav-height-narrow
-    // height: $nav-height-narrow
-    // font-size: 1.5rem
     img
       height: $nav-height-narrow
       width: auto
       max-width: unset
       background: transparent !important
-    // @media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
-    //   // padding-left: 0
-    //   img
-    //     background: transparent !important
   &_mobile_toggle
     position: absolute
     right: 0
@@ -607,9 +567,6 @@
 .hero-image_background
   &_main
     position: relative
-    // display: flex
-    // flex-direction: column
-    // justify-content: flex-end
     padding-bottom: 0
     .main_inner
       position: relative
@@ -660,13 +617,9 @@
       .main_inner
         min-height: 100vh
         min-height: 100lvh
-        // min-height: calc(100vh - #{$nav-height})
-        // min-height: calc(100lvh - #{$nav-height})
-        // padding: 3rem 0 0 0
         padding-top: 3rem
         margin: -3rem auto -100vh auto
         margin-bottom: -100lvh
-        // padding-bottom: calc(#{$screenViewBodyPadding})
         z-index: ($main-z-index + 2)
       & ~ .footer
         position: sticky
@@ -785,9 +738,6 @@
     position: relative
     right: auto // initial
     top: auto // initial
-    // FIXME: Always display label for accessibility
-    // &_label
-    //   display: none
 
 // Full navigation menu bar
 @media screen and (min-width: $screenViewBreakpointWidthNarrow)
@@ -878,28 +828,6 @@ html.content-above-header
             left: -1em
             background-color: var(--theme-bg-hover)
             opacity: 1
-          // Triangle
-          // &::before
-          //   content: ''
-          //   position: absolute
-          //   top: calc((1 - var(--line-height)) * 1em / 2 + 0.3em + 0.2rem)
-          //   left: calc(-1rem + 0.25ch)
-          //   opacity: 1
-          //   border-style: solid
-          //   border-width: calc(var(--line-height) * 0.3em) 0 calc(var(--line-height) * 0.3em) 1ch
-          //   border-color: transparent transparent transparent var(--accent)
-          // Line below
-          // &::after
-          //   content: ''
-          //   display: block
-          //   width: 100%
-          //   height: 0.125em
-          //   position: absolute
-          //   // top: 0
-          //   bottom: -0.25rem
-          //   // left: -1rem
-          //   background-color: var(--theme-bg-hover)
-
       &:active
         color: var(--accent)
         cursor: pointer
