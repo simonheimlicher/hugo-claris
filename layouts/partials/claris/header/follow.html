@@ -16,7 +16,7 @@
     {{- $url = absLangURL $url }}
   {{- end }}
             <div class="nav_parent">
-              <a href="{{ $url }}" class="nav_follow" title="{{ $name }}">
+              <a href="{{ $url }}" class="nav_item" title="{{ $name }}">
               {{ partial "sprite" (dict "icon" $label) }}
               </a>
             </div>

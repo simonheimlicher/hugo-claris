@@ -7,84 +7,76 @@
   top: -0.5rem
   left: 1rem
 
-@mixin hover-background($color: var(--text-hover), $background: var(--theme-bg-hover), $top-left: 0, $top-right: 0, $bottom-right: 0, $bottom-left: 0)
-  z-index: -1
-  content: ''
-  position: absolute
-  color: var(--theme-text-hover)
-  top: 0
-  right: 0
-  bottom: 0
-  left: 0
-  background-size: 100% 100%
-  background-image: linear-gradient(to top, $background 0, $background 100%)
-  background-repeat: repeat-x
-  background-position-y: bottom
-  height: unset
-  margin: 0
-  border-radius: 0
-  --all: 0
-  --top-left: #{$top-left}
-  --top-right: #{$top-right}
-  --bottom-right: #{$bottom-right}
-  --bottom-left: #{$bottom-left}
-  -webkit-mask: linear-gradient(45deg, transparent 0 var(--bottom-left,var(--all)) ,#fff 0) bottom left, linear-gradient( -45deg, transparent 0 var(--bottom-right,var(--all)),#fff 0) bottom right, linear-gradient( 135deg, transparent 0 var(--top-left,var(--all)) ,#fff 0) top left, linear-gradient(-135deg, transparent 0 var(--top-right,var(--all)) ,#fff 0) top right
-  -webkit-mask-size: 50.5% 50.5%
-  -webkit-mask-repeat: no-repeat
-
-@mixin cut-off-corner($color: var(--text-hover), $background: var(--theme-bg-hover))
-  z-index: -1
-  content: ''
-  position: absolute
-  color: var(--theme-text-hover)
-  top: 0
-  right: 0
-  bottom: 0
-  left: 0
-  background-size: 100% 100%
-  background-image: linear-gradient(to top, $background 0, $background 100%)
-  background-repeat: repeat-x
-  background-position-y: bottom
-  height: unset
-  margin: 0.25rem 0 0 0
-  border-radius: 0.125rem 0.8rem 0 0
-  --all: 0
-  // --top-left: 0.5rem
-  --top-right: 0.5rem
-  -webkit-mask: linear-gradient(45deg, transparent 0 var(--bottom-left,var(--all)) ,#fff 0) bottom left, linear-gradient( -45deg, transparent 0 var(--bottom-right,var(--all)),#fff 0) bottom right, linear-gradient( 135deg, transparent 0 var(--top-left,var(--all)) ,#fff 0) top left, linear-gradient(-135deg, transparent 0 var(--top-right,var(--all)) ,#fff 0) top right
-  -webkit-mask-size: 50.5% 50.5%
-  -webkit-mask-repeat: no-repeat
+// This mixin creates a background that is cut off at the corner specified
+// Unfortunately, it cannot be used to generate an outline with a cut-off corner
+// @mixin cut-off-corner-background($color: var(--text-hover), $background: var(--theme-bg-hover), $top-left: 0, $top-right: 0, $bottom-right: 0, $bottom-left: 0)
+//   z-index: -1
+//   content: ''
+//   position: absolute
+//   color: var(--theme-text-hover)
+//   top: 0
+//   right: 0
+//   bottom: 0
+//   left: 0
+//   background-size: 100% 100%
+//   background-image: linear-gradient(to top, $background 0, $background 100%)
+//   background-repeat: repeat-x
+//   background-position-y: bottom
+//   height: unset
+//   margin: 0
+//   border-radius: 0
+//   --all: 0
+//   --top-left: #{$top-left}
+//   --top-right: #{$top-right}
+//   --bottom-right: #{$bottom-right}
+//   --bottom-left: #{$bottom-left}
+//   -webkit-mask: linear-gradient(45deg, transparent 0 var(--bottom-left,var(--all)) ,#fff 0) bottom left, linear-gradient( -45deg, transparent 0 var(--bottom-right,var(--all)),#fff 0) bottom right, linear-gradient( 135deg, transparent 0 var(--top-left,var(--all)) ,#fff 0) top left, linear-gradient(-135deg, transparent 0 var(--top-right,var(--all)) ,#fff 0) top right
+//   -webkit-mask-size: 50.5% 50.5%
+//   -webkit-mask-repeat: no-repeat
 
 @mixin nav-background($color: var(--text-active), $background: var(--theme-bg-active), $border: var(--theme-bg-active), $top-left: 0.5rem, $top-right: 0.5rem, $bottom-right: 0, $bottom-left: 0)
-  z-index: -1
-  content: ''
-  position: absolute
-  color: var(--theme-text-hover)
-  top: 0
-  right: 0
-  bottom: 0
-  left: 0
-  background-size: 100% 100%
-  background: $background
-  border: 1px solid $border
-  border-bottom: none
-  height: unset
-  // margin: 0.25rem -0.125rem
-  border-radius: 0.25rem
+  color: $color
+  z-index: ($main-z-index + 1)
+  &::after
+    z-index: -1
+    content: ''
+    position: absolute
+    top: 0
+    right: 0
+    bottom: 0
+    left: 0
+    background-size: 100% 10%
+    background: $background
+    border: none
+    height: unset
+    border-radius: 0.25rem
   @media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
-    border-radius: $top-left $top-right $bottom-right $bottom-left
-    margin: 0.25rem 0 0 0
+    .nav_group_menu &::after
+      background-size: 100% 100%
+      background: $background
+      border: 1px solid $border
+      height: unset
+      border-radius: 0.25rem
+      border-radius: $top-left $top-right $bottom-right $bottom-left
+      margin: 0.25rem 0 0 0
+      border-bottom: none
+  .icon
+    fill: $color
+    // filter: invert(100%)
 
-@mixin nav-active-background($color: var(--text-active), $background: var(--theme-bg-active), $border: var(--theme-bg-active), $top-left: 0.5rem, $top-right: 0.5rem, $bottom-right: 0, $bottom-left: 0)
-  @include nav-background($color, $background, $border, $top-left, $top-right, $bottom-right, $bottom-left)
+@mixin nav-active-background($color: var(--theme-text-active), $background: var(--theme-bg-active), $border: var(--theme-bg-active))
+  @include nav-background($color, $background, $border)
+  cursor: default
+  &:hover
+    color: $color
 
-@mixin nav-active-section-background($color: var(--text), $background: var(--bg), $border: var(--theme-bg-active))
+@mixin nav-active-section-background($color: var(--theme-text), $background: var(--bg), $border: var(--theme-bg-active))
   @include nav-background($color, $background, $border)
 
-@mixin nav-hover-background($color: var(--text-hover), $background: var(--theme-bg-hover), $border: var(--theme-bg-hover))
+@mixin nav-hover-background($color: var(--theme-text-hover), $background: var(--theme-bg-hover), $border: var(--theme-bg-hover))
   @include nav-background($color, $background, $border)
 
-@mixin nav-open-background($color: var(--text), $background: var(--theme-bg), $border: var(--theme-bg-active))
+@mixin nav-open-background($color: var(--theme-text), $background: var(--theme-bg), $border: var(--theme-bg-active))
   @include nav-background($color, $background, $border)
 
 @media screen
@@ -137,8 +129,7 @@
     padding: 0
     border-radius: 0.125rem
     &, &_is_menu.nav_menu, &_has_menu:not(.nav_open), &_parent_is_menu.nav_menu, &_parent_has_menu
-      &::after
-        @include nav-active-background
+      @include nav-active-background
 
       &:active
         color: var(--xaccent)
@@ -146,9 +137,7 @@
         outline: var(--accent)
     &_in_section
       z-index: ($main-z-index + 1)
-      &::after
-        z-index: -1
-        @include nav-active-section-background
+      @include nav-active-section-background
 
   &_open_sub
     .nav_active.nav_child.nav_item
@@ -161,12 +150,7 @@
   &_active
     // FIXME: Do not use position relative, otherwise alignment gets out of shape
     // position: relative
-    z-index: ($main-z-index + 1)
-    color: var(--theme-text-active)
-    cursor: default
-    &::after
-      z-index: -1
-      @include nav-active-background
+    @include nav-active-background
 
   &_icon
     width: 0.7rem
@@ -238,47 +222,24 @@
       background: rgba(var(--RGB_choice-bg), 0.98)
       @include background-gradient-translucent("to top", 0.9)
       // @include shadow-centered-narrow
-  &_item, &_follow
-    padding: 0.25rem 0.25rem
   &_item
+    padding: 0.25rem 0.25rem
     display: inline-flex
-    // border-radius: 0.25rem
     border-radius: 0
     align-items: center
   @media (any-hover: hover)
-    &_parent > &_item
-      &:hover
-        z-index: ($main-z-index + 1)
-        color: var(--theme-text-hover)
-        &:not(.nav_active)::after
-          @include nav-hover-background
-        .icon
-          filter: invert(100%)
-    &_parent > &_follow
-      &:hover
-        z-index: ($main-z-index + 1)
-        color: var(--theme-text-hover)
-        &::after
-          @include nav-hover-background
-        .icon
-          filter: invert(100%)
-    &_item
-      &.nav_brand, &.nav_mobile_toggle
-        &:hover
-          z-index: ($main-z-index + 1)
-          color: var(--theme-text-hover)
-          &::after
-            @include nav-hover-background
+    &_item:not(&_active):hover
+      @include nav-hover-background
 
-  &_follow
+  &_parent_follow &_item
     margin: 0 0.25rem
     line-height: 1.25rem
     .icon
       margin: 0
     // &:first-child
     //   margin-left: 0
-    a
-      padding: 0.5rem
+    // a
+    //   padding: 0.5rem
 
   &_group
     &_follow_mode
@@ -319,9 +280,7 @@
       margin-left: auto
 
   &_open
-    z-index: ($main-z-index + 1)
-    &::after
-      @include nav-open-background
+    @include nav-open-background
 
   &_open + &_sub &_child
     padding-top: 0.5rem
@@ -330,7 +289,6 @@
     & + a
       @media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
         padding-top: 0.5rem
-        // border-radius: 0.5rem
     &:not(:first-child)
       position: relative
     &:first-child:before
@@ -388,20 +346,16 @@
     margin: 0
     @media (any-hover: hover)
       &:hover
-        color: var(--theme-text-hover)
-        &:not(.nav_active)::after
+        &:not(.nav_active)
           @include nav-hover-background
           margin: 0
           border-radius: 0.5rem
-        .icon
-          filter: invert(100%)
 
   &_brand
     position: relative
-    margin-left: (-1 * $screenViewBodyPaddingMobile)
+    margin-left: (0 - $screenViewBodyPaddingMobile)
     margin-right: 0rem
-    padding-left: $screenViewBodyPaddingMobile
-    padding-right: $screenViewBodyPaddingMobile
+    padding: 0 0.5rem 0 $screenViewBodyPaddingMobile
     z-index: 999
     width: min-content
     // Setting min-height is required to avoid nav bar incl. burger menu icon from collapsing
@@ -658,17 +612,24 @@
     .nav
       &_body
         transform: translateX(0)
-        padding-left: 1.5rem
-        padding-right: 1.5rem
+        @include wrap
         & > .nav_group
           width: 100%
+          margin-left: (0.25rem - $screenViewBodyPaddingMobile)
+          .nav_item
+            padding-left: ($screenViewBodyPaddingMobile - 0.25rem)
+            padding-right: ($screenViewBodyPaddingMobile - 0.25rem)
+          @media screen and (min-width: $screenViewBreakpointWidthNarrow)
+            margin-left: (0.5rem - $screenViewBodyPadding)
+            .nav_item
+              padding-left: ($screenViewBodyPadding - 0.5rem)
+              padding-right: ($screenViewBodyPadding - 0.5rem)
           &:first-child
             margin-top: ($nav-height-narrow + $screenViewBodyPadding)
       &_group_follow_mode
         flex-wrap: wrap
         justify-content: space-between
         margin-top: $screenViewBodyPadding
-        margin-left: -0.5rem
       &_active
         &, &_is_menu.nav_menu, &_has_menu:not(.nav_open), &_parent_is_menu.nav_menu, &_parent_has_menu, .nav_open_sub &_is_menu, .nav_open_sub &_parent_is_menu, .nav_open_sub &_parent_parent_is_menu
 
@@ -742,7 +703,7 @@
 // Full navigation menu bar
 @media screen and (min-width: $screenViewBreakpointWidthNarrow)
   .nav
-    &_header
+    &_header, &_brand
       height: $nav-height
       font-size: 1.1rem
       line-height: 1.5rem
@@ -750,15 +711,14 @@
       padding: 0.5rem 0.5rem
     &_brand
       height: $nav-height
-      font-size: 1.5rem
       margin-left: (-1 * $screenViewBodyPadding)
       margin-right: 0rem
       padding-left: $screenViewBodyPadding
-      padding-right: $screenViewBodyPadding
+      // padding-right: $screenViewBodyPadding
       img
         height: $nav-height
     &_mobile_toggle
-      padding-left: $screenViewBodyPadding
+      // padding-left: $screenViewBodyPadding
       padding-right: $screenViewBodyPadding
 
     .color_mode_label
