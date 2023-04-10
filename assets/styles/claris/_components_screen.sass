@@ -171,20 +171,9 @@
         outline: var(--accent)
     &_in_section
       z-index: ($main-z-index + 1)
-      color: var(--theme-text-active)
-      cursor: default
       &::after
         z-index: -1
-        // color: var(--theme-text-active)
-        // bottom: 0
-        // background-size: 100% 100%
-        // background: var(--theme-bg-active)
-        // @include nav-active-section-background(var(--theme-text-active), var(--theme-bg), var(--theme-bg-active), 0, 0.5rem, 0, 0)
         @include nav-active-section-background
-        // margin: 0.25rem 0 0 0
-        // border-radius: 0.25rem 1rem 0 0
-        // .icon
-        //   filter: invert(100%)
 
   &_open_sub
     .nav_active.nav_child.nav_item
@@ -202,16 +191,7 @@
     cursor: default
     &::after
       z-index: -1
-      // color: var(--theme-text-active)
-      // bottom: 0
-      // background-size: 100% 100%
-      // background: var(--theme-bg-active)
-      // @include hover-background(var(--theme-text-active), var(--theme-bg-active), 0, 0.5rem, 0, 0)
-      // margin: 0.25rem 0 0 0
-      // border-radius: 0.25rem 1rem 0 0
       @include nav-active-background
-      // .icon
-      //   filter: invert(100%)
 
   &_icon
     width: 0.7rem
