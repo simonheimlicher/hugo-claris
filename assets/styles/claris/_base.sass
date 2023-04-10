@@ -134,7 +134,8 @@ img, svg
   vertical-align: middle
 img
   height: auto // initiial
-  margin: 1rem auto
+  // margin: 1rem auto
+  margin: 0
   padding: 0
   &:focus, &:focus-within
     outline: none !important
@@ -145,10 +146,7 @@ img
 // main
 //   flex: 1
 
-ul
-  list-style: none
-  -webkit-padding-start: 0
-  -moz-padding-start: 0
+@include list-style
 
 em
   font-weight: var(--font-weight)
