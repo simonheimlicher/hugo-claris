@@ -8,8 +8,8 @@ $list-style-indent: 0;
 $list-style-ul-indent: $list-style-indent;
 $list-style-ol-indent: $list-style-indent;
 
-$nav-height: 3rem;
-$nav-height-narrow: 2.5rem;
+$screenViewNavHeightNarrow: 2.5rem;
+$screenViewNavHeight: 3rem;
 
 $screenViewBodyPaddingMobileHorizontal: ($screenViewBodyPaddingMobile / 1.0);
 $screenViewBodyPaddingMobileVertical: ($screenViewBodyPaddingMobile / 1.5);
@@ -365,7 +365,7 @@ $main-z-index: 1;
 // }
 // Note: the CSS below must be applied to all elements with an id, such as footnotes,
 // not only headings
-@mixin nav-bar-offset($offset: $nav-height) {
+@mixin nav-bar-offset($offset: $screenViewNavHeight) {
   $anchor-offset: 1rem;
   .main {
     padding-top: $offset;
@@ -401,9 +401,9 @@ $main-z-index: 1;
 }
 
 @mixin nav-bar-anchor-offset {
-  @include nav-bar-offset($nav-height-narrow);
+  @include nav-bar-offset($screenViewNavHeightNarrow);
   @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
-    @include nav-bar-offset($nav-height);
+    @include nav-bar-offset($screenViewNavHeight);
   }
 }
 
@@ -411,15 +411,15 @@ $main-z-index: 1;
 // FIXME: Does not work the same. The heaadings do not expand despite containing the ::before
 /*
 html {
-  scroll-padding-top:calc(#{$nav-height}+ #{$heading-padding-top})}
+  scroll-padding-top:calc(#{$screenViewNavHeight}+ #{$heading-padding-top})}
 
 [id]:not([href]) {
   h1, h2, h3, h4, h5, h6 {
     &::before {
       content: " ";
       display: block;
-      height: calc(#{$nav-height} + #{$heading-padding-top});
-      margin-top: calc(-#{$nav-height} - #{$heading-padding-top});
+      height: calc(#{$screenViewNavHeight} + #{$heading-padding-top});
+      margin-top: calc(-#{$screenViewNavHeight} - #{$heading-padding-top});
       pointer-events: none;
       visibility: hidden;
     }
@@ -508,6 +508,11 @@ html {
   --content_wide_max-width: #{$screenViewColumnWidthWideMax};
   @media screen and (min-width: #{$screenViewBreakpointWidthWide}) {
     --content_max-width: #{$screenViewColumnWidthWideMax};
+  }
+
+  --screenViewNavHeight: #{$screenViewNavHeightNarrow};
+  @media screen and (min-width: #{$screenViewBreakpointWidthNarrow}) {
+    --screenViewNavHeight: #{$screenViewNavHeight};
   }
 
   --screenViewBodyPadding: #{$screenViewBodyPaddingMobile};

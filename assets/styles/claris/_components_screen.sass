@@ -191,7 +191,7 @@
     &:after
       content: ''
       position: absolute
-      top: $nav-height-narrow
+      top: $screenViewNavHeightNarrow
       left: 0
       width: 100%
       height: 100%
@@ -204,7 +204,7 @@
     left: 0
     top: 0
     width: 100%
-    height: $nav-height-narrow
+    height: $screenViewNavHeightNarrow
     z-index: 99
     padding: 0
     background: transparent
@@ -359,9 +359,9 @@
     z-index: 999
     width: min-content
     // Setting min-height is required to avoid nav bar incl. burger menu icon from collapsing
-    min-height: $nav-height-narrow
+    min-height: $screenViewNavHeightNarrow
     img
-      height: $nav-height-narrow
+      height: $screenViewNavHeightNarrow
       width: auto
       max-width: unset
       background: transparent !important
@@ -392,7 +392,7 @@
         display: block
 
     img
-      height: ($nav-height-narrow - 0.5rem)
+      height: ($screenViewNavHeightNarrow - 0.5rem)
   &_center
     display: none
     @media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
@@ -467,8 +467,8 @@
 .main
   @media only screen
     // Ensure .main is under nav_header when nav_header is position: relative
-    padding-top: #{$nav-height}
-    margin-top: - #{$nav-height}
+    padding-top: #{$screenViewNavHeight}
+    margin-top: - #{$screenViewNavHeight}
     min-height: 100vh
     min-height: 100lvh
     // Ensure main covers whole width of footer
@@ -476,8 +476,8 @@
     // Ensure .main extends padding to reach under nav_header
     // when nav_header is position: relative
     // padding-top: 0
-    padding: #{$nav-height-narrow} 0 $screenViewBodyPadding 0
-    margin: - #{$nav-height-narrow} auto 0 auto
+    padding: #{$screenViewNavHeightNarrow} 0 $screenViewBodyPadding 0
+    margin: - #{$screenViewNavHeightNarrow} auto 0 auto
 
 .footer
   // Footer shall stick to the bottom and reveal when body scrolls up
@@ -494,14 +494,13 @@
       left: 0
       width: 100%
 
-
 .hero-image_above-main
   &_figure
     margin: 0
     padding: 0
     z-index: ($main-z-index + 1)
     // FIXME: Let's not push the image under the navigation bar
-    // margin-top: (-1 * #{$nav-height})
+    // margin-top: (-1 * #{$screenViewNavHeight})
   &_img
     margin: 0
     padding: 0
@@ -588,7 +587,7 @@
       margin: 0
       padding: 0
       z-index: ($main-z-index + 1)
-      margin-top: (-1 * $nav-height)
+      margin-top: (-1 * $screenViewNavHeight)
 
 @media screen and (max-width: #{$screenViewBreakpointWidthMobileMenu - 0.01})
   html.jsopen
@@ -625,7 +624,7 @@
               padding-left: ($screenViewBodyPadding - 0.5rem)
               padding-right: ($screenViewBodyPadding - 0.5rem)
           &:first-child
-            margin-top: ($nav-height-narrow + $screenViewBodyPadding)
+            margin-top: ($screenViewNavHeightNarrow + $screenViewBodyPadding)
       &_group_follow_mode
         flex-wrap: wrap
         justify-content: space-between
@@ -704,19 +703,19 @@
 @media screen and (min-width: $screenViewBreakpointWidthNarrow)
   .nav
     &_header, &_brand
-      height: $nav-height
+      height: $screenViewNavHeight
       font-size: 1.1rem
       line-height: 1.5rem
     &_item, &_follow
       padding: 0.5rem 0.5rem
     &_brand
-      height: $nav-height
+      height: $screenViewNavHeight
       margin-left: (-1 * $screenViewBodyPadding)
       margin-right: 0rem
       padding-left: $screenViewBodyPadding
       // padding-right: $screenViewBodyPadding
       img
-        height: $nav-height
+        height: $screenViewNavHeight
     &_mobile_toggle
       // padding-left: $screenViewBodyPadding
       padding-right: $screenViewBodyPadding
@@ -729,7 +728,7 @@
       height: 1.5rem
     &_body
       &::after
-        top: $nav-height
+        top: $screenViewNavHeight
 
 
 // If the homepage contains a hero element, we want to be able to scroll
@@ -774,79 +773,18 @@ html.content-above-header
 
   // nav > a, nav:not(.active) li, nav:not(.active) li.visible ~ li, nav.active li
   nav:not(.active) li, nav:not(.active) li.visible ~ li, nav.active li
-    @media (any-hover: hover)
-      &:hover
-        color: var(--theme-bg-hover)
-        cursor: pointer
-        list-style-type: none
-        &::before
-          content: none
-        & > a::before
-          content: ''
-          display: block
-          width: 1ch
-          height: 100%
-          position: absolute
-          top: 0
-          bottom: 0
-          left: -1.5em
-          background-color: var(--theme-bg-hover)
-          opacity: 1
-        & > a
-          color: var(--theme-bg-hover)
-      & > a:active
-        color: var(--accent)
-        cursor: pointer
-
-  nav:not(.active) ul ul li, nav:not(.active) ul ul li.visible ~ li, nav.active ul ul li
-    // outline: 5px solid red
-    @media (any-hover: hover)
-      &:hover
-        & > a::before
-          content: ''
-          position: absolute
-          top: 0.33em
-          left: -1.25em
-          height: 0
-          width: 0
-          opacity: 1
-          background: transparent
-          border-style: solid
-          border-width: 0.75ch 0 0.75ch 1ch
-          border-color: transparent transparent transparent var(--theme-bg-hover)
+    @include table-of-contents-hover
 
   li.active, nav:not(.active) li.visible //, li.visible:not(.active) + li.active
-    // list-style-type: disc
     list-style-type: none
     cursor: auto // initial
-    &::before
-      content: none
-    & > a::before
-      content: ''
-      display: block
-      width: 1ch
-      height: 100%
-      position: absolute
-      top: 0
-      bottom: 0
-      left: -1.5em
-      background-color: var(--xxhaze)
-      opacity: 1
+    @include table-of-contents-current
+
+  nav:not(.active) ul ul li, nav:not(.active) ul ul li.visible ~ li, nav.active ul ul li
+    @include table-of-contents-hover
 
   ul ul li.active, nav:not(.active) ul ul li.visible
-    // outline: 5px solid green
-    & > a::before
-      content: ''
-      position: absolute
-      top: 0.33em
-      left: -1.25em
-      height: 0
-      width: 0
-      opacity: 1
-      background: transparent
-      border-style: solid
-      border-width: 0.75ch 0 0.75ch 1ch
-      border-color: transparent transparent transparent var(--xxxhaze)
+    @include table-of-contents-current
 
   nav:not(.active) li.visible ~ li.visible
     list-style-type: circle
