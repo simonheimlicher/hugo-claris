@@ -11,11 +11,13 @@ $list-style-ol-indent: $list-style-indent;
 $nav-height: 3rem;
 $nav-height-narrow: 2.5rem;
 
-$screenViewBodyPadding-list: 0.5rem;
+$screenViewBodyPaddingMobileHorizontal: ($screenViewBodyPaddingMobile / 1.0);
+$screenViewBodyPaddingMobileVertical: ($screenViewBodyPaddingMobile / 1.5);
 
 $screenViewBodyPaddingHorizontal: ($screenViewBodyPadding / 1.0);
 $screenViewBodyPaddingVertical: ($screenViewBodyPadding / 1.5);
-;
+
+$screenViewBodyPadding-list: 0.5rem;
 $screenViewBodyPadding-list: 0.5rem;
 $screenViewBodyPadding-list: 0.5rem;
 $screenViewBodyPadding-list: 0.5rem;
@@ -171,11 +173,11 @@ $main-z-index: 1;
 }
 
 @mixin wrap() {
-  padding: 0 $screenViewBodyPaddingMobile;
-  padding: env(safe-area-inset-top) calc(#{$screenViewBodyPaddingMobile} + env(safe-area-inset-right)) env(safe-area-inset-bottom) calc(#{$screenViewBodyPaddingMobile} + env(safe-area-inset-left));
+  padding: 0 $screenViewBodyPaddingMobileHorizontal;
+  padding: env(safe-area-inset-top) calc(#{$screenViewBodyPaddingMobileHorizontal} + env(safe-area-inset-right)) env(safe-area-inset-bottom) calc(#{$screenViewBodyPaddingMobileHorizontal} + env(safe-area-inset-left));
   @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
-    padding: 0 $screenViewBodyPadding;
-    padding: env(safe-area-inset-top) calc(#{$screenViewBodyPadding} + env(safe-area-inset-right)) env(safe-area-inset-bottom) calc(#{$screenViewBodyPadding} + env(safe-area-inset-left));
+    padding: 0 $screenViewBodyPaddingHorizontal;
+    padding: env(safe-area-inset-top) calc(#{$screenViewBodyPaddingHorizontal} + env(safe-area-inset-right)) env(safe-area-inset-bottom) calc(#{$screenViewBodyPaddingHorizontal} + env(safe-area-inset-left));
   }
 }
 
@@ -499,18 +501,33 @@ html {
   --darkmode-timing: ease;
 
   --screenViewWidthChrome: #{$screenViewWidthChrome};
+  --screenViewWidthUltrawide: #{$screenViewWidthUltrawide};
+
   --content_multicolumn_max-width: #{$screenViewWidthChrome};
   --content_max-width: #{$screenViewColumnWidthMax};
   --content_wide_max-width: #{$screenViewColumnWidthWideMax};
-  --screenViewWidthUltrawide: #{$screenViewWidthUltrawide};
+  @media screen and (min-width: #{$screenViewBreakpointWidthWide}) {
+    --content_max-width: #{$screenViewColumnWidthWideMax};
+  }
 
-  --screenViewBodyPadding: #{$screenViewBodyPadding};
-  --screenViewBodyPadding-horizontal: #{$screenViewBodyPaddingHorizontal};
-  --screenViewBodyPadding-half-horizontal: #{($screenViewBodyPaddingHorizontal / 2)};
-  --screenViewBodyPadding-quarter-horizontal: #{($screenViewBodyPaddingHorizontal / 4)};
-  --screenViewBodyPadding-vertical: #{$screenViewBodyPaddingVertical};
-  --screenViewBodyPadding-half-vertical: #{($screenViewBodyPaddingVertical / 2)};
-  --screenViewBodyPadding-quarter-vertical: #{($screenViewBodyPaddingVertical / 4)};
+  --screenViewBodyPadding: #{$screenViewBodyPaddingMobile};
+  --screenViewBodyPadding-horizontal: #{$screenViewBodyPaddingMobileHorizontal};
+  --screenViewBodyPadding-half-horizontal: #{($screenViewBodyPaddingMobileHorizontal / 2)};
+  --screenViewBodyPadding-quarter-horizontal: #{($screenViewBodyPaddingMobileHorizontal / 4)};
+  --screenViewBodyPadding-vertical: #{$screenViewBodyPaddingMobileVertical};
+  --screenViewBodyPadding-half-vertical: #{($screenViewBodyPaddingMobileVertical / 2)};
+  --screenViewBodyPadding-quarter-vertical: #{($screenViewBodyPaddingMobileVertical / 4)};
+
+  @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
+    --screenViewBodyPadding: #{$screenViewBodyPadding};
+    --screenViewBodyPadding-horizontal: #{$screenViewBodyPaddingHorizontal};
+    --screenViewBodyPadding-half-horizontal: #{($screenViewBodyPaddingHorizontal / 2)};
+    --screenViewBodyPadding-quarter-horizontal: #{($screenViewBodyPaddingHorizontal / 4)};
+    --screenViewBodyPadding-vertical: #{$screenViewBodyPaddingVertical};
+    --screenViewBodyPadding-half-vertical: #{($screenViewBodyPaddingVertical / 2)};
+    --screenViewBodyPadding-quarter-vertical: #{($screenViewBodyPaddingVertical / 4)};
+  }
+
   --navigation-header-height: 0;
 
   @include generate_colors($colors-lit);
