@@ -89,8 +89,27 @@ function injectTableOfContents() {
         let navigationElementList = [];
 
         for (let idx = 0, headingItem = navListItems[0]; idx < navListItems.length; headingItem = navListItems[++idx]) {
-            if (headingItem.querySelector('a')) {
-                // deb(headingItem.outerHTML);
+            let anchor = headingItem.querySelector('a');
+            if (anchor) {
+                let innerLIs = headingItem.querySelectorAll('li');
+                for (let liIdx = 0, innerLI = innerLIs[0]; liIdx < innerLIs.length; innerLI = innerLIs[++liIdx]) {
+                    if (innerLI && !innerLI.innerHTML) {
+                        // Remove empty list item from DOM
+                        // deb("Remove empty LI: ", innerLI, innerLI.parentElement);
+                        innerLI.remove();
+                    }
+                }
+                let innerULs = headingItem.querySelectorAll('ul');
+                for (let ulIdx = 0, innerUL = innerULs[0]; ulIdx < innerULs.length; innerUL = innerULs[++ulIdx]) {
+                    if (innerUL && !(innerUL.innerHTML.trim())) {
+                        // Remove empty unordered list from DOM
+                        // deb("Remove empty UL: ", innerUL);
+                        innerUL.remove();
+                    }
+                    // else {
+                    //     deb("Keep non-empty UL: '" + innerUL.innerHTML.trim() + "'");
+                    // }
+                }
                 navigationElementList.push(headingItem);
             }
         }
