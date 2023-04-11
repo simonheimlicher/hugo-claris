@@ -489,7 +489,7 @@
   // https://syntaxfix.com/question/5666/css-media-query-to-target-only-ios-devices
   // Exclude any version of IE or other browsers that don't support @supports with '@supports (position: sticky)'
   @supports (position: sticky) and (not (-webkit-touch-callout: none))
-    @media screen and (min-height: $screenViewBreakpointHeightShallow)
+    @media screen and (min-width: $screenViewBreakpointWidthNarrow) and (min-height: $screenViewBreakpointHeightShallow)
       position: sticky
       bottom: 0
       left: 0
