@@ -12,7 +12,7 @@
 {{- with $page -}}<!-- Restore "." to refer to page context from which the partial was called -->
 {{ if .Param $taxonomy }}
   {{ range $index, $value := (.GetTerms $taxonomy) }}
-    <a href="{{ .RelPermalink }}" title="{{ . }}" title="{{ .LinkTitle }}" class="article_meta_tag button button_translucent">
+    <a href="{{ .RelPermalink }}" title="{{ .LinkTitle }}" class="article_meta_tag button button_translucent">
       {{- .LinkTitle -}}
     </a>
   {{ end }}
