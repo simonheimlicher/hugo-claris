@@ -112,6 +112,22 @@
   .nav
     display: flex
 
+@media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
+  .kind-section .main_inner
+    &::before
+      content: ''
+      position: absolute
+      top: $screenViewNavHeightNarrow
+      top: var(--screenViewNavHeight)
+      left: 0
+      width: 100%
+      // height: $screenViewNavHeightNarrow
+      // height: var(--screenViewNavHeight)
+      // background: linear-gradient(to bottom, var(--theme-bg-active) 10%, transparent 100%)
+      // outline-top: 2px solid var(--theme-bg-active)
+      height: 0.25rem
+      background: var(--theme-bg-active)
+
 .nav
   justify-content: space-between
   color: var(--text)
