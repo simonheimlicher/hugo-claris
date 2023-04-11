@@ -748,9 +748,9 @@ html.content-above-header
 
   h2
     font-size: 100%
-    margin: 0 -1rem
-    padding: 0.25rem 1rem
-    border-radius: 0.25rem
+    margin: 0 -1em
+    padding: 0.25em 1em
+    border-radius: 0.25em
     text-transform: uppercase
 
   a
@@ -759,78 +759,94 @@ html.content-above-header
     position: relative
 
   ul
-    padding: 0.25em 1.5em
-    margin: 0 -0.5em
-    list-style: outside circle
+    margin: 0
+    padding: 0
     width: 100%
 
   li
     list-style-type: circle
-    padding: 0
+    // padding: 0 0 0 0.5em
     width: 100%
+    &::before
+      content: none
+    ul
+      padding-left: 1em
 
-  nav > a, nav:not(.active) li, nav:not(.active) li.visible ~ li, nav.active li
+  // nav > a, nav:not(.active) li, nav:not(.active) li.visible ~ li, nav.active li
+  nav:not(.active) li, nav:not(.active) li.visible ~ li, nav.active li
     @media (any-hover: hover)
       &:hover
         color: var(--theme-bg-hover)
         cursor: pointer
         list-style-type: none
-        a
+        &::before
+          content: none
+        & > a::before
+          content: ''
+          display: block
+          width: 1ch
+          height: 100%
+          position: absolute
+          top: 0
+          bottom: 0
+          left: -1.5em
+          background-color: var(--theme-bg-hover)
+          opacity: 1
+        & > a
           color: var(--theme-bg-hover)
-          &::before
-            content: ''
-            display: block
-            width: 1ch
-            height: 100%
-            position: absolute
-            top: 0
-            bottom: 0
-            left: -1em
-            background-color: var(--theme-bg-hover)
-            opacity: 1
-      &:active
+      & > a:active
         color: var(--accent)
         cursor: pointer
-        a
-          color: var(--accent)
+
+  nav:not(.active) ul ul li, nav:not(.active) ul ul li.visible ~ li, nav.active ul ul li
+    // outline: 5px solid red
+    @media (any-hover: hover)
+      &:hover
+        & > a::before
+          content: ''
+          position: absolute
+          top: 0.33em
+          left: -1.25em
+          height: 0
+          width: 0
+          opacity: 1
+          background: transparent
+          border-style: solid
+          border-width: 0.75ch 0 0.75ch 1ch
+          border-color: transparent transparent transparent var(--theme-bg-hover)
 
   li.active, nav:not(.active) li.visible //, li.visible:not(.active) + li.active
     // list-style-type: disc
     list-style-type: none
     cursor: auto // initial
-    a
-      &::before
-        content: ''
-        display: block
-        width: 1ch
-        height: 100%
-        position: absolute
-        top: 0
-        bottom: 0
-        left: -1rem
-        background-color: var(--xxhaze)
-        opacity: 1
-      // Triangle
-      // &::before
-      //   content: ''
-      //   position: absolute
-      //   top: calc((1 - var(--line-height)) * 1em / 2 + 0.3em + 0.2rem)
-      //   left: calc(-1rem + 0.25ch)
-      //   opacity: 1
-      //   border-style: solid
-      //   border-width: calc(var(--line-height) * 0.3em) 0 calc(var(--line-height) * 0.3em) 1ch
-      //   border-color: transparent transparent transparent var(--text)
-      // Line below
-      // &::after
-      //   content: ''
-      //   display: block
-      //   width: 100%
-      //   height: 0.125em
-      //   position: absolute
-      //   // top: 0
-      //   bottom: -0.25rem
-      //   // left: -1rem
-      //   background-color: var(--xxhaze)
+    &::before
+      content: none
+    & > a::before
+      content: ''
+      display: block
+      width: 1ch
+      height: 100%
+      position: absolute
+      top: 0
+      bottom: 0
+      left: -1.5em
+      background-color: var(--xxhaze)
+      opacity: 1
+
+  ul ul li.active, nav:not(.active) ul ul li.visible
+    // outline: 5px solid green
+    & > a::before
+      content: ''
+      position: absolute
+      top: 0.33em
+      left: -1.25em
+      height: 0
+      width: 0
+      opacity: 1
+      background: transparent
+      border-style: solid
+      border-width: 0.75ch 0 0.75ch 1ch
+      border-color: transparent transparent transparent var(--xxxhaze)
 
   nav:not(.active) li.visible ~ li.visible
     list-style-type: circle
