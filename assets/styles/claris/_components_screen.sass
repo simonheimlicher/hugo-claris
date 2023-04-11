@@ -741,6 +741,71 @@ html.content-above-header
     min-height: 100vh
     min-height: 100lvh
 
+@mixin table-of-contents-hover($hover-color: var(--theme-bg-hover), $active-color: var(--accent), $icon-color: var(--theme-bg-hover))
+  @media (any-hover: hover)
+    &:hover
+      color: $hover-color
+      cursor: pointer
+      list-style-type: none
+      &::before
+        content: none
+      & > a::before
+        content: ''
+        display: block
+        position: absolute
+        opacity: 1
+        // Vertical bar
+        // width: 1ch
+        // height: 100%
+        // top: 0
+        // bottom: 0
+        // left: -1.5em
+        // background-color: $icon-color
+
+        // Triangle
+        top: 0.33em
+        left: -1.5em
+        height: 0
+        width: 0
+        opacity: 1
+        background: transparent
+        border-style: solid
+        border-width: 0.75ch 0 0.75ch 1ch
+        border-color: transparent transparent transparent $icon-color
+      & > a
+        color: $icon-color
+    & > a:active
+      color: $active-color
+      cursor: pointer
+
+@mixin table-of-contents-current($current-color: var(--text), $icon-color: var(--text))
+  & > a
+    color: $current-color
+    &::before
+      content: ''
+      display: block
+      position: absolute
+
+      // // Vertical bar
+      // width: 1ch
+      // height: 100%
+      // top: 0
+      // bottom: 0
+      // left: -1.5em
+      // background-color: $icon-color
+      // opacity: 1
+
+      // Triangle
+      top: 0.33em
+      left: -1.5em
+      height: 0
+      width: 0
+      opacity: 1
+      background: transparent
+      border-style: solid
+      border-width: 0.75ch 0 0.75ch 1ch
+      border-color: transparent transparent transparent $icon-color
+
 .table_of_contents
   visibility: hidden
   @include aside-meta
