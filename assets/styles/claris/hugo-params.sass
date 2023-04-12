@@ -1,7 +1,7 @@
 {{- $page := .Page }}
 $contentType: '{{ .ContentType }}'
 $mediaType: '{{ .MediaType }}'
-/* File='styles/claris/hugo-params.sass': .Page='{{ .Page }}' .MediaType='{{ .MediaType }}' */
+/* File='styles/claris/hugo-params.sass': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .MediaType='{{ .MediaType }}' */
 
 $themeColorLit: {{ default "hsl(47, 20%, 98%)" ($page.Param "themeColorLit") }}
 $themeColorDim: {{ default "hsl(47, 20%, 17%)" ($page.Param "themeColorDim") }}
