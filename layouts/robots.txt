@@ -1,6 +1,12 @@
-{{- $robotsTxtHiddenSections := default (slice "error" "home" "footer") site.Params.robots.robotsTxtHiddenSections }}
+{{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
+{{- if $envProd }}
+  {{- $robotsTxtHiddenSections := default (slice "error" "home" "footer") site.Params.robots.robotsTxtHiddenSections }}
 Sitemap: {{ absURL "/sitemap.xml" }}
 User-agent: *
-{{ range $robotsTxtHiddenSections -}}
+{{- range $robotsTxtHiddenSections }}
 {{ printf "Disallow: /%s/" (replaceRE "^/*(.+)/*$" "$1" . )}}
+{{- end }}
+{{ else -}}
+User-agent: *
+Disallow: /
 {{ end -}}
