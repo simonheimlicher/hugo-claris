@@ -15,7 +15,7 @@
 @import 'claris/variables'
 @import 'claris/override'
 
-{{- $fontsSelfHosted := default true ($page.Param "fontsSelfHosted") }}
+{{- $fontsSelfHosted := default false ($page.Param "fontsSelfHosted") }}
 {{- $customFonts := default false ($page.Param "customFonts") }}
 {{- if and $fontsSelfHosted (not $customFonts) -}}
 {{- $fontFamilySans := default "Source Sans 3" ($page.Param "fontFamilySans") }}

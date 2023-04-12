@@ -8,7 +8,7 @@
 {{- $fontFamilyMono := default "DM Mono" ($page.Param "fontFamilyMono") }}
 {{- $fontFamilies := (slice $fontFamilySans $fontFamilySerif $fontFamilyMono) }}
 
-{{- $fontsSelfHosted := default true ($page.Param "fontsSelfHosted") }}
+{{- $fontsSelfHosted := default false ($page.Param "fontsSelfHosted") }}
 {{- $customFonts := default false ($page.Param "customFonts") }}
 
 {{/* {{- warnf "%s[%s]: fontFamilies:%v customFonts:%v $fontsSelfHosted:%v"
