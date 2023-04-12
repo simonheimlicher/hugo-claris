@@ -52,25 +52,25 @@ $main-z-index: 1;
   @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
     padding: $screenViewBodyPaddingVertical $screenViewBodyPaddingHorizontal;
   }
-  padding:  calc(max(var(--padding-outer-vertical), env(safe-area-inset-top)))
-            calc(max(var(--padding-outer-horizontal), env(safe-area-inset-right)))
-            calc(max(var(--padding-outer-vertical), env(safe-area-inset-bottom)))
-            calc(max(var(--padding-outer-horizontal), env(safe-area-inset-left)));
+  padding:  calc(max(var(--padding-outer-vertical), env(safe-area-inset-top, 0px)))
+            calc(max(var(--padding-outer-horizontal), env(safe-area-inset-right, 0px)))
+            calc(max(var(--padding-outer-vertical), env(safe-area-inset-bottom, 0px)))
+            calc(max(var(--padding-outer-horizontal), env(safe-area-inset-left, 0px)));
 }
 
 @mixin wrap() {
   // For browsers that don't support CSS properties
-  padding: 0 $screenViewInnerPaddingMobileHorizontal;
+  padding: 0px $screenViewInnerPaddingMobileHorizontal;
   @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
-    padding: 0 $screenViewInnerPaddingNarrowHorizontal;
+    padding: 0px $screenViewInnerPaddingNarrowHorizontal;
   }
   @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
-    padding: 0 $screenViewInnerPaddingHorizontal;
+    padding: 0px $screenViewInnerPaddingHorizontal;
   }
-  padding:  calc(max(0, env(safe-area-inset-top)))
-            calc(max(var(--padding-inner-horizontal), env(safe-area-inset-right)))
-            calc(max(0, env(safe-area-inset-bottom)))
-            calc(max(var(--padding-inner-horizontal), env(safe-area-inset-left)));
+  padding:  calc(max(0px, env(safe-area-inset-top, 0px)))
+            calc(max(var(--padding-inner-horizontal), env(safe-area-inset-right, 0px)))
+            calc(max(0px, env(safe-area-inset-bottom, 0px)))
+            calc(max(var(--padding-inner-horizontal), env(safe-area-inset-left, 0px)));
 }
 
 @mixin content_base() {

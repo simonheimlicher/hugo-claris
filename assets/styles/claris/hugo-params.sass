@@ -26,7 +26,7 @@ $screenViewWidthChrome: {{ default "104rem" ($page.Param "screenViewWidthChrome"
 // Padding around body up to narrow breakpoint
 $screenViewBodyPaddingMobile: {{ default "0rem" ($page.Param "screenViewBodyPaddingMobile") }}
 // Padding around main elements (header, main, footer) up to narrow breakpoint
-$screenViewInnerPaddingMobile: {{ default "0.5rem" ($page.Param "screenViewInnerPaddingMobile") }}
+$screenViewInnerPaddingMobile: {{ default "0.75rem" ($page.Param "screenViewInnerPaddingMobile") }}
 
 // From this width upward, the mobile menu is hidden
 // and the full menu bar is shown
@@ -42,7 +42,7 @@ $screenViewBreakpointWidthNarrow: {{ default "36rem" ($page.Param "screenViewBre
 $screenViewBreakpointWidthOneColumn: {{ default "48rem" ($page.Param "screenViewBreakpointWidthOneColumn") }}
 
 // Layout with one aside
-$screenViewBreakpointWidthTwoColumn: {{ default "63rem" ($page.Param "screenViewBreakpointWidthTwoColumn") }}
+$screenViewBreakpointWidthTwoColumn: {{ default "60rem" ($page.Param "screenViewBreakpointWidthTwoColumn") }}
 
 // Layout with two asides
 $screenViewBreakpointWidthWide: {{ default "76rem" ($page.Param "screenViewBreakpointWidthWide") }}
@@ -57,7 +57,7 @@ $screenViewInnerPaddingNarrow: {{ default "1rem" ($page.Param "screenViewInnerPa
 $screenViewBodyPaddingNarrow: {{ default "1rem" ($page.Param "screenViewBodyPaddingNarrow") }}
 
 // Padding around body from two-column breakpoint upward
-$screenViewInnerPadding: {{ default "1.25rem" ($page.Param "screenViewInnerPadding") }}
+$screenViewInnerPadding: {{ default "1rem" ($page.Param "screenViewInnerPadding") }}
 // Padding around main elements (header, main, footer) from two-column breakpoint upward
 $screenViewBodyPadding: {{ default "1.5rem" ($page.Param "screenViewBodyPadding") }}
 
@@ -66,7 +66,7 @@ $screenViewColumnGap: {{ default "1rem" ($page.Param "screenViewColumnGap") }}
 $screenViewWidthAsideMin: {{ default "12rem" ($page.Param "screenViewWidthAsideMin") }}
 
 // Parameters for layout with one aside
-$screenViewColumnWidthMin: ($screenViewBreakpointWidthOneColumn - 2 * $screenViewBodyPadding);
+$screenViewColumnWidthMin: ($screenViewBreakpointWidthTwoColumn - 2 * $screenViewBodyPadding - $screenViewWidthAsideMin - $screenViewColumnGap);
 // $screenViewColumnWidthMax: (#{$screenViewBreakpointWidthTwoColumn} - 2 * #{$screenViewBodyPadding});
 $screenViewColumnWidthMax: ($screenViewBreakpointWidthWide - $screenViewWidthAsideMin - 2 * $screenViewBodyPadding - $screenViewColumnGap);
 

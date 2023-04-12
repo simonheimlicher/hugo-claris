@@ -7,7 +7,6 @@
 body, html
   // scroll-behavior: smooth
   // Replaced by settings smooth scrolling only for 'html:focus-within', see below
-  font-size: var(--font-size)
   font-kerning: normal
   -webkit-text-size-adjust: 100%
   -webkit-font-feature-settings: "kern" 1
@@ -28,7 +27,11 @@ html:focus-within
   animation-name: smoothscroll-html-focus-within
   scroll-behavior: smooth
 
+html
+  font-size: 100%
+
 body
+  font-size: var(--font-size)
   font-family: var(--font)
   font-weight: var(--font-weight)
   background: var(--choice-bg)
@@ -36,7 +39,6 @@ body
   // background: transparent
   color: var(--text)
   // font-size: 1.1rem
-  font-size: 1rem
   line-height: var(--line-height)
   // FIXME: min-height needs to be applied to main element
   // to hide footer until the user scrools up and reveals it
