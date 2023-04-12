@@ -1,27 +1,27 @@
-// import {
-//   htmlRootClassNoJavaScript,
-//   htmlRootClassNoCSSProperties,
-//   htmlRootClassNoCSSGrid,
-//   pageHasLoaded,
-//   iconsPath,
-//   inline,
-//   baseURL,
-//   showImagePosition,
-//   showImagePositionLabel,
-// } from "../hugo_params";
-// export * from '../hugo_params';
+import {
+  htmlRootClassNoJavaScript,
+  htmlRootClassNoCSSProperties,
+  htmlRootClassNoCSSGrid,
+  pageHasLoaded,
+  iconsPath,
+  inline,
+  baseURL,
+  showImagePosition,
+  showImagePositionLabel,
+} from "../hugo-params";
+export * from '../hugo-params';
 
-export const baseURL = '//localhost:1313/';
-export const iconsPath = 'icons/';
-export const showImagePosition = "false";
-export const showImagePositionLabel = 'Figure';
+// export const baseURL = '//localhost:1313/';
+// export const iconsPath = 'icons/';
+// export const showImagePosition = "false";
+// export const showImagePositionLabel = 'Figure';
 
-export const htmlRootClassNoJavaScript = 'no-js';
-export const htmlRootClassModernJavaScript = 'modern-js';
-export const htmlRootClassNoCSSProperties = 'no-css-prop';
-export const htmlRootClassNoCSSGrid = 'no-css-grid';
-export const pageHasLoaded = 'DOMContentLoaded';
-export const inline = ":inline";
+// export const htmlRootClassNoJavaScript = 'no-js';
+// export const htmlRootClassModernJavaScript = 'modern-js';
+// export const htmlRootClassNoCSSProperties = 'no-css-prop';
+// export const htmlRootClassNoCSSGrid = 'no-css-grid';
+// export const pageHasLoaded = 'DOMContentLoaded';
+// export const inline = ":inline";
 
 // export {
 //   htmlRootClassNoJavaScript,
