@@ -37,9 +37,6 @@ $screenViewInnerPadding-list: 0.5rem;
 $heading-padding-top: 0.5rem;
 $heading-margin-top: 1.5rem;
 
-$icons: '{{ printf "../%s" (default "icons/" site.Params.iconsDir) }}';
-$images: '/images/';
-
 $main-z-index: 1;
 
 // $theme-hue: 207;
