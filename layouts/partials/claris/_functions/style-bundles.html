@@ -76,7 +76,9 @@
           {{- $executedFileList = append (slice $executedFile) $executedFileList }}
           {{- $executedResourceList = append (slice $executedResource) $executedResourceList }}
         {{- else -}}
-          {{- errorf "%s[%s]: resourceFile '%s' not found" $page $template $resourceFile }}
+          {{- if (eq $contentType "claris") }}
+            {{- errorf "%s[%s]: resourceFile '%s' not found" $page $template $resourceFile }}
+          {{- end -}}
         {{- end -}}
       {{- end -}}
     {{- end }}
