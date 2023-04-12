@@ -557,19 +557,23 @@
   @supports (display: grid)
     @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
       .excerpt_grid
+        // Allow 1 column, not 2
+        grid-template-columns: 1fr
+    @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+      .excerpt_grid
         // Allow 2 columns, not 3
-        grid-template-columns: repeat(2, minmax(#{$list-excerpt-width}, 1fr))
+        grid-template-columns: repeat(2, 1fr)
       @supports (aspect-ratio: 1)
         .excerpt_thumbnail img
-          aspect-ratio: 1 // sqare
-    @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+          aspect-ratio: 1 // square
+    @media screen and (min-width: $screenViewBreakpointWidthWide)
       @supports (aspect-ratio: 1)
         .excerpt_thumbnail img
           aspect-ratio: 514229 / 317811 // golden ratio
     @media screen and (min-width: $screenViewBreakpointWidthUltrawide)
       .excerpt_grid
         // Allow 4 columns only when 4 columns fit, not 3
-        grid-template-columns: repeat(4, minmax(#{$list-excerpt-width}, 1fr))
+        grid-template-columns: repeat(4, 1fr)
 
 
 .sidebar
