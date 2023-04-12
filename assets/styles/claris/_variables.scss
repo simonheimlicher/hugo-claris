@@ -14,13 +14,25 @@ $screenViewNavHeight: 3rem;
 $screenViewBodyPaddingMobileHorizontal: ($screenViewBodyPaddingMobile / 1.0);
 $screenViewBodyPaddingMobileVertical: ($screenViewBodyPaddingMobile / 1.5);
 
+$screenViewBodyPaddingNarrowHorizontal: ($screenViewBodyPaddingNarrow / 1.0);
+$screenViewBodyPaddingNarrowVertical: ($screenViewBodyPaddingNarrow / 1.5);
+
 $screenViewBodyPaddingHorizontal: ($screenViewBodyPadding / 1.0);
 $screenViewBodyPaddingVertical: ($screenViewBodyPadding / 1.5);
 
-$screenViewBodyPadding-list: 0.5rem;
-$screenViewBodyPadding-list: 0.5rem;
-$screenViewBodyPadding-list: 0.5rem;
-$screenViewBodyPadding-list: 0.5rem;
+$screenViewInnerPaddingMobileHorizontal: ($screenViewInnerPaddingMobile / 1.0);
+$screenViewInnerPaddingMobileVertical: ($screenViewInnerPaddingMobile / 1.5);
+
+$screenViewInnerPaddingNarrowHorizontal: ($screenViewInnerPaddingNarrow / 1.0);
+$screenViewInnerPaddingNarrowVertical: ($screenViewInnerPaddingNarrow / 1.5);
+
+$screenViewInnerPaddingHorizontal: ($screenViewInnerPadding / 1.0);
+$screenViewInnerPaddingVertical: ($screenViewInnerPadding / 1.5);
+
+$screenViewInnerPadding-list: 0.5rem;
+$screenViewInnerPadding-list: 0.5rem;
+$screenViewInnerPadding-list: 0.5rem;
+$screenViewInnerPadding-list: 0.5rem;
 
 $heading-padding-top: 0.5rem;
 $heading-margin-top: 1.5rem;
@@ -172,13 +184,34 @@ $main-z-index: 1;
   }
 }
 
-@mixin wrap() {
-  padding: 0 $screenViewBodyPaddingMobileHorizontal;
-  padding: env(safe-area-inset-top) calc(#{$screenViewBodyPaddingMobileHorizontal} + env(safe-area-inset-right)) env(safe-area-inset-bottom) calc(#{$screenViewBodyPaddingMobileHorizontal} + env(safe-area-inset-left));
+@mixin wrap_outer() {
+  // For browsers that don't support CSS properties
+  padding: $screenViewBodyPaddingMobileVertical $screenViewBodyPaddingMobileHorizontal;
   @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
-    padding: 0 $screenViewBodyPaddingHorizontal;
-    padding: env(safe-area-inset-top) calc(#{$screenViewBodyPaddingHorizontal} + env(safe-area-inset-right)) env(safe-area-inset-bottom) calc(#{$screenViewBodyPaddingHorizontal} + env(safe-area-inset-left));
+    padding: $screenViewBodyPaddingNarrowVertical $screenViewBodyPaddingNarrowHorizontal;
   }
+  @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
+    padding: $screenViewBodyPaddingVertical $screenViewBodyPaddingHorizontal;
+  }
+  padding:  calc(max(var(--padding-outer-vertical), env(safe-area-inset-top)))
+            calc(max(var(--padding-outer-horizontal), env(safe-area-inset-right)))
+            calc(max(var(--padding-outer-vertical), env(safe-area-inset-bottom)))
+            calc(max(var(--padding-outer-horizontal), env(safe-area-inset-left)));
+}
+
+@mixin wrap() {
+  // For browsers that don't support CSS properties
+  padding: 0 $screenViewInnerPaddingMobileHorizontal;
+  @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
+    padding: 0 $screenViewInnerPaddingNarrowHorizontal;
+  }
+  @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
+    padding: 0 $screenViewInnerPaddingHorizontal;
+  }
+  padding:  calc(max(0, env(safe-area-inset-top)))
+            calc(max(var(--padding-inner-horizontal), env(safe-area-inset-right)))
+            calc(max(0, env(safe-area-inset-bottom)))
+            calc(max(var(--padding-inner-horizontal), env(safe-area-inset-left)));
 }
 
 @mixin content_base() {
@@ -262,7 +295,7 @@ $main-z-index: 1;
   }
 }
 
-@mixin list-style($padding-vertical: $screenViewBodyPaddingMobile / 2, $indent: $list-style-indent) {
+@mixin list-style($padding-vertical: $screenViewInnerPaddingMobile / 2, $indent: $list-style-indent) {
   ul, ol {
     // list-style: disc outside none; // initial;
     padding: $padding-vertical 0;
@@ -521,22 +554,56 @@ html {
     --screenViewNavHeight: #{$screenViewNavHeight};
   }
 
-  --screenViewBodyPadding: #{$screenViewBodyPaddingMobile};
-  --screenViewBodyPadding-horizontal: #{$screenViewBodyPaddingMobileHorizontal};
-  --screenViewBodyPadding-half-horizontal: #{($screenViewBodyPaddingMobileHorizontal / 2)};
-  --screenViewBodyPadding-quarter-horizontal: #{($screenViewBodyPaddingMobileHorizontal / 4)};
-  --screenViewBodyPadding-vertical: #{$screenViewBodyPaddingMobileVertical};
-  --screenViewBodyPadding-half-vertical: #{($screenViewBodyPaddingMobileVertical / 2)};
-  --screenViewBodyPadding-quarter-vertical: #{($screenViewBodyPaddingMobileVertical / 4)};
+  --padding-outer: #{$screenViewBodyPaddingMobile};
+  --padding-outer-horizontal: #{$screenViewBodyPaddingMobileHorizontal};
+  --padding-outer-half-horizontal: #{($screenViewBodyPaddingMobileHorizontal / 2)};
+  --padding-outer-quarter-horizontal: #{($screenViewBodyPaddingMobileHorizontal / 4)};
+  --padding-outer-vertical: #{$screenViewBodyPaddingMobileVertical};
+  --padding-outer-half-vertical: #{($screenViewBodyPaddingMobileVertical / 2)};
+  --padding-outer-quarter-vertical: #{($screenViewBodyPaddingMobileVertical / 4)};
+
+  --padding-inner: #{$screenViewInnerPaddingMobile};
+  --padding-inner-horizontal: #{$screenViewInnerPaddingMobileHorizontal};
+  --padding-inner-half-horizontal: #{($screenViewInnerPaddingMobileHorizontal / 2)};
+  --padding-inner-quarter-horizontal: #{($screenViewInnerPaddingMobileHorizontal / 4)};
+  --padding-inner-vertical: #{$screenViewInnerPaddingMobileVertical};
+  --padding-inner-half-vertical: #{($screenViewInnerPaddingMobileVertical / 2)};
+  --padding-inner-quarter-vertical: #{($screenViewInnerPaddingMobileVertical / 4)};
 
   @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
-    --screenViewBodyPadding: #{$screenViewBodyPadding};
-    --screenViewBodyPadding-horizontal: #{$screenViewBodyPaddingHorizontal};
-    --screenViewBodyPadding-half-horizontal: #{($screenViewBodyPaddingHorizontal / 2)};
-    --screenViewBodyPadding-quarter-horizontal: #{($screenViewBodyPaddingHorizontal / 4)};
-    --screenViewBodyPadding-vertical: #{$screenViewBodyPaddingVertical};
-    --screenViewBodyPadding-half-vertical: #{($screenViewBodyPaddingVertical / 2)};
-    --screenViewBodyPadding-quarter-vertical: #{($screenViewBodyPaddingVertical / 4)};
+    --padding-outer: #{$screenViewBodyPaddingNarrow};
+    --padding-outer-horizontal: #{$screenViewBodyPaddingNarrowHorizontal};
+    --padding-outer-half-horizontal: #{($screenViewBodyPaddingNarrowHorizontal / 2)};
+    --padding-outer-quarter-horizontal: #{($screenViewBodyPaddingNarrowHorizontal / 4)};
+    --padding-outer-vertical: #{$screenViewBodyPaddingNarrowVertical};
+    --padding-outer-half-vertical: #{($screenViewBodyPaddingNarrowVertical / 2)};
+    --padding-outer-quarter-vertical: #{($screenViewBodyPaddingNarrowVertical / 4)};
+
+    --padding-inner: #{$screenViewInnerPaddingNarrow};
+    --padding-inner-horizontal: #{$screenViewInnerPaddingNarrowHorizontal};
+    --padding-inner-half-horizontal: #{($screenViewInnerPaddingNarrowHorizontal / 2)};
+    --padding-inner-quarter-horizontal: #{($screenViewInnerPaddingNarrowHorizontal / 4)};
+    --padding-inner-vertical: #{$screenViewInnerPaddingNarrowVertical};
+    --padding-inner-half-vertical: #{($screenViewInnerPaddingNarrowVertical / 2)};
+    --padding-inner-quarter-vertical: #{($screenViewInnerPaddingNarrowVertical / 4)};
+  }
+
+  @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
+    --padding-outer: #{$screenViewBodyPadding};
+    --padding-outer-horizontal: #{$screenViewBodyPaddingHorizontal};
+    --padding-outer-half-horizontal: #{($screenViewBodyPaddingHorizontal / 2)};
+    --padding-outer-quarter-horizontal: #{($screenViewBodyPaddingHorizontal / 4)};
+    --padding-outer-vertical: #{$screenViewBodyPaddingVertical};
+    --padding-outer-half-vertical: #{($screenViewBodyPaddingVertical / 2)};
+    --padding-outer-quarter-vertical: #{($screenViewBodyPaddingVertical / 4)};
+
+    --padding-inner: #{$screenViewInnerPadding};
+    --padding-inner-horizontal: #{$screenViewInnerPaddingHorizontal};
+    --padding-inner-half-horizontal: #{($screenViewInnerPaddingHorizontal / 2)};
+    --padding-inner-quarter-horizontal: #{($screenViewInnerPaddingHorizontal / 4)};
+    --padding-inner-vertical: #{$screenViewInnerPaddingVertical};
+    --padding-inner-half-vertical: #{($screenViewInnerPaddingVertical / 2)};
+    --padding-inner-quarter-vertical: #{($screenViewInnerPaddingVertical / 4)};
   }
 
   --navigation-header-height: 0;

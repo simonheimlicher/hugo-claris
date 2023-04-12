@@ -13,13 +13,19 @@ $fontFamilyMono: '{{ default "DM Mono" ($page.Param "fontFamilyMono") }}'
 // Adapt to width of screen
 // Maximum width for anything the user is supposed
 // to interact with (the "page chrome")
-$screenViewWidthChrome: {{ default "96rem" ($page.Param "screenViewWidthChrome") }}
+$screenViewWidthChrome: {{ default "104rem" ($page.Param "screenViewWidthChrome") }}
 
 // Padding around body up to narrow breakpoint
-$screenViewBodyPaddingMobile: {{ default "0.75rem" ($page.Param "screenViewBodyPaddingMobile") }}
+$screenViewBodyPaddingMobile: {{ default "0rem" ($page.Param "screenViewBodyPaddingMobile") }}
+// Padding around main elements (header, main, footer) up to narrow breakpoint
+$screenViewInnerPaddingMobile: {{ default "0.5rem" ($page.Param "screenViewInnerPaddingMobile") }}
 
 // From this width upward, the mobile menu is hidden
 // and the full menu bar is shown
+$screenViewBreakpointWidthMobileMenu: {{ default "28rem" ($page.Param "screenViewBreakpointWidthMobileMenu") }}
+
+// From this width upward, more than one content item is shown -
+// e.g., a floating image surrounded by text
 $screenViewBreakpointWidthMobile: {{ default "20rem" ($page.Param "screenViewBreakpointWidthMobile") }}
 // Reset font size to regular size
 $screenViewBreakpointWidthNarrow: {{ default "36rem" ($page.Param "screenViewBreakpointWidthNarrow") }}
@@ -28,32 +34,44 @@ $screenViewBreakpointWidthNarrow: {{ default "36rem" ($page.Param "screenViewBre
 $screenViewBreakpointWidthOneColumn: {{ default "48rem" ($page.Param "screenViewBreakpointWidthOneColumn") }}
 
 // Layout with one aside
-$screenViewBreakpointWidthTwoColumn: {{ default "61rem" ($page.Param "screenViewBreakpointWidthTwoColumn") }}
+$screenViewBreakpointWidthTwoColumn: {{ default "63rem" ($page.Param "screenViewBreakpointWidthTwoColumn") }}
 
 // Layout with two asides
-$screenViewBreakpointWidthWide: {{ default "84rem" ($page.Param "screenViewBreakpointWidthWide") }}
+$screenViewBreakpointWidthWide: {{ default "76rem" ($page.Param "screenViewBreakpointWidthWide") }}
 
 // Layout with two asides and wider sections in main column, e.g., for code or figures
 $screenViewBreakpointWidthUltrawide: {{ default "96rem" ($page.Param "screenViewBreakpointWidthUltrawide") }}
 
-// Parameters for layout with one columne
-// Padding around body from narrow breakpoint upward
-$screenViewBodyPadding: {{ default "1.5rem" ($page.Param "screenViewBodyPadding") }}
+// Parameters for layout with one column
+// Padding around body up to two-column breakpoint
+$screenViewInnerPaddingNarrow: {{ default "1rem" ($page.Param "screenViewInnerPaddingNarrow") }}
+// Padding around main elements (header, main, footer) up to two-column breakpoint
+$screenViewBodyPaddingNarrow: {{ default "1rem" ($page.Param "screenViewBodyPaddingNarrow") }}
+
+// Padding around body from two-column breakpoint upward
+$screenViewInnerPadding: {{ default "1.25rem" ($page.Param "screenViewBodyPadding") }}
+$screenViewColumnGap: {{ default "1rem" ($page.Param "screenViewColumnGap") }}
 
 $screenViewWidthAsideMin: {{ default "12rem" ($page.Param "screenViewWidthAsideMin") }}
 
 // Parameters for layout with one aside
-$screenViewColumnWidthMin: calc(#{$screenViewBreakpointWidthOneColumn} - 2 * #{$screenViewBodyPadding});
-$screenViewColumnWidthMax: calc(#{$screenViewBreakpointWidthTwoColumn} - 2 * #{$screenViewBodyPadding});
+$screenViewColumnWidthMin: ($screenViewBreakpointWidthOneColumn - 2 * $screenViewBodyPadding);
+// $screenViewColumnWidthMax: (#{$screenViewBreakpointWidthTwoColumn} - 2 * #{$screenViewBodyPadding});
+$screenViewColumnWidthMax: ($screenViewBreakpointWidthWide - $screenViewWidthAsideMin - 2 * $screenViewBodyPadding - $screenViewColumnGap);
 
 // Parameters for layout with two asides
-$screenViewColumnWidthWideMin: #{$screenViewColumnWidthMin};
-$screenViewColumnWidthWideMax: {{ default "80rem" ($page.Param "screenViewColumnWidthWideMax") }}
-$screenViewWidthWideAsideMin: {{ default "14rem" ($page.Param "screenViewWidthWideAsideMin") }}
-$screenViewWidthWideAsideMax: {{ default "24rem" ($page.Param "screenViewWidthWideAsideMax") }}
+$screenViewColumnGapWide: {{ default "2rem" ($page.Param "screenViewColumnGapWide") }}
+$screenViewColumnWidthWideMax: {{ default "60rem" ($page.Param "screenViewColumnWidthWideMax") }}
+$screenViewWidthWideAsideMin: {{ default "12rem" ($page.Param "screenViewWidthWideAsideMin") }}
+$screenViewWidthWideAsideMax: {{ default "18rem" ($page.Param "screenViewWidthWideAsideMax") }}
+$screenViewColumnWidthWideMin: ($screenViewBreakpointWidthWide - 2 * $screenViewWidthWideAsideMin - 2 * $screenViewBodyPadding - 2 * $screenViewColumnGapWide);
 
 // Parameters for layout with two asides and wider sections in main column, e.g., for code or figures
 $screenViewWidthUltrawide: {{ default "57rem" ($page.Param "screenViewWidthUltrawide") }}
 
-$screenViewBreakpointHeightTall: {{ default "48rem" ($page.Param "tall-breakpoint") }}
-$screenViewBreakpointHeightShallow: {{ default "42rem" ($page.Param "shallow-breakpoint") }}
+$screenViewBreakpointHeightTall: {{ default "48rem" ($page.Param "screenViewBreakpointHeightTall") }}
+$screenViewBreakpointHeightShallow: {{ default "42rem" ($page.Param "screenViewBreakpointHeightShallow") }}
+
+// From this height upward, the footer is layered beneath the main content
+// and revealed when scrolling up
+$screenViewBreakpointHeightStickyFooter: {{ default "42rem" ($page.Param "screenViewBreakpointHeightStickyFooter") }}

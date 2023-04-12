@@ -8,7 +8,7 @@
       margin-top: 2rem
 
   .content + .content
-    padding-top: var(--screenViewBodyPadding-vertical)
+    padding-top: var(--padding-inner-vertical)
 
 .wrap
   @include wrap
@@ -37,8 +37,8 @@
 
   // border-top: 1px solid $xhaze
   // background: var(--footer-bg)
-  padding-top: var(--screenViewBodyPadding-vertical)
-  // padding-bottom: var(--screenViewBodyPadding-vertical)
+  padding-top: var(--padding-inner-vertical)
+  // padding-bottom: var(--padding-inner-vertical)
   background: rgba(var(--choice-bg), 1)
   @include background-gradient-translucent("to top", 1, 0)
   // @include shadow-centered-narrow
@@ -63,7 +63,7 @@
         grid-template-columns: repeat(auto-fit, minmax(min-content, max-content))
         grid-template-rows: 1fr
         .footer_page
-          padding: var(--screenViewBodyPadding-vertical) var(--screenViewBodyPadding-horizontal)
+          padding: var(--padding-inner-vertical) var(--padding-inner-horizontal)
           margin: auto
         .grid-id-2
           grid-column: 2
@@ -88,8 +88,8 @@
 
   &_copyright
     @include footer
-    padding-top: var(--screenViewBodyPadding-vertical)
-    padding-bottom: var(--screenViewBodyPadding-vertical)
+    padding-top: var(--padding-inner-vertical)
+    padding-bottom: var(--padding-inner-vertical)
     font-size: 0.9rem
 
 .button
@@ -224,7 +224,7 @@
   position: sticky
   margin: 0.8rem 0 1rem auto
   // top: calc(#{$screenViewNavHeight} + 5vh)
-  top: calc(#{$screenViewNavHeight} + #{$screenViewBodyPadding})
+  top: calc(#{$screenViewNavHeight} + #{$screenViewInnerPadding})
   align-self: start
   border-radius: 0.25rem
   // padding: 0.5rem 1rem 0 1rem
@@ -463,12 +463,12 @@
         font-size: 125%
   &_title, &_meta
     width: 100%
-    padding: 0 $screenViewBodyPadding
+    padding: 0 var(--padding-inner-horizontal)
   &_header, &_footer
     width: 100%
   &_title
     width: 100%
-    padding-top: var(--screenViewBodyPadding-vertical)
+    padding-top: var(--padding-inner-vertical)
     @extend h3
     margin: 0
   &_main
@@ -478,11 +478,11 @@
       &.partition
         .excerpt_thumbnail
           float: left
-          padding: var(--screenViewBodyPadding-vertical) var(--screenViewBodyPadding-half-horizontal) var(--screenViewBodyPadding-quarter-vertical) var(--screenViewBodyPadding-horizontal)
+          padding: var(--padding-inner-vertical) var(--padding-inner-half-horizontal) var(--padding-inner-quarter-vertical) var(--padding-inner-horizontal)
           max-width: 40%
   &_thumbnail
     width: 100%
-    padding: var(--screenViewBodyPadding-vertical) var(--screenViewBodyPadding-horizontal) var(--screenViewBodyPadding-quarter-vertical) var(--screenViewBodyPadding-horizontal)
+    padding: var(--padding-inner-vertical) var(--padding-inner-horizontal) var(--padding-inner-quarter-vertical) var(--padding-inner-horizontal)
     img
       margin: 0
       min-height: 4rem
@@ -499,11 +499,11 @@
         aspect-ratio: 1
   &_content
     height: 100% // Ensure the entire excerpt div is covered by <a> tags
-    padding: var(--screenViewBodyPadding-half-vertical) var(--screenViewBodyPadding-horizontal)
+    padding: var(--padding-inner-half-vertical) var(--padding-inner-horizontal)
   &_footer
     clear: both
     &_read-on, &_page-count
-      padding: var(--screenViewBodyPadding-half-vertical) var(--screenViewBodyPadding-horizontal) var(--screenViewBodyPadding-vertical) var(--screenViewBodyPadding-horizontal)
+      padding: var(--padding-inner-half-vertical) var(--padding-inner-horizontal) var(--padding-inner-vertical) var(--padding-inner-horizontal)
       margin: 0
       width: 100%
     &_read-on
@@ -536,7 +536,7 @@
         margin: 1rem 0 0 0
       @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
         flex-grow: 1
-        flex-basis: calc((#{$screenViewBreakpointWidthOneColumn} - 2 * #{$screenViewBodyPadding} - 2rem) / 2)
+        flex-basis: calc((#{$screenViewBreakpointWidthOneColumn} - 2 * #{$screenViewInnerPadding} - 2rem) / 2)
 
         /* Auto-fit as many items on a row as possible without going under $list-excerpt-width */
         display: grid
@@ -548,7 +548,7 @@
           margin: 0
 
       @media screen and (min-width: $screenViewBreakpointWidthWide)
-        grid-gap: var(--screenViewBodyPadding)
+        grid-gap: var(--padding-inner)
       &_thumbnail
         height: auto
 
@@ -580,7 +580,7 @@
   @include aside
   &_inner
     position: relative
-    margin-top: calc(#{$screenViewBodyPadding})
+    margin-top: calc(#{$screenViewInnerPadding})
     padding-top: 1rem
     padding-bottom: 3rem
     &:after
@@ -624,7 +624,7 @@
 
 .pagination
   display: flex
-  margin: calc(1 * #{$screenViewBodyPadding}) 0
+  margin: calc(1 * #{$screenViewInnerPadding}) 0
 
 .page
   &-item
@@ -693,8 +693,8 @@
   z-index: ($main-z-index  + 10)
   font-size: 0.75rem // Minitmal size for mobile users
   @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
-    left: var(--screenViewBodyPadding-horizontal)
-    bottom: var(--screenViewBodyPadding-vertical)
+    left: var(--padding-inner-horizontal)
+    bottom: var(--padding-inner-vertical)
     max-width: ($screenViewBreakpointWidthOneColumn / 2)
   @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
     max-width: ($screenViewWidthAsideMin)
@@ -702,11 +702,11 @@
     display: flex
     flex-direction: column
     align-items: flex-start
-    padding: ($screenViewBodyPadding / 1.5) ($screenViewBodyPadding)
+    padding: ($screenViewInnerPadding / 1.5) ($screenViewInnerPadding)
     background: rgba(var(--RGB_choice-bg), 0.98)
     @include background-gradient-translucent("to top", 0.9)
   &__label
-    padding-bottom: ($screenViewBodyPadding / 3)
+    padding-bottom: ($screenViewInnerPadding / 3)
 
   &__actions
     a, button
@@ -963,8 +963,8 @@ html[data-mode="dim"]
 
 .shortcode_responsive-figure
   display: block
-  margin: calc(#{$screenViewBodyPadding}) auto
-  // padding: calc(#{$screenViewBodyPadding}) calc(#{$screenViewBodyPadding})
+  margin: calc(#{$screenViewInnerPadding}) auto
+  // padding: calc(#{$screenViewInnerPadding}) calc(#{$screenViewInnerPadding})
   border-radius: 0.125rem
   & > picture
     display: block
@@ -991,12 +991,12 @@ html[data-mode="dim"]
     max-height: 100%
   &.caption
     background: var(--figure-bg)
-    padding: var(--screenViewBodyPadding-vertical)  var(--screenViewBodyPadding-horizontal)
+    padding: var(--padding-inner-vertical)  var(--padding-inner-horizontal)
     color: var(--text)
     font-family: var(--font)
     & > figcaption
       width: 100%
-      padding: var(--screenViewBodyPadding-vertical) 0 0 0
+      padding: var(--padding-inner-vertical) 0 0 0
 
   &.background-light
     background: var(--bg-light)
@@ -1013,7 +1013,7 @@ html[data-mode="dim"]
   &.float-left, &.float-right
     float: none
     max-width: 80%
-    // max-width: calc(0.8 * (#{$screenViewBreakpointWidthMobile} - 2 * var(--screenViewBodyPadding-horizontal) ) )
+    // max-width: calc(0.8 * (#{$screenViewBreakpointWidthMobile} - 2 * var(--padding-inner-horizontal) ) )
     margin: 0 auto
   *:not(figure) + &
     clear: both
@@ -1031,11 +1031,11 @@ html[data-mode="dim"]
     &.relative-width-20
       &.float-left
         float: left
-        margin: 0 $screenViewBodyPadding 1rem 0
+        margin: 0 $screenViewInnerPadding 1rem 0
     &.relative-width-20
       &.float-right
         float: right
-        margin: 0 0 1rem $screenViewBodyPadding
+        margin: 0 0 1rem $screenViewInnerPadding
     &.relative-width-20
       max-width: 40%
     &.relative-width-30
@@ -1047,11 +1047,11 @@ html[data-mode="dim"]
     &.relative-width-30
       &.float-left
         float: left
-        margin: 0 $screenViewBodyPadding 1rem 0
+        margin: 0 $screenViewInnerPadding 1rem 0
     &.relative-width-30
       &.float-right
         float: right
-        margin: 0 0 1rem $screenViewBodyPadding
+        margin: 0 0 1rem $screenViewInnerPadding
     &.relative-width-20
       max-width: 30%
     &.relative-width-30
@@ -1067,13 +1067,13 @@ html[data-mode="dim"]
     &.relative-width-60
       &.float-left
         float: left
-        margin: 0 $screenViewBodyPadding 1rem 0
+        margin: 0 $screenViewInnerPadding 1rem 0
     &.relative-width-40,
     &.relative-width-50,
     &.relative-width-60
       &.float-right
         float: right
-        margin: 0 0 1rem $screenViewBodyPadding
+        margin: 0 0 1rem $screenViewInnerPadding
     &.relative-width-20
       max-width: 20%
     &.relative-width-30

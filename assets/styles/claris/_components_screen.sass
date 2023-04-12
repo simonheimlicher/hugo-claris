@@ -370,9 +370,9 @@
 
   &_brand
     position: relative
-    margin-left: (0 - $screenViewBodyPaddingMobile)
+    margin-left: (0 - $screenViewInnerPaddingMobile)
     margin-right: 0rem
-    padding: 0 0.5rem 0 $screenViewBodyPaddingMobile
+    padding: 0 0.5rem 0 $screenViewInnerPaddingMobile
     z-index: 999
     width: min-content
     // Setting min-height is required to avoid nav bar incl. burger menu icon from collapsing
@@ -388,8 +388,8 @@
     top: 0
     bottom: 0
     height: 100%
-    padding-left: $screenViewBodyPaddingMobile
-    padding-right: $screenViewBodyPaddingMobile
+    padding-left: $screenViewInnerPaddingMobile
+    padding-right: $screenViewInnerPaddingMobile
     cursor: pointer
     z-index: 1000
     display: flex
@@ -493,7 +493,7 @@
     // Ensure .main extends padding to reach under nav_header
     // when nav_header is position: relative
     // padding-top: 0
-    padding: #{$screenViewNavHeightNarrow} 0 $screenViewBodyPadding 0
+    padding: #{$screenViewNavHeightNarrow} 0 $screenViewInnerPadding 0
     margin: - #{$screenViewNavHeightNarrow} auto 0 auto
 
 .footer
@@ -545,7 +545,7 @@
       justify-content: flex-end
       min-height: 100vh
       min-height: 100lvh
-      padding-bottom: $screenViewBodyPadding
+      padding-bottom: $screenViewInnerPadding
       z-index: ($main-z-index + 2)
     .content-title
       color: white
@@ -559,7 +559,7 @@
     & ~ .footer
       position: relative
       z-index: ($main-z-index + 1)
-      // padding-top: ($screenViewBodyPadding)
+      // padding-top: ($screenViewInnerPadding)
       background: var(--bg-dark)
       color: var(--text-dark)
       h1, h2, h3, a
@@ -631,21 +631,21 @@
         @include wrap
         & > .nav_group
           width: 100%
-          margin-left: (0.25rem - $screenViewBodyPaddingMobile)
+          margin-left: (0.25rem - $screenViewInnerPaddingMobile)
           .nav_item
-            padding-left: ($screenViewBodyPaddingMobile - 0.25rem)
-            padding-right: ($screenViewBodyPaddingMobile - 0.25rem)
+            padding-left: ($screenViewInnerPaddingMobile - 0.25rem)
+            padding-right: ($screenViewInnerPaddingMobile - 0.25rem)
           @media screen and (min-width: $screenViewBreakpointWidthNarrow)
-            margin-left: (0.5rem - $screenViewBodyPadding)
+            margin-left: (0.5rem - $screenViewInnerPadding)
             .nav_item
-              padding-left: ($screenViewBodyPadding - 0.5rem)
-              padding-right: ($screenViewBodyPadding - 0.5rem)
+              padding-left: ($screenViewInnerPadding - 0.5rem)
+              padding-right: ($screenViewInnerPadding - 0.5rem)
           &:first-child
-            margin-top: ($screenViewNavHeightNarrow + $screenViewBodyPadding)
+            margin-top: ($screenViewNavHeightNarrow + $screenViewInnerPadding)
       &_group_follow_mode
         flex-wrap: wrap
         justify-content: space-between
-        margin-top: $screenViewBodyPadding
+        margin-top: $screenViewInnerPadding
       &_active
         &, &_is_menu.nav_menu, &_has_menu:not(.nav_open), &_parent_is_menu.nav_menu, &_parent_has_menu, .nav_open_sub &_is_menu, .nav_open_sub &_parent_is_menu, .nav_open_sub &_parent_parent_is_menu
 
@@ -727,15 +727,15 @@
       padding: 0.5rem 0.5rem
     &_brand
       height: $screenViewNavHeight
-      margin-left: (-1 * $screenViewBodyPadding)
+      margin-left: (-1 * $screenViewInnerPadding)
       margin-right: 0rem
-      padding-left: $screenViewBodyPadding
-      // padding-right: $screenViewBodyPadding
+      padding-left: $screenViewInnerPadding
+      // padding-right: $screenViewInnerPadding
       img
         height: $screenViewNavHeight
     &_mobile_toggle
-      // padding-left: $screenViewBodyPadding
-      padding-right: $screenViewBodyPadding
+      // padding-left: $screenViewInnerPadding
+      padding-right: $screenViewInnerPadding
 
     .color_mode_label
       display: flex

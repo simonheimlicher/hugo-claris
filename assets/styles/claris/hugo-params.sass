@@ -16,7 +16,9 @@ $fontFamilyMono: '{{ default "DM Mono" ($page.Param "fontFamilyMono") }}'
 $screenViewWidthChrome: {{ default "104rem" ($page.Param "screenViewWidthChrome") }}
 
 // Padding around body up to narrow breakpoint
-$screenViewBodyPaddingMobile: {{ default "0.75rem" ($page.Param "screenViewBodyPaddingMobile") }}
+$screenViewBodyPaddingMobile: {{ default "0rem" ($page.Param "screenViewBodyPaddingMobile") }}
+// Padding around main elements (header, main, footer) up to narrow breakpoint
+$screenViewInnerPaddingMobile: {{ default "0.5rem" ($page.Param "screenViewInnerPaddingMobile") }}
 
 // From this width upward, the mobile menu is hidden
 // and the full menu bar is shown
@@ -40,9 +42,17 @@ $screenViewBreakpointWidthWide: {{ default "76rem" ($page.Param "screenViewBreak
 // Layout with two asides and wider sections in main column, e.g., for code or figures
 $screenViewBreakpointWidthUltrawide: {{ default "96rem" ($page.Param "screenViewBreakpointWidthUltrawide") }}
 
-// Parameters for layout with one columne
-// Padding around body from narrow breakpoint upward
+// Parameters for layout with one column
+// Padding around body up to two-column breakpoint
+$screenViewInnerPaddingNarrow: {{ default "1rem" ($page.Param "screenViewInnerPaddingNarrow") }}
+// Padding around main elements (header, main, footer) up to two-column breakpoint
+$screenViewBodyPaddingNarrow: {{ default "1rem" ($page.Param "screenViewBodyPaddingNarrow") }}
+
+// Padding around body from two-column breakpoint upward
+$screenViewInnerPadding: {{ default "1.25rem" ($page.Param "screenViewInnerPadding") }}
+// Padding around main elements (header, main, footer) from two-column breakpoint upward
 $screenViewBodyPadding: {{ default "1.5rem" ($page.Param "screenViewBodyPadding") }}
+
 $screenViewColumnGap: {{ default "1rem" ($page.Param "screenViewColumnGap") }}
 
 $screenViewWidthAsideMin: {{ default "12rem" ($page.Param "screenViewWidthAsideMin") }}
