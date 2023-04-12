@@ -4,11 +4,10 @@
 {{ if not $envDevel }}
   {{- with site.Params.volumentAnalyticsID -}}
     <script async src="https://cdn.volument.com/v1/volument.js" token="{{ . }}"></script>
-  {{- else -}}
-    {{- warnf "%s[%s]: site parameter site.Params.volumentAnalyticsID not set" $page $template }}
+    {{/* {{- else -}}
+    {{- warnf "%s[%s]: site parameter site.Params.volumentAnalyticsID not set" $page $template }} */}}
   {{- end -}}
-  {{ template "_internal/google_analytics_async.html" . }}
-{{- else }}
+{{/* {{- else }}
   {{- warnf "%s[%s]: Not including Volument Analytics with volumentAnalyticsID='%v' [env=%s == devel: %#v]"
-      $page $template site.Params.volumentAnalyticsID hugo.Environment $envDevel -}}
+  $page $template site.Params.volumentAnalyticsID hugo.Environment $envDevel -}} */}}
 {{- end }}
