@@ -4,7 +4,12 @@
 {{- /* By specifying a second argument to partialCached "claris/_functions/logo-image",
     we ensure that it creates a new version with the specified size */ -}}
 {{- $logoImage := partialCached "claris/_functions/logo-image" $sizeSpec $sizeSpec -}}
-{{- $logoImageURL := partialCached "claris/_functions/canonical-url" $logoImage -}}
+{{- $logoImageURL := false -}}
+{{- with $logoImage }}
+  {{- $logoImageURL = partialCached "claris/_functions/canonical-url" . -}}
+{{- else }}
+  {{- errorf "%s[%s]: Logo image not found" }}
+{{- end }}
 {{- if .IsHome -}}
 {{- $copyright := "" }}
 {{- with site.Params.since }}
