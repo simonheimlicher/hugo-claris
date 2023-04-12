@@ -3,7 +3,6 @@
  */
 
 $list-excerpt-width: 20rem;
-// $list-style-indent: 1.25em;
 $list-style-indent: 0;
 $list-style-ul-indent: $list-style-indent;
 $list-style-ol-indent: $list-style-indent;
@@ -30,148 +29,11 @@ $screenViewInnerPaddingHorizontal: ($screenViewInnerPadding / 1.0);
 $screenViewInnerPaddingVertical: ($screenViewInnerPadding / 1.5);
 
 $screenViewInnerPadding-list: 0.5rem;
-$screenViewInnerPadding-list: 0.5rem;
-$screenViewInnerPadding-list: 0.5rem;
-$screenViewInnerPadding-list: 0.5rem;
 
 $heading-padding-top: 0.5rem;
 $heading-margin-top: 1.5rem;
 
 $main-z-index: 1;
-
-// $theme-hue: 207;
-
-// $theme-hue-lit: $theme-hue;
-// $theme-hue-dim: $theme-hue;
-
-// $theme-sat-lit: 50%;
-// $theme-sat-dim: 50%;
-
-// $bg-sat-lit: 10%;
-// $bg-sat-dim: 5%;
-
-// $haze-sat-lit: 50%;
-// $haze-sat-dim: 20%;
-
-// $theme-text-inv-lit: hsl($theme-hue-lit, $theme-sat-lit, 99%);
-// $theme-text-lit: hsl($theme-hue-lit, $bg-sat-lit, 10%);
-
-// $bg-lit: hsl($theme-hue-lit, $bg-sat-lit, 98%);
-// $bg-hover-lit: lighten($bg-lit, 3%);
-
-// $haze-lit: hsl($theme-hue-lit, $haze-sat-lit, 94%);
-// $xhaze-lit: darken($haze-lit, 5%);
-// $xxhaze-lit: darken($xhaze-lit, 10%);
-
-// $theme-lit: hsl($theme-hue-lit, $theme-sat-lit, 27%);
-// $theme-lit-hover: darken($theme-lit, 20%);
-// $theme-lit-bg: lighten($theme-lit, 60%);
-// $theme-lit-bg-hover: darken($theme-lit-bg, 20%);
-
-// $highlight-bg-yellow-lit: hsl(60, 100%, 77%);
-
-// $bg-dim: hsl($theme-hue-dim, $bg-sat-dim, 15%);
-// $bg-hover-dim: lighten($bg-dim, 3%);
-
-// $haze-dim: hsl($theme-hue-dim, $haze-sat-dim, 20%);
-// $xhaze-dim: lighten($haze-dim, 5%);
-// $xxhaze-dim: lighten($xhaze-dim, 10%);
-
-// $theme-dim: hsl($theme-hue-dim, $theme-sat-dim, 50%);
-// $theme-dim-hover: lighten($theme-dim, 20%);
-// $theme-dim-bg:  darken($theme-dim, 30%);
-// $theme-dim-bg-hover: lighten($theme-dim-bg, 30%);
-
-// $highlight-bg-yellow-dim: hsl(60, 100%, 20%);
-
-// $colors-lit: (
-//   light: $theme-text-inv-lit,
-//   xlight: darken($theme-text-inv-lit, 10%),
-//   dark: $theme-text-lit,
-//   xdark: lighten($theme-text-lit, 5%),
-
-//   // theme: hsl(200, 100%, 27%),
-//   theme: $theme-lit,
-//   // theme-hover: hsl(200, 100%, 12%),
-//   theme-hover: $theme-lit-hover,
-//   theme-bg: $theme-lit-bg,
-//   theme-bg-hover: $theme-lit-bg-hover,
-//   theme-text: var(--theme-text-lit),
-//   neutral-theme: hsl(0, 0%, 13%),
-//   accent: hsl(20, 100%, 40%),
-//   xaccent: hsl(20, 100%, 25%),
-//   haze: $haze-lit,
-//   xhaze: $xhaze-lit,
-//   xxhaze: $xxhaze-lit,
-//   neutral-haze: hsl(0, 0%, 87%),
-//   text: hsl(0, 0%, 34%),
-//   text-hover: var(--theme),
-//   bg: $bg-lit,
-//   bg-hover: $bg-hover-lit,
-//   initial: hsl(0, 100%, 30%),
-//   header-text: var(--theme-text-lit),
-//   code-bg: var(--xdark),
-//   code-scrollbar-track: hsla(0, 0%, 20%, 1),
-//   code-scrollbar-thumb: hsla(0, 0%, 50%, 0.5),
-//   code-scrollbar-thumb-border: hsla(0, 0%, 60%, 0.5),
-//   table-bg: var(--theme-bg-lit),
-//   table-haze: var(--haze),
-//   table-border: var(--neutral-haze),
-//   footer-bg: var(--haze),
-//   shadow: hsla(0, 0%, 0%, 0.12),
-//   translucent-lit: hsla(0, 0%, 0%, 0.05),
-//   translucent: var(--translucent-lit),
-//   article-bg: var(--bg),
-//   article-bg-hover: var(--bg-hover),
-//   choice-bg: var(--bg),
-//   highlight-bg-yellow: $highlight-bg-yellow-lit,
-// );
-
-// $colors-dim: (
-//   theme: $theme-dim,
-//   theme-hover: $theme-dim-hover,
-//   theme-bg: $theme-dim-bg,
-//   theme-bg-hover: $theme-dim-bg-hover,
-//   theme-text: var(--theme-text-inv-dim),
-//   neutral-theme: hsl(0, 0%, 80%),
-//   accent: hsl(20, 100%, 40%),
-//   xaccent: hsl(20, 100%, 65%),
-//   light: hsla(0, 0%, 100%, 0.87),
-//   dark-hover: hsla(0,0%,20%,1),
-//   bg: $bg-dim,
-//   bg-hover: $bg-hover-dim,
-//   initial: hsl(0, 100%, 60%),
-//   haze: $haze-dim,
-//   xhaze: $xhaze-dim,
-//   xxhaze: $xxhaze-dim,
-//   neutral-haze: hsl(0, 0%, 20%),
-//   text: var(--theme-text-dim),
-//   shadow: hsla(0, 100%, 100%, 0.12),
-//   code-bg: var(--xdark),
-//   code-scrollbar-track: hsla(0, 0%, 20%, 1),
-//   code-scrollbar-thumb: hsla(0, 0%, 50%, 0.5),
-//   code-scrollbar-thumb-border: hsla(0, 0%, 80%, 0.5),
-//   header-text: var(--theme-text-dim),
-//   table-bg: var(--code-bg),
-//   table-haze: hsla(0, 0%, 100%, 0.1),
-//   table-border: var(--code-bg),
-//   footer-bg: var(--bg),
-//   translucent-dim: hsla(0, 0%, 100%, 0.05),
-//   translucent: var(--translucent-dim),
-//   article-bg: var(--bg),
-//   article-bg-hover: var(--bg-hover),
-//   choice-bg: var(--bg),
-//   highlight-bg-yellow: $highlight-bg-yellow-dim,
-// );
-
-
-// @mixin generate_colors($colors) {
-//   // Colors, RGB Colors
-//   @each $color, $value in $colors {
-//     --#{$color}: #{$value};
-//     --RGB_#{$color}: #{mapColorVarToRGB($colors, $value)};
-//   }
-// }
 
 @mixin generate_colors($colors) {
   // Add RGB / RGBA color definitions
@@ -381,7 +243,7 @@ $main-z-index: 1;
 }
 
 /*
- *   Ensure headings with ids (e.g. /about#experience) are not hidden by sticky header
+ * Ensure headings with ids (e.g. /about#experience) are not hidden by sticky header
  */
 // https://stackoverflow.com/q/4086107/617559
 // Other ideas: https://css-tricks.com/hash-tag-links-padding/, e.g.
@@ -512,26 +374,6 @@ html {
 
   --color-mode: 'lit';
 
-  // --theme-text-lit: hsl(0, 0%, 100%);
-  // --theme-text-lit: hsl(0, 0%, 0%);
-  // --bg: $bg-dim;
-  // --haze: #f2f2f2;
-  // --gray: hsl(0, 0%, 1%);
-  // --accent: var(--gray);
-  // --text: hsl(0, 0%, 34%);
-  // --header-text: var(--theme-text-lit);
-  // --theme: hsl(201, 100%, 36%);
-  // --code-bg: var(--bg);
-  // --table-bg: var(--theme-bg-lit);
-  // --table-haze: var(--haze);
-  // --table-border: hsl(0, 0%, 87%);
-  // --footer-bg: var(--haze);
-  // --shadow: hsla(0, 0%, 0%, 0.12);
-  // --translucent-lit hsla(0, 0%, 0%, 0.05);
-  // --translucent-dim: hsla(0, 0%, 100%, 0.05);
-  // --article-bg: var(--theme-bg-lit);
-  // --choice-bg: var(--haze);
-
   // https://web.dev/prefers-color-scheme/#activating-dark-mode-in-the-operating-system
   --darkmode-duration: 0.7s;
   --darkmode-timing: ease;
@@ -628,19 +470,10 @@ html {
     --table-haze: hsla(0, 0%, 100%, 0.1);
     --table-border: var(--code-bg);
     --footer-bg: var(--bg);
-    // * {
-    //   box-shadow: none !important;
-    // }
   }
 
   &[data-mode="dim"] {
     @include darkmode;
-    /*
-    blockquote {
-      background: var(--translucent);
-      color: #dedede;
-    }
-    */
     svg.icon {
       fill: var(--theme-text);
     }
@@ -652,55 +485,20 @@ html {
         fill: #fafafa;
       }
     }
-    /**
-     *
-    .sidebar {
-      &_inner {
-        &:before {
-          display: none;
-        }
-      }
-    }
-     */
     .color {
       &_choice {
         &:after {
-          // background-image: url("#{$images}night-moon.jpg");
           background-image: url("#{$images}moon-mono.svg");
           transform: translateX(1.4rem);
         }
       }
     }
-    // &.image-background {
-    //   .main {
-    //     .content_item {
-    //       &::after {
-    //         content: '';
-    //         position: absolute;
-    //         top: 0;
-    //         right: 0;
-    //         bottom: 0;
-    //         left: 0;
-    //         z-index: -2;
-    //         border-radius: 0.25rem;
-    //         background: hsla(0, 0%, 5%, 0.8);
-    //         box-shadow: 0 0 1.5rem 1.2rem hsla(0deg, 0%, 5%, 0.9) !important;
-    //       }
-    //     }
-    //   }
-    // }
     @include dim_colors();
   }
 
   @media screen and (prefers-color-scheme: dark) {
     &:not([data-mode="lit"]) {
       @include darkmode;
-      /*
-      blockquote {
-        background: var(--translucent);
-        color: #dedede;
-      }
-      */
        svg.icon {
         fill: var(--text);
       }
@@ -722,59 +520,15 @@ html {
       .color {
         &_choice {
           &:after {
-            // background-image: url("#{$images}night-moon.jpg");
             background-image: url("#{$images}moon-mono.svg");
             transform: translateX(1.4rem);
           }
         }
       }
-      // &.image-background {
-      //   .main {
-      //     .content_item {
-      //       &::after {
-      //         content: '';
-      //         position: absolute;
-      //         top: 0;
-      //         right: 0;
-      //         bottom: 0;
-      //         left: 0;
-      //         z-index: -2;
-      //         border-radius: 0.25rem;
-      //         background: hsla(0, 0%, 5%, 0.8);
-      //         box-shadow: 0 0 1.5rem 1.2rem hsla(0deg, 0%, 5%, 0.9) !important;
-      //       }
-      //     }
-      //   }
-      // }
       @include dim_colors();
-      // transition: color var(--darkmode-duration) var(--darkmode-timing), background-color var(--darkmode-duration) var(--darkmode-timing)
       body {
         transition: none;
       }
     }
   }
 }
-
-/*
-@mixin background-mode {
-  &:before {
-    content: "";
-    position: fixed;
-    height: 100%;
-    width: 100%;
-    background: var(--choice-bg);
-    transform: translateX(-100%);
-    transition: transform var(--darkmode-duration) var(--darkmode-timing);
-  }
-  &[data-mode="dim"]:before {
-    transform: translateX(0);
-  }
-}
-
-html {
-  @include background-mode;
-  .main {
-    @include background-mode;
-  }
-}
-*/
