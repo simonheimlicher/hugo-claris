@@ -1,8 +1,8 @@
-{{- $iconsDir := default "/" site.Params.iconsDir }}
-{{- $appleTouch := absURL (printf "%s%s" $iconsDir "apple-touch-icon.png") }}
-{{- $favicon32 := absURL (printf "%s%s" $iconsDir "favicon-32x32.png" ) }}
-{{- $favicon16 := absURL (printf "%s%s" $iconsDir "favicon-16x16.png" ) }}
-{{- $manifest := absURL (printf "%s%s" $iconsDir "site.webmanifest" ) }}
+{{ $faviconsDir := absURL (printf "%s/" (default "/" (strings.TrimLeft "/" (strings.TrimRight "/" site.Params.faviconsDir) ) ) ) }}';
+{{- $appleTouch := absURL (printf "%s%s" $faviconsDir "apple-touch-icon.png") }}
+{{- $favicon32 := absURL (printf "%s%s" $faviconsDir "favicon-32x32.png" ) }}
+{{- $favicon16 := absURL (printf "%s%s" $faviconsDir "favicon-16x16.png" ) }}
+{{- $manifest := absURL (printf "%s%s" $faviconsDir "site.webmanifest" ) }}
     <link rel="apple-touch-icon" sizes="180x180" href="{{ $appleTouch }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ $favicon32 }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ $favicon16 }}">

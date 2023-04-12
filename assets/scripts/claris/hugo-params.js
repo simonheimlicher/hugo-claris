@@ -2,7 +2,7 @@
 {{- $s := site }}
 {{- $p := site.Params }}
 export const baseURL = '{{ default "/" $s.BaseURL }}';
-export const iconsPath = '{{ default "icons/" $p.iconsDir }}';
+export const iconsPath = '{{ absURL (printf "%s/" (default "icons/" (strings.TrimLeft "/" (strings.TrimRight "/" site.Params.iconsDir) ) ) ) }}';
 export const showImagePosition = "{{ $p.figurePositionShow }}";
 export const showImagePositionLabel = '{{ $p.figurePositionLabel }}';
 
