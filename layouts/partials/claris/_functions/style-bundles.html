@@ -53,7 +53,7 @@
     $page $template $contentTypeList $contentTypeListID $mediaType $mediaTypeList }} */}}
     <!-- Parameters to pass to the hugoParamsFile and other top-level style files
       that are executed as templates -->
-    {{- $tplParams := (dict "Page" $page "ContentType" $contentTypeListID "MediaType" $mediaType) }}
+    {{- $tplParams := (dict "Page" $page "ContentTypeList" $contentTypeList "ContentTypeListID" $contentTypeListID "MediaType" $mediaType) }}
     {{/* {{- warnf "%s[%s]: resourceID=%v params=%v $tplParams=%v" $page $template $resourceID $params $tplParams }} */}}
 
     <!-- Cconcat SASS -->
@@ -62,6 +62,7 @@
 
     {{- $resourcePathPrefix := "styles" }}
     {{- range $contentType := $contentTypeList }}
+      {{- $tplParams = merge $tplParams (dict "ContentType" $contentType) }}
       <!-- Get the Hugo params file resource and execute it as a Go Template -->
       {{- $hugoParamsFile := printf "%s/%s/hugo-params" $resourcePathPrefix $contentType }}
       <!-- Get the main SASS/SCSS file resource and execute it as a Go Template -->

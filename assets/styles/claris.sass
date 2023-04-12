@@ -1,6 +1,6 @@
 {{- $page := .Page }}
 {{- $mediaType := .MediaType }}
-/* File='styles/claris.sass': .Page='{{ .Page }}' $contentType='#{$contentType}' $mediaType='#{$mediaType}' */
+/* File='styles/claris.sass': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .ContentTypeList='{{ printf "%v" .ContentTypeList }}' .ContentTypeListID='{{ .ContentTypeListID }}' .ContentType='{{ .ContentType }}' .MediaType='{{ .MediaType }}' */
 
 // Core stylesheets that are included for all media types
 @import 'claris/functions'
