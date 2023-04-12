@@ -7,8 +7,6 @@ baseURL = "https://simon.heimlicher.com/"  # Include trailing slash
 defaultContentLanguage = 'en'
 languageCode = "en-us"
 
-theme = ["claris"]
-
 # https://gohugo.io/templates/robots/
 enableRobotsTXT = true
 
