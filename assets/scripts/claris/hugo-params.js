@@ -1,6 +1,3 @@
-{{- $page := .Page }}
-$contentType: '{{ .ContentType }}'
-$mediaType: '{{ .MediaType }}'
 /* File='scripts/claris/hugo-params.js': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .MediaType='{{ .MediaType }}' */
 
 // Parameters read from Hugo configuration
