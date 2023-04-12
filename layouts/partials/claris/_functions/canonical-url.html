@@ -1,21 +1,42 @@
+<!-- This function takes as argument an object that has a URL and
+  returns the canonical URL. Examples for objects with URLs are:
+  - Pages
+  - Image resources
+-->
+{{- $template := "claris/_functions/canonical-url" }}
+{{- $debug := false }}
+{{/* {{- if (strings.Contains .RelPermalink "/") }}{{ $debug = true }}{{ end }} */}}
 {{- $canonicalURL := false -}}
-{{- with . -}}
-  {{- $canonicalURL = .Permalink -}}
-  {{- $s := site.Params -}}
-  {{- if $s.canonicalBaseURL -}}
-    {{- if ne $s.canonicalBaseURL $s.BaseURL -}}
-      {{- $canonicalURL = (printf "%s%s" $s.canonicalBaseURL .RelPermalink)}}
-    {{- end -}}
-  {{- end -}}
-  {{- with .Params.canonicalURL -}}
-    {{- $canonicalURL = .Params.canonicalURL -}}
-  {{- end -}}
-  {{- $canonicalURL = (printf "%s" $canonicalURL | safeURL) -}}
-  {{- if not (hasPrefix $canonicalURL "http") -}}
-    {{- warnf "%s: partial '_functions/canonical-url': invalid canonicalURL='%s' based on:\nsite.Params.canonicalBaseURL:\n    %s\n.Params.canonicalURL:\n    %s\nsite.BaseURL:\n    %s\n.Permalink:\n    %s\n.RelPermalink:\n    %s"
-    .Page $canonicalURL site.Params.canonicalBaseURL .Params.canonicalURL site.BaseURL .Permalink .RelPermalink }}
-    {{- errorf "%s: Fatal configuration error: canonicalURL does not start with 'http'. Please ensure configuration for the following values includes the scheme ('http' or 'https'): \nsite.Params.canonicalBaseURL:\n    %s\n.Params.canonicalURL:\n    %s\nsite.BaseURL:\n    %s"
-    .Page site.Params.canonicalBaseURL .Params.canonicalURL site.BaseURL }}
+{{- $arg := . }}
+{{- $relPermalink := .RelPermalink }}
+{{- $canonicalBaseURL := site.BaseURL -}}
+
+<!-- If the page itself has a canonical URL, this takes precedence -->
+{{- if strings.Contains (printf "%T" $arg) "hugolib.pageState" }}
+  {{- with $arg.Params.canonicalurl -}}
+    {{- $relPermalink = . }}
+    {{- if $debug }}{{ warnf "[%s]: arg=%v: .Params.canonicalurl=%v relPermalink:\n    %v" $template $arg $relPermalink $canonicalURL }}{{ end }}
   {{- end -}}
 {{- end -}}
+
+{{- with site.Params.canonicalbaseurl }}
+  {{- $canonicalBaseURL = . }}
+  {{- if $debug }}{{ warnf "[%s]: arg=%v T=%T site.BaseURL=%v != site.Params.canonicalbaseurl=%v canonicalURL:\n    %v"
+  $template $arg $arg site.BaseURL site.Params.canonicalbaseurl $canonicalURL }}{{ end }}
+{{- end -}}
+
+{{- $canonicalURL = printf "%s/%s" (strings.TrimRight "/" $canonicalBaseURL) (strings.TrimLeft "/" $relPermalink) }}
+{{- if $debug }}{{ warnf "[%s]: arg=%v T=%T\n.RelPermalink:                '%v'\n$relPermaLink:                '%v'\nsite.BaseURL:                 '%v'\nsite.Params.canonicalbaseurl: '%v'\ncanonicalURL:                 '%v'"
+$template $arg $arg $arg.RelPermalink $relPermalink site.BaseURL site.Params.canonicalbaseurl $canonicalURL }}{{ end }}
+
+{{- if $canonicalURL }}
+  {{- if not (hasPrefix $canonicalURL "http") }}
+    {{- errorf "[%s]: invalid canonicalURL='%s' based on:\n%v.Permalink=%v %v.RelPermalink=%v\nsite.Params.canonicalBaseURL='%v'\nsite.BaseURL='%v'"
+        $template $canonicalURL $arg.Permalink $arg.RelPermalink site.Params.canonicalBaseURL site.BaseURL }}
+  {{- end -}}
+  {{- $canonicalURL = (printf "%s" $canonicalURL | safeURL) -}}
+{{- else -}}
+  {{- $canonicalURL = $arg.Permalink -}}
+{{- end -}}
+
 {{- return $canonicalURL -}}
