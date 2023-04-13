@@ -1,4 +1,4 @@
-{{ $faviconsDir := absURL (printf "%s/" (default "/" (strings.TrimLeft "/" (strings.TrimRight "/" site.Params.faviconsDir) ) ) ) }}';
+{{- $faviconsDir := printf "%s/" (strings.TrimLeft "/" (strings.TrimRight "/" (default "/" site.Params.faviconsDir) ) ) }}
 {{- $appleTouch := absURL (printf "%s%s" $faviconsDir "apple-touch-icon.png") }}
 {{- $favicon32 := absURL (printf "%s%s" $faviconsDir "favicon-32x32.png" ) }}
 {{- $favicon16 := absURL (printf "%s%s" $faviconsDir "favicon-16x16.png" ) }}
