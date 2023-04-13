@@ -1,36 +1,6 @@
 import {
-  isObj,
   createEl,
-  elem,
-  elems,
   pushClass,
-  hasClasses,
-  deleteClass,
-  modifyClass,
-  containsClass,
-  elemAttribute,
-  wrapEl,
-  deleteChars,
-  isBlank,
-  isMatch,
-  copyToClipboard,
-  getMobileOperatingSystem,
-  horizontalSwipe,
-  parseBoolean
-} from './functions';
-
-import {
-  doc,
-  htmlRootClassNoJavaScript,
-  htmlRootClassModernJavaScript,
-  htmlRootClassNoCSSProperties,
-  htmlRootClassNoCSSGrid,
-  pageHasLoaded,
-  iconsPath,
-  inline,
-  parentURL,
-  showImagePosition,
-  showImagePositionLabel
 } from './init';
 
 // Source: https://danielpost.com/articles/making-hugos-footnotes-accessible/

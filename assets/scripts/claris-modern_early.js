@@ -4,8 +4,10 @@
 // import 'scripts/claris/theme/init';
 // NOTE: color-mode needs to be loaded as early as possible to avoid the infamous
 // Flash of Incorrect Color Scheme (FOICS) at page load when dark mode is active
+// console.log('iconsPath: ', iconsPath);
+
 import 'scripts/claris/theme/color-mode';
 
-import 'lazysizes';
-import 'lazysizes/plugins/parent-fit/ls.parent-fit';
+// import 'lazysizes';
+// import 'lazysizes/plugins/parent-fit/ls.parent-fit';
 // console.log('END   modern_early.js');

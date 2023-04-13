@@ -1,11 +1,4 @@
 // console.log('BEGIN theme/minimal.js');
-import {
-    htmlRootElement,
-    htmlRootClassNoJavaScript,
-    deleteClass
-} from './init';
-
-// deleteClass(htmlRootElement, htmlRootClassNoJavaScript);
 import "./tags";
 import "./obfuscated-link";
 import "./mobile-nav";

@@ -5,16 +5,17 @@
 {{- $supportIE11 := default false .SupportIE11 }}
 {{- $minifyBundles := default false .minifyBundless }}
 {{- $template := "claris/_functions/script-bundles" }}
+{{- $skeletonOnly := false }}
 
 {{- $contentTypeListID := delimit $contentTypeList "-" }}
 {{/* {{- warnf "%s[%s]: $contentTypeList:%s $supportIE11:%v" $page $template $contentTypeList $supportIE11 -}} */}}
 <!-- https://www.hackification.io/software-development/hugo/html/asset-bundling/ */ -->
+{{- $resourcePathBase := "scripts" -}}
 {{- $sourceExt := "js" }}
+{{- $executedSourceSuffix := "" }}
 {{- $targetExt := "js" -}}
 {{- $legacySuffix := default "_legacy" .LegacySuffix }}
 {{- $fingerprintOptions := default "sha256" site.Params.resourceFingerprintOptions }}
-
-{{- $tmpContext := . -}}
 
 {{- /* $targetVersion := "es6" */ -}}
 {{- /* Avoid error 'JSBUILD: failed to transform "js/modern_late-bundle.js" (text/javascript): Transforming async generator functions to the configured target environment ("es2015") is not supported yet' */ -}}
@@ -27,10 +28,9 @@
   <!-- Note on source maps. Only "inline" seems to work but let's keep "external" for prod -->
 {{- $jsBuildOptionsBase := (dict
     "target" $targetVersion
-    "sourceMap" (cond $minifyBundles "external" "inline")
+    "sourceMap" (cond $minifyBundles "inline" "external")
     "minify" $minifyBundles
   ) }}
-
 
 {{- $scriptResources := (dict
   "polyfills" (dict
@@ -47,83 +47,74 @@
     "supportIE11" false)
 ) }}
 
+{{- if $skeletonOnly }}
+  {{- $scriptResources = (dict
+    "modern_early" (dict
+      "target" $targetVersion
+      "supportIE11" false)
+  ) }}
+{{- end }}
+
+<!-- Parameters to pass to the hugoParamsFile and other top-level script files
+  that are executed as templates -->
+{{- $tplParams := (dict "Page" $page "ContentTypeList" $contentTypeList "ContentTypeListID" $contentTypeListID) }}
+
 {{- range $resourceID, $params := $scriptResources }}
   {{- $mediaType := default "all" $params.media }}
   {{- if (in $mediaTypeList $mediaType) }}
     {{/* {{- warnf "%s[%s]: Generating script bundle for MediaType=%s in MediaTypeList=%v"
         $page $template $mediaType $mediaTypeList }} */}}
-    <!-- Parameters to pass to the hugoParamsFile and other top-level script files
-      that are executed as templates -->
-    {{- $tplParams := (dict "Page" $page "ContentType" $contentTypeListID "MediaType" $mediaType) }}
     {{/* {{- warnf "%s[%s]: resourceID:%v params:%v $tplParams:%v" $page $template $resourceID $params $tplParams }} */}}
 
-    {{- $scriptResourceList := slice }}
+    {{- $jsBuildOptions := merge $jsBuildOptionsBase (dict "target" $params.target) -}}
 
+    <!-- Concat raw JS -->
+    {{- $executedResourceList := (slice) }}
     {{- range $contentType := $contentTypeList }}
-      {{- $resourcePathPrefix := printf "scripts/%s" $contentType -}}
+      {{- $tplParams = merge $tplParams (dict "ContentType" $contentType "MediaType" $mediaType) }}
+      {{- $resourcePathPrefix := printf "%s/%s" $resourcePathBase $contentType -}}
 
       <!-- Get the Hugo params file resource and execute it as a Go Template -->
-      {{- $hugoParamsFile := printf "%s/hugo-params" $resourcePathPrefix }}
-
+      {{- $hugoParamsFile := printf "%s-hugo-params" $resourcePathPrefix }}
       <!-- Get the main JavaScript file resource and execute it as a Go Template -->
-      {{- $resourceFileBaseName := (default $resourceID $params.file) }}
-      {{- $scriptMainFile := printf "%s/%s" $resourcePathPrefix $resourceFileBaseName }}
+      {{- $mainFileBaseName := (default $resourceID $params.file) }}
+      {{- $mainFile := printf "%s-%s" $resourcePathPrefix $mainFileBaseName }}
 
-      {{- $scriptFileTemplates := (slice $hugoParamsFile $scriptMainFile) }}
-      {{- $contentTypeExecutedResources := slice }}
-
-      {{- range $resourceFile := $scriptFileTemplates }}
+      <!-- Process these top-level files as Go Template language templates -->
+      {{- $sourceTemplates := (slice $hugoParamsFile $mainFile) }}
+      {{- range $resourceFile := $sourceTemplates }}
         {{- with resources.GetMatch (printf "%s.*" $resourceFile ) -}}
-          {{- $executedFile := printf "%s_%s-executed.%s" $resourceFile $resourceID $sourceExt }}
+          {{- $executedFile := printf "%s%s.%s" $resourceFile $executedSourceSuffix $sourceExt }}
           {{- $executedResource := resources.ExecuteAsTemplate $executedFile $tplParams . }}
-          {{- $contentTypeExecutedResources = append (slice $executedResource) $contentTypeExecutedResources }}
+          {{- $executedResourceList = append (slice $executedResource) $executedResourceList }}
         {{- else -}}
           {{- if (eq $contentType "claris") }}
             {{- errorf "%s[%s]: resourceFile '%s' not found" $page $template $resourceFile }}
           {{- end -}}
         {{- end -}}
       {{- end -}}
-      {{- with $contentTypeExecutedResources }}
-        {{- $contentTypeTargetPathPrefix := printf "scripts/%s" $contentType -}}
-        {{- $contentTypeTargetFile := printf "%s/%s-executed-concat.%s" $contentTypeTargetPathPrefix $resourceID $targetExt }}
-        {{- $contentTypeScriptResource := $contentTypeExecutedResources | resources.Concat $contentTypeTargetFile }}
+    {{- end -}}
 
-        {{/* {{- warnf "%s[%s]: $contentTypeScriptResource .MediaType:%s .Content:\n%v\n...\n%v"
-            $page $template $contentTypeScriptResource.MediaType
-            (substr $contentTypeScriptResource.Content 0 100)
-            (substr $contentTypeScriptResource.Content -100) }} */}}
-
-        {{- $scriptResourceList = append (slice $contentTypeScriptResource) $scriptResourceList }}
-      {{- end }}
-    {{- end }}
-
-    {{/* {{- if (gt (len $contentTypeList) 1) }}
-      {{- warnf "%s[%s]: Multiple types=%v ID=%v resourceID=%s scriptResourceList: "
+    {{- if (gt (len $contentTypeList) 1) }}
+      {{- warnf "%s[%s]: Content types=%v ID=%v resourceID=%s produced executedResourceList: "
           $page $template $contentTypeList $contentTypeListID $resourceID }}
-      {{- range $idx, $resource := $scriptResourceList }}
-        {{- warnf "%s[%s]: %d --> %v .Name:%v .MediaType:%v" $page $template $idx $resource $resource.Name $resource.MediaType }}
+      {{- range $idx, $resource := $executedResourceList }}
+        {{- warnf "%s[%s]: %d --> %v .Name=%v .MediaType=%v" $page $template $idx $resource $resource.Name $resource.MediaType }}
       {{- end }}
-    {{- end }} */}}
-
-    {{- $concatResource := "" }}
-    {{- $bundle := "" }}
-    {{- $targetPathPrefix := printf "scripts/%s" $contentTypeListID -}}
-    {{- $targetFile := printf "%s/%s.%s" $targetPathPrefix $resourceID $targetExt }}
-
-    {{/* {{- warnf "%s[%s]: concat scriptResourceList:%s targetFile:%s"
-        $page $template $scriptResourceList $targetFile }} */}}
-
-    {{- $concatResource = $scriptResourceList | resources.Concat $targetFile }}
-
-    {{- if (and $supportIE11 $params.supportIE11 ) }}
-      {{- $bundle = $concatResource | js.Build (merge $jsBuildOptionsBase (dict "target" $targetVersion "minify" false) ) -}}
-      {{- $bundle = $bundle | babel -}}
-      {{- $bundle = $bundle | js.Build (merge $jsBuildOptionsBase (dict "target" $params.target) ) -}}
-    {{- else }}
-      {{- $bundle = $concatResource | js.Build (merge $jsBuildOptionsBase (dict "target" $params.target) ) -}}
-      {{/* {{- warnf "%s[%s]: js.Build concatResource:%v target:%v produced bundle:%v"
-          $page $template $concatResource $params.target $bundle }} */}}
     {{- end }}
+
+    {{- $buildSourceResource := false }}
+    {{- $bundle := "" }}
+
+    {{- $paramsSourceResource := index $executedResourceList 0 }}
+    {{- $hugoParamsBundle := $paramsSourceResource | js.Build $jsBuildOptions -}}
+    {{- warnf "%s[%s]: js.Build paramsSourceResource=%v target=%v produced hugoParamsBundle: %v"
+        $page $template $paramsSourceResource $params.target $hugoParamsBundle.RelPermalink }}
+
+    {{- $buildSourceResource = index $executedResourceList 1 }}
+    {{- $bundle = $buildSourceResource | js.Build $jsBuildOptions -}}
+    {{- warnf "%s[%s]: js.Build buildSourceResource=%v target=%v produced bundle: %v"
+        $page $template $buildSourceResource $params.target $bundle.RelPermalink }}
 
     {{- $bundle = $bundle | resources.Fingerprint $fingerprintOptions }}
     {{/* {{- warnf "%s[%s]: $bundle[%s] %#v: MediaType:%s Content:\n%v\n...\n%v"
@@ -132,10 +123,10 @@
 
     {{- if (and $supportIE11 $params.supportIE11) }}
       {{- $legacyResourceID := printf "%s%s" $resourceID $legacySuffix }}
-      {{- $legacyExecutedFile := printf "%s.%s" $legacyResourceID $sourceExt }}
-      {{- $legacyBundle := $concatResource | js.Build (merge $jsBuildOptionsBase (dict "target" $targetVersion "minify" false) ) -}}
+      {{- $legacyExecutedFile := printf "%s%s.%s" $legacyResourceID $executedSourceSuffix $sourceExt }}
+      {{- $legacyBundle := $buildSourceResource | js.Build (merge $jsBuildOptions (dict "target" $targetVersion "minify" false) ) -}}
       {{- $legacyBundle = $bundle | babel -}}
-      {{- $legacyBundle = $legacyBundle | js.Build (merge $jsBuildOptionsBase (dict "target" $params.target) ) -}}
+      {{- $legacyBundle = $legacyBundle | js.Build (merge $jsBuildOptions (dict "target" $params.target) ) -}}
       {{- $scriptBundles = merge $scriptBundles (dict $legacyResourceID $legacyBundle) -}}
     {{- end -}}
   {{/* {{- else }}

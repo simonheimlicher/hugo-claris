@@ -1,16 +1,3 @@
-import {
-  htmlRootClassNoJavaScript,
-  htmlRootClassNoCSSProperties,
-  htmlRootClassNoCSSGrid,
-  pageHasLoaded,
-  iconsPath,
-  inline,
-  baseURL,
-  showImagePosition,
-  showImagePositionLabel,
-} from "../hugo-params";
-export * from '../hugo-params';
-
 // export const baseURL = '//localhost:1313/';
 // export const iconsPath = 'icons/';
 // export const showImagePosition = "false";
@@ -23,17 +10,19 @@ export * from '../hugo-params';
 // export const pageHasLoaded = 'DOMContentLoaded';
 // export const inline = ":inline";
 
-// export {
-//   htmlRootClassNoJavaScript,
-//   htmlRootClassNoCSSProperties,
-//   htmlRootClassNoCSSGrid,
-//   pageHasLoaded,
-//   iconsPath,
-//   inline,
-//   baseURL,
-//   showImagePosition,
-//   showImagePositionLabel,
-// };
+import {
+  baseURL,
+  iconsPath,
+  showImagePosition,
+  showImagePositionLabel,
+  htmlRootClassNoJavaScript,
+  htmlRootClassModernJavaScript,
+  htmlRootClassNoCSSProperties,
+  htmlRootClassNoCSSGrid,
+  pageHasLoaded,
+  inline,
+} from 'scripts/claris-hugo-params';
+export * from 'scripts/claris-hugo-params';
 
 import {
   isObj,
@@ -62,17 +51,17 @@ export const doc = document.documentElement;
 export const parentURL = window.location.protocol + "//" + window.location.host + "/";
 export const htmlRootElement = elem('html');
 
-const grid_supported = typeof document.createElement('div').style.grid === 'string';
-if ( ! grid_supported) {
-  pushClass(htmlRootElement, htmlRootClassNoCSSGrid);
-}
+// const grid_supported = typeof document.createElement('div').style.grid === 'string';
+// if ( ! grid_supported) {
+//   pushClass(htmlRootElement, htmlRootClassNoCSSGrid);
+// }
 
-const css_properties_supported = window.CSS && CSS.supports('color', 'var(--CSS-property-support-validation)');
-if ( ! css_properties_supported) {
-  pushClass(htmlRootElement, htmlRootClassNoCSSProperties);
-}
+// const css_properties_supported = window.CSS && CSS.supports('color', 'var(--CSS-property-support-validation)');
+// if ( ! css_properties_supported) {
+//   pushClass(htmlRootElement, htmlRootClassNoCSSProperties);
+// }
 
-deleteClass(htmlRootElement, htmlRootClassNoJavaScript);
+// deleteClass(htmlRootElement, htmlRootClassNoJavaScript);
 
 function fileClosure() {
 

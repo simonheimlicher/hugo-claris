@@ -8,7 +8,9 @@
 
 {{- $contentTypeListID := delimit $contentTypeList "-" }}
 <!-- https://www.hackification.io/software-development/hugo/html/asset-bundling/ */ -->
+{{- $resourcePathBase := "styles" -}}
 {{- $sourceExt := "sass" }}
+{{- $executedSourceSuffix := "_executed" }}
 {{- $targetExt := "css" -}}
 {{- $legacySuffix := default "_legacy" .LegacySuffix }}
 {{- $fingerprintOptions := default "sha256" site.Params.resourceFingerprintOptions }}
@@ -21,7 +23,7 @@
 {{- end }}
 {{- $toCSSIncludePaths := slice }}
 {{- range $contentTypeList }}
-  {{- $toCSSIncludePaths = append (slice (printf "assets/styles/%s" . ) ) $toCSSIncludePaths }}
+  {{- $toCSSIncludePaths = append (slice (printf "assets/%s/%s" $resourcePathBase . ) ) $toCSSIncludePaths }}
 {{- end }}
 {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "includePaths" $toCSSIncludePaths)}}
 {{- $postCSSoptions := (dict "config" "postcss.config.js" "noMap" false) -}}
@@ -46,6 +48,8 @@
   )
 ) -}}
 
+{{- $tplParams := (dict "Page" $page "ContentTypeList" $contentTypeList "ContentTypeListID" $contentTypeListID) }}
+
 {{- range $resourceID, $params := $styleResources }}
   {{- $mediaType := default "all" $params.media }}
   {{- if (in $mediaTypeList $mediaType) }}
@@ -53,28 +57,31 @@
     $page $template $contentTypeList $contentTypeListID $mediaType $mediaTypeList }} */}}
     <!-- Parameters to pass to the hugoParamsFile and other top-level style files
       that are executed as templates -->
-    {{- $tplParams := (dict "Page" $page "ContentTypeList" $contentTypeList "ContentTypeListID" $contentTypeListID "MediaType" $mediaType) }}
     {{/* {{- warnf "%s[%s]: resourceID=%v params=%v $tplParams=%v" $page $template $resourceID $params $tplParams }} */}}
 
-    <!-- Cconcat SASS -->
+    <!-- Concat SASS -->
     {{- $executedResourceList := slice }}
-    {{- $executedFileList := slice }}
 
-    {{- $resourcePathPrefix := "styles" }}
     {{- range $contentType := $contentTypeList }}
-      {{- $tplParams = merge $tplParams (dict "ContentType" $contentType) }}
-      <!-- Get the Hugo params file resource and execute it as a Go Template -->
-      {{- $hugoParamsFile := printf "%s/%s/hugo-params" $resourcePathPrefix $contentType }}
-      <!-- Get the main SASS/SCSS file resource and execute it as a Go Template -->
-      {{- $styleMainFile := printf "%s/%s" $resourcePathPrefix $contentType -}}
+      {{- $tplParams = merge $tplParams (dict "ContentType" $contentType "MediaType" $mediaType) }}
+      {{- $resourcePathPrefix := printf "%s/%s" $resourcePathBase $contentType -}}
 
-      <!-- Process these top-level SASS files as Go Template language templates -->
-      {{- $styleFileTemplates := (slice $hugoParamsFile $styleMainFile) }}
-      {{- range $resourceFile := $styleFileTemplates }}
+      <!-- Get the Hugo params file resource and execute it as a Go Template -->
+      {{- $hugoParamsFile := printf "%s/hugo-params" $resourcePathPrefix }}
+      <!-- Get the main SASS/SCSS file resource and execute it as a Go Template -->
+      {{- $mainFileBaseName := (default $resourceID $params.file) }}
+      <!-- The main SASS file needs to be outside the contentType directory to avoid
+        file name clashes between multiple contentType directories that contain files
+        with the same names
+      -->
+      {{- $mainFile := printf "%s-%s" $resourcePathPrefix $mainFileBaseName -}}
+
+      <!-- Process these top-level files as Go Template language templates -->
+      {{- $sourceTemplates := (slice $hugoParamsFile $mainFile) }}
+      {{- range $resourceFile := $sourceTemplates }}
         {{- with resources.GetMatch (printf "%s.*" $resourceFile ) -}}
-          {{- $executedFile := printf "%s_%s-executed.%s" $resourceFile $resourceID $sourceExt }}
+          {{- $executedFile := printf "%s_%s%s.%s" $resourceFile $resourceID $executedSourceSuffix $sourceExt }}
           {{- $executedResource := resources.ExecuteAsTemplate $executedFile $tplParams . }}
-          {{- $executedFileList = append (slice $executedFile) $executedFileList }}
           {{- $executedResourceList = append (slice $executedResource) $executedResourceList }}
         {{- else -}}
           {{- if (eq $contentType "claris") }}
@@ -82,7 +89,7 @@
           {{- end -}}
         {{- end -}}
       {{- end -}}
-    {{- end }}
+    {{- end -}}
 
     {{/* {{- if (gt (len $contentTypeList) 1) }}
       {{- warnf "%s[%s]: Multiple types=%v ID=%v resourceID=%s produced executedResourceList: "
@@ -92,18 +99,16 @@
       {{- end }}
     {{- end }} */}}
 
-    {{- $concatResource := "" }}
-    {{- $bundle := "" }}
-    {{- $targetPathPrefix := printf "styles/%s" $contentTypeListID -}}
+    {{- $targetPathPrefix := printf "%s/%s" $resourcePathBase $contentTypeListID -}}
     {{- $targetFile := printf "%s/%s.%s" $targetPathPrefix $resourceID $targetExt }}
 
-    {{- $sassImportFile := printf "styles/%s-%s.%s" $contentTypeListID $resourceID $sourceExt }}
-    {{- $concatResource = $executedResourceList | resources.Concat $sassImportFile }}
+    {{- $importFile := printf "%s/%s-%s.%s" $resourcePathBase $contentTypeListID $resourceID $sourceExt }}
+    {{- $concatResource := $executedResourceList | resources.Concat $importFile }}
     {{/* {{- warnf "%s[%s]: $concatResource '%s'.Content:\n%v\n...\n%v"
         $page $template $concatResource (substr $concatResource.Content 0 100) (substr $concatResource.Content -100) }} */}}
 
     {{- $toCSSoptions := merge $toCSSoptionsBase (dict "targetPath" $targetFile) -}}
-    {{- $bundle = $concatResource | resources.ToCSS $toCSSoptions | resources.Fingerprint $fingerprintOptions }}
+    {{- $bundle := $concatResource | resources.ToCSS $toCSSoptions | resources.Fingerprint $fingerprintOptions }}
 
     {{/* {{- warnf "%s[%s]: $bundle[%s] %#v: MediaType:%s Content:\n%v\n...\n%v"
         $page $template $bundle $resourceID $bundle.MediaType (substr $bundle.Content 0 100) (substr $bundle.Content -100) }} */}}

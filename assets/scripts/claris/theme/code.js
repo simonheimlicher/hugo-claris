@@ -1,5 +1,7 @@
 import {
-  isObj,
+  iconsPath,
+  doc,
+  parentURL,
   eventTarget,
   createEl,
   elem,
@@ -9,29 +11,9 @@ import {
   deleteClass,
   modifyClass,
   containsClass,
-  elemAttribute,
   wrapEl,
-  deleteChars,
-  isBlank,
-  isMatch,
   copyToClipboard,
-  getMobileOperatingSystem,
-  horizontalSwipe,
   parseBoolean
-} from './functions';
-
-import {
-  doc,
-  htmlRootClassNoJavaScript,
-  htmlRootClassModernJavaScript,
-  htmlRootClassNoCSSProperties,
-  htmlRootClassNoCSSGrid,
-  pageHasLoaded,
-  iconsPath,
-  inline,
-  parentURL,
-  showImagePosition,
-  showImagePositionLabel
 } from './init';
 
 
@@ -128,7 +110,11 @@ const blocks = codeBlocks();
   // https://github.com/github/fetch
 
   function loadSvg(file, parent, path = iconsPath) {
-    const link = `${parentURL}${path}${file}.svg`;
+    // const link = `${parentURL}${path}${file}.svg`;
+    if (!path.startsWith('http')) {
+      path = `${parentURL}${path}`;
+    }
+    const link = `${path}${file}.svg`;
     fetch(link)
       .then((response) => {
         return response.text();

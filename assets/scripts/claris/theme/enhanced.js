@@ -1,7 +1,7 @@
 // console.log('BEGIN theme/enhanced.js');
 import {
-  htmlRootElement,
   htmlRootClassModernJavaScript,
+  htmlRootElement,
   pushClass
 } from './init';
 

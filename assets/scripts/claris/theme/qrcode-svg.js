@@ -1,29 +1,7 @@
 // console.log('BEGIN qrcode_svg.js');
 
-import {
-    isObj,
-    createEl,
-    elem,
-    elems,
-    pushClass,
-    hasClasses,
-    deleteClass,
-    modifyClass,
-    containsClass,
-    elemAttribute,
-    wrapEl,
-    deleteChars,
-    isBlank,
-    isMatch,
-    copyToClipboard,
-    getMobileOperatingSystem,
-    horizontalSwipe,
-    parseBoolean
-  } from './functions';
-
 import QRCode from "qrcode-svg";
 
-// console.log(qrcode.svg());
 let targetContainers = document.querySelectorAll(".qrcode-svg");
 targetContainers.forEach(function(el, index) {
     var qrcode = new QRCode({

@@ -2,28 +2,12 @@ import {
   doc,
   htmlRootElement,
   htmlRootClassNoCSSProperties,
-  // isObj,
   eventTarget,
-  // createEl,
   elem,
-  // elems,
   pushClass,
-  // hasClasses,
-  // deleteClass,
-  // modifyClass,
   containsClass,
   elemAttribute,
-  // wrapEl,
-  // deleteChars,
-  // isBlank,
-  // isMatch,
-  // copyToClipboard,
-  // getMobileOperatingSystem,
-  // horizontalSwipe,
-  // parseBoolean
 } from './init';
-
-
 
 (function toggleColorModes() {
   const colorModeNav = elem('.color_mode');

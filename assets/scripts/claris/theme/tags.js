@@ -1,38 +1,13 @@
-
 import {
-  isObj,
+  pageHasLoaded,
+  doc,
   eventTarget,
-  createEl,
   elem,
   elems,
   pushClass,
-  hasClasses,
   deleteClass,
   modifyClass,
   containsClass,
-  elemAttribute,
-  wrapEl,
-  deleteChars,
-  isBlank,
-  isMatch,
-  copyToClipboard,
-  getMobileOperatingSystem,
-  horizontalSwipe,
-  parseBoolean
-} from './functions';
-
-import {
-  doc,
-  htmlRootClassNoJavaScript,
-  htmlRootClassModernJavaScript,
-  htmlRootClassNoCSSProperties,
-  htmlRootClassNoCSSGrid,
-  pageHasLoaded,
-  iconsPath,
-  inline,
-  parentURL,
-  showImagePosition,
-  showImagePositionLabel
 } from './init';
 
 const injectTagControl = function() {
