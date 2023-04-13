@@ -8,6 +8,6 @@
 
 import 'scripts/claris/theme/color-mode';
 
-// import 'lazysizes';
-// import 'lazysizes/plugins/parent-fit/ls.parent-fit';
+import 'lazysizes';
+import 'lazysizes/plugins/parent-fit/ls.parent-fit';
 // console.log('END   modern_early.js');
