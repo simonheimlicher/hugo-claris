@@ -1,6 +1,4 @@
 import {
-  pageHasLoaded,
-  doc,
   eventTarget,
   elem,
   elems,
@@ -8,10 +6,11 @@ import {
   deleteClass,
   modifyClass,
   containsClass,
-} from './init';
+} from './functions';
 
 const injectTagControl = function() {
-  // console.log("injectTagControl()");
+  const doc = document.documentElement;
+
   function toggleTags(target) {
     target = target || null;
     const tagsButtonClass = 'article_tags_toggle';
@@ -77,5 +76,5 @@ const injectTagControl = function() {
   })();
 }
 
-// console.log("theme/tags.js: addEventListener(" + pageHasLoaded + ", ", injectTagControl + ")");
-window.addEventListener(pageHasLoaded, injectTagControl);
+// console.log("theme/tags.js: addEventListener(" + 'DOMContentLoaded' + ", ", injectTagControl + ")");
+window.addEventListener('DOMContentLoaded', injectTagControl);

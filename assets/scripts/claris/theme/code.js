@@ -1,7 +1,4 @@
 import {
-  iconsPath,
-  doc,
-  parentURL,
   eventTarget,
   createEl,
   elem,
@@ -14,96 +11,100 @@ import {
   wrapEl,
   copyToClipboard,
   parseBoolean
-} from './init';
+} from './functions';
 
 
-const copyId = 'panel_copy';
-const wrapId = 'panel_wrap';
-const linesId = 'panel_lines';
-const panelExpand = 'panel_expand';
-const panelExpanded = 'panel_expanded';
-const panelHide = 'panel_hide';
-const panelFrom = 'panel_from';
-const panelBox = 'panel_box';
-const fullHeight = 'initial';
-const highlightClass = 'highlight';
-const highlightInnerClass = 'highlight_inner';
+const initCodeActions = function () {
+  const doc = document.documentElement;
+  const iconsPath = clarisHugoParams.iconsPath;
+  const parentURL = clarisHugoParams.parentURL;
 
-const codeActionButtons = [
-  {
-    icon: 'copy',
-    id: 'copy',
-    title: 'Copy Code',
-    show: true
-  },
-  {
-    icon: 'order',
-    id: 'lines',
-    title: 'Toggle Line Numbers',
-    show: true
-  },
-  {
-    icon: 'carly',
-    id: 'wrap',
-    title: 'Toggle Line Wrap',
-    show: false
-  },
-  {
-    icon: 'expand',
-    id: 'expand',
-    title: 'Toggle code block expand',
-    show: false
-  }
-];
+  const bodyElement = elem('body');
+  const maxLines = parseInt(bodyElement.dataset.code);
 
-const bodyElement = elem('body');
-const maxLines = parseInt(bodyElement.dataset.code);
+  const copyId = 'panel_copy';
+  const wrapId = 'panel_wrap';
+  const linesId = 'panel_lines';
+  const panelExpand = 'panel_expand';
+  const panelExpanded = 'panel_expanded';
+  const panelHide = 'panel_hide';
+  const panelFrom = 'panel_from';
+  const panelBox = 'panel_box';
+  const fullHeight = 'initial';
+  const highlightClass = 'highlight';
+  const highlightInnerClass = 'highlight_inner';
 
-function codeBlocks() {
-  const markedCodeBlocks = elems('code');
-  let blocks = Array();
-  for (let idx = 0, block = markedCodeBlocks[idx]; idx < markedCodeBlocks.length; block = markedCodeBlocks[++idx]) {
-    if (hasClasses(block) && !containsClass(block, 'noClass')) {
-      blocks.push(markedCodeBlocks[idx]);
-    }
-  }
-  return blocks;
-}
-const blocks = codeBlocks();
-
-(function markInlineCodeTags() {
-  const codeBlocks = elems('code');
-  if (codeBlocks) {
-    for (let idx = 0, codeBlock = codeBlocks[idx]; idx < codeBlocks.length; codeBlock = codeBlocks[++idx]) {
-      // Fix for orgmode inline code, leave 'verbatim' alone as well
-      containsClass(codeBlock, 'verbatim') ? pushClass(codeBlock, 'noClass') : false;
-      hasClasses(codeBlock) ? false : pushClass(codeBlock, 'noClass');
-    }
-  }
-})();
-
-(function wrapOrphanedPreElements() {
-  const pres = elems('pre');
-  for (let idx = 0, pre = pres[idx]; idx < pres.length; pre = pres[++idx]) {
-    const parent = pre.parentNode;
-    const isOrphaned = !containsClass(parent, 'highlight');
-    if (isOrphaned) {
-      const preWrapper = createEl('div');
-      preWrapper.className = highlightInnerClass;
-      const outerWrapper = createEl('div');
-      outerWrapper.className = highlightClass;
-      wrapEl(pre, preWrapper);
-      wrapEl(preWrapper, outerWrapper);
-    }
-  }
-})();
-
-(function codeActions() {
-  // const bodyElement = elem('body');
   if (containsClass(bodyElement, 'legacyJS')) {
     return;
   }
-  // FIXME
+
+  const codeActionButtons = [
+    {
+      icon: 'copy',
+      id: 'copy',
+      title: 'Copy Code',
+      show: true
+    },
+    {
+      icon: 'order',
+      id: 'lines',
+      title: 'Toggle Line Numbers',
+      show: true
+    },
+    {
+      icon: 'carly',
+      id: 'wrap',
+      title: 'Toggle Line Wrap',
+      show: false
+    },
+    {
+      icon: 'expand',
+      id: 'expand',
+      title: 'Toggle code block expand',
+      show: false
+    }
+  ];
+
+  function codeBlocks() {
+    const markedCodeBlocks = elems('code');
+    let blocks = Array();
+    for (let idx = 0, block = markedCodeBlocks[idx]; idx < markedCodeBlocks.length; block = markedCodeBlocks[++idx]) {
+      if (hasClasses(block) && !containsClass(block, 'noClass')) {
+        blocks.push(markedCodeBlocks[idx]);
+      }
+    }
+    return blocks;
+  }
+  const blocks = codeBlocks();
+
+  (function markInlineCodeTags() {
+    const codeBlocks = elems('code');
+    if (codeBlocks) {
+      for (let idx = 0, codeBlock = codeBlocks[idx]; idx < codeBlocks.length; codeBlock = codeBlocks[++idx]) {
+        // Fix for orgmode inline code, leave 'verbatim' alone as well
+        containsClass(codeBlock, 'verbatim') ? pushClass(codeBlock, 'noClass') : false;
+        hasClasses(codeBlock) ? false : pushClass(codeBlock, 'noClass');
+      }
+    }
+  })();
+
+  (function wrapOrphanedPreElements() {
+    const pres = elems('pre');
+    for (let idx = 0, pre = pres[idx]; idx < pres.length; pre = pres[++idx]) {
+      const parent = pre.parentNode;
+      const isOrphaned = !containsClass(parent, 'highlight');
+      if (isOrphaned) {
+        const preWrapper = createEl('div');
+        preWrapper.className = highlightInnerClass;
+        const outerWrapper = createEl('div');
+        outerWrapper.className = highlightClass;
+        wrapEl(pre, preWrapper);
+        wrapEl(preWrapper, outerWrapper);
+      }
+    }
+  })();
+
+    // FIXME
   // fetch is not available in IE 11
   // Requires promise polyfill and fetch polyfill
   // https://github.com/taylorhakes/promise-polyfill
@@ -290,7 +291,7 @@ const blocks = codeBlocks();
     }
   });
 
-  for (let idx = 0, block=blocks[idx]; idx < blocks.length; block = blocks[++idx]) {
+  for (let idx = 0, block = blocks[idx]; idx < blocks.length; block = blocks[++idx]) {
     // collapse code blocks
     // collapseCodeBlock(block);
 
@@ -328,4 +329,5 @@ const blocks = codeBlocks();
       }
     }
   })();
-})();
+};
+window.addEventListener("DOMContentLoaded", initCodeActions);

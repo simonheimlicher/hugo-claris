@@ -1,9 +1,8 @@
 import {
-  pageHasLoaded,
   eventTarget,
   elem,
   elems,
-} from './init';
+} from './functions';
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
 // https://codepen.io/saas/pen/LYENgqq
@@ -438,4 +437,4 @@ function injectTableOfContents() {
         addScrollObserver(navigationElements, content);
     }
 }
-window.addEventListener(pageHasLoaded, injectTableOfContents);
+window.addEventListener('DOMContentLoaded', injectTableOfContents);

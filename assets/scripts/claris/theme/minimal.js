@@ -1,4 +1,4 @@
-// console.log('BEGIN theme/minimal.js');
+// console.log('BEGIN claris/theme/minimal');
 import "./tags";
 import "./obfuscated-link";
 import "./mobile-nav";
@@ -7,5 +7,4 @@ import "./mobile-nav";
 // import './color-mode';
 import "./link-anchor";
 import './footnotes-accessible';
-import './qrcode-svg';
-// console.log('END   theme/minimal.js');
+// console.log('END   claris/theme/minimal');

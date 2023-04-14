@@ -1,69 +1,40 @@
-// export const baseURL = '//localhost:1313/';
-// export const iconsPath = 'icons/';
-// export const showImagePosition = "false";
-// export const showImagePositionLabel = 'Figure';
-
-// export const htmlRootClassNoJavaScript = 'no-js';
-// export const htmlRootClassModernJavaScript = 'modern-js';
-// export const htmlRootClassNoCSSProperties = 'no-css-prop';
-// export const htmlRootClassNoCSSGrid = 'no-css-grid';
-// export const pageHasLoaded = 'DOMContentLoaded';
-// export const inline = ":inline";
-
 import {
-  baseURL,
-  iconsPath,
-  showImagePosition,
-  showImagePositionLabel,
-  htmlRootClassNoJavaScript,
-  htmlRootClassModernJavaScript,
-  htmlRootClassNoCSSProperties,
-  htmlRootClassNoCSSGrid,
-  pageHasLoaded,
-  inline,
-} from 'scripts/claris-hugo-params';
-export * from 'scripts/claris-hugo-params';
-
-import {
-  isObj,
   eventTarget,
   createEl,
   elem,
   elems,
   pushClass,
-  hasClasses,
   deleteClass,
-  modifyClass,
   containsClass,
   elemAttribute,
   wrapEl,
-  deleteChars,
-  isBlank,
   isMatch,
   copyToClipboard,
   getMobileOperatingSystem,
-  horizontalSwipe,
-  parseBoolean
 } from './functions';
-export * from './functions';
 
-export const doc = document.documentElement;
-export const parentURL = window.location.protocol + "//" + window.location.host + "/";
-export const htmlRootElement = elem('html');
+// console.log('BEGIN claris/theme/init');
+const clarisInit = function() {
+  // console.log('BEGIN claris/theme/init: clarisInit()', clarisHugoParams);
 
-// const grid_supported = typeof document.createElement('div').style.grid === 'string';
-// if ( ! grid_supported) {
-//   pushClass(htmlRootElement, htmlRootClassNoCSSGrid);
-// }
+  const doc = document.documentElement;
+  const parentURL = clarisHugoParams.parentURL;
+  const htmlRootElement = clarisHugoParams.htmlRootElement;
 
-// const css_properties_supported = window.CSS && CSS.supports('color', 'var(--CSS-property-support-validation)');
-// if ( ! css_properties_supported) {
-//   pushClass(htmlRootElement, htmlRootClassNoCSSProperties);
-// }
+  const htmlRootClassNoJavaScript = clarisHugoParams.htmlRootClassNoJavaScript;
+  const htmlRootClassNoCSSProperties = clarisHugoParams.htmlRootClassNoCSSProperties;
+  const htmlRootClassNoCSSGrid = clarisHugoParams.htmlRootClassNoCSSGrid;
+  const grid_supported = typeof document.createElement('div').style.grid === 'string';
+  if ( ! grid_supported) {
+    pushClass(htmlRootElement, htmlRootClassNoCSSGrid);
+  }
 
-// deleteClass(htmlRootElement, htmlRootClassNoJavaScript);
+  const css_properties_supported = window.CSS && CSS.supports('color', 'var(--CSS-property-support-validation)');
+  if ( ! css_properties_supported) {
+    pushClass(htmlRootElement, htmlRootClassNoCSSProperties);
+  }
 
-function fileClosure() {
+  deleteClass(htmlRootElement, htmlRootClassNoJavaScript);
 
   (function() {
     const userAgent = window.navigator.userAgent,
@@ -411,7 +382,8 @@ function fileClosure() {
     });
   })();
 
-  // add new code above this line
+  // console.log('END   claris/theme/init: clarisInit()');
 }
 
-window.addEventListener(pageHasLoaded, fileClosure());
+document.addEventListener('DOMContentLoaded', clarisInit);
+// console.log('END   claris/theme/init');

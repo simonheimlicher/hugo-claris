@@ -1,13 +1,17 @@
 import {
-  doc,
   eventTarget,
   elem,
   deleteClass,
   modifyClass,
   containsClass,
-} from './init';
+} from './functions';
 
-(function navToggle() {
+// console.log('BEGIN claris/theme/mobile-nav');
+const navToggle = function() {
+  // console.log('BEGIN claris/theme/mobile-nav: navToggle()');
+  const doc = document.documentElement;
+  const htmlRootElement = clarisHugoParams.htmlRootElement;
+
   const open = 'jsopen';
   const navToggleIconClass = '.nav_mobile_toggle';
   const navToggleOpenSelector = '.nav_mobile_toggle_open';
@@ -31,13 +35,13 @@ import {
     const isNavToggle = target.matches(navToggleIconClass) || target.closest(navToggleIconClass);
     if (isNavToggle) {
       event.preventDefault();
-      modifyClass(doc, open);
+      modifyClass(htmlRootElement, open);
       modifyClass(navToggle, 'isopen');
     }
 
     if (!target.closest('.nav') && elem(`.${open}`)) {
-      modifyClass(doc, open);
-      const navIsOpen = containsClass(doc, open);
+      modifyClass(htmlRootElement, open);
+      const navIsOpen = containsClass(htmlRootElement, open);
       !navIsOpen ? modifyClass(navToggle, 'isopen') : false;
     }
 
@@ -77,4 +81,8 @@ import {
       }
     });
   }
-}) ();
+  // console.log('END   claris/theme/mobile-nav: navToggle()');
+};
+document.addEventListener('DOMContentLoaded', navToggle);
+
+// console.log('END   claris/theme/mobile-nav');

@@ -1,7 +1,7 @@
 import {
   createEl,
   pushClass,
-} from './init';
+} from './functions';
 
 // Source: https://danielpost.com/articles/making-hugos-footnotes-accessible/
 const footnotes = document.querySelector('.footnotes');

@@ -37,6 +37,12 @@ Once this is set up, you can call this function in the context of a page:
     {{- else }}
       {{- $alternativeType = (slice $defaultType) }}
     {{- end }}
+  {{- else }}
+    {{- with .Current }}
+      {{- if not $alternativeType }}
+        {{- $alternativeType = $defaultType }}
+      {{- end }}
+    {{- end }}
   {{- end }}
 {{- end }}
 {{- return $alternativeType }}

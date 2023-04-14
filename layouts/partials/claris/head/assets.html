@@ -12,10 +12,11 @@
 {{- $scriptBundles := index $assets "Scripts" }}
 {{- $styleBundles := index $assets "Styles" }}
 {{- $bundleParams := index $assets "Params" }}
-{{- with $scriptBundles }}
-  {{- with (index . "modern_early") }}
-    <script type="module" src="{{ .Permalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
-  {{- end }}
+{{- with $scriptBundles.head }}
+  <script type="module" src="{{ .Permalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
+{{- end }}
+{{- with $scriptBundles.head_legacy }}
+  <script nomodule src="{{ .Permalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
 {{- end }}
 
 {{ partialCached "claris/head/fonts" . $assetVariant -}}

@@ -1,15 +1,16 @@
 import {
-  doc,
-  htmlRootElement,
-  htmlRootClassNoCSSProperties,
   eventTarget,
   elem,
   pushClass,
   containsClass,
   elemAttribute,
-} from './init';
+} from './functions';
 
-(function toggleColorModes() {
+const initColorMode = function () {
+  const htmlRootElement = clarisHugoParams.htmlRootElement;
+  const htmlRootClassNoCSSProperties = clarisHugoParams.htmlRootClassNoCSSProperties;
+  const doc = document.documentElement;
+
   const colorModeNav = elem('.color_mode');
   if (!colorModeNav) {
     return;
@@ -157,4 +158,5 @@ import {
       setUserColorMode(true);
     }
   });
-})();
+};
+window.addEventListener('DOMContentLoaded', initColorMode);

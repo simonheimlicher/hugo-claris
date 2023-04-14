@@ -6,7 +6,7 @@
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="{{- $themeColorDim -}}">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     {{- $title := site.Title }}
-    {{- $contentType := default "claris" (partialCached "claris/_functions/alternative-type" . . .Type) }}
+    {{- $contentType := default "claris" (partialCached "claris/_functions/alternative-type" (dict "Page" .Page "Current" true) . .Type) }}
     {{- $partialHeadTitle := printf "%s/head/title" $contentType }}
     {{ partial "html-comment"
         (printf "BASEOF: Looking for %s" (printf "partials/%s" $partialHeadTitle) ) }}

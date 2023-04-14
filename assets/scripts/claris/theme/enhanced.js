@@ -1,27 +1,36 @@
 // console.log('BEGIN theme/enhanced.js');
 import {
-  htmlRootClassModernJavaScript,
-  htmlRootElement,
   pushClass
-} from './init';
+} from './functions';
 
-pushClass(htmlRootElement, htmlRootClassModernJavaScript);
+const themeEnhancedInit = function () {
+  const htmlRootElement = clarisHugoParams.htmlRootElement;
+  const htmlRootClassModernJavaScript = clarisHugoParams.htmlRootClassModernJavaScript;
+    pushClass(htmlRootElement, htmlRootClassModernJavaScript);
+};
+window.addEventListener('DOMContentLoaded', themeEnhancedInit);
 
 import "./table-of-contents";
 import './code';
 // import './format-url';
-const mediumZoomOptions = {
-  container: {
-    top: 48,
-    right: 24,
-    bottom: 48,
-    left: 24
-  },
-  background: 'var(--bg-light)',
-};
+
+import './qrcode-svg';
 
 import mediumZoom from 'medium-zoom';
-mediumZoom('[data-zoomable]', mediumZoomOptions);
+const mediumZoomInit = function () {
+  const mediumZoomOptions = {
+    container: {
+      top: 48,
+      right: 24,
+      bottom: 48,
+      left: 24
+    },
+    background: 'var(--bg-light)',
+  };
+
+  mediumZoom('[data-zoomable]', mediumZoomOptions);
+}
+document.addEventListener('DOMContentLoaded', mediumZoomInit);
 
 // FIXME: The below does not appear to work
 // document.addEventListener("lazybeforeunveil", e => {

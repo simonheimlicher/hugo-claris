@@ -1,14 +1,10 @@
 {{- $page := .Page }}
 {{- $template := "claris/_hoos/body-end/scripts" }}
 {{- with .Assets -}}
-<!-- Include legacy JS -->
-  {{- with .Scripts.polyfills }}
-    <script nomodule src="{{ .Permalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
-  {{- end -}}
-  {{- with .Scripts.legacy }}
-    <script nomodule src="{{ .Permalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
-  {{- end -}}
-  {{- with .Scripts.modern_late }}
+  {{- with .Scripts.body }}
     <script type="module" src="{{ .Permalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
+  {{- end -}}
+  {{- with .Scripts.body_legacy }}
+    <script nomodule src="{{ .Permalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
   {{- end -}}
 {{- end -}}
