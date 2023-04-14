@@ -8,6 +8,7 @@
 {{- $processingFormat := default false .Format -}}
 {{- $processingHint := default false .Hint -}}
 {{- $includeOriginalImage := default false ($page.Param "responsiveImageIncludeOriginal") }}
+{{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
 
 {{/* {{- warnf "%s[%s]: resourceSpec:%v[%T]" $page $template $resourceSpec $resourceSpec }} */}}
 {{- $img := $resourceSpec }}
@@ -20,32 +21,55 @@
   {{- $placeholderSvg := printf "<svg xmlns=%q viewBox=%q></svg>" "http://www.w3.org/2000/svg" (printf "0 0 %d %d" $img.Width $img.Height) | safeHTML }}
   {{- $placeholderInlineImg := printf "data:image/svg+xml,%s" $placeholderSvg | replaceRE " " "%20" | replaceRE "<" "%3c" | replaceRE ">" "%3e" | replaceRE "\"" "'" | safeURL }}
 
-  {{- if site.Params.lazyLoadLowImageQualityPlaceholder }}
+  {{- if default true site.Params.lazyLoadLowImageQualityPlaceholder }}
     {{- $placeholder := ($img.Resize "48x q20") | images.Filter (images.GaussianBlur 6) -}}
     {{- $placeholderInlineImg = printf "data:image/jpeg;base64,%s" ($placeholder.Content | base64Encode) | safeURL | safeHTMLAttr }}
   {{- end -}}
 
-  {{/* {{- $numVersions := 15 }} */}}
-  {{/* {{- $powerBase := math.Sqrt (math.Sqrt 2) }} */}}
-  {{- $numVersions := 7 }}
-  {{- $powerBase := math.Sqrt 2 }}
-  {{- $sizeRange := math.Pow $powerBase (sub $numVersions 1) }}
-  {{- $roundBase := 2 }}
-  {{- $roundToNearest := math.Pow $roundBase (math.Round (div (math.Log (div $maxWidth (math.Pow $roundBase (sub $numVersions 1) ))) (math.Log $roundBase) ) ) }}
-  {{- $baseWidth := mul (math.Round (div (div $maxWidth $sizeRange) $roundToNearest)) $roundToNearest }}
+  {{- $numVersions := 3 }}
+  {{- $sizeRange := 8.0 }}
+  {{- $roundBase := 2.0 }}
+
+  {{- if $envProd }}
+    {{- $numVersions = 7 }}
+  {{- end }}
+
+  <!-- No changes below this line -->
+  {{- $powerBase := math.Pow $sizeRange (div 1.0 (sub $numVersions 1.0) ) }}
+  {{/* {{- $baseWidthCalculated := div $maxWidth $sizeRange }}
+  {{- $baseWidthCalculatedPrev := div $baseWidthCalculated $powerBase }}
+  {{- $roundToNearest := math.Pow $roundBase (math.Floor (div (math.Log (div (sub $baseWidthCalculated $baseWidthCalculatedPrev) 2) ) (math.Log $roundBase) ) ) }}
+  {{- $baseWidth := int (math.Round (mul (math.Round (div $baseWidthCalculated $roundToNearest) ) $roundToNearest) ) }} */}}
+
   {{- $sep := "" }}
   {{- $srcSetWidths := slice -}}
 
-  {{/* {{- warnf "%s[%s]:\n    maxWidth=%d ratio smallest:largest = 1:%.0f baseWidth=%.2f roundToNearest=%.2f"
-      $page $template $maxWidth $sizeRange $baseWidth $roundToNearest -}} */}}
+  {{- $widthCalculated := int (div $maxWidth $sizeRange) }}
+  {{- $widthCalculatedPrev := int (div $widthCalculated $powerBase) }}
+  {{- $baseWidth := 0 }}
+
   {{- range $i, $exp := (seq $numVersions) }}
-    {{- $widthCalculated := mul $baseWidth (math.Pow $powerBase $i) }}
-    {{- $width := int (math.Round (mul (math.Round (div $widthCalculated $roundToNearest) ) $roundToNearest) ) }}
+    {{- $width := 0 }}
+    {{- if gt $i 0 }}
+      {{- $widthCalculated = int (mul $baseWidth (math.Pow $powerBase $i)) }}
+    {{- end }}
+    <!-- roundToNearest = roundBase ^ floor( ln( (width_{n+1} - width_n) / 2)  / ln(roundBase) ) -->
+    {{- $roundToNearest := math.Pow $roundBase (math.Floor (div (math.Log (div (sub $widthCalculated $widthCalculatedPrev) 2) ) (math.Log $roundBase) ) ) }}
+
+    {{- if eq $i 0 }}
+      {{- $baseWidth = int (math.Round (mul (math.Round (div $widthCalculated $roundToNearest) ) $roundToNearest) ) }}
+      {{/* {{- warnf "%s[%s]:\n    maxWidth=%d sizeRange=%d numVersions=%d [baseWidth=%d powerBase=%.2f roundToNearest=%.0f]"
+          $page $template $maxWidth $sizeRange $numVersions $baseWidth $powerBase $roundToNearest -}} */}}
+    {{- end }}
+
+    {{- $width = int (math.Round (mul (math.Round (div $widthCalculated $roundToNearest) ) $roundToNearest) ) }}
+    {{- $widthCalculatedPrev = $width }}
+
     {{- if (eq $i (sub $numVersions 1) ) }}
-      {{/* {{- warnf "    [%s]: width=maxWidth=%d i=%d exp=%d width=%d [%.2f]" $template $maxWidth $i $exp $width $widthCalculated -}} */}}
       {{- $width = $maxWidth }}
-    {{/* {{- else }}
-      {{- warnf "    [%s]: i=%d exp=%d width=%d [%.2f]" $template $i $exp $width $widthCalculated -}} */}}
+      {{/* {{- warnf "    [%s]: i=%d exp=%d width=maxWidth=%d [widthCalculated=%d]" $template $i $exp $width $widthCalculated -}}
+    {{- else }}
+      {{- warnf "    [%s]: i=%d exp=%d width=%d [widthCalculated=%d, roundToNearest=%.0f]" $template $i $exp $width $widthCalculated $roundToNearest -}} */}}
     {{- end }}
     {{- $srcSetWidths = $srcSetWidths | append $width }}
     {{- $resizeSpec := printf "%dx" $width }}
