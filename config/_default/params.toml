@@ -35,7 +35,7 @@
 # figurePositionLabel = "Figure" # the text before image number e.g Figure 1.0
 
 # Set the collapsed mobile navigation to either appear from the left or the right
-# mobileNavigation = "left" # if you prefer right change to 'right'
+# mobileNavigation = "right" # if you prefer, change this to "left"
 
 # some site owners want to decide how they would like their sites to be introduced users. These settings give you as a site owner to decide how the user will view your site for the first time.
 

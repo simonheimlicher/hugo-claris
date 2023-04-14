@@ -17,7 +17,7 @@
         {{- else }}
           {{- partialCached "claris/header/logo" (dict "logo" $logo "logoURL" $logoURL ) }}
         {{- end }}
-        <div class='nav_body nav_body_{{ $s.mobileNavigation }}'>
+        <div class='nav_body nav_body_{{ default "right" $s.mobileNavigation }}'>
           {{- $menuData := site.Data.menu }}
           {{- with $menuData }}
             {{ partial "claris/header/nav" (dict "ctx" $page "Page" $page "Menu" $menuData) }}
