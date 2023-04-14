@@ -3,7 +3,7 @@
 {{- $mediaTypeList := .MediaTypeList }}
 {{- $contentTypeList := .ContentTypeList }}
 {{- $supportIE11 := default false .SupportIE11 }}
-{{- $minifyBundles := default false .minifyBundless }}
+{{- $minifyBundles := default false .MinifyBundles }}
 {{- $template := "claris/_functions/style-bundles" }}
 
 {{- $contentTypeListID := delimit $contentTypeList "-" }}
@@ -26,7 +26,7 @@
   {{- $toCSSIncludePaths = append (slice (printf "assets/%s/%s" $resourcePathBase . ) ) $toCSSIncludePaths }}
 {{- end }}
 {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "includePaths" $toCSSIncludePaths)}}
-{{- $postCSSoptions := (dict "config" "postcss.config.js" "noMap" false) -}}
+{{- $postCSSoptions := (dict "config" "postcss.config.js" "noMap" $minifyBundles) -}}
 
 {{/* {{- warnf "%s[%s]: contentTypeList:%s supportIE11=%v minifyBundles=%v site.Params.supportIE11=%v toCSSoptionsBase=%v postCSSoptions=%v "
     $page $template $contentTypeList $supportIE11 $minifyBundles site.Params.supportIE11 $toCSSoptionsBase $postCSSoptions -}} */}}

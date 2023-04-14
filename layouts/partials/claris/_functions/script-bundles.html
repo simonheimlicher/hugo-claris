@@ -3,7 +3,7 @@
 {{- $mediaTypeList := .MediaTypeList }}
 {{- $contentTypeList := .ContentTypeList }}
 {{- $supportIE11 := default true .SupportIE11 }}
-{{- $minifyBundles := default false .minifyBundless }}
+{{- $minifyBundles := default false .MinifyBundles }}
 {{- $template := "claris/_functions/script-bundles" }}
 {{- $skeletonOnly := false }}
 
@@ -26,12 +26,17 @@
   {{- $legacyTargetVersion = "es5" }}
 {{- end }}
 
-  <!-- Note on source maps. Only "inline" seems to work but let's keep "external" for prod -->
 {{- $jsBuildOptionsBase := (dict
     "target" $targetVersion
-    "sourceMap" (cond $minifyBundles "inline" "external")
     "minify" $minifyBundles
   ) }}
+
+  <!-- Note on source maps: option "inline" seems to work, the alternative would be "external" -->
+{{- if not $minifyBundles }}
+  {{- $jsBuildOptionsBase = merge $jsBuildOptionsBase (dict
+      "sourceMap" "inline"
+    ) }}
+{{- end }}
 
 {{- $targetBundles := (slice
   (dict
