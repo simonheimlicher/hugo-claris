@@ -22,6 +22,7 @@
 {{- $fontFamilySerif := default "Merriweather" ($page.Param "fontFamilySerif") }}
 {{- $fontFamilyMono := default "DM Mono" ($page.Param "fontFamilyMono") }}
 {{- $fontFamilies := (slice $fontFamilySans $fontFamilySerif $fontFamilyMono) }}
+$hostedFontPath: '{{ default (absURL "fonts") ($page.Param "hostedFontPath") }}'
 {{- range $fontFamilies }}
 @import 'claris/fonts/{{ urlize . }}'
 {{- end }}
