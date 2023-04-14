@@ -10,11 +10,11 @@
       gtag('js', new Date());
       gtag('config', '{{ . }}');
     </script>
-  {{- else -}}
-    {{- warnf "%s[%s]: Configuration value for site.GoogleAnalytics not set" $page $template }}
+  {{/* {{- else -}}
+    {{- warnf "%s[%s]: Configuration value for site.GoogleAnalytics not set" $page $template }} */}}
   {{- end -}}
   {{/* {{ template "_internal/google_analytics_async.html" . }} */}}
-{{- else }}
+{{/* {{- else }}
   {{- warnf "%s[%s]: Not including Google Analytics with googleAnalytics='%v' [env=%s == devel: %#v]"
-      $page $template site.Config.Services.GoogleAnalytics.ID hugo.Environment $envDevel -}}
+      $page $template site.Config.Services.GoogleAnalytics.ID hugo.Environment $envDevel -}} */}}
 {{- end }}
