@@ -100,8 +100,8 @@ JavaScript equivalent of global variables in the dictionary
 
     {{- range $variant := $bundleVariants }}
 
-      {{- warnf "%s[%s]: .Target=%v .Variant=%v .BaseName=%v: Concatenating content types=%v to ID=%v"
-        $page $template $target.Target .Variant .BaseName $contentTypeList $contentTypeListID }}
+      {{/* {{- warnf "%s[%s]: .Target=%v .Variant=%v .BaseName=%v: Concatenating content types=%v to ID=%v"
+        $page $template $target.Target .Variant .BaseName $contentTypeList $contentTypeListID }} */}}
 
       {{- $variantResources := slice }}
 
@@ -120,11 +120,11 @@ JavaScript equivalent of global variables in the dictionary
             {{- $executedFile := printf "%s%s.%s" $tplFile $executedSourceSuffix $sourceExt }}
             {{- $executedResource := resources.ExecuteAsTemplate $executedFile $tplParams . }}
             {{- $variantResources = append (slice $executedResource) $variantResources }}
-            {{- warnf "%s[%s]: executed tplFile=%v to executedResource.Name=%v .RelPermalink=%v:\n%v"
+            {{/* {{- warnf "%s[%s]: executed tplFile=%v to executedResource.Name=%v .RelPermalink=%v:\n%v"
                 $page $template $tplFile
                 $executedResource.Name
                 $executedResource.RelPermalink
-                (substr $executedResource.Content 0 400) }}
+                (substr $executedResource.Content 0 400) }} */}}
           {{- else -}}
             {{- if (eq $contentType "claris") }}
               {{- errorf "%s[%s]: tplFile '%s' not found" $page $template $tplFile }}
@@ -139,10 +139,10 @@ JavaScript equivalent of global variables in the dictionary
           {{- $variantResourcesContents = printf "%s    %d --> %v .Name=%v .MediaType=%v\n"
               $variantResourcesContents $idx $resource $resource.RelPermalink $resource.MediaType }}
         {{- end }}
-        {{- warnf "%s[%s]: .Target=%v .Variant=%v Content types=%v ID=%v accumulated %d variantResources:\n%s"
+        {{/* {{- warnf "%s[%s]: .Target=%v .Variant=%v Content types=%v ID=%v accumulated %d variantResources:\n%s"
             $page $template $target.Target $variant.Variant
             $contentTypeList $contentTypeListID
-            (len $variantResources) $variantResourcesContents }}
+            (len $variantResources) $variantResourcesContents }} */}}
       {{- end }}
 
       {{- $targetPathPrefix := printf "%s/%s" $resourcePathBase $contentTypeListID -}}
@@ -158,9 +158,9 @@ JavaScript equivalent of global variables in the dictionary
         {{- $jsBuildOptions := $jsBuildOptionsBase }}
         {{- $bundle := $concatResources | js.Build $jsBuildOptions -}}
         {{- $bundle = $bundle | resources.Fingerprint $fingerprintOptions }}
-        {{- warnf "%s[%s]: js.Build target=%v bundle.Name=%v published at .RelPermalink=%v:\n%v"
+        {{/* {{- warnf "%s[%s]: js.Build target=%v bundle.Name=%v published at .RelPermalink=%v:\n%v"
             $page $template $jsBuildOptions.target $bundle.Name
-            $bundle.RelPermalink (substr $bundle.Content 0 400) }}
+            $bundle.RelPermalink (substr $bundle.Content 0 400) }} */}}
 
         {{- $scriptBundles = merge $scriptBundles (dict $target.Target $bundle) -}}
         {{- end }}
@@ -169,21 +169,21 @@ JavaScript equivalent of global variables in the dictionary
         {{- $legacyExecutedFile := printf "%s%s.%s" $legacyTarget $executedSourceSuffix $sourceExt }}
         {{- $legacyTargetFile := printf "%s/%s%s%s.%s" $targetPathPrefix $target.Target $legacySuffix $targetSuffix $targetExt }}
         {{- $legacyConcatResources := $variantResources | resources.Concat $legacyTargetFile }}
-        {{- warnf "%s[%s]: resources.Concat of .Target=%v .Variant=%v legacyTarget=%v: legacyConcatResources.Name=%v published at .RelPermalink=%v:\n%v"
+        {{/* {{- warnf "%s[%s]: resources.Concat of .Target=%v .Variant=%v legacyTarget=%v: legacyConcatResources.Name=%v published at .RelPermalink=%v:\n%v"
             $page $template $target.Target $variant.Variant $legacyTarget
             $legacyConcatResources.Name
             $legacyConcatResources.RelPermalink
-            $legacyConcatResources.Content}}
+            $legacyConcatResources.Content }} */}}
         {{- $legacyBundle := $legacyConcatResources | js.Build (merge $jsBuildOptionsBase (dict "target" $targetVersion "minify" false) ) -}}
         {{- $legacyBundle = $legacyBundle | babel }}
         {{- $jsBuildLegacyOptions := merge $jsBuildOptionsBase (dict "target" $legacyTargetVersion) }}
         {{- $legacyBundle = $legacyBundle | js.Build $jsBuildLegacyOptions }}
         {{- $legacyBundle = $legacyBundle | resources.Fingerprint $fingerprintOptions }}
-        {{- warnf "%s[%s]: js.Build of .Target=%v .Variant=%v legacyTarget=%v: jsBuildLegacyOptions=%v legacyBundle.Name=%v published at .RelPermalink=%v:\n%v"
+        {{/* {{- warnf "%s[%s]: js.Build of .Target=%v .Variant=%v legacyTarget=%v: jsBuildLegacyOptions=%v legacyBundle.Name=%v published at .RelPermalink=%v:\n%v"
             $page $template $target.Target $variant.Variant $legacyTarget
              $jsBuildLegacyOptions $legacyBundle.Name
             $legacyBundle.RelPermalink
-            $legacyBundle.Content }}
+            $legacyBundle.Content }} */}}
 
         {{- $scriptBundles = merge $scriptBundles (dict $legacyTarget $legacyBundle) -}}
       {{- else -}}
@@ -196,5 +196,5 @@ JavaScript equivalent of global variables in the dictionary
     $page $template $mediaType $mediaTypeList }} */}}
   {{- end }}
 {{- end }}
-{{- warnf "%s[%s]: returning $scriptBundles: %s" $page $template $scriptBundles }}
+{{/* {{- warnf "%s[%s]: returning $scriptBundles: %s" $page $template $scriptBundles }} */}}
 {{- return $scriptBundles -}}
