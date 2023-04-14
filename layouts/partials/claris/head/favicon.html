@@ -1,4 +1,7 @@
-{{- $faviconsDir := printf "%s/" (strings.TrimLeft "/" (strings.TrimRight "/" (default "/" site.Params.faviconsDir) ) ) }}
+<!-- IMPORTANT NOTE: URLs passed to absURL must not start with a '/', unless
+we absolutely want to ignore the path within site.BaseURL
+https://gohugo.io/functions/absurl/ -->
+{{- $faviconsDir := printf "%s" (strings.TrimLeft "/" (strings.TrimRight "/" (default "/" site.Params.faviconsDir) ) ) }}
 {{- $appleTouch := absURL (printf "%s%s" $faviconsDir "apple-touch-icon.png") }}
 {{- $favicon32 := absURL (printf "%s%s" $faviconsDir "favicon-32x32.png" ) }}
 {{- $favicon16 := absURL (printf "%s%s" $faviconsDir "favicon-16x16.png" ) }}
