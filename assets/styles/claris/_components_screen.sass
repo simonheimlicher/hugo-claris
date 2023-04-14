@@ -493,7 +493,7 @@
     // Ensure .main extends padding to reach under nav_header
     // when nav_header is position: relative
     // padding-top: 0
-    padding: #{$screenViewNavHeightNarrow} 0 $screenViewInnerPadding 0
+    padding: #{$screenViewNavHeightNarrow} 0 $screenViewInnerPaddingOneColumn 0
     margin: - #{$screenViewNavHeightNarrow} auto 0 auto
 
 .footer
@@ -545,7 +545,7 @@
       justify-content: flex-end
       min-height: 100vh
       min-height: 100lvh
-      padding-bottom: $screenViewInnerPadding
+      padding-bottom: $screenViewInnerPaddingOneColumn
       z-index: ($main-z-index + 2)
     .content-title
       color: white
@@ -559,7 +559,7 @@
     & ~ .footer
       position: relative
       z-index: ($main-z-index + 1)
-      // padding-top: ($screenViewInnerPadding)
+      // padding-top: ($screenViewInnerPaddingOneColumn)
       background: var(--bg-dark)
       color: var(--text-dark)
       h1, h2, h3, a
@@ -628,7 +628,7 @@
     .nav
       &_body
         transform: translateX(0)
-        @include wrap
+        @include element-padding('inner', 0, 1)
         & > .nav_group
           width: 100%
           margin-left: (0.25rem - $screenViewInnerPaddingMobile)
@@ -636,16 +636,16 @@
             padding-left: ($screenViewInnerPaddingMobile - 0.25rem)
             padding-right: ($screenViewInnerPaddingMobile - 0.25rem)
           @media screen and (min-width: $screenViewBreakpointWidthNarrow)
-            margin-left: (0.5rem - $screenViewInnerPadding)
+            margin-left: (0.5rem - $screenViewInnerPaddingOneColumn)
             .nav_item
-              padding-left: ($screenViewInnerPadding - 0.5rem)
-              padding-right: ($screenViewInnerPadding - 0.5rem)
+              padding-left: ($screenViewInnerPaddingOneColumn - 0.5rem)
+              padding-right: ($screenViewInnerPaddingOneColumn - 0.5rem)
           &:first-child
-            margin-top: ($screenViewNavHeightNarrow + $screenViewInnerPadding)
+            margin-top: ($screenViewNavHeightNarrow + $screenViewInnerPaddingOneColumn)
       &_group_follow_mode
         flex-wrap: wrap
         justify-content: space-between
-        margin-top: $screenViewInnerPadding
+        margin-top: $screenViewInnerPaddingOneColumn
       &_active
         &, &_is_menu.nav_menu, &_has_menu:not(.nav_open), &_parent_is_menu.nav_menu, &_parent_has_menu, .nav_open_sub &_is_menu, .nav_open_sub &_parent_is_menu, .nav_open_sub &_parent_parent_is_menu
 
@@ -727,15 +727,15 @@
       padding: 0.5rem 0.5rem
     &_brand
       height: $screenViewNavHeight
-      margin-left: (-1 * $screenViewInnerPadding)
+      margin-left: (-1 * $screenViewInnerPaddingOneColumn)
       margin-right: 0rem
-      padding-left: $screenViewInnerPadding
-      // padding-right: $screenViewInnerPadding
+      padding-left: $screenViewInnerPaddingOneColumn
+      // padding-right: $screenViewInnerPaddingOneColumn
       img
         height: $screenViewNavHeight
     &_mobile_toggle
-      // padding-left: $screenViewInnerPadding
-      padding-right: $screenViewInnerPadding
+      // padding-left: $screenViewInnerPaddingOneColumn
+      padding-right: $screenViewInnerPaddingOneColumn
 
     .color_mode_label
       display: flex

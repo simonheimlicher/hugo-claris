@@ -10,7 +10,7 @@
   {{- errorf "%s[%s]: Invalid logoURL=%v" $page $template $logoURL }}
 {{- end }}
     <header class="nav_header">
-      <nav class="nav wrap">
+      <nav class="nav inner_horizontal inner_top-0">
         {{- /* FIXME: partial "claris/header/logo" is required for mobile navigation to work. Otherwise, JS "theme/mobile-nav.js" will terminate early" */ -}}
         {{- if $centerLogo }}
           {{- partialCached "claris/header/logo" (dict "logo" $logo "class" "nav_hide" "logoURL" $logoURL ) }}

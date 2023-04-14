@@ -1,7 +1,7 @@
 {{- define "main" }}
 {{- $s := site.Params }}
 {{- $p := .Params }}
-<div class="never wrap">
+<div class="never inner_horizontal">
   {{- $t := .Title }}
   <h1>{{ $t | markdownify }}</h1>
   {{- .Content }}

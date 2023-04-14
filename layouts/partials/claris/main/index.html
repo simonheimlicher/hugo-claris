@@ -14,7 +14,7 @@
 {{- $s := site.Params }}
 {{- $p := .Params }}
 
-{{- $mainInnerClassList := (slice "main_inner" "wrap") }}
+{{- $mainInnerClassList := (slice "main_inner" "inner_horizontal") }}
 {{ if (and (eq $kind "page") (not (or (eq $p.singleColumn true) (eq $p.sidebar false) ) ) ) }}
   {{- $mainInnerClassList = append (slice "grid-main-single") $mainInnerClassList }}
 {{- end }}
