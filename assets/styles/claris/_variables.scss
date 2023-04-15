@@ -65,7 +65,7 @@ $main-z-index: 1;
         @debug "absolute-length: #{$value}";
         $pFix: map-merge($pFix, (#{$key}: #{$value}) );
         $pVar: map-merge($pVar, (
-          #{$key}: calc( max(#{$value}, env(safe-area-inset-top, 0px) ) )
+          #{$key}: calc( max(#{$value}, env(safe-area-inset-#{$key}, 0px) ) )
         ));
       }
       @else {
@@ -73,12 +73,12 @@ $main-z-index: 1;
         $valueVar: $value;
         @if $value == 0 {
           $valueFix: 0;
-          $valueVar: env(safe-area-inset-top, 0px)
+          $valueVar: env(safe-area-inset-#{$key}, 0px)
         }
         @else {
           // FIXME: Use a single padding value for browsers that don't support CSS properties
           $valueFix: ($value * $screenViewInnerPaddingNarrow);
-          $valueVar: calc( max(#{$value} * var(--#{$where}_padding-#{$direction}), env(safe-area-inset-top, 0px) ) )
+          $valueVar: calc( max(#{$value} * var(--#{$where}_padding-#{$direction}), env(safe-area-inset-#{$key}, 0px) ) )
         }
         $pFix: map-merge($pFix, (#{$key}: $valueFix));
         $pVar: map-merge($pVar, (#{$key}: $valueVar));
