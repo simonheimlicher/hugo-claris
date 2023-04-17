@@ -23,7 +23,7 @@ $images: '{{ absURL (printf "%s/" (default "images/" (strings.TrimLeft "/" (stri
 // Adapt to width of screen
 // Maximum width for anything the user is supposed
 // to interact with (the "page chrome")
-$screenViewWidthChrome: {{ default "104rem" ($page.Param "screenViewWidthChrome") }}
+$screenViewWidthChrome: {{ default "100rem" ($page.Param "screenViewWidthChrome") }}
 
 // Padding around body up to narrow breakpoint
 $screenViewBodyPaddingMobile: {{ default "0rem" ($page.Param "screenViewBodyPaddingMobile") }}
@@ -67,19 +67,19 @@ $screenViewColumnGap: {{ default "1rem" ($page.Param "screenViewColumnGap") }}
 
 $screenViewWidthAsideMin: {{ default "12rem" ($page.Param "screenViewWidthAsideMin") }}
 
-// Parameters for layout with one aside
+// Parameters for layout with two columns: main content and one aside
 $screenViewColumnWidthMin: ($screenViewBreakpointWidthTwoColumn - 2 * $screenViewBodyPaddingOneColumn - $screenViewWidthAsideMin - $screenViewColumnGap);
 // $screenViewColumnWidthMax: (#{$screenViewBreakpointWidthTwoColumn} - 2 * #{$screenViewBodyPaddingOneColumn});
 $screenViewColumnWidthMax: ($screenViewBreakpointWidthWide - $screenViewWidthAsideMin - 2 * $screenViewBodyPaddingOneColumn - $screenViewColumnGap);
 
-// Parameters for layout with two asides
+// Parameters for layout with three columns: main content and two asides
 $screenViewColumnGapWide: {{ default "2rem" ($page.Param "screenViewColumnGapWide") }}
 $screenViewColumnWidthWideMax: {{ default "60rem" ($page.Param "screenViewColumnWidthWideMax") }}
 $screenViewWidthWideAsideMin: {{ default "12rem" ($page.Param "screenViewWidthWideAsideMin") }}
-$screenViewWidthWideAsideMax: {{ default "18rem" ($page.Param "screenViewWidthWideAsideMax") }}
+$screenViewWidthWideAsideMax: {{ default "19rem" ($page.Param "screenViewWidthWideAsideMax") }}
 $screenViewColumnWidthWideMin: ($screenViewBreakpointWidthWide - 2 * $screenViewWidthWideAsideMin - 2 * $screenViewBodyPaddingOneColumn - 2 * $screenViewColumnGapWide);
 
-// Parameters for layout with two asides and wider sections in main column, e.g., for code or figures
+// Parameters for layout with three columns: main content and two asides and wider sections in main column, e.g., for code or figures
 $screenViewWidthUltrawide: {{ default "57rem" ($page.Param "screenViewWidthUltrawide") }}
 
 $screenViewBreakpointHeightTall: {{ default "48rem" ($page.Param "screenViewBreakpointHeightTall") }}
