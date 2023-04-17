@@ -49,7 +49,7 @@
 <body id="documentContainer" {{- block "body-data" . -}} {{- end -}}>
   {{ partial "html-comment" (printf "BASEOF [%s]: BEGIN block body" $template) }}
   {{ block "body" . -}}{{ end }}
-  {{ partial "html-comment" (printf "BASEOF [%s]:   END block body" $template) }}
+  {{ partial "html-comment" (printf "BASEOF [%s]: END   block body" $template) }}
   {{- with $s.customJS }}
     {{- range . -}}
       <script src="{{ relURL . }}" ></script>
