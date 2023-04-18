@@ -1,0 +1,73 @@
+{{- $page := .Page }}
+{{- $template := "claris/_functions/meta/site" }}
+{{- $debug := default false .Debug }}
+
+{{- $siteMeta := dict -}}
+
+{{- $metaSchemaOrg := site.Params.robots.index }}
+
+{{- $author :=  site.Author.name }}
+
+{{- $copyright := default (T "copyright") (printf "%s %s %s. %s" (string now.Year) $author (T "all_rights") ) }}
+{{- with site.Params.website.since }}
+  {{- $copyright = printf "%s %s–%s %s. %s" (T "copyright") (string .) (string now.Year) $author (T "all_rights" ) }}
+{{- end }}
+
+{{- $alternativeHeadline := site.Params.alternativeHeadline | $page.RenderString | plainify }}
+
+{{- $description := site.Params.description | $page.RenderString | plainify }}
+
+{{- $name := site.Params.website.name }}
+
+{{- $organization := site.Params.organization.name }}
+
+{{- $license := site.Params.website.license.text }}
+
+{{- $language := site.Language.Lang }}
+
+{{- $alternativeLanguages := slice }}
+{{- range site.Languages }}
+  {{- if not (eq . site.Language.Lang) }}
+    {{- $alternativeLanguages = append (slice .Lang) $alternativeLanguages }}
+  {{- end }}
+{{- end }}
+
+{{- $canonicalURL := partial "claris/_functions/canonical-url" $page }}
+{{- $canonicalBaseURL := ( site.Params.canonicalBaseURL | default site.Params.BaseURL ) }}
+
+<!-- HTML 'id' attribute of the DOM container of the main content -->
+{{- $websiteID := "mainContainer" }}
+
+{{- $metaImages := partial "claris/_functions/resources/images" (dict
+  "Page" $page
+  "Params" (merge $page.Params site.Params)
+  "Debug" $debug
+) }}
+
+{{- $siteMeta = merge $siteMeta (dict
+  "Classification" (dict
+    "Robots" site.Params.robots
+    "SchemaOrg" $metaSchemaOrg
+  )
+
+  "Data" (dict
+    "CanonicalURL" $canonicalURL
+    "WebsiteID" $websiteID
+    "EntityID" (printf "%s#%s" $canonicalURL $websiteID)
+    "Name" $name
+    "Headline" ( .Title | $page.RenderString | plainify )
+    "AlternativeHeadline" $alternativeHeadline
+    "Description" $description
+    "Images" $metaImages
+    "Language" $language
+    "AlternativeLanguages" $alternativeLanguages
+    "Copyright" $copyright
+    "License" $license
+  )
+) }}
+
+{{- if $debug }}
+  {{- warnf "%s[%s]: %v returning %v" $page $template site $siteMeta }}
+{{- end }}
+
+{{- return $siteMeta }}

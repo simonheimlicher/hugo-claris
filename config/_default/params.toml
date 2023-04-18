@@ -65,13 +65,18 @@
 # dateFormat = "2006-01-02" # Default to "Jan 2, 2006".
 # customFonts = false # toggle to true if you want to use custom fonts only.
 
-# The year when this website was created, this value is used in the copyright
-# notice of the footer.
-# since = 2016
-
 # tell hugo where you store your icons e.g favicons. This is useful if you're using an apache server and there are conflicts >> see issue https://github.com/chipzoller/hugo-clarity/issues/74. If this is applicable to you, be sure to copy the contents of https://github.com/chipzoller/hugo-clarity/tree/master/static/icons to your preferred icons directory
 # iconsDir = "icons/" # without a leading forward slash
 
+[website]
+  name = "simon.heimlicher.com"
+
+  # The year when ths website was created, this value is used in the copyright
+  # notice of the footer.
+  since = 1999
+
+  [website.license]
+    text = "simon.heimlicher.com © 1999 by Simon Heimlicher is licensed under CC BY-NC-ND 4.0"
 
 # configuration of robots tag in head
 [robots]

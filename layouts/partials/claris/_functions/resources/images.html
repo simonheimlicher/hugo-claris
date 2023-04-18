@@ -1,0 +1,293 @@
+{{- $page := .Page }}
+{{- $params := .Params }}
+{{- $debug := findRE "//" .Page.RelPermalink }}
+
+{{- $imageResourceBaseArgs := (dict
+  "Page" $page
+  "Quality" false
+  "Format" false
+) }}
+
+{{- if reflect.IsMap . }}
+  {{- with .Debug }}{{ $debug = . }}{{ end }}
+  {{- with .Quality }}
+    {{ $imageResourceBaseArgs = merge $imageResourceBaseArgs "Quality" . }}
+  {{ end }}
+  {{- with .Format }}
+    {{ $imageResourceBaseArgs = merge $imageResourceBaseArgs "Format" . }}
+  {{ end }}
+{{- end }}
+
+{{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
+
+{{- $template := "claris/_functions/meta/images" }}
+
+<!-- Grab images provided by .Params
+Typically, .Params is page.Params merged with site.Params
+
+* Feature: General large images, e.g. hero image, and fallback for thumbnail
+* Thumbnail: General thumbnail images and fallback for search and share image
+* Search: Images to be displayed by search engines as "rich results"
+  Google recommendations:
+  multiple high-resolution images (minimum of 50K pixels when
+  multiplying width and height) with the following aspect ratios:
+  16x9, 4x3, and 1x1.
+* Share: Images to be used as teaser for sharing
+-->
+
+{{- $metaImages := dict }}
+{{- $defaultImageKind := "feature" }}
+
+{{- $requiredImageVersions := (dict
+"feature" (slice
+  (dict "aspect" "16x9"
+    "width" 3840 "height" 2160)
+)
+"excerpt" (slice
+  (dict "aspect" "1x1"
+    "width" 675 "height" 675)
+)
+"thumbnail" slice
+"search" (slice
+  (dict "aspect" "16x9"
+    "width" 1200 "height" 675)
+  (dict "aspect" "4x3"
+    "width" 1200 "height" 900)
+  (dict "aspect" "1x1"
+    "width" 1200 "height" 1200)
+)
+"share" (slice
+  (dict "aspect" "16x9"
+    "width" 1200 "height" 675)
+)
+) }}
+
+{{/* {{- if $debug }}
+  {{- warnf "%s[%s]: .Params:\n%v\n"
+      $page $template (jsonify (dict "indent" "  ") $params) }}
+{{- end }} */}}
+
+{{- $imageResources := dict }}
+{{- range $imageKind, $versions := $requiredImageVersions }}
+  {{- $imageResParamList := slice }}
+  {{- with $page.Params.image }}
+    {{- $imageKindParam := false }}
+    {{- if reflect.IsMap . }}
+      {{- $imageKindParam = index . $imageKind }}
+    {{- else }}
+      {{- $imageKindParam = . }}
+    {{- end }}
+    {{- with $imageKindParam }}
+      {{- if not (reflect.IsSlice $imageKindParam) }}
+        {{- $imageKindParam = slice $imageKindParam }}
+      {{- end }}
+      {{- range $res := $imageKindParam }}
+        {{- $resParam := dict }}
+        {{- if (reflect.IsMap .) }}
+          {{- with .resource }}
+            {{- $resParam = merge $resParam (dict
+              "Resource" .
+            ) }}
+          {{- end }}
+          {{- with .position }}
+            {{- $resParam = merge $resParam (dict
+              "ImgPosition" .
+            ) }}
+          {{- end }}
+        {{- else }}
+          {{- $resType := printf "%T" $res }}
+          {{- if (or
+            (eq "string" $resType )
+            (strings.Contains "resources.resourceAdapter" $resType )
+          ) }}
+            {{- $resParam = merge $resParam (dict
+              "Resource" $res
+            ) }}
+          {{- end }}
+        {{- end }}
+        {{- if isset $resParam "Resource" }}
+          {{- $imageResParamList = append (slice $resParam) $imageResParamList }}
+        {{- else }}
+          {{- warnf "%s[%s]: kind=%v: Invalid entry resParam=%v in imageKindParam: %v"
+              $page $template $imageKind $resParam (jsonify (dict "indent" "  ") $imageKindParam) }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- with $imageResParamList }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: kind=%v: Gathered imageResParamList: %v"
+          $page $template $imageKind (jsonify (dict "indent" "  ") $imageResParamList) }}
+    {{- end }}
+    {{- $imageResources = merge $imageResources (dict $imageKind $imageResParamList) }}
+    {{- if not (isset $imageResources $defaultImageKind) }}
+      {{- $imageResources = merge $imageResources (dict $defaultImageKind $imageResParamList) }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- $defaultImageResources := index $imageResources $defaultImageKind }}
+{{- with $defaultImageResources }}
+  {{- range $imageKind, $versions := $requiredImageVersions }}
+
+    {{- $imageResParamList := default $defaultImageResources (index $imageResources $imageKind) }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: kind=%v: Picked default imageResParamList=%v from imageResources: %v"
+          $page $template $imageKind
+          (jsonify (dict "indent" "  ") $imageResParamList)
+          (jsonify (dict "indent" "  ") $imageResources) }}
+    {{- end }}
+
+    {{- $availableImageResParamList := slice }}
+
+    {{- range $res := $imageResParamList }}
+      {{- with $res.Resource }}
+        {{- $imgResource := . }}
+        {{- $imageResourceArgs := merge $imageResourceBaseArgs $res }}
+        {{- if not (strings.Contains (printf "%T" $imgResource) "resources.resourceAdapter") }}
+          {{- if $debug }}
+            {{- warnf "%s[%s]: kind=%v: Looking for image resource %q with imageResourceArgs=%v"
+                $page $template $imageKind $imageResourceArgs.Resource $imageResourceArgs }}
+          {{- end }}
+          {{- $imgResource = partial "claris/_functions/image-resource" $imageResourceArgs }}
+        {{- end }}
+        {{- with $imgResource }}
+          {{- if (strings.Contains (printf "%T" $imgResource) "resources.resourceAdapter") }}
+            {{- $resParam := (dict
+              "Resource" $imgResource
+              "ImgPosition" $imageResourceArgs.ImgPosition
+              "Media" (default "default" $imageResourceArgs.Media)
+            ) }}
+            {{- $availableImageResParamList = append (slice $resParam) $availableImageResParamList }}
+            {{- if $debug }}
+              {{- warnf "%s[%s]: kind=%v: Appended image resource=%s with params=%v"
+                  $page $template $imageKind $imgResource $resParam }}
+            {{- end }}
+          {{- else }}
+            {{- errorf "%s[%s]: kind=%v versions=%v: Got invalid image resource %q[%T] with imageResourceArgs=%v"
+                $page $template $imageKind $imageResourceArgs.Resource
+                $imageResourceArgs.Resource $imageResourceArgs }}
+          {{- end }}
+        {{- else }}
+          {{- errorf "%s[%s]: kind=%v versions=%v: Failed to get image resource %q[%T] with imageResourceArgs=%v"
+              $page $template $imageKind $versions $imageResourceArgs.Resource
+              $imageResourceArgs.Resource $imageResourceArgs }}
+        {{- end }}
+      {{- else }}
+        {{- errorf "%s[%s]: kind=%v versions=%v: invalid $res.Resource=%v from $res=%v"
+            $page $template $imageKind $versions $res.Resource  (jsonify (dict "indent" "  ") $res) }}
+      {{- end }}
+    {{- end }}
+
+    {{- with $availableImageResParamList }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: kind=%v availableImageResParamList=%v"
+            $page $template $imageKind $availableImageResParamList }}
+      {{- end }}
+      {{- $imageKindVersionResParams := dict }}
+      {{- $imageKindVersionURLs := slice }}
+
+      {{- range $verSpec := $versions }}
+        {{- $bestMatchResource := index $availableImageResParamList 0 }}
+        {{- $bestMatch := mul (div (mul 1.0 $bestMatchResource.Resource.Width) $verSpec.width) (div (mul 1.0 $bestMatchResource.Resource.Height) $verSpec.height) }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: kind=%v: version=%v. Initial  bestMatchResource=%vx%v bestMatch=%v"
+              $page $template $imageKind $verSpec $bestMatchResource.Resource.Width $bestMatchResource.Resource.Height $bestMatch }}
+        {{- end }}
+        {{- range $resParam := $availableImageResParamList }}
+          {{- $candMatch := mul (div (mul 1.0 .Resource.Width) $verSpec.width) (div (mul 1.0 .Resource.Height) $verSpec.height) }}
+          {{- if ge $candMatch $bestMatch }}
+            {{- $bestMatchResource = $resParam }}
+            {{- $bestMatch = $candMatch}}
+            {{- if $debug }}
+              {{- warnf "%s[%s]: kind=%v: version=%v: Candidate bestMatchResource=%vx%v bestMatch=%v"
+                  $page $template $imageKind $verSpec $bestMatchResource.Resource.Width $bestMatchResource.Resource.Height $bestMatch }}
+            {{- end }}
+            {{- $imageKindVersionResParams = merge $imageKindVersionResParams (dict
+              $verSpec.aspect (dict
+                "Resource" $resParam.Resource
+                "ImgPosition" $resParam.ImgPosition
+                "Media" (default "default" $resParam.Media)
+              )
+            ) }}
+            {{- $imageKindVersionURLs = append (slice
+              (partial "claris/_functions/canonical-url" $resParam.Resource))
+              $imageKindVersionURLs }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+      <!-- Generate any missing versions -->
+      {{- range $verSpec := $versions }}
+        {{- with (index $imageKindVersionResParams $verSpec.aspect) }}
+          {{- if $debug }}
+            {{- warnf "%s[%s]: kind=%v version=%v: Found imgResource=%v[%T]"
+                $page $template $imageKind $verSpec .Resource .Resource }}
+          {{- end }}
+        {{- else }}
+          <!-- We only scale down, so let's find an existing version with adequate size -->
+          {{- $resParam := false }}
+          {{- range $availableImageResParamList }}
+            {{- if and (gt .Resource.Width $verSpec.width) (gt .Resource.Height $verSpec.height) }}
+              {{- $resParam = . }}
+            {{- end }}
+          {{- end }}
+          {{- with $resParam }}
+            {{- $imageResourceArgs := merge $imageResourceBaseArgs (dict
+              "Resource" $resParam.Resource
+              "Width" $verSpec.width
+              "Height" $verSpec.height
+            ) }}
+            {{- if $debug }}
+              {{- warnf "%s[%s]: Process image for kind=%v: imgResource=%v[%T] imageResourceArgs=%v Required versions=%v"
+                  $page $template $imageKind $resParam.Resource $resParam.Resource $imageResourceArgs $versions }}
+            {{- end }}
+            {{- $processedImage := partial "claris/_functions/image-resource" $imageResourceArgs }}
+            {{- with $processedImage }}
+              {{- $resParam = merge $resParam (dict "Resource" . ) }}
+              {{- if $debug }}
+                {{- warnf "%s[%s]: kind=%v version=%v: Generated resParam=%v [imageResourceArgs=%v]"
+                    $page $template $imageKind $resParam $imageResourceArgs }}
+              {{- end }}
+              {{- $imageKindVersionResParams = merge $imageKindVersionResParams (dict
+                $verSpec.aspect $resParam
+              ) }}
+              {{- $imageKindVersionURLs = append (slice
+                (partial "claris/_functions/canonical-url" .))
+                $imageKindVersionURLs }}
+            {{- else }}
+              {{- if $debug }}
+                {{- errorf "%s[%s]: Failed to process image %v[%T] for kind=%v [imageResourceArgs=%v]"
+                    $page $template $resParam.Resource $resParam.Resource $imageKind $imageResourceArgs }}
+              {{- end }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+
+      {{- with $imageKindVersionResParams }}
+        {{- $metaImages = merge $metaImages (dict
+          (strings.FirstUpper $imageKind) (dict
+            "Params" $imageKindVersionResParams
+            "URL" $imageKindVersionURLs
+          )
+          ) }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: Appended processed images %v for kind=%v: \n%v"
+              $page $template $imageKindVersionResParams $imageKind $metaImages }}
+        {{- end }}
+      {{- end }}
+    {{- else }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: kind=%v: No image resources found in imageResParamList: \n%v"
+            $page $template (jsonify (dict "indent" "  ") $imageResParamList) }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- else }}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: No image resources found in page params: \n%v"
+        $page $template (jsonify (dict "indent" "  ") $page.Params) }}
+  {{- end }}
+{{- end }}
+
+{{- return $metaImages }}

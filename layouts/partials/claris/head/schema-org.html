@@ -1,0 +1,52 @@
+{{- $page := . }}
+{{- $template := "claris/head/schema-org" }}
+{{- $debug := findRE "//" $page.RelPermalink }}
+
+{{- $pagePath := "" }}
+{{- with $page.File }}
+  {{- $pagePath = .Path }}
+{{- end }}
+
+{{- $homePage := (site.GetPage "/") }}
+
+{{- $siteMeta := partialCached "claris/_functions/meta/site" (dict "Page" $homePage "Debug" $debug) site.BaseURL }}
+{{- $pageMeta := partialCached "claris/_functions/meta/page" (dict "Page" $page "Debug" $debug) $page.Permalink }}
+
+{{/* {{- if $debug }}
+  {{- warnf "%s[%s]: \n\nsiteMeta=%v\n\npageMeta=%v" $page $template (jsonify (dict "indent" "  ") $siteMeta) (jsonify (dict "indent" "  ") $pageMeta) }}
+{{- end }} */}}
+
+{{/* {{- $schemaOrg := false }} */}}
+{{- $schemaOrg := default $siteMeta.Classification.SchemaOrg $pageMeta.Classification.SchemaOrg }}
+{{- if $schemaOrg }}
+  {{- $entityType := "Article" }}
+
+  {{- if .IsHome -}}
+    {{- $entityType = "WebSite" }}
+  {{- end }}
+
+  {{- with .Params.schemaorg.mainentity }}
+    {{- if (eq . "person") }}
+      {{- $entityType = "ProfilePage" }}
+    {{- else }}
+      {{- errorf "%s[%s]: Invalid Schema.org MainEntity=%v" $page $template . }}
+    {{- end }}
+  {{- end }}
+
+  {{- $entityParams := (dict
+    "Page" $page
+    "EntityType" $entityType
+    "SiteMeta" $siteMeta
+    "PageMeta" $pageMeta
+    "Debug" $debug
+  ) }}
+
+  {{- $entityPartial := printf "claris/_functions/schema-org/%s" (anchorize $entityType) }}
+  {{- $schemaMetadata := partial $entityPartial $entityParams }}
+  <script type="application/ld+json">
+    {{ $schemaMetadata | jsonify (dict "indent" "  " "prefix" "      ") | safeJS }}
+  </script>
+
+{{/* {{- else }}
+  {{- warnf "%s[%s]: Not including Schema.org meta data" $page $template }} */}}
+{{- end }}

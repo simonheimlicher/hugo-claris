@@ -1,0 +1,66 @@
+{{- $page := .Page }}
+{{- $template := "claris/_functions/schema-org/website" }}
+
+{{- $schemaOrgMeta := (dict
+    "@type" .EntityType
+) }}
+
+{{- $siteMeta := .SiteMeta }}
+{{- $pageMeta := .PageMeta }}
+
+<!-- [Schema.org entity Article](https://schema.org/Article)
+## Background
+ * [Correct use of mainEntityOfPage schema](https://stackoverflow.com/a/52496080/617559)
+-->
+
+{{- $mainEntityOfPage := (dict "@type" "WebPage" "@id" (partial "claris/_functions/canonical-url" .) ) }}
+
+{{- with $pageMeta.Data }}
+  {{- $schemaOrgMeta = merge $schemaOrgMeta (dict
+    "@context" "http://schema.org"
+    "@type" "Article"
+    "@id" .EntityID
+    "articleSection" .ArticleSection
+    "name" .Title
+    "headline" .Title
+    "alternativeHeadline" .AlternativeHeadline
+    "description" .Description
+    "inLanguage" .Language
+    "availableLanguage" .AlternativeLanguages
+    "isFamilyFriendly" "true"
+    "mainEntityOfPage" $mainEntityOfPage
+    "author" (dict
+        "@type" "Person"
+        "name" .Author.Name
+        "url" .Author.ProfileURL
+    )
+    "creator" (dict
+        "@type" "Person"
+        "name" .Author.Name
+    )
+    "accountablePerson" (dict
+        "@type" "Person"
+        "name" .Author.Name
+    )
+    "copyrightHolder" (dict
+        "@type" "Person"
+        "name" .Author.Name
+    )
+    "copyrightYear" .CopyrightYear
+    "dateCreated" .DateCreated
+    "datePublished" .DatePublished
+    "dateModified" .DateModified
+    "publisher" (dict
+        "@type" "Person"
+        "name" .Author.Name
+        "url" .Author.ProfileURL
+    )
+    "image" .Images.Search.URL
+    "url" .CanonicalURL
+    "wordCount" .WordCount
+    "genre" .Genre
+    "keywords" .Keywords
+  ) }}
+{{- end }}
+
+{{- return $schemaOrgMeta }}

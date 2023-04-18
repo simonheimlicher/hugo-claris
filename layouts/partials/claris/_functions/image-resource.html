@@ -4,51 +4,57 @@
 {{- $template := "claris/_functions/image-resource" }}
 {{- $resourceSpec := .Resource }}
 {{- $process := .Process }}
-{{- if (hasPrefix $resourceSpec "http") }}
-  {{ $img = resources.GetRemote (absURL $resourceSpec) }}
-{{- else }}
-  {{/* {{- $img = $page.Resources.GetMatch (printf "%s*" $resourceSpec) -}} */}}
-  {{/* {{- warnf "%s[%s]: Looking for image resource %v in page bundle"
-      $page $template $resourceSpec }} */}}
-  {{- $img = partial "claris/_functions/resources" $imageResourceArgs -}}
-  {{- if not $img }}
-    {{- warnf "%s[%s]: No resource found in page bundle; looking for resource matching %v in site resources"
-        $page $template $resourceSpec }}
-    {{- $img = resources.GetMatch (printf "%s*" $resourceSpec) -}}
+{{- if $resourceSpec }}
+  {{- if (strings.Contains (printf "%T" $resourceSpec) "resources.resourceAdapter") }}
+    {{- $img = $resourceSpec }}
+    {{/* {{- warnf "%s[%s]: Use provided ResourceSpec=%v[%T]" $page $template $resourceSpec $resourceSpec }} */}}
+  {{- else }}
+    {{- if (hasPrefix $resourceSpec "http") }}
+      {{ $img = resources.GetRemote (absURL $resourceSpec) }}
+    {{- else }}
+      {{- $img = partial "claris/_functions/resources" $imageResourceArgs -}}
+      {{- if not $img }}
+        {{- warnf "%s[%s]: No resource found in page bundle; looking for resource matching %v[%T] in site resources"
+            $page $template $resourceSpec $resourceSpec }}
+        {{- $img = resources.GetMatch (printf "%s*" $resourceSpec) -}}
+      {{- end }}
+      {{- /* FIXME: Don't look for images in directory of page }}
+      {{- if and (not $img) .File -}}
+        {{ $path := path.Join .File.Dir (printf "%s*" $resourceSpec) }}
+        {{- $img = resources.Get $path -}}
+        {{- warnf (printf "%s: path=%s img=%#v" $alt $path $img) -}}
+      {{- end -}}
+      {{ */ -}}
+    {{- end }}
   {{- end }}
-  {{- /* FIXME: Don't look for images in directory of page }}
-  {{- if and (not $img) .File -}}
-    {{ $path := path.Join .File.Dir (printf "%s*" $resourceSpec) }}
-    {{- $img = resources.Get $path -}}
-    {{- warnf (printf "%s: path=%s img=%#v" $alt $path $img) -}}
+
+  {{- if $img }}
+    {{- if $process }}
+      {{- $process_method := "fill" }}
+      {{- $process_args := $process }}
+      {{- if reflect.IsMap $process }}
+        {{- $process_method = (index $process "method") }}
+        {{- $process_args = (index $process "args") }}
+      {{- end }}
+
+      {{- if (eq $process_method "fill")}}
+        {{- /* warnf "%s[%s]: %q.Fill '%s'" $page $template $resourceSpec $process_args */ -}}
+        {{- $img = $img.Fill $process_args }}
+      {{- else if (eq $process_method "fit")}}
+        {{- /* warnf "%s[%s]: %q.Fit '%s'" $page $template $resourceSpec $process_args */ -}}
+        {{- $img = $img.Fit $process_args }}
+      {{- else if (eq $process_method "crop")}}
+        {{- /* warnf "%s[%s]: %q.Crop '%s'" $page $process_args */ -}}
+        {{- $img = $img.Crop $process_args }}
+      {{- else if (eq $process_method "resize")}}
+        {{- /* warnf "%s[%s]: %q.Resize '%s'" $page $template $resourceSpec $process_args */ -}}
+        {{- $img = $img.Resize $process_args }}
+      {{- end }}
+    {{- end }}
+  {{- else -}}
+    {{- warnf "%s[%s]: no resource matching %s[%T]" $page $template $resourceSpec $resourceSpec -}}
   {{- end -}}
-  {{ */ -}}
-{{- end }}
-
-{{- if $img }}
-  {{- if $process }}
-    {{- $process_method := "fill" }}
-    {{- $process_args := $process }}
-    {{- if reflect.IsMap $process }}
-      {{- $process_method = (index $process "method") }}
-      {{- $process_args = (index $process "args") }}
-    {{- end }}
-
-    {{- if (eq $process_method "fill")}}
-      {{- /* warnf "partial '_functions/image-resource'[%s]: %q.Fill '%s'" $page $resourceSpec $process_args */ -}}
-      {{- $img = $img.Fill $process_args }}
-    {{- else if (eq $process_method "fit")}}
-      {{- /* warnf "partial '_functions/image-resource'[%s]: %q.Fit '%s'" $page $resourceSpec $process_args */ -}}
-      {{- $img = $img.Fit $process_args }}
-    {{- else if (eq $process_method "crop")}}
-      {{- /* warnf "partial '_functions/image-resource'[%s]: %q.Crop '%s'" $page $process_args */ -}}
-      {{- $img = $img.Crop $process_args }}
-    {{- else if (eq $process_method "resize")}}
-      {{- /* warnf "partial '_functions/image-resource'[%s]: %q.Resize '%s'" $page $resourceSpec $process_args */ -}}
-      {{- $img = $img.Resize $process_args }}
-    {{- end }}
-  {{- end }}
 {{- else -}}
-  {{- warnf "%s[%s]: no resource matching %s" $page $template $resourceSpec -}}
+  {{- errorf "%s[%s]: invalid resourceSpec=%v" $page $template $resourceSpec -}}
 {{- end -}}
 {{ return $img }}

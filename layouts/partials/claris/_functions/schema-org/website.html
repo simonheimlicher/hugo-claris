@@ -1,0 +1,33 @@
+{{- $page := .Page }}
+{{- $template := "claris/_functions/schema-org/website" }}
+
+<!-- Get meta data for home page -->
+{{- $args := merge . (dict "Page" (site.GetPage "/")) }}
+{{- $schemaOrgMeta := partial "claris/_functions/schema-org/article" $args }}
+
+{{- $siteMeta := .SiteMeta }}
+{{- $entityType := .EntityType }}
+
+<!-- [Schema.org entity WebSite](https://schema.org/WebSite) -->
+
+{{/* {{- warnf "%s[%s]: siteMeta:\n%v" $page $template (jsonify (dict "indent" "  ") $siteMeta) }} */}}
+{{- with $siteMeta.Data }}
+  {{- $schemaOrgMeta = merge $schemaOrgMeta (dict
+      "isPartOf" (dict
+      "@type" $entityType
+      "@id" .EntityID
+      "name" .Name
+      "description" .Description
+      "image" .Images.Search.URL
+      "thumbnailUrl" .Images.Thumbnail.URL
+      "inLanguage" .Language
+      "license" .License
+      "url" .CanonicalURL
+    )
+  ) }}
+{{- end }}
+    {{/* "headline" .Headline */}}
+    {{/* "alternativeHeadline" .AlternativeHeadline */}}
+    {{/* "availableLanguage" .AlternativeLanguages */}}
+
+{{- return $schemaOrgMeta }}

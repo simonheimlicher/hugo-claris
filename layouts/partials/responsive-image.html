@@ -82,11 +82,28 @@
 
 {{- with $page }}<!-- Restore "." to refer to page context from which the partial was called -->
   {{- $pictureResources := slice }}
+  <!-- Ensure we can use partialCached without accidentally re-using cached versions of the wrong image
+  FIXME: Using only a single dictionary as a "cache busting" 2nd argument to `partialCached`
+  does not seem sufficient to avoid accidental re-use of image resources.
+  In fact, passing both '$imageResourceVariant' and '$imageResourceVariant.Resource'
+  seems to avoid the issue, but it appears to be clearer to pass the
+  resource specification and $imageResourceVariant as two separate arguments -->
+  {{- $imageResourceVariant := dict }}
+  {{- with $imageResourceArgs }}
+    {{- $imageResourceVariant = merge $imageResourceVariant (dict
+      "Width" .Width
+      "Height" .Height
+      "AspectRatio" .AspectRatio
+      "Quality" .Quality
+      "Format" .Format
+      "Hint" .Hint
+    ) }}
+  {{- end }}
   {{- if reflect.IsSlice $resourceSpec }}
     {{- range $resourceSpec }}
       {{- $media := .media }}
       {{- $imageResourceArgs = merge $imageResourceArgs (dict "Resource" .src ) }}
-      {{- with (partialCached "claris/_functions/image-srcset" $imageResourceArgs $imageResourceArgs) }}
+      {{- with (partialCached "claris/_functions/image-srcset" $imageResourceArgs .src $imageResourceVariant) }}
         {{- $pictureResources = append $pictureResources (slice (dict "Media" $media "ImageResource" . ) ) }}
       {{- else }}
         {{- warnf "%s[%s]: failed to get srcSet with %s" $page $template $imageResourceArgs -}}
@@ -96,7 +113,7 @@
     {{- if (not (where $pictureResources "Media" $defaultMedia) ) }}
       {{- with (index $resourceSpec 0) }}
         {{- $imageResourceArgs = merge $imageResourceArgs (dict "Resource" .src ) }}
-        {{- with (partialCached "claris/_functions/image-srcset" $imageResourceArgs $imageResourceArgs) }}
+        {{- with (partialCached "claris/_functions/image-srcset" $imageResourceArgs .src $imageResourceVariant) }}
           {{- $pictureResources = append $pictureResources (slice (dict "Media" $defaultMedia "ImageResource" . ) ) }}
         {{- else }}
           {{- warnf "%s[%s]: failed to get srcSet with %s" $page $template $imageResourceArgs -}}
@@ -104,13 +121,15 @@
       {{- end }}
     {{- end }}
   {{- else }}
-    {{- with (partialCached "claris/_functions/image-srcset" $imageResourceArgs $imageResourceArgs) }}
+    {{- with (partialCached "claris/_functions/image-srcset" $imageResourceArgs $resourceSpec $imageResourceVariant) }}
       {{- $pictureResources = append $pictureResources (slice (dict "Media" $defaultMedia "ImageResource" . ) ) }}
     {{- else }}
       {{- warnf "%s[%s]: .Resource: %v failed to get srcSet with %s" $page $template $resourceSpec $imageResourceArgs -}}
     {{- end }}
   {{- end }}
-  {{/* {{- warnf "%s[%s]: .Resource: %v $pictureResources: %v with $imageResourceArgs: %s" $page $template $resourceSpec $pictureResources $imageResourceArgs -}} */}}
+  {{/* {{- warnf "%s[%s]: .Resource=%q[%T] with imageResourceVariant=%v with imageResourceArgs=%v: pictureResources:\n%v\n"
+      $page $template $imageResourceArgs.Resource $imageResourceArgs.Resource $imageResourceVariant
+      $imageResourceArgs $pictureResources -}} */}}
 
   {{- with $pictureResources }}
     {{- $defaultSrcURL := "" }}

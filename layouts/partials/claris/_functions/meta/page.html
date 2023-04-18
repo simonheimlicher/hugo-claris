@@ -1,0 +1,134 @@
+{{- $page := .Page }}
+{{- $template := "claris/_functions/meta/page" }}
+{{- $debug := default false .Debug }}
+
+{{- $pageMeta := dict -}}
+
+{{- with $page }}
+  {{- $pagePath := "" }}
+  {{- with $page.File }}
+    {{- $pagePath = .Path }}
+  {{- end }}
+
+  {{- $metaRobots := (dict
+    "Index" (index ($page.Param "robots") "index")
+    "IndexImages" (index ($page.Param "robots") "indeximages")
+    "Follow" (index ($page.Param "robots") "follow")
+  ) }}
+
+  <!-- Determine if any part of the path to the file underlying this page is hidden -->
+  {{- $pathVisible := true }}
+  {{- with $pagePath }}
+    {{- $hiddenPathPrefix := default "_" ($page.Param "hiddenPathPrefix") }}
+    {{- $pathBase := (path.Split .).Dir }}
+    {{- $pathParts := split $pathBase "/" }}
+    {{- range $pathParts }}
+      {{- if strings.HasPrefix . $hiddenPathPrefix }}
+        {{- $pathVisible = false }}
+        {{/* {{- warnf "%s[%s]: Hiding pagePath=%v: part=%v begins with %v"
+            $page $template $pagePath . $hiddenPathPrefix }} */}}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+
+  <!-- Only include SchemaOrg meta if the path is visible and page should be indexed -->
+  {{- $metaSchemaOrg := and $metaRobots.Index $pathVisible }}
+
+  {{- $author := default site.Author.name .Params.author }}
+
+  {{- $authorProfilePagePath := "about" }}
+  {{- with $pageAuthor := $page.Param "author" }}
+    {{- with $page.Param "authors" }}
+      {{- with index . $pageAuthor }}
+        {{- with index . "profilepage" }}
+          {{- $authorProfilePagePath = . }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+
+  {{- $authorProfilePage := site.GetPage $authorProfilePagePath }}
+  {{/* {{- warnf "%s[%s]: authorProfilePagePath=%v authorProfilePage=%v" $page $template $authorProfilePagePath $authorProfilePage  }} */}}
+  {{- $authorProfileURL := partial "claris/_functions/canonical-url" $authorProfilePage }}
+
+  {{- $alternativeHeadline := "" }}
+  {{- if .Params.subtitle }}
+    {{- if .Params.supertitle }}
+      {{- $alternativeHeadline = ( printf "%s: %s – %s" .Params.supertitle .Title .Params.subtitle | $page.RenderString | plainify ) }}
+    {{- else }}
+      {{- $alternativeHeadline = ( printf "%s – %s" .Title .Params.subtitle | $page.RenderString | plainify ) }}
+    {{- end }}
+  {{- else if .Params.supertitle }}
+    {{- $alternativeHeadline = ( printf "%s: %s" .Title .Params.supertitle | $page.RenderString | plainify ) }}
+  {{- end }}
+
+  {{- $description := "" }}
+  {{- with .Description }}
+      {{ $description = . }}
+  {{- else }}
+    {{- with .Summary }}
+      {{ $description = . }}
+    {{- end }}
+  {{- end }}
+  {{- $description = $description | $page.RenderString | plainify }}
+
+  {{- $metaImages := partial "claris/_functions/resources/images" (dict
+    "Page" $page
+    "Params" $page.Params
+    "Debug" $debug
+  ) }}
+
+  {{- $license := .Param "license" }}
+
+  {{- $language := $page.Language.Lang }}
+
+  {{- $alternativeLanguages := slice }}
+  {{- range $page.Translations }}
+    {{- $alternativeLanguages = append (slice .Lang) $alternativeLanguages }}
+  {{- end }}
+
+  {{- $genre := default (index .Params.categories 0) .Params.genre }}
+  {{- $keywords := default .Params.tags .Params.keywords }}
+
+  <!-- HTML 'id' attribute of the DOM container of the main content -->
+  {{- $articleID := default "contentContainer" ($page.Param "articleID") }}
+
+  {{- $canonicalURL := partial "claris/_functions/canonical-url" $page }}
+
+  {{- $pageMeta = merge $pageMeta (dict
+    "Classification" (dict
+      "Robots" $metaRobots
+      "SchemaOrg" $metaSchemaOrg
+    )
+
+    "Data" (dict
+      "CanonicalURL" $canonicalURL
+      "ArticleSection" ( default "Root" (humanize .Section) )
+      "ArticleID" $articleID
+      "EntityID" (printf "%s#%s" $canonicalURL $articleID)
+      "Title" ( .Title | $page.RenderString | plainify )
+      "AlternativeHeadline" $alternativeHeadline
+      "Description" ( $description )
+      "Language" $language
+      "AlternativeLanguages" $alternativeLanguages
+      "Author" (dict
+          "Name" $author
+          "ProfileURL" $authorProfileURL
+      )
+      "CopyrightYear" ( .Date.Format "2006" )
+      "DateCreated" ( .Date.Format "2006-01-02T15:04:05.00Z" | safeHTML )
+      "DatePublished" ( .PublishDate.Format "2006-01-02T15:04:05.00Z" | safeHTML )
+      "DateModified" ( .Lastmod.Format "2006-01-02T15:04:05.00Z" | safeHTML )
+      "Images" $metaImages
+      "WordCount" .WordCount
+      "License" $license
+      "Genre" $genre
+      "Keywords" $keywords
+    )
+  ) }}
+
+  {{- if $debug }}
+    {{- warnf "%s[%s]: Path='%v' returning %v" $page $template $pagePath (jsonify (dict "indent" "  ") $pageMeta.Data.Images) }}
+  {{- end }}
+{{- end }}
+{{- return $pageMeta }}

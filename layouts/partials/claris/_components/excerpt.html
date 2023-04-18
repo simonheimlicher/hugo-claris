@@ -6,30 +6,46 @@
 {{- $headerPartial := default "" .HeaderPartial }}
 {{- $itemType := default "page" .ItemType }}
 {{- $headingLevel := default 3 .HeadingLevel }}
+{{- $debug := false }}
+{{- if findRE "never-match" $page.RelPermalink }}
+  {{- $debug = true }}
+{{- else }}
+  {{- with .Debug }}
+    {{- $debug = . }}
+  {{- end }}
+{{- end }}
 
 {{- if (eq $itemType "article") }}
   {{- $headerPartial = default "claris/_components/meta" .HeaderPartial  }}
 {{- end }}
 
 {{- with .Page }}
-  {{- $thumbnail := default .Params.featureImage .Params.thumbnail }}
   {{- $thumbnailResource := false }}
-  {{- if $thumbnail }}
-    {{- $thumbnailResource = partial "claris/_functions/image-resource" (dict
-    "Page" $page
-    "Resource" $thumbnail) }}
-    {{/* {{- warnf "%s[%s]: Rendering excerpt of page with thumbnail:%v resource:%v"
-    $page $template $thumbnail $thumbnailResource.Permalink }} */}}
+  {{- with partial "claris/_functions/resources/images" $page }}
+    {{- $thumbnailResource = (index .Excerpt.Params "1x1") }}
+    {{- with $thumbnailResource }}
+      {{- $thumbnailResource = .Resource }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: Rendering excerpt of page with thumbnailResource=%v"
+            $page $template $thumbnailResource.RelPermalink }}
+      {{- end }}
+    {{- else }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: No .Excerpt.Params found in imageResources=%v"
+            $page $template (jsonify (dict "indent" "  ") .) }}
+      {{- end }}
+    {{- end }}
   {{- else }}
     <!-- If the page is a taxonomoy term page, we use the thumbnail from the most recently modified page that has one -->
-    {{- $pages := .Pages.ByLastmod.Reverse }}
-    {{- range $pages }}
-      {{- if not $thumbnail }}
+    {{- $childPages := .Pages.ByLastmod.Reverse }}
+    {{- range $childPage := $childPages }}
+      {{- if not $thumbnailResource }}
         {{/* {{- warnf "%s[%s]: Rendering excerpt of page with thumbnail of the most recent page %v in .Pages:%v"
-        $page $template . $pages }} */}}
-        {{- $thumbnail = default .Params.featureImage .Params.thumbnail }}
-        {{- if $thumbnail }}
-          {{- $thumbnailResource = partial "claris/_functions/image-resource" (dict "Page" . "Resource" $thumbnail "Size" $thumbnailSizeSpec) }}
+            $page $template . $childPages }} */}}
+        {{- with partial "claris/_functions/resources/images" $page }}
+          {{- if $debug }}
+            {{- warnf "%s[%s]: childPage=%v: Images=%v" $page $template $childPage (jsonify (dict "indent" "  ") .) -}}
+          {{- end }}
         {{- end }}
       {{- end }}
     {{- end }}
@@ -56,9 +72,9 @@
     </div>
     <div class="excerpt_main{{ if $summary }} partition{{ end }}">
       <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
-        {{- with $thumbnailResource }}
+      {{- with $thumbnailResource }}
         <div class="excerpt_thumbnail">
-            {{- partial "html-comment" (printf "[%s]: processing thumbnail:%v spec:%v"
+            {{- partial "html-comment" (printf "[%s]: using thumbnailResource=%v with spec=%v"
             $template . $thumbnailSizeSpec)}}
             {{- partial "responsive-image" (dict
             "Page" $page

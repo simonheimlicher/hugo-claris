@@ -1,17 +1,31 @@
 {{- $page := .Page }}
-{{- $p := .Page.Params }}
 {{- $title := .Title }}
-  {{- with $p.featureImage }}
-    {{- /* warnf "single: %#v" $page */ -}}
-    {{- $featureImageArgs := (dict
-        "Page" $page
-        "Resource" .
-        "FigureClass" "hero-image_above-main"
-        "ImgClass" "hero-image_above-main_img"
-        "Alt" ($title | plainify)
-        "LazyLoad" false) }}
-    {{- with $p.featureImagePosition }}
-      {{- $featureImageArgs = merge $featureImageArgs (dict "ImgPosition" . ) }}
+{{- $debug := findRE "//" $page.RelPermalink }}
+{{- with .Debug }}
+  {{- $debug = . }}
+{{- end }}
+{{- $template := "claris/_components/feature-image" }}
+{{- if not $page.Params.heroImage }}
+  {{- with partial "claris/_functions/resources/images" $page }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: Looking for feature image in page images=%v" $page $template (jsonify (dict "indent" "  ") .) -}}
     {{- end }}
-    {{- partial "responsive-image" $featureImageArgs . }}
+    {{- $featureImage := (index .Feature.Params "16x9") }}
+    {{ with $featureImage }}
+      {{- $featureImageArgs := merge . (dict
+          "FigureClass" "hero-image_above-main"
+          "ImgClass" "hero-image_above-main_img"
+          "Alt" ($title | plainify)
+          "LazyLoad" false) }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: Found feature image; now calling responsive-image with .Resource=%v %v"
+            $page $template $featureImageArgs.Resource (jsonify (dict "indent" "  ") $featureImageArgs) -}}
+      {{- end }}
+      {{- partial "responsive-image" (merge $featureImageArgs (dict "Page" $page)) $featureImageArgs }}
+    {{- else }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: No feature image found: %v" $page $template (jsonify (dict "indent" "  ") $featureImage) -}}
+      {{- end }}
+    {{- end }}
   {{- end }}
+{{- end }}
