@@ -1071,18 +1071,14 @@ html[data-mode="dim"]
       max-width: 60%
 
   @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
-    &.relative-width-40,
-    &.relative-width-50,
-    &.relative-width-60
-      &.float-left
-        float: left
-        margin: 0 $screenViewInnerPaddingOneColumn 1rem 0
-    &.relative-width-40,
-    &.relative-width-50,
-    &.relative-width-60
-      &.float-right
-        float: right
-        margin: 0 0 1rem $screenViewInnerPaddingOneColumn
+    &.float-left, &.float-right
+      max-width: 60%
+    &.float-left
+      float: left
+      margin: 0 $screenViewInnerPaddingOneColumn 1rem 0
+    &.float-right
+      float: right
+      margin: 0 0 1rem $screenViewInnerPaddingOneColumn
     &.relative-width-20
       max-width: 20%
     &.relative-width-30
