@@ -1,14 +1,14 @@
 ---
-title: "{{ .Name | humanize | strings.FirstUpper }}" # Title of the article.
-date: {{ .Date }} # Date of article creation.
-lastmod: {{ .Date }} # Date of last modification.
+title: "{{ .Name | humanize | strings.FirstUpper }}"
+date: {{ .Date }}
+lastmod: {{ .Date }}
 description: "Article description." # Description used for search engine.
-featured: false # Sets if article is a featured article, making appear on the home page side bar.
-draft: true # Sets whether to render this page: if true, it will only be rendered with --buildDrafts
-# toc: true # Controls if a table of contents should be generated for first-level links automatically.
-featureImage: "images/hugo_theme_claris-feature" # Sets featured image shown at top of article.
-thumbnail: "images/hugo_theme_claris-thumbnail" # Sets thumbnail image appearing inside card on homepage.
-shareImage: "images/hugo_theme_claris-share" # Designate a separate image for social media sharing.
+featured: false
+draft: true
+image:
+  feature: "images/hugo_theme_claris-feature"
+  thumbnail: "images/hugo_theme_claris-thumbnail"
+  share: "images/hugo_theme_claris-share"
 categories:
   - Category_name
 tags:

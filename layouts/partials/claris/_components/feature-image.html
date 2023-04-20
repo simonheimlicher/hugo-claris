@@ -1,31 +1,42 @@
 {{- $page := .Page }}
 {{- $title := .Title }}
-{{- $debug := findRE "//" $page.RelPermalink }}
+{{- $debug := false }}
+{{/* {{- $debug = findRE "//" $page.RelPermalink }} */}}
 {{- with .Debug }}
-  {{- $debug = . }}
+  {{- $debug = or $debug . }}
 {{- end }}
+
 {{- $template := "claris/_components/feature-image" }}
 {{- if not $page.Params.heroImage }}
+  {{- $featureImage := false }}
   {{- with partial "claris/_functions/resources/images" $page }}
     {{- if $debug }}
       {{- warnf "%s[%s]: Looking for feature image in page images=%v" $page $template (jsonify (dict "indent" "  ") .) -}}
     {{- end }}
-    {{- $featureImage := (index .Feature.Params "16x9") }}
-    {{ with $featureImage }}
-      {{- $featureImageArgs := merge . (dict
-          "FigureClass" "hero-image_above-main"
-          "ImgClass" "hero-image_above-main_img"
-          "Alt" ($title | plainify)
-          "LazyLoad" false) }}
-      {{- if $debug }}
-        {{- warnf "%s[%s]: Found feature image; now calling responsive-image with .Resource=%v %v"
-            $page $template $featureImageArgs.Resource (jsonify (dict "indent" "  ") $featureImageArgs) -}}
+    {{- with .Feature.Params }}
+      {{- $widest := 0 }}
+      {{- range $aspect, $resParam := . }}
+        {{- if (gt .Resource.Width $widest)  }}
+          {{- $featureImage = . }}
+        {{- end }}
       {{- end }}
-      {{- partial "responsive-image" (merge $featureImageArgs (dict "Page" $page)) $featureImageArgs }}
-    {{- else }}
-      {{- if $debug }}
-        {{- warnf "%s[%s]: No feature image found: %v" $page $template (jsonify (dict "indent" "  ") $featureImage) -}}
+      {{ with $featureImage }}
+        {{- $featureImageArgs := merge . (dict
+            "FigureClass" "hero-image_above-main"
+            "ImgClass" "hero-image_above-main_img"
+            "Alt" ($title | plainify)
+            "LazyLoad" false) }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: Found feature image; now calling responsive-image with .Resource=%v %v"
+              $page $template $featureImageArgs.Resource (jsonify (dict "indent" "  ") $featureImageArgs) -}}
+        {{- end }}
+        {{- partial "responsive-image" (merge $featureImageArgs (dict "Page" $page)) $featureImageArgs }}
       {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- if not $featureImage }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: No feature image found: %v" $page $template (jsonify (dict "indent" "  ") $featureImage) -}}
     {{- end }}
   {{- end }}
 {{- end }}

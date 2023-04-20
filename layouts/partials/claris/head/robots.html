@@ -1,28 +1,13 @@
 {{- $page := .Page }}
+{{- $meta := .Meta }}
+{{- $contentType := .ContentType }}
 {{- $template := "claris/head/robots" }}
 {{- $robotsGenerate := false -}}
-{{- if (or (isset $.Params "robots") (isset site.Params "robots") ) -}}
-  {{/* {{- warnf "%s[%s]: $.Params.robots=%v site.Params.robots=%v" $page $template $.Params.robots site.Params.robots }} */}}
-  {{- $robotsIndex := true -}}
-  {{- $robotsFollow := true -}}
-  {{- if isset site.Params "robots" -}}
-    {{- if isset site.Params.robots "index" -}}
-      {{- $robotsIndex = site.Params.robots.index -}}
-    {{- end -}}
-    {{- if isset site.Params.robots "follow" -}}
-      {{- $robotsFollow = site.Params.robots.follow -}}
-    {{- end -}}
-  {{- end -}}
-  {{- if isset $.Params "robots" -}}
-    {{- if isset $.Params.robots "index" -}}
-      {{- $robotsIndex = $.Params.robots.index -}}
-    {{- end -}}
-    {{- if isset $.Params.robots "follow" -}}
-      {{- $robotsFollow = $.Params.robots.follow -}}
-    {{- end -}}
-  {{- end -}}
-  {{- $outputFormat := partial "claris/_functions/output-format" . }}
-  {{- $outputFormatsRobotsExcluded := default (slice "print") ($.Page.Param "outputFormatsRobotsExcluded") }}
+{{- if (or (isset $page.Params "robots") (isset site.Params "robots") ) -}}
+  {{- $robotsIndex := default true (index ($page.Param "robots") "index") }}
+  {{- $robotsFollow := default true (index ($page.Param "robots") "follow") }}
+  {{- $outputFormat := partial "claris/_functions/output-format" $page }}
+  {{- $outputFormatsRobotsExcluded := default (slice "print") ($page.Param "outputFormatsRobotsExcluded") }}
   {{- if in $outputFormatsRobotsExcluded $outputFormat.Name }}
     {{- $robotsIndex = false }}
     {{- $robotsFollow = false }}
@@ -34,13 +19,21 @@
     {{- $robotsFollow = false }}
     {{/* {{- warnf "%s[%s]: noIndexSections=%v: index=%v follow=%v" $page $template $noIndexSections $robotsIndex $robotsFollow }} */}}
   {{ end -}}
+  {{- with $meta.Single.Classification.Robots }}
+    {{- $robotsIndex = and $robotsIndex .Index }}
+    {{- $robotsFollow = and $robotsFollow .Follow }}
+    {{/* {{- warnf "%s[%s]: .Meta.Single.Classification.Robots=%v: index=%v follow=%v" $page $template . $robotsIndex $robotsFollow }} */}}
+  {{ end -}}
+  {{/* {{- if not $robotsIndex }}
+    {{- warnf "%s[%s]: not indexing: robotsIndex=%v robotsFollow=%v" $page $template $robotsIndex $robotsFollow }}
+  {{- end }} */}}
   {{- if and (eq $robotsIndex true) (eq $robotsFollow true) }}
-  <meta name="robots" content="index, follow" />
+  <meta name="robots" content="index, follow">
   {{- else if and (eq $robotsIndex true) (eq $robotsFollow false) }}
-  <meta name="robots" content="index, nofollow" />
+  <meta name="robots" content="index, nofollow">
   {{- else if and (eq $robotsIndex false) (eq $robotsFollow true) }}
-  <meta name="robots" content="noindex, follow" />
+  <meta name="robots" content="noindex, follow">
   {{- else if and (eq $robotsIndex false) (eq $robotsFollow false) }}
-  <meta name="robots" content="noindex, nofollow" />
+  <meta name="robots" content="noindex, nofollow">
   {{- end -}}
 {{- end -}}

@@ -1,6 +1,7 @@
 {{- $page := .Page }}
+{{- $meta := .Meta }}
 {{- $template := "partials/claris/main/page" }}
 
 {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
-{{- partial "claris/_components/content" . }}
+{{- partial "claris/_components/content" (dict "Page" $page "Meta" $meta) }}
 {{ partial "html-comment" (printf "[%s]:   END" $template) }}

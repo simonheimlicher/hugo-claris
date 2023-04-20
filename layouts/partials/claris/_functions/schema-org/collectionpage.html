@@ -1,0 +1,75 @@
+{{- $page := .Page }}
+{{- $schemaOrgMeta := .SchemaOrgMeta }}
+{{- $template := "claris/_functions/schema-org/collectionpage" }}
+{{- $debug := .Debug }}
+{{/* {{- $debug = or $debug (findRE "technology" $page.Permalink) }} */}}
+{{- $entityParams := merge . (dict "Debug" $debug) }}
+
+<!-- [Schema.org entity CollectionPage](https://schema.org/CollectionPage)
+# Background
+* [Usage for a category page]
+(https://webmasters.stackexchange.com/a/99106/135400)
+  "mainEntity": {
+    "@type": "ItemList",
+    "itemListElement": [
+      {
+        "@type": "BlogPosting",
+        "name": "Top 10 booze-infused getaways",
+        "headline": "Top 10 booze-infused getaways",
+        "description": "Vacations are all about letting loose, so it’s no surprise that more and more travelers are opting for locations known for their libations. Whether you’re a former keg stand ..",
+        "url": "http://www.cheapflight.com.uk/news/top-10-booze-infused-getaways/",
+        "dateCreated": "2016-04-08",
+        "author": {"@id": "http://www.cheapflight.com.uk/authors/stephanie-schaefer/#i"}
+      },
+    ]
+  }
+-->
+
+{{- with .Meta.Single.Data }}
+  {{- $schemaOrgMeta = merge $schemaOrgMeta (dict
+    "Root" (dict
+      "@type" "CollectionPage"
+    )
+  ) }}
+{{- else }}
+  {{- errorf "%s[%s]: Missing parameter .Meta.Single.Data" $page $template }}
+{{- end }}
+
+{{- $itemList := slice }}
+
+{{- $listMeta := partial "claris/_functions/meta/list" $entityParams }}
+
+{{- with $listMeta.List.Data }}
+  {{- range .Items }}
+    {{- with .Single.Data }}
+      {{- $item := (dict
+        "@type" "Article"
+        "@id" .CanonicalURL
+        "name" .Title
+        "headline" .Title
+        "description" .Description
+        "url" .CanonicalURL
+      ) }}
+      {{- $itemList = append (slice $item) $itemList }}
+    {{- else }}
+      {{- errorf "%s[%s]: Invalid entry at .Single.Data.Items: %v" $page $template . }}
+    {{- end }}
+  {{- end }}
+
+  {{- $schemaOrgMeta = merge $schemaOrgMeta (dict
+    "Root" (dict
+      "mainEntity" (dict
+        "@type" "itemList"
+        "itemListElement" $itemList
+      )
+    )
+  ) }}
+{{- else }}
+  {{- errorf "%s[%s]: Failed to obtain $listMeta.List.Data" $page $template }}
+{{- end }}
+
+{{- if $debug }}
+  {{- warnf "%s[%s]: returning %v" $page $template
+  (jsonify (dict "indent" "  ") $schemaOrgMeta) }}
+{{- end }}
+{{- return $schemaOrgMeta }}

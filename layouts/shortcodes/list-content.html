@@ -1,0 +1,37 @@
+{{- $sections := .Get "sections" | default (.Get 0) -}}
+{{- $limit := .Get "limit" -}}
+{{- $page := .Page }}
+{{- $template := "shortcodes/list-content" }}
+
+{{- $includeSections := $sections }}
+{{- if (eq (lower $sections) "mainsections") }}
+  {{- $includeSections = site.Params.mainsections }}
+{{- end }}
+
+{{- $listParams := dict }}
+
+{{- with $limit }}
+  {{- $listParams = merge $listParams (dict "Limit" .) }}
+{{- end }}
+
+{{- with $includeSections }}
+  {{- if not (reflect.IsSlice .) }}
+    {{- $includeSections = split . "," }}
+  {{- end }}
+  {{- $listParams = merge $listParams (dict "IncludeSections" $includeSections)  }}
+{{- end }}
+
+{{- $contentParams := (dict
+  "ItemType" "article"
+  "ListLayout" "list"
+) }}
+
+{{- with $listParams }}
+  {{- $contentParams = merge $contentParams (dict
+    "ListParams" $listParams
+  ) }}
+{{- end }}
+
+{{/* {{- warnf "%s[%s]: shortcode called with sections=%v limit=%v. Calling claris/_components/list with contentParams=%v"
+    $page $template $sections $limit $contentParams }} */}}
+{{- partial "claris/_components/list" (merge $contentParams (dict "Page" $page) ) }}

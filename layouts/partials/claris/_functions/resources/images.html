@@ -1,6 +1,7 @@
 {{- $page := .Page }}
 {{- $params := .Params }}
-{{- $debug := findRE "//" .Page.RelPermalink }}
+{{- $debug := false }}
+{{/* {{- $debug = findRE "never-match" .Page.RelPermalink }} */}}
 
 {{- $imageResourceBaseArgs := (dict
   "Page" $page
@@ -9,7 +10,9 @@
 ) }}
 
 {{- if reflect.IsMap . }}
-  {{- with .Debug }}{{ $debug = . }}{{ end }}
+  {{- with .Debug }}
+    {{/* {{- $debug = or $debug . }} */}}
+  {{- end }}
   {{- with .Quality }}
     {{ $imageResourceBaseArgs = merge $imageResourceBaseArgs "Quality" . }}
   {{ end }}
@@ -36,30 +39,44 @@ Typically, .Params is page.Params merged with site.Params
 -->
 
 {{- $metaImages := dict }}
-{{- $defaultImageKind := "feature" }}
+{{- $defaultImageKind := "default" }}
+{{- $defaultMedia := "all" }}
 
-{{- $requiredImageVersions := (dict
-"feature" (slice
-  (dict "aspect" "16x9"
-    "width" 3840 "height" 2160)
-)
-"excerpt" (slice
-  (dict "aspect" "1x1"
-    "width" 675 "height" 675)
-)
-"thumbnail" slice
-"search" (slice
-  (dict "aspect" "16x9"
-    "width" 1200 "height" 675)
-  (dict "aspect" "4x3"
-    "width" 1200 "height" 900)
-  (dict "aspect" "1x1"
-    "width" 1200 "height" 1200)
-)
-"share" (slice
-  (dict "aspect" "16x9"
-    "width" 1200 "height" 675)
-)
+{{- $requiredImageVersions := (slice
+  (dict "kind" "default"
+    "versions" (slice
+      (dict "aspect" "16x9"
+        "width" 3840 "height" 2160)
+      )
+  )
+  (dict "kind" "excerpt"
+    "versions" (slice
+      (dict "aspect" "1x1"
+        "width" 675 "height" 675)
+      )
+  )
+  (dict "kind" "thumbnail"
+    "versions" (slice)
+  )
+  (dict "kind" "search"
+    "versions" (slice
+      (dict "aspect" "16x9"
+        "width" 1200 "height" 675)
+      (dict "aspect" "4x3"
+        "width" 1200 "height" 900)
+      (dict "aspect" "1x1"
+        "width" 1200 "height" 1200)
+      )
+  )
+  (dict "kind" "share"
+    "versions" (slice
+      (dict "aspect" "16x9"
+        "width" 1200 "height" 675)
+      )
+  )
+  (dict "kind" "feature"
+    "versions" (slice)
+  )
 ) }}
 
 {{/* {{- if $debug }}
@@ -68,14 +85,21 @@ Typically, .Params is page.Params merged with site.Params
 {{- end }} */}}
 
 {{- $imageResources := dict }}
-{{- range $imageKind, $versions := $requiredImageVersions }}
+{{- range $kindVerSpec := $requiredImageVersions }}
+  {{- $imageKind := .kind }}
+  {{- $versions := .versions }}
   {{- $imageResParamList := slice }}
   {{- with $page.Params.image }}
     {{- $imageKindParam := false }}
     {{- if reflect.IsMap . }}
       {{- $imageKindParam = index . $imageKind }}
-    {{- else }}
+    {{- else if ($imageKind $defaultImageKind) }}
       {{- $imageKindParam = . }}
+    {{- else }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: kind=%v: Not using any image from .Params.image=%v"
+            $page $template $imageKind (jsonify (dict "indent" "  ") $page.Params.image) }}
+      {{- end }}
     {{- end }}
     {{- with $imageKindParam }}
       {{- if not (reflect.IsSlice $imageKindParam) }}
@@ -128,11 +152,14 @@ Typically, .Params is page.Params merged with site.Params
 
 {{- $defaultImageResources := index $imageResources $defaultImageKind }}
 {{- with $defaultImageResources }}
-  {{- range $imageKind, $versions := $requiredImageVersions }}
+
+  {{- range $kindVerSpec := $requiredImageVersions }}
+    {{- $imageKind := .kind }}
+    {{- $versions := .versions }}
 
     {{- $imageResParamList := default $defaultImageResources (index $imageResources $imageKind) }}
     {{- if $debug }}
-      {{- warnf "%s[%s]: kind=%v: Picked default imageResParamList=%v from imageResources: %v"
+      {{- warnf "%s[%s]: kind=%v: Picked default imageResParamList=\n%v\nfrom imageResources=\n%v"
           $page $template $imageKind
           (jsonify (dict "indent" "  ") $imageResParamList)
           (jsonify (dict "indent" "  ") $imageResources) }}
@@ -156,7 +183,7 @@ Typically, .Params is page.Params merged with site.Params
             {{- $resParam := (dict
               "Resource" $imgResource
               "ImgPosition" $imageResourceArgs.ImgPosition
-              "Media" (default "default" $imageResourceArgs.Media)
+              "Media" (default $defaultMedia $imageResourceArgs.Media)
             ) }}
             {{- $availableImageResParamList = append (slice $resParam) $availableImageResParamList }}
             {{- if $debug }}
@@ -186,6 +213,7 @@ Typically, .Params is page.Params merged with site.Params
       {{- end }}
       {{- $imageKindVersionResParams := dict }}
       {{- $imageKindVersionURLs := slice }}
+      {{- $imageKindVersionCanonicalURLs := slice }}
 
       {{- range $verSpec := $versions }}
         {{- $bestMatchResource := index $availableImageResParamList 0 }}
@@ -205,14 +233,17 @@ Typically, .Params is page.Params merged with site.Params
             {{- end }}
             {{- $imageKindVersionResParams = merge $imageKindVersionResParams (dict
               $verSpec.aspect (dict
-                "Resource" $resParam.Resource
-                "ImgPosition" $resParam.ImgPosition
-                "Media" (default "default" $resParam.Media)
+                "Resource" .Resource
+                "ImgPosition" .ImgPosition
+                "Media" (default $defaultMedia .Media)
               )
             ) }}
-            {{- $imageKindVersionURLs = append (slice
-              (partial "claris/_functions/canonical-url" $resParam.Resource))
-              $imageKindVersionURLs }}
+            {{- if not (in $imageKindVersionURLs .Resource.RelPermalink) }}
+              {{- $imageKindVersionURLs = append (slice .Resource.RelPermalink) $imageKindVersionURLs }}
+              {{- $imageKindVersionCanonicalURLs = append (slice
+                (partial "claris/_functions/canonical-url" .Resource)
+              ) $imageKindVersionCanonicalURLs }}
+            {{- end }}
           {{- end }}
         {{- end }}
       {{- end }}
@@ -233,7 +264,7 @@ Typically, .Params is page.Params merged with site.Params
           {{- end }}
           {{- with $resParam }}
             {{- $imageResourceArgs := merge $imageResourceBaseArgs (dict
-              "Resource" $resParam.Resource
+              "Resource" .Resource
               "Width" $verSpec.width
               "Height" $verSpec.height
             ) }}
@@ -249,11 +280,18 @@ Typically, .Params is page.Params merged with site.Params
                     $page $template $imageKind $resParam $imageResourceArgs }}
               {{- end }}
               {{- $imageKindVersionResParams = merge $imageKindVersionResParams (dict
-                $verSpec.aspect $resParam
+                $verSpec.aspect (dict
+                  "Resource" $resParam.Resource
+                  "ImgPosition" $resParam.ImgPosition
+                  "Media" (default $defaultMedia $resParam.Media)
+                )
               ) }}
-              {{- $imageKindVersionURLs = append (slice
-                (partial "claris/_functions/canonical-url" .))
-                $imageKindVersionURLs }}
+              {{- if not (in $imageKindVersionURLs .RelPermalink) }}
+                {{- $imageKindVersionURLs = append (slice .RelPermalink) $imageKindVersionURLs }}
+                {{- $imageKindVersionCanonicalURLs = append (slice
+                  (partial "claris/_functions/canonical-url" .)
+                ) $imageKindVersionCanonicalURLs }}
+              {{- end }}
             {{- else }}
               {{- if $debug }}
                 {{- errorf "%s[%s]: Failed to process image %v[%T] for kind=%v [imageResourceArgs=%v]"
@@ -264,16 +302,38 @@ Typically, .Params is page.Params merged with site.Params
         {{- end }}
       {{- end }}
 
+      <!-- Add any additional available versions -->
+      {{- range $resParam := $availableImageResParamList }}
+        {{- if not (in $imageKindVersionURLs .Resource.RelPermalink) }}
+          {{- $aspect := partial "claris/_functions/resources/aspect-ratio" .Resource }}
+          {{- $imageKindVersionResParams = merge $imageKindVersionResParams (dict
+            $aspect (dict
+              "Resource" .Resource
+              "ImgPosition" .ImgPosition
+              "Media" (default $defaultMedia .Media)
+            )
+          ) }}
+          {{- $imageKindVersionURLs = append (slice .Resource.RelPermalink) $imageKindVersionURLs }}
+          {{- $imageKindVersionCanonicalURLs = append (slice
+            (partial "claris/_functions/canonical-url" .Resource)
+          ) $imageKindVersionCanonicalURLs }}
+        {{- end }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: kind=%v Appended additional available resParam=%v: \n%v"
+              $page $template $imageKind $resParam (jsonify (dict "indent" "  ") $imageKindVersionResParams) }}
+        {{- end }}
+      {{- end }}
       {{- with $imageKindVersionResParams }}
         {{- $metaImages = merge $metaImages (dict
           (strings.FirstUpper $imageKind) (dict
             "Params" $imageKindVersionResParams
             "URL" $imageKindVersionURLs
+            "CanonicalURL" $imageKindVersionCanonicalURLs
           )
           ) }}
         {{- if $debug }}
-          {{- warnf "%s[%s]: Appended processed images %v for kind=%v: \n%v"
-              $page $template $imageKindVersionResParams $imageKind $metaImages }}
+          {{- warnf "%s[%s]: kind=%v Appended processed images=\n%v"
+              $page $template $imageKind (jsonify (dict "indent" "  ") $imageKindVersionResParams) }}
         {{- end }}
       {{- end }}
     {{- else }}
@@ -290,4 +350,10 @@ Typically, .Params is page.Params merged with site.Params
   {{- end }}
 {{- end }}
 
+{{- if $debug }}
+  {{- warnf "%s[%s]: returning \n%v\n"
+      $page $template (jsonify (dict "indent" "  ") $metaImages) }}
+{{- end }}
+
 {{- return $metaImages }}
+

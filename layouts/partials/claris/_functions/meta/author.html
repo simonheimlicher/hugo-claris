@@ -1,0 +1,74 @@
+{{- $page := .Page }}
+{{- $template := "claris/_functions/meta/author" }}
+{{- $debug := default false .Debug }}
+
+{{- $siteTemplates := (dict
+  "twitter" "https://twitter.com/@%s"
+  "linkedin" "https://www.linkedin.com/in/%s"
+  "github" "https://github.com/%s"
+  "stackoverflow" "https://stackoverflow.com/users/%s"
+  "superuser" "https://superuser.com/users/%s"
+) }}
+
+{{- $authorMeta := dict -}}
+
+{{- with $page }}
+  {{- $author := default site.Author.name .Params.author }}
+
+  {{- $otherProfileURLs := slice }}
+
+
+  {{- with site.Params.social }}
+    {{- range $site, $profile := . }}
+      {{- $siteTemplate := index $siteTemplates $site }}
+      {{- with $siteTemplate }}
+        {{- $profileURL := (printf $siteTemplate $profile) }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: profileURL=%q [siteTemplate=%q profile=%q]"
+              $page $template $profileURL $siteTemplate $profile }}
+          {{- end }}
+        {{- $otherProfileURLs = append (slice $profileURL) $otherProfileURLs }}
+      {{- else }}
+        {{- warnf "%s[%s]: No siteTemplate for site=%q profile=%q"
+            $page $template $site $profile }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+
+  {{- $authorProfilePagePath := "about" }}
+  {{- with $pageAuthor := $page.Param "author" }}
+    {{- with $page.Param "authors" }}
+      {{- with index . $pageAuthor }}
+        {{- with index . "profilepage" }}
+          {{- $authorProfilePagePath = . }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- $authorProfilePage := site.GetPage $authorProfilePagePath }}
+  {{/* {{- warnf "%s[%s]: authorProfilePagePath=%v authorProfilePage=%v" $page $template $authorProfilePagePath $authorProfilePage  }} */}}
+  {{- $authorProfileURL := partial "claris/_functions/canonical-url" $authorProfilePage }}
+
+  {{- $description := default "" $authorProfilePage.Summary }}
+
+  {{- $contentContainerID := "contentContainer" }}
+  {{- $authorMeta = (dict "Author"
+    (dict "Data"
+      (dict
+        "Name" $author
+        "ProfileID" $contentContainerID
+        "ProfileURL" $authorProfileURL
+        "Description" $description
+        "OtherProfiles" (dict
+          "URL" $otherProfileURLs
+        )
+      )
+    )
+  ) }}
+{{- end }}
+
+{{- if $debug }}
+  {{- warnf "%s[%s]: returning %v" $page $template
+      (jsonify (dict "indent" "  ") $authorMeta) }}
+{{- end }}
+{{- return $authorMeta }}

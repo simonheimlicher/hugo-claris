@@ -1,0 +1,147 @@
+{{- $page := .Page }}
+{{- $template := "claris/_functions/meta/single" }}
+{{- $debug := false }}
+{{/* {{- $debug = or .Debug (not (not (findRE "_error" $page.RelPermalink))) }} */}}
+
+{{/* {{- warnf "%s[%s]: .Page=%T page=%T" $page $template .Page page }} */}}
+{{- $singleMeta := dict -}}
+
+{{- with $page }}
+  {{- $pagePath := "" }}
+  {{- with $page.File }}
+    {{- $pagePath = .Path }}
+  {{- else }}
+    {{- $pagePath = .Path }}
+  {{- end }}
+
+  <!-- Determine if any part of the path to the file underlying this page is hidden -->
+  {{- $pathVisible := true }}
+  {{- $hiddenPathPrefix := default "_" ($page.Param "hiddenPathPrefix") }}
+  {{- with $pagePath }}
+    {{- $pathDirFile := (path.Split .) }}
+    {{- with $pathDirFile.Dir }}
+      {{- if strings.HasPrefix . $hiddenPathPrefix }}
+        {{- $pathVisible = false }}
+        {{/* {{- warnf "%s[%s]: Hiding pagePath=%v: it begins with %v"
+            $page $template $pagePath $hiddenPathPrefix }} */}}
+      {{- else }}
+        {{- $pathParts := split . "/" }}
+        {{- range $pathParts }}
+          {{- if strings.HasPrefix . $hiddenPathPrefix }}
+            {{- $pathVisible = false }}
+            {{/* {{- warnf "%s[%s]: Hiding pagePath=%v: part=%v begins with %v"
+                $page $template $pagePath . $hiddenPathPrefix }} */}}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- else }}
+      {{- if and (ne $page.Kind "home") (strings.HasPrefix $pagePath $hiddenPathPrefix) }}
+        {{- $pathVisible = false }}
+        {{/* {{- warnf "%s[%s]: Hiding pagePath=%v: it begins with %v"
+            $page $template $pagePath $hiddenPathPrefix }} */}}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: pagePath=%s hiddenPathPrefix=%v" $page $template $pagePath $hiddenPathPrefix }}
+  {{- end }}
+
+  {{- $metaRobots := (dict
+    "Index" (default (index ($page.Param "robots") "index") $pathVisible)
+    "IndexImages" (default (index ($page.Param "robots") "indeximages") $pathVisible)
+    "Follow" (default (index ($page.Param "robots") "follow") $pathVisible)
+  ) }}
+
+  <!-- Only include SchemaOrg meta if the page should be indexed -->
+  {{- $metaSchemaOrg := $metaRobots.Index }}
+  {{- $metaOpengraph := $metaRobots.Index }}
+  {{- $metaTwitterCard := $metaRobots.Index }}
+
+  {{- $alternativeHeadline := "" }}
+  {{- if .Params.subtitle }}
+    {{- if .Params.supertitle }}
+      {{- $alternativeHeadline = ( printf "%s: %s – %s" .Params.supertitle .Title .Params.subtitle | $page.RenderString | plainify ) }}
+    {{- else }}
+      {{- $alternativeHeadline = ( printf "%s – %s" .Title .Params.subtitle | $page.RenderString | plainify ) }}
+    {{- end }}
+  {{- else if .Params.supertitle }}
+    {{- $alternativeHeadline = ( printf "%s: %s" .Title .Params.supertitle | $page.RenderString | plainify ) }}
+  {{- end }}
+
+  {{- $description := "" }}
+  {{- with .Description }}
+      {{ $description = . }}
+  {{- else }}
+    {{- with .Summary }}
+      {{ $description = . }}
+    {{- end }}
+  {{- end }}
+  {{- $description = $description | $page.RenderString | plainify }}
+
+  {{- $metaImages := partial "claris/_functions/resources/images" (dict
+    "Page" $page
+    "Params" $page.Params
+    "Debug" $debug
+  ) }}
+
+  {{- $license := .Param "license" }}
+
+  {{- $language := $page.Language.Lang }}
+
+  {{- $alternativeLanguages := slice }}
+  {{- range $page.Translations }}
+    {{- $alternativeLanguages = append (slice .Lang) $alternativeLanguages }}
+  {{- end }}
+
+  {{- $genre := default (index .Params.categories 0) .Params.genre }}
+  {{- $keywords := default .Params.tags .Params.keywords }}
+
+  <!-- HTML 'id' attribute of the DOM container of the main content -->
+  {{- $articleID := default "contentContainer" ($page.Param "articleID") }}
+
+  {{- $canonicalURL := partial "claris/_functions/canonical-url" $page }}
+
+  {{- $singleMeta = (dict
+    "Single" (dict
+      "Classification" (dict
+        "Robots" $metaRobots
+        "SchemaOrg" $metaSchemaOrg
+        "Opengraph" $metaOpengraph
+        "TwitterCard" $metaTwitterCard
+      )
+
+      "Data" (dict
+        "CanonicalURL" $canonicalURL
+        "ArticleSection" ( default "Root" (default .Params.section (humanize .Section) ) )
+        "ArticleID" $articleID
+        "EntityID" (printf "%s#%s" $canonicalURL $articleID)
+        "Title" ( .Title | $page.RenderString | plainify )
+        "AlternativeHeadline" $alternativeHeadline
+        "Description" ( $description )
+        "Language" $language
+        "AlternativeLanguages" $alternativeLanguages
+        "CopyrightYear" ( now.Format "2006" )
+        "Date" (dict
+          "Created" .Date
+          "Published" .PublishDate
+          "Modified" .Lastmod
+        )
+        "Images" $metaImages
+        "WordCount" .WordCount
+        "License" $license
+        "Genre" $genre
+        "Keywords" $keywords
+      )
+      "Page" $page
+    )
+  ) }}
+
+{{- end }}
+
+{{- if $debug }}
+  {{/* {{- warnf "%s[%s]: returning %v" $page $template
+      (jsonify (dict "indent" "  ") $singleMeta) }} */}}
+  {{- warnf "%s[%s]: returning %v" $page $template
+      $singleMeta }}
+{{- end }}
+{{- return $singleMeta }}

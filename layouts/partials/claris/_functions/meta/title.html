@@ -1,6 +1,7 @@
-{{- $template := "claris/_functions/title" }}
+{{- $template := "claris/_functions/meta/title" }}
 {{- $page := .Page }}
-{{- $title := .Title }}
+{{- $meta := .Meta }}
+{{- $title := default .Title $meta.Single.Data.Title }}
 <!-- Adjust title for some values of .Kind -->
 {{- if in (slice "taxonomy") .Kind }}
   {{- partial "html-comment" (printf "[%s]: .Kind:%s .Singular:%s .Plural:%s .Section:%s .Title:%s" $template .Kind .Data.Singular .Data.Plural .Section .Title) }}

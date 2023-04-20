@@ -154,15 +154,15 @@
     &_in_section
       z-index: ($main-z-index + 1)
       @include nav-active-section-background
-
   &_open_sub
     .nav_active.nav_child.nav_item
-      color: var(--text)
-      text-decoration: none
-      .icon
-        filter: invert(100%);
-      &::after
-        content: none
+      // color: var(--text)
+      // text-decoration: none
+      // .icon
+      //   filter: invert(100%);
+      // &::after
+      //   content: none
+      @include nav-active-background
   &_active
     // FIXME: Do not use position relative, otherwise alignment gets out of shape
     // position: relative

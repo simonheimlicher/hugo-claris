@@ -1,83 +1,73 @@
-{{- $summary := .Summary }}
-{{- $s := site.Params }}
-{{- $p := .Params }}
-{{- if .IsHome }}
-  {{- with $s.description }}
-    {{- $summary = . }}
+{{- $page := . }}
+{{- $meta := .Meta }}
+{{- $template := "claris/head/schema-org" }}
+{{- $debug := false }}
+{{/* {{- $debug = findRE "never-match" $page.RelPermalink }} */}}
+
+{{- $pagePath := "" }}
+{{- with $page.File }}
+  {{- $pagePath = .Path }}
+{{- end }}
+
+{{- $dateLocalISO8601 := "2006-01-02T15:04:05-07:00" -}}
+
+{{- $homePage := (site.GetPage "/") }}
+
+{{- $opengraph := default $meta.Site.Classification.Opengraph $meta.Single.Classification.Opengraph }}
+{{- if $opengraph }}
+  {{- with $meta.Single.Data }}
+    <meta property="og:title" content="{{ .Title }}">
+    <meta property="og:description" content="{{ default $meta.Site.Description .Description }}">
+    <meta property="og:type" content="{{ if $page.IsPage }}article{{ else }}website{{ end }}">
+    <meta property="og:url" content="{{ .CanonicalURL }}">
+
+{{- with .Images.Share.CanonicalURL }}
+    {{- range first 6 . }}
+    <meta property="og:image" content="{{ . }}">
+    {{- end }}
+{{- else -}}
+  {{- with $meta.Site.Images.Share.CanonicalURL }}
+    {{- range first 6 . }}
+    <meta property="og:image" content="{{ . }}">
+    {{- end }}
   {{- end }}
 {{- end }}
-{{- with $p.description }}
-  {{- $summary = . }}
-{{- end }}
-{{- $summary = truncate 160 $summary -}}
-{{- $siteTitle := site.Title }}
-{{- $title := .Title }}
-{{- $permalink := .Permalink }}
-{{- $logo := absURL $s.logo }}
-{{- $author := $s.author }}
-{{- with $p.author }}
-  {{- $author := . }}
-{{- end }}
-{{- $image := absURL $s.fallBackOgImage }}
-{{- with $p.featureImage }}
-  {{- $image = absURL .  }}
-{{- end }}
-{{- with $p.thumbnail }}
-  {{- $image = absURL .  }}
-{{- end }}
-{{- with $p.shareImage }}
-  {{- $image = absURL .  }}
+
+    {{- if $page.IsPage }}
+    <meta property="article:section" content="{{ .ArticleSection }}">
+    {{ with (default .Date.Created .Date.Published) }}<meta property="article:published_time" {{ .Format $dateLocalISO8601 | printf "content=%q" | safeHTMLAttr }}>{{ end }}
+    {{ with .Date.Modified }}<meta property="article:modified_time" {{ .Format $dateLocalISO8601 | printf "content=%q" | safeHTMLAttr }}>{{ end }}
+    {{- end -}}
+
+    {{- with .Audio }}<meta property="og:audio" content="{{ . }}">{{ end }}
+    {{- with .Locale }}<meta property="og:locale" content="{{ . }}">{{ end }}
+    {{- with $meta.Site.Name }}<meta property="og:site_name" content="{{ . }}">{{ end }}
+{{- with .Videos.Share.CanonicalURL }}
+  {{- range . }}
+    <meta property="og:video" content="{{ . }}">
+  {{- end }}
 {{- end -}}
-    <meta name="description" content="{{ $summary }}">
-{{- if $s.twitter }}
-    <meta name="twitter:card" content="{{ if $s.largeTwitterCard }}summary_large_image{{ else }}summary{{ end }}">
-    <meta name="twitter:creator" content="{{ $s.twitter }}">
-    <meta name="twitter:title" content="{{ .Title }}">
-{{ end }}
-    <meta property="og:locale" content="{{ .Lang }}">
-{{- range .Translations }}
-    <meta property="og:locale:alternate" content="{{ .Lang }}">
-{{ end }}
-{{- if .IsHome }}
-    <meta property="og:type" content="website">
-{{- else }}
-    <meta property="og:type" content="article">
-{{- end }}
-    <meta property="og:url" content="{{ $permalink }}">
-    <meta property="og:title" content="{{ $title }}">
-    <meta property="og:description" content="{{ $summary }}">
-    <meta property="og:image" content="{{ $image }}">
-{{- if eq .Section $s.blogDir -}}
-  {{- $date := ( .Date.Format "2006-02-01") -}}
-  {{- $date := (time .Date) }}
-  {{- $lastMod := (time .Lastmod) }}
-  <script type="application/ld+json">
-    {
-      "@context": "http://schema.org",
-      "@type": "BlogPosting",
-      "mainEntityOfPage":"{{ $permalink }}",
-      "name": "{{ $siteTitle }}",
-      "headline": {{ $title }},
-      "description": {{ $summary }},
-      "url": "{{ $permalink }}",
-      "datePublished": {{ $date  }},
-      "dateModified": {{ $lastMod }},
-      "author": {
-        "@type": "Person",
-        "name": "{{ $author }}"
-      },
-      "image":{
-        "@type":"ImageObject",
-        "url": "{{ $image }}"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "logo": {
-          "@type":"ImageObject",
-          "url": "{{ $logo }}"
-        },
-        "name": "{{ $siteTitle }}"
-      }
-    }
-  </script>
+
+<!-- If it is part of a series, link to related articles -->
+{{- $permalink := $page.Permalink }}
+{{- $siteSeries := site.Taxonomies.series }}
+{{- if $siteSeries }}
+  {{- with $page.Params.series }}
+    {{- range $name := . }}
+      {{- $series := index $siteSeries ($name | urlize) }}
+      {{- range $seriesPage := first 6 $series.Pages }}
+        {{- if ne $seriesPage.Permalink $permalink }}
+    <meta property="og:see_also" content="{{ $seriesPage.Permalink }}">
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end -}}
+
+  <!-- Facebook Page Admin ID for Domain Insights -->
+  {{- with site.Social.facebook_admin }}
+    <meta property="fb:admins" content="{{ . }}">
+  {{- end }}
+
+  {{- end }}
 {{- end -}}

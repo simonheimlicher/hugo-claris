@@ -228,6 +228,40 @@ $main-z-index: 1;
   }
 }
 
+// Inline list with separators
+// https://www.jankollars.com/posts/multi-line-horizontal-list-with-separators/
+@mixin inline-separator-list($list-item-separation: 2ch, $list-separator: '•') {
+  $list-sep-width: $list-item-separation / 3.0 + 0.5ch;
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    padding-left: 0;
+    list-style: none;
+    // margin-left: calc(-3ch);
+    margin-left: -$list-item-separation + 0.5ch;
+    // clip-path: inset(0 0 0 3ch);
+    clip-path: inset(0 0 0 $list-item-separation - 0.5ch);
+    & > * {
+      padding-left: $list-item-separation;
+    }
+    li {      // padding-left: 1ch;
+      list-style: none;
+      padding-left: $list-item-separation;
+      margin-left: -$list-item-separation / 3.0 - $list-sep-width;
+    }
+    li::before {
+      content: '•';
+      display: inline-block;
+      // margin-right: 0.5ch;
+      // margin-right: 0.5ch;
+      margin-right: $list-item-separation / 3.0 - 0.5ch;
+      // width: 1ch;
+      width: $list-sep-width;
+      text-align: center;
+    }
+  }
+}
+
 @mixin viewport($width: 1024px, $margin: 25px) {
   max-width: $width;
   margin: $margin auto;

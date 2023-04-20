@@ -1,13 +1,19 @@
 {{- $page := .Page }}
-{{- $entityParams := . }}
-{{- $template := "claris/_functions/schema-org/website" }}
+{{- $schemaOrgMeta := .SchemaOrgMeta }}
+{{- $template := "claris/_functions/schema-org/profilepage" }}
 
 <!-- [Schema.org entity ProfilePage](https://schema.org/ProfilePage) -->
-{{/* {{- warnf "%s[%s]: entityParams:\n%v" $page $template (jsonify (dict "indent" "  ") $entityParams) }} */}}
-{{- $schemaOrgMeta := partial "claris/_functions/schema-org/article" $entityParams }}
 
-{{- $schemaOrgMeta = merge $schemaOrgMeta (dict
-  "mainEntityOfPage" $schemaOrgMeta.author
-) }}
+{{- with $schemaOrgMeta.Entities.Author }}
+  {{- $schemaOrgMeta = merge $schemaOrgMeta (dict
+    "Root" (dict
+      "@type" "ProfilePage"
+      "about" .Reference
+      "mainEntity" $schemaOrgMeta.Entities.Article.Reference
+    )
+  ) }}
+{{- else }}
+  {{- errorf "%s[%s]: Missing parameter $schemaOrgMeta.Entities.Author" $page $template }}
+{{- end }}
 
 {{- return $schemaOrgMeta }}

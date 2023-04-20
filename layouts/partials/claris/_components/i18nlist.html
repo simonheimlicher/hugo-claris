@@ -1,10 +1,13 @@
 {{ with .Translations }}
-<h3>{{ T "translations" }}:</h3>
-<ul>
-  {{ range . }}
-    <li>
-      <a href="{{ .Permalink }}">{{ printf "%#v" .Language.LanguageName }} |</a>
-    </li>
-  {{ end }}
-</ul> 
+<hr>
+<div class="inline-separator-list">
+  <p>{{ T "translations" (len .) }}</p>
+  <ul>
+    {{ range . }}
+      <li>
+        <a href="{{ .Permalink }}" title="{{ T "view_page_in_language" (dict "Count" 1 "Language" .Language.LanguageName) }}">{{ printf "%v" .Language.LanguageName | safeHTML }}</a>
+      </li>
+    {{ end }}
+  </ul>
+</div>
 {{ end }}

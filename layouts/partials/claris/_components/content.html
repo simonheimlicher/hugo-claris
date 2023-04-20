@@ -1,6 +1,5 @@
 {{- $page := .Page }}
-{{- $p := .Page.Params }}
-{{- $s := site.Params }}
+{{- $meta := .Meta }}
 {{- $template := "partials/claris/_componentes/content" }}
 
 {{- $itemType := .ItemType }}
@@ -8,14 +7,14 @@
 {{- with $page }}
 {{- $mainSection := (in ($page.Param "mainSections") .Section) -}}
 {{- $outdated := false }}
-{{- with $page.Params.BestBefore }}
+{{- with $page.Param "BestBefore" }}
   {{- if ge now (time . ) }}
     {{- $outdated = true }}
   {{- end }}
 {{- else }}
-  {{- $ephemeralSections := default (slice "articles") $s.ephemeralSections }}
+  {{- $ephemeralSections := default slice ($page.Param "ephemeralSections") }}
   {{- $ephemeralSection := (in $ephemeralSections .Section) }}
-  {{- $outdatedAfterYears := default 0 $s.outdatedAfterYears }}
+  {{- $outdatedAfterYears := default 0 ($page.Param "outdatedAfterYears") }}
   {{- if (and $outdatedAfterYears $ephemeralSection) }}
     {{- if (lt .Page.Lastmod (now.AddDate (int (sub 0 $outdatedAfterYears)) 0 0) ) }}
       {{- $outdated = true }}
@@ -23,14 +22,14 @@
   {{- end }}
 {{- end }}
 
-{{- $displayTableOfContents := and (default true $p.toc) (ge (strings.Count "<li>" .TableOfContents) 2) -}}
+{{- $displayTableOfContents := and (default true ($page.Param "toc") ) (ge (strings.Count "<li>" .TableOfContents) 2) -}}
 {{- $showComments := default true ($page.Param "comments") }}
 
 {{- if $displayTableOfContents }}
   {{ partial "claris/_components/aside-article" . }}
 {{- end }}
 <article class="article_content content_singlecolumn content{{ if $mainSection }} main-section{{ end }}">
-  {{- partial "claris/_components/title" $page }}
+  {{- partial "claris/_components/title" (dict "Page" $page "Meta" $meta) }}
   {{- if (and (eq $itemType "article") $mainSection) -}}
     {{- partial "claris/_components/meta" . }}
   {{- end -}}

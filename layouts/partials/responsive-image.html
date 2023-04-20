@@ -5,6 +5,7 @@
 {{- $resourceSpec := .Resource -}}
 {{- $caption := default "" .Caption -}}
 {{- $alt := default $caption .Alt -}}
+{{- $title := default $alt .Title -}}
 {{- $imgClass := default "" .ImgClass -}}
 {{- $imgPosition := default "center center" .ImgPosition -}}
 {{- $figureClass := cond (ne "" $caption) "caption" "" -}}
@@ -161,6 +162,7 @@
             {{- $imgHeight := default .ImageResource.Img.Height $imageResourceArgs.Height }}
             <img class="{{ with $imgClass }}{{ . }}{{ end }}" src="{{ $srcURL }}"
               width="{{ $imgWidth }}" height="{{ $imgHeight }}"
+              title="{{ $title }}"
               alt="{{ $alt }}"
               {{- with $imgInlineStyle_attr -}}
               {{ $imgInlineStyle_attr | safeHTMLAttr }}
@@ -212,6 +214,7 @@
             srcset="{{ $srcSet }}"
             {{- end }}
             width="{{ $imgWidth }}" height="{{ $imgHeight }}"
+            title="{{ $title }}"
             alt="{{ $alt }}"
             {{- with $imgInlineStyle_attr -}}
             {{ $imgInlineStyle_attr | safeHTMLAttr }}

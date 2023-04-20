@@ -56,7 +56,8 @@ other = "Keine Seite unter dieser Adresse gefunden"
 other = "Zurück"
 
 [translations]
-other = "Sprache"
+one = "Diese Seite gibt es auch in einer anderen Sprache"
+other = "Diese Seite gibt es auch in anderen Sprachen"
 
 [categories]
 other = "Kategorien"
@@ -139,10 +140,19 @@ other = "Update"
 other = "Link zu diesem Abschnitt kopieren"
 
 [private-data-requires-javascript]
-other = "Persönlich Daten verborgen (erfordert JavaScript)"
+other = "[Persönliche Daten erfordern JavaScript]"
 
 [switch_language_page]
 other = "Sprache dieser Seite wählen"
 
 [switch_language_site]
 other = "Sprache der Website wählen"
+
+[view_page_in_language]
+one = "Seite in {{ .Language }} lesen"
+
+[view_website_in_language]
+one = "Website in {{ .Language }} lesen"
+
+[license_website]
+one = "{{ .WebsiteName }} © {{ .Date.Established }}–{{ .Date.Current }} {{ .SiteAuthor }} ist lizenziert unter {{ .License }}"

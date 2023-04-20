@@ -1,34 +1,47 @@
+{{- $page := .Page }}
 {{- $themeColorLit := default "hsl(47, 20%, 98%)" (.Page.Param "themeColorLit") }}
 {{- $themeColorDim := default "hsl(47, 20%, 10%)" (.Page.Param "themeColorDim") }}
+
+{{- $debug := false }}
+{{/* {{- $debug = findRE "powerful" $page.RelPermalink }} */}}
+
+{{- $siteMeta := partialCached "claris/_functions/meta/site" (dict "Page" $page "Debug" $debug) site.BaseURL }}
+{{- $singleMeta := partialCached "claris/_functions/meta/single" (dict "Page" $page "Debug" $debug) $page.Permalink }}
+{{- $authorMeta := partialCached "claris/_functions/meta/author" (dict "Page" $page "Debug" $debug) $page.Permalink }}
+
+{{- $meta := (merge
+  $siteMeta
+  $singleMeta
+  $authorMeta
+) }}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="{{- $themeColorLit -}}">
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="{{- $themeColorDim -}}">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    {{- $title := site.Title }}
-    {{- $contentType := default "claris" (partialCached "claris/_functions/alternative-type" (dict "Page" .Page "Current" true) . .Type) }}
+    {{- $title := $meta.Single.Data.AlternativeHeadline | safeHTML }}
+    {{- $contentType := partialCached "claris/_functions/alternative-type" (dict "Page" .Page "Current" false) . .Type }}
     {{- $partialHeadTitle := printf "%s/head/title" $contentType }}
     {{ partial "html-comment"
         (printf "BASEOF: Looking for %s" (printf "partials/%s" $partialHeadTitle) ) }}
     {{- if (templates.Exists (printf "partials/%s.html" $partialHeadTitle) ) }}
       {{- $title = partial $partialHeadTitle . }}
-    {{- else }}
-      {{- $title = partial "claris/head/title" . }}
     {{- end }}
     <title>{{ $title }}</title>
     {{ hugo.Generator }}
-    {{- partial "claris/head/schema-org" . }}
-    {{/* {{ partial "claris/head/opengraph" . }} */}}
-    <meta name="description" content="{{ .Description | default site.Params.description }}">
-    {{ template "_internal/opengraph.html" . }}
-    {{ template "_internal/twitter_cards.html" . }}
+    {{- partial "claris/head/schema-org" (dict "Page" $page "Meta" $meta) }}
+    <meta name="description" content="{{ $meta.Single.Data.Description }}">
+    {{- partial "claris/head/opengraph" (dict "Page" $page "Meta" $meta) }}
+    {{- partial "claris/head/twitter-cards" (dict "Page" $page "Meta" $meta) }}
+    {{- /* template "_internal/opengraph.html" . */ -}}
+    {{- /* template "_internal/twitter_cards.html" . */ -}}
     {{- $partialHeadRobots := printf "%s/head/robots" $contentType }}
     {{ partial "html-comment"
         (printf "BASEOF: Looking for %s" (printf "partials/%s" $partialHeadRobots) ) }}
     {{- if (templates.Exists (printf "partials/%s.html" $partialHeadRobots) ) }}
-      {{- partial $partialHeadRobots . }}
+      {{- partial $partialHeadRobots (dict "Page" $page "Meta" $meta "ContentType" $contentType) }}
     {{- else }}
-      {{ partial "claris/head/robots" . }}
+      {{ partial "claris/head/robots" (dict "Page" $page "Meta" $meta "ContentType" $contentType) }}
     {{- end }}
 {{- with .Page.Param "googleSiteVerification" }}
     <meta name="google-site-verification" content="{{ . }}">

@@ -1,0 +1,46 @@
+{{- $page := .Page }}
+{{- $entityParams := .}}
+{{- $template := "claris/_functions/schema-org/author" }}
+{{- $debug := .Debug }}
+{{/* {{- $debug = or $debug (findRE "powerful" $page.Permalink) }} */}}
+{{- $entityParams := merge . (dict "Debug" $debug) }}
+
+<!-- [Schema.org entity Author](https://schema.org/Author)
+-->
+
+{{/* {{- if $debug }}
+  {{- warnf "%s[%s]: got entityParams.Meta=%v" $page $template
+  (jsonify (dict "indent" "  ") $entityParams.Meta) }}
+{{- end }} */}}
+
+{{- $entityAuthor := dict }}
+
+{{- with .Meta.Author.Data }}
+  {{- $entityAuthor = (dict "Entity"
+    (dict
+      "@type" "Person"
+      "@id" (printf "%s#%s" .ProfileURL .ProfileID)
+      "name" .Name
+      "url" .ProfileURL
+      "description" .Description
+      "sameAs" .OtherProfiles.URL
+    )
+    "Reference"
+    (dict
+      "@type" "Person"
+      "@id" .ProfileURL
+    )
+  ) }}
+{{- end }}
+
+{{- $schemaOrgAuthor := (dict
+  "Entities" (dict
+    "Author" $entityAuthor
+  )
+) }}
+
+{{- if $debug }}
+  {{- warnf "%s[%s]: returning %v" $page $template
+  (jsonify (dict "indent" "  ") $entityAuthor) }}
+{{- end }}
+{{- return $schemaOrgAuthor }}
