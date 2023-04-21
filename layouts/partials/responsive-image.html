@@ -103,9 +103,11 @@
   {{- if reflect.IsSlice $resourceSpec }}
     {{- range $resourceSpec }}
       {{- $media := .media }}
+      {{- $resTitle := .title }}
+      {{- $resAlt := default $resTitle .alt }}
       {{- $imageResourceArgs = merge $imageResourceArgs (dict "Resource" .src ) }}
       {{- with (partialCached "claris/_functions/image-srcset" $imageResourceArgs .src $imageResourceVariant) }}
-        {{- $pictureResources = append $pictureResources (slice (dict "Media" $media "ImageResource" . ) ) }}
+        {{- $pictureResources = append $pictureResources (slice (dict "Media" $media "ImageResource" . "Title" $resTitle "Alt" $resAlt) ) }}
       {{- else }}
         {{- warnf "%s[%s]: failed to get srcSet with %s" $page $template $imageResourceArgs -}}
       {{- end }}
@@ -114,8 +116,10 @@
     {{- if (not (where $pictureResources "Media" $defaultMedia) ) }}
       {{- with (index $resourceSpec 0) }}
         {{- $imageResourceArgs = merge $imageResourceArgs (dict "Resource" .src ) }}
+        {{- $resTitle := .title }}
+        {{- $resAlt := default $resTitle .alt }}
         {{- with (partialCached "claris/_functions/image-srcset" $imageResourceArgs .src $imageResourceVariant) }}
-          {{- $pictureResources = append $pictureResources (slice (dict "Media" $defaultMedia "ImageResource" . ) ) }}
+          {{- $pictureResources = append $pictureResources (slice (dict "Media" $defaultMedia "ImageResource" . "Title" $resTitle "Alt" $resAlt) ) }}
         {{- else }}
           {{- warnf "%s[%s]: failed to get srcSet with %s" $page $template $imageResourceArgs -}}
         {{- end }}
@@ -123,7 +127,7 @@
     {{- end }}
   {{- else }}
     {{- with (partialCached "claris/_functions/image-srcset" $imageResourceArgs $resourceSpec $imageResourceVariant) }}
-      {{- $pictureResources = append $pictureResources (slice (dict "Media" $defaultMedia "ImageResource" . ) ) }}
+      {{- $pictureResources = append $pictureResources (slice (dict "Media" $defaultMedia "ImageResource" . "Title" $title "Alt" $alt) ) }}
     {{- else }}
       {{- warnf "%s[%s]: .Resource: %v failed to get srcSet with %s" $page $template $resourceSpec $imageResourceArgs -}}
     {{- end }}
@@ -160,6 +164,12 @@
             {{- $srcURL := .ImageResource.Img.RelPermalink }}
             {{- $imgWidth := default .ImageResource.Img.Width $imageResourceArgs.Width }}
             {{- $imgHeight := default .ImageResource.Img.Height $imageResourceArgs.Height }}
+            {{- with .Title }}
+              {{- $title = . }}
+            {{- end }}
+            {{- with .Alt }}
+              {{- $alt = . }}
+            {{- end }}
             <img class="{{ with $imgClass }}{{ . }}{{ end }}" src="{{ $srcURL }}"
               width="{{ $imgWidth }}" height="{{ $imgHeight }}"
               title="{{ $title }}"
