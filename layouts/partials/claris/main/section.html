@@ -9,7 +9,7 @@
 {{- end }}
 
 {{- $debug := default false .Debug }}
-{{- $debug = or $debug (not (not (findRE "/index" $page.RelPermalink) ) ) }}
+{{/* {{- $debug = or $debug (not (not (findRE "/index" $page.RelPermalink) ) ) }} */}}
 
 {{- with $page }}
   {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}

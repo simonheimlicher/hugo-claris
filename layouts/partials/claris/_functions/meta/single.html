@@ -1,7 +1,7 @@
 {{- $page := .Page }}
 {{- $template := "claris/_functions/meta/single" }}
 {{- $debug := false }}
-{{/* {{- $debug = or .Debug (not (not (findRE "_error" $page.RelPermalink))) }} */}}
+{{- $debug = or .Debug (not (not (findRE "about" $page.RelPermalink))) }}
 
 {{/* {{- warnf "%s[%s]: .Page=%T page=%T" $page $template .Page page }} */}}
 {{- $singleMeta := dict -}}

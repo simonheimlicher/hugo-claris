@@ -29,7 +29,7 @@
 
 {{- with $containerClass }}
   {{- if $figureClass -}}
-    {{- $figureClass = printf "%s %s" $figureClass . -}}
+    {{- $figureClass = printf "%s %s" (strings.TrimLeft " " $figureClass) . -}}
   {{- else }}
     {{- $imgClass = printf "%s %s" $imgClass . }}
   {{- end }}
@@ -144,7 +144,7 @@
     {{- if $lazy }}
       <noscript>
       {{- if $figureClass }}
-        <figure class="{{ $figureClass }}"
+        <figure  class="{{ $figureClass }}"
           {{- with $figureInlineStyle -}}
           {{ printf " style=%q" (. | safeCSS) | safeHTMLAttr }}
           {{- end -}}
@@ -152,7 +152,7 @@
       {{- end -}}
       {{- if $lightbox -}}
         <a href='{{ $defaultSrcURL }}'>
-      {{- end -}}
+      {{- end }}
           <picture>
           {{- range where $pictureResources "Media" "ne" $defaultMedia}}
             {{- $srcURL := .ImageResource.Img.RelPermalink }}
@@ -164,18 +164,16 @@
             {{- $srcURL := .ImageResource.Img.RelPermalink }}
             {{- $imgWidth := default .ImageResource.Img.Width $imageResourceArgs.Width }}
             {{- $imgHeight := default .ImageResource.Img.Height $imageResourceArgs.Height }}
-            {{- with .Title }}
-              {{- $title = . }}
-            {{- end }}
-            {{- with .Alt }}
-              {{- $alt = . }}
-            {{- end }}
             <img class="{{ with $imgClass }}{{ . }}{{ end }}" src="{{ $srcURL }}"
-              width="{{ $imgWidth }}" height="{{ $imgHeight }}"
-              title="{{ $title }}"
-              alt="{{ $alt }}"
-              {{- with $imgInlineStyle_attr -}}
-              {{ $imgInlineStyle_attr | safeHTMLAttr }}
+                 width="{{ $imgWidth }}" height="{{ $imgHeight }}"
+              {{- with .Title }}
+                 title="{{ . | safeHTMLAttr }}"
+              {{- end }}
+              {{- with .Alt }}
+                   alt="{{ . | safeHTMLAttr }}"
+              {{- end }}
+              {{- with $imgInlineStyle_attr }}
+                {{ $imgInlineStyle_attr | safeHTMLAttr }}
               {{- end -}}
             >
           {{- end }}
@@ -215,19 +213,23 @@
           {{- $imgHeight := default .ImageResource.Img.Height $imageResourceArgs.Height }}
           {{- $placeholderInlineImg := .ImageResource.Placeholder }}
           {{- $srcSet := .ImageResource.SrcSet }}
-          <img class="{{ with $imgClass }}{{ . }}{{ end }}{{ if $lazy }} lazyload{{ end }}" src="{{ $srcURL }}"
+          <img  class="{{ with $imgClass }}{{ . }}{{ end }}{{ if $lazy }} lazyload{{ end }}" src="{{ $srcURL }}"
             {{- with $lightbox }} data-zoomable="{{ . | safeHTMLAttr }}"{{- end -}}
             {{- if $lazy }}
-            data-sizes="auto"
-            {{ printf " srcset=%q" $placeholderInlineImg | safeHTMLAttr }} data-src="{{ $srcURL }}" data-srcset="{{ $srcSet }}"
+           data-sizes="auto"
+               {{ printf "srcset=%q" $placeholderInlineImg | safeHTMLAttr }} data-src="{{ $srcURL }}" data-srcset="{{ $srcSet }}"
             {{- else }}
-            srcset="{{ $srcSet }}"
+              srcset="{{ $srcSet }}"
             {{- end }}
-            width="{{ $imgWidth }}" height="{{ $imgHeight }}"
-            title="{{ $title }}"
-            alt="{{ $alt }}"
-            {{- with $imgInlineStyle_attr -}}
-            {{ $imgInlineStyle_attr | safeHTMLAttr }}
+                width="{{ $imgWidth }}" height="{{ $imgHeight }}"
+            {{- with .Title }}
+                title="{{ . | safeHTMLAttr }}"
+            {{- end }}
+            {{- with .Alt }}
+                  alt="{{ . | safeHTMLAttr }}"
+            {{- end }}
+            {{- with $imgInlineStyle_attr }}
+              {{ $imgInlineStyle_attr | safeHTMLAttr }}
             {{- end -}}
           >
         {{- end }}

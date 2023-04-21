@@ -1,6 +1,8 @@
 {{- define "main" }}
 {{- $template := "_default/list" }}
-{{- $meta := partialCached "claris/_functions/meta/single" . .RelPermalink }}
+{{- $debug := false }}
+{{- $debug = findRE "about" .RelPermalink }}
+{{- $meta := partialCached "claris/_functions/meta/single" (dict "Page" . "Debug" $debug) .RelPermalink }}
 {{ partial "html-comment" (printf "[%s]: BEGIN define main" $template) }}
 {{ partial "claris/main/index" (dict "Page" . "Meta" $meta) }}
 {{ partial "html-comment" (printf "[%s]: END   define main" $template) }}

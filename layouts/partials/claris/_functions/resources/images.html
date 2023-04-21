@@ -1,7 +1,7 @@
 {{- $page := .Page }}
 {{- $params := .Params }}
 {{- $debug := false }}
-{{/* {{- $debug = findRE "never-match" .Page.RelPermalink }} */}}
+{{- $debug = findRE "about" .Page.RelPermalink }}
 
 {{- $imageResourceBaseArgs := (dict
   "Page" $page
@@ -118,6 +118,16 @@ Typically, .Params is page.Params merged with site.Params
               "ImgPosition" .
             ) }}
           {{- end }}
+          {{- with .alt }}
+            {{- $resParam = merge $resParam (dict
+              "Alt" .
+            ) }}
+          {{- end }}
+          {{- with .title }}
+            {{- $resParam = merge $resParam (dict
+              "Title" .
+            ) }}
+          {{- end }}
         {{- else }}
           {{- $resType := printf "%T" $res }}
           {{- if (or
@@ -167,10 +177,10 @@ Typically, .Params is page.Params merged with site.Params
 
     {{- $availableImageResParamList := slice }}
 
-    {{- range $res := $imageResParamList }}
-      {{- with $res.Resource }}
+    {{- range $resParam := $imageResParamList }}
+      {{- with $resParam.Resource }}
         {{- $imgResource := . }}
-        {{- $imageResourceArgs := merge $imageResourceBaseArgs $res }}
+        {{- $imageResourceArgs := merge $imageResourceBaseArgs $resParam }}
         {{- if not (strings.Contains (printf "%T" $imgResource) "resources.resourceAdapter") }}
           {{- if $debug }}
             {{- warnf "%s[%s]: kind=%v: Looking for image resource %q with imageResourceArgs=%v"
@@ -180,11 +190,7 @@ Typically, .Params is page.Params merged with site.Params
         {{- end }}
         {{- with $imgResource }}
           {{- if (strings.Contains (printf "%T" $imgResource) "resources.resourceAdapter") }}
-            {{- $resParam := (dict
-              "Resource" $imgResource
-              "ImgPosition" $imageResourceArgs.ImgPosition
-              "Media" (default $defaultMedia $imageResourceArgs.Media)
-            ) }}
+            {{- $resParam := merge $resParam (dict "Resource" $imgResource ) }}
             {{- $availableImageResParamList = append (slice $resParam) $availableImageResParamList }}
             {{- if $debug }}
               {{- warnf "%s[%s]: kind=%v: Appended image resource=%s with params=%v"
@@ -201,8 +207,8 @@ Typically, .Params is page.Params merged with site.Params
               $imageResourceArgs.Resource $imageResourceArgs }}
         {{- end }}
       {{- else }}
-        {{- errorf "%s[%s]: kind=%v versions=%v: invalid $res.Resource=%v from $res=%v"
-            $page $template $imageKind $versions $res.Resource  (jsonify (dict "indent" "  ") $res) }}
+        {{- errorf "%s[%s]: kind=%v versions=%v: invalid $resParam.Resource=%v from $resParam=%v"
+            $page $template $imageKind $versions $resParam.Resource  (jsonify (dict "indent" "  ") $resParam) }}
       {{- end }}
     {{- end }}
 
@@ -231,13 +237,12 @@ Typically, .Params is page.Params merged with site.Params
               {{- warnf "%s[%s]: kind=%v: version=%v: Candidate bestMatchResource=%vx%v bestMatch=%v"
                   $page $template $imageKind $verSpec $bestMatchResource.Resource.Width $bestMatchResource.Resource.Height $bestMatch }}
             {{- end }}
-            {{- $imageKindVersionResParams = merge $imageKindVersionResParams (dict
-              $verSpec.aspect (dict
+            {{- $imageKindVersionResParams = merge $imageKindVersionResParams (dict $verSpec.aspect . ) }}
+              {{/* (dict
                 "Resource" .Resource
                 "ImgPosition" .ImgPosition
                 "Media" (default $defaultMedia .Media)
-              )
-            ) }}
+              ) */}}
             {{- if not (in $imageKindVersionURLs .Resource.RelPermalink) }}
               {{- $imageKindVersionURLs = append (slice .Resource.RelPermalink) $imageKindVersionURLs }}
               {{- $imageKindVersionCanonicalURLs = append (slice
@@ -306,13 +311,7 @@ Typically, .Params is page.Params merged with site.Params
       {{- range $resParam := $availableImageResParamList }}
         {{- if not (in $imageKindVersionURLs .Resource.RelPermalink) }}
           {{- $aspect := partial "claris/_functions/resources/aspect-ratio" .Resource }}
-          {{- $imageKindVersionResParams = merge $imageKindVersionResParams (dict
-            $aspect (dict
-              "Resource" .Resource
-              "ImgPosition" .ImgPosition
-              "Media" (default $defaultMedia .Media)
-            )
-          ) }}
+          {{- $imageKindVersionResParams = merge $imageKindVersionResParams (dict $aspect .) }}
           {{- $imageKindVersionURLs = append (slice .Resource.RelPermalink) $imageKindVersionURLs }}
           {{- $imageKindVersionCanonicalURLs = append (slice
             (partial "claris/_functions/canonical-url" .Resource)
