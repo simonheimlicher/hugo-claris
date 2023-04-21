@@ -19,22 +19,22 @@
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="{{- $themeColorLit -}}">
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="{{- $themeColorDim -}}">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    {{- $title := $meta.Single.Data.AlternativeHeadline | safeHTML }}
+    {{- $title := default $meta.Single.Data.Title $meta.Single.Data.AlternativeHeadline | safeHTML }}
     {{- $contentType := partialCached "claris/_functions/alternative-type" (dict "Page" .Page "Current" false) . .Type }}
-    {{- $partialHeadTitle := printf "%s/head/title" $contentType }}
-    {{ partial "html-comment"
-        (printf "BASEOF: Looking for %s" (printf "partials/%s" $partialHeadTitle) ) }}
-    {{- if (templates.Exists (printf "partials/%s.html" $partialHeadTitle) ) }}
-      {{- $title = partial $partialHeadTitle . }}
+    {{- with $contentType }}
+      {{- $partialHeadTitle := printf "%s/head/title" $contentType }}
+      {{ partial "html-comment"
+          (printf "BASEOF: Looking for %s" (printf "partials/%s" $partialHeadTitle) ) }}
+      {{- if (templates.Exists (printf "partials/%s.html" $partialHeadTitle) ) }}
+        {{- $title = partial $partialHeadTitle $page }}
+      {{- end }}
     {{- end }}
     <title>{{ $title }}</title>
     {{ hugo.Generator }}
     {{- partial "claris/head/schema-org" (dict "Page" $page "Meta" $meta) }}
     <meta name="description" content="{{ $meta.Single.Data.Description }}">
     {{- partial "claris/head/opengraph" (dict "Page" $page "Meta" $meta) }}
-    {{- partial "claris/head/twitter-cards" (dict "Page" $page "Meta" $meta) }}
-    {{- /* template "_internal/opengraph.html" . */ -}}
-    {{- /* template "_internal/twitter_cards.html" . */ -}}
+    {{- partial "claris/head/twitter-card" (dict "Page" $page "Meta" $meta) }}
     {{- $partialHeadRobots := printf "%s/head/robots" $contentType }}
     {{ partial "html-comment"
         (printf "BASEOF: Looking for %s" (printf "partials/%s" $partialHeadRobots) ) }}
