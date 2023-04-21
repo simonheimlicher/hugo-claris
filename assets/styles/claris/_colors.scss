@@ -34,8 +34,8 @@ $text-light-dim: hsl($theme-hue-dim, $theme-sat-dim, $text-lum-lit);
 $text-dark-lit: hsl($theme-hue-lit, $theme-sat-lit, $text-lum-dim);
 $text-dark-dim: hsl($theme-hue-dim, $theme-sat-dim, $text-lum-dim);
 
-$text-faint-lit: hsl($theme-hue-lit, $theme-sat-neutral-lit, 40%);
-$text-faint-dim: hsl($theme-hue-dim, $theme-sat-neutral-dim, 60%);
+$text-faint-lit: hsl($theme-hue-lit, $theme-sat-neutral-lit, 30%);
+$text-faint-dim: hsl($theme-hue-dim, $theme-sat-neutral-dim, 85%);
 
 $bg-lit: $themeColorLit;
 $bg-hover-lit: lighten(desaturate($bg-lit, 10%), 5%);
@@ -97,9 +97,9 @@ $theme-bg-active-dim: lighten(saturate($theme-bg-dim, 0%), 40%);
 $theme-bg-hover-dim: lighten(saturate($theme-bg-dim, 20%), 50%);
 
 $haze-lit: darken(desaturate($theme-lit, 15%), 2%);
-$xhaze-lit: darken($haze-lit, 5%);
-$xxhaze-lit: darken($xhaze-lit, 5%);
-$xxxhaze-lit: darken($xxhaze-lit, 5%);
+$xhaze-lit: darken($haze-lit, 10%);
+$xxhaze-lit: darken($xhaze-lit, 10%);
+$xxxhaze-lit: darken($xxhaze-lit, 10%);
 
 $haze-dim: lighten(desaturate($theme-dim, 10%), 10%);
 $xhaze-dim: lighten($haze-dim, 10%);
