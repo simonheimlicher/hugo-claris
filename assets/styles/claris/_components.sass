@@ -33,7 +33,7 @@
     @include content_multicolumn
 
 .footer
-  font-size: 0.8rem
+  font-size: 1rem
   // FIXME: IE 11 bug
   // https://github.com/philipwalton/flexbugs/issues/75
   // Setting a min-height on the container (body does not work)
@@ -65,7 +65,7 @@
   //     font-size: 120%
 
   @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
-    font-size: 0.9rem
+    font-size: 1rem
     @supports (display: grid)
       .grid-footer
         display: grid
@@ -75,6 +75,9 @@
         .footer_page
           padding: var(--inner_padding-y) var(--inner_padding-x)
           margin: auto
+        .grid-id-1
+          grid-column: 1
+          padding-left: 0
         .grid-id-2
           grid-column: 2
         .grid-id-3
