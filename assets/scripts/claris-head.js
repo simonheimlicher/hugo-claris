@@ -4,6 +4,10 @@
 import 'scripts/claris/theme/init';
 import 'scripts/claris/theme/color-mode';
 
+// FIXME: Try loading all JS in the head
+import 'scripts/claris/theme/minimal';
+import 'scripts/claris/theme/enhanced';
+
 import 'lazysizes';
 
 // Since we use CSS attribute 'object-fit', lazy loading cannot infer
