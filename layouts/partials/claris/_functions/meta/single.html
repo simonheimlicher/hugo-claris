@@ -1,7 +1,7 @@
 {{- $page := .Page }}
 {{- $template := "claris/_functions/meta/single" }}
-{{- $debug := false }}
-{{- $debug = or .Debug (not (not (findRE "about" $page.RelPermalink))) }}
+{{- $debug := default false .Debug }}
+{{/* {{- $debug = or $debug (not (not (findRE `^/$` $page.RelPermalink) ) ) }} */}}
 
 {{/* {{- warnf "%s[%s]: .Page=%T page=%T" $page $template .Page page }} */}}
 {{- $singleMeta := dict -}}
@@ -46,40 +46,58 @@
     {{- warnf "%s[%s]: pagePath=%s hiddenPathPrefix=%v" $page $template $pagePath $hiddenPathPrefix }}
   {{- end }}
 
+  {{- $robotsIndex := and (default false site.Params.robots.index) (and $pathVisible (index ($page.Param "robots") "index") ) }}
+  {{- $robotsIndexImages := and (default false site.Params.robots.indeximages) (and $pathVisible (index ($page.Param "robots") "indeximages") ) }}
+  {{- $robotsFollow := and (default false site.Params.robots.follow) (and $pathVisible (index ($page.Param "robots") "follow") ) }}
+
+  <!-- Don't index taxonomy and term pages but follow links -->
+  {{- if in (slice "taxonomy" "term") .Kind }}
+    {{- $robotsIndex = false }}
+    {{- $robotsIndexImages = false }}
+  {{- end }}
+
   {{- $metaRobots := (dict
-    "Index" (default (index ($page.Param "robots") "index") $pathVisible)
-    "IndexImages" (default (index ($page.Param "robots") "indeximages") $pathVisible)
-    "Follow" (default (index ($page.Param "robots") "follow") $pathVisible)
+    "Index" $robotsIndex
+    "IndexImages" $robotsIndexImages
+    "Follow" $robotsFollow
   ) }}
 
-  <!-- Only include SchemaOrg meta if the page should be indexed -->
-  {{- $metaSchemaOrg := $metaRobots.Index }}
-  {{- $metaOpengraph := $metaRobots.Index }}
-  {{- $metaTwitterCard := $metaRobots.Index }}
+  <!-- Only include SchemaOrg meta if the page should be indexed or followed -->
+  {{- $metaSchemaOrg := or $metaRobots.Index $metaRobots.Follow }}
+  {{- $metaOpengraph := or $metaRobots.Index $metaRobots.Follow }}
+  {{- $metaTwitterCard := or $metaRobots.Index $metaRobots.Follow }}
 
   {{- $title := .Title | $page.RenderString | plainify }}
-  {{- if in (slice "taxonomy") .Kind }}
-    {{- partial "html-comment" (printf "[%s]: .Kind:%s .Singular:%s .Plural:%s .Section:%s .Title:%s" $template .Kind .Data.Singular .Data.Plural .Section .Title) }}
-    {{- $title = default .Data.Plural (default (T (printf "%s_list_title" .Data.Singular) | title) $title) }}
+
+  {{- $alternativeHeadline := "" }}
+  {{- if .Params.subtitle }}
+    {{- $alternativeHeadline = ( printf "%s: %s" .Title .Params.subtitle | $page.RenderString | plainify ) }}
+
+  {{- else if in (slice "taxonomy") .Kind }}
+    {{- $alternativeHeadline = default (strings.FirstUpper .Data.Plural) (T .Data.Plural 2) }}
+
+    {{- if $debug }}
+      {{- warnf "%s[%s]: .Kind=%s: title=%s alternativeHeadline=%s from .Singular=%s .Plural=%s .Section=%s .Title=%s"
+          $page $template .Kind $title $alternativeHeadline
+          .Data.Singular .Data.Plural .Section .Title }}
+    {{- end }}
+
   {{- else if in (slice "term") .Kind }}
-    {{- partial "html-comment" (printf "[%s]: .Kind:%s .Singular:%s .Plural:%s .Section:%s .Title:%s" $template .Kind .Data.Singular .Data.Plural .Section .Title) }}
-    {{- $title = default .Data.Singular $title }}
+
+    {{- $title = (default .Title (T (lower .Title) ) ) }}
+    {{- $alternativeHeadline = default .Data.Singular $title }}
     {{- $titlePrefix := T "articles_in_taxonomy" }}
     {{ if in (slice "tag") .Data.Singular }}
       {{ $titlePrefix = T "articles_with_taxonomy" }}
     {{- end }}
-    {{- $title = printf "%s %s %s" (humanize $titlePrefix) .Data.Singular ($page.RenderString (printf "*%s*" .Title) ) | safeHTML }}
-  {{- end }}
+    {{- $alternativeHeadline = printf "%s %s %s" (humanize $titlePrefix) (T .Data.Plural 1) ($page.RenderString (printf "*%s*" (default .Title (T (lower .Title) ) ) ) ) | safeHTML }}
 
-  {{- $alternativeHeadline := "" }}
-  {{- if .Params.subtitle }}
-    {{- if .Params.supertitle }}
-      {{- $alternativeHeadline = ( printf "%s: %s – %s" .Params.supertitle .Title .Params.subtitle | $page.RenderString | plainify ) }}
-    {{- else }}
-      {{- $alternativeHeadline = ( printf "%s – %s" .Title .Params.subtitle | $page.RenderString | plainify ) }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: .Kind=%s: title=%s alternativeHeadline=%s from .Singular=%s .Plural=%s .Section=%s .Title=%s"
+          $page $template .Kind $title $alternativeHeadline
+          .Data.Singular .Data.Plural .Section .Title }}
     {{- end }}
-  {{- else if .Params.supertitle }}
-    {{- $alternativeHeadline = ( printf "%s: %s" .Title .Params.supertitle | $page.RenderString | plainify ) }}
+
   {{- end }}
 
   {{- $description := "" }}
@@ -92,15 +110,48 @@
   {{- end }}
   {{- $description = $description | $page.RenderString | plainify }}
 
-  {{- $metaImages := partial "claris/_functions/resources/images" (dict
+  {{- $mainSections := $page.Param "mainSections" }}
+  {{- $itemType := "page" }}
+  {{- with .Page }}
+    {{- if in (slice "page"  "term") .Kind }}
+      {{- if (in $mainSections .Section) }}
+        {{- $itemType = "article" }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: .Kind=%v .Section=%v in mainSections=%v"
+              $page $template .Kind .Section $mainSections }}
+        {{- end }}
+      {{- else }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: .Kind=%v .Section=%v not in mainSections=%v"
+              $page $template .Kind .Section $mainSections }}
+        {{- end }}
+      {{- end }}
+    {{- else if in (slice "home" "section" "taxonomy") .Kind }}
+      {{- $itemType = "section" }}
+    {{- else }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: Unexpected .Kind=%v" $page $template .Kind }}
+      {{- end }}
+    {{- end }}
+  {{- else }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: no .Page.Kind: .Page=%v" $page $template .Page }}
+    {{- end }}
+  {{- end }}
+
+
+  {{- $metaImagesParams := (dict
     "Page" $page
     "Params" $page.Params
     "Debug" $debug
   ) }}
+  {{- $metaImages := partialCached "claris/_functions/meta/images/index" $metaImagesParams $metaImagesParams }}
 
   {{- $license := .Param "license" }}
 
   {{- $language := $page.Language.Lang }}
+
+  {{- $locale := $page.Language.Lang }}
 
   {{- $alternativeLanguages := slice }}
   {{- range $page.Translations }}
@@ -108,7 +159,7 @@
   {{- end }}
 
   {{- $genre := default (index .Params.categories 0) .Params.genre }}
-  {{- $keywords := default .Params.tags .Params.keywords }}
+  {{- $keywords := apply (default (default (split (anchorize .Title) "-") .Params.tags) .Params.keywords) "lower" "." }}
 
   <!-- HTML 'id' attribute of the DOM container of the main content -->
   {{- $articleID := default "contentContainer" ($page.Param "articleID") }}
@@ -125,14 +176,17 @@
       )
 
       "Data" (dict
+        "URL" $page.RelPermalink
         "CanonicalURL" $canonicalURL
         "ArticleSection" ( default "Root" (default .Params.section (humanize .Section) ) )
         "ArticleID" $articleID
         "EntityID" (printf "%s#%s" $canonicalURL $articleID)
         "Title" $title
         "AlternativeHeadline" $alternativeHeadline
-        "Description" ( $description )
+        "Description" $description
+        "ItemType" $itemType
         "Language" $language
+        "Locale" $locale
         "AlternativeLanguages" $alternativeLanguages
         "CopyrightYear" ( now.Format "2006" )
         "Date" (dict

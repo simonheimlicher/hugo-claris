@@ -40,12 +40,6 @@ other = "articles in"
 one = "article with"
 other = "articles with"
 
-[category_list_title]
-other = "categories"
-
-[tag_list_title]
-other = "tags"
-
 [404_title]
 other = "Lost?"
 
@@ -60,12 +54,15 @@ one = "This page is also available in another language"
 other = "This page is also available in other languages"
 
 [categories]
+one = "Category"
 other = "Categories"
 
 [tags]
+one = "Tag"
 other = "Tags"
 
 [series]
+one = "Series"
 other = "Series"
 
 [all_categories]
@@ -109,7 +106,6 @@ other = "first published"
 
 [meta_date_lastmonth]
 other = "last month"
-
 
 [meta_date_month]
 other = "month"

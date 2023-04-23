@@ -3,81 +3,88 @@
 {{- $entityParams := . }}
 {{- $template := "claris/_functions/schema-org/webpage" }}
 {{- $debug := .Debug }}
-{{/* {{- $debug = or $debug (findRE "technology" $page.Permalink) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `technology` $page.RelPermalink) ) ) }} */}}
 {{- $entityParams := merge . (dict "Debug" $debug) }}
 
-{{- $schemaOrgMeta := partial "claris/_functions/schema-org/author"
-    $entityParams $entityParams.Meta.Author }}
 
 {{- $dateFormat := default "2006-01-02T15:04:05.00Z" .Format.Date -}}
 
 <!-- [Schema.org entity WebPage](https://schema.org/WebPage)
 -->
 
-{{- with .Meta.Single.Data }}
-  {{- $schemaOrgMeta = merge $schemaOrgMeta (dict
-    "Root" (dict
-      "@context" "http://schema.org"
-      "@type" "WebPage"
-      "@id" .EntityID
-      "name" .Title
-      "headline" .Title
-      "alternativeHeadline" .AlternativeHeadline
-      "description" .Description
-      "inLanguage" .Language
-      "isFamilyFriendly" "true"
-      "author" $schemaOrgMeta.Entities.Author.Entity
-      "creator" $schemaOrgMeta.Entities.Author.Reference
-      "accountablePerson" $schemaOrgMeta.Entities.Author.Reference
-      "copyrightHolder" $schemaOrgMeta.Entities.Author.Reference
-      "copyrightYear" .CopyrightYear
-      "dateCreated" (.Date.Created.Format $dateFormat | safeHTML)
-      "datePublished" ((default .Date.Created .Date.Published).Format $dateFormat | safeHTML)
-      "dateModified" (.Date.Modified.Format $dateFormat | safeHTML)
-      "publisher"  $schemaOrgMeta.Entities.Author.Reference
-      "image" .Images.Search.CanonicalURL
-      "url" .CanonicalURL
-      "genre" (default .Genre .ArticleSection)
-      "keywords" .Keywords
-    )
-  ) }}
+{{- $schemaOrgMeta := dict }}
 
-  {{- $specificEntityType := false }}
-  {{- with $page.Params.schemaorg.entitytype }}
-    {{- if (eq (lower .) "profilepage") }}
-      {{- $specificEntityType = . }}
-      {{/* {{- warnf "%s[%s]: .Params.SchemaOrg.EntityType=%v" $page $template $specificEntityType }} */}}
-    {{- else }}
-      {{- errorf "%s[%s]: Invalid Schema.org EntityType specified in .Params.SchemaOrg.EntityType=%v" $page $template . }}
-    {{- end }}
-  {{- else }}
-    {{- with $page.Kind }}
-      {{- $kindToEntity := (dict
-        "home" "WebSite"
-        "page" "Article"
-        "section" "CollectionPage"
-        "term" "CollectionPage"
-        "taxonomy" "CollectionPage"
-      ) }}
-      {{- with index $kindToEntity . }}
+{{- with $meta.Author }}
+  {{- $schemaOrgMeta = merge $schemaOrgMeta (partialCached "claris/_functions/schema-org/_entities/author"
+      $entityParams $meta.Author) }}
+
+  {{- with $meta.Single.Data }}
+    {{- $schemaOrgMeta = merge $schemaOrgMeta (dict
+      "Root" (dict
+        "@context" "http://schema.org"
+        "@type" "WebPage"
+        "@id" .EntityID
+        "name" .Title
+        "headline" .Title
+        "alternativeHeadline" .AlternativeHeadline
+        "description" .Description
+        "inLanguage" .Language
+        "isFamilyFriendly" "true"
+        "author" $schemaOrgMeta.Entities.Author.Entity
+        "creator" $schemaOrgMeta.Entities.Author.Reference
+        "accountablePerson" $schemaOrgMeta.Entities.Author.Reference
+        "copyrightHolder" $schemaOrgMeta.Entities.Author.Reference
+        "copyrightYear" .CopyrightYear
+        "dateCreated" (.Date.Created.Format $dateFormat | safeHTML)
+        "datePublished" ((default .Date.Created .Date.Published).Format $dateFormat | safeHTML)
+        "dateModified" (.Date.Modified.Format $dateFormat | safeHTML)
+        "publisher"  $schemaOrgMeta.Entities.Author.Reference
+        "image" (default $meta.Site.Data.Images.search.canonicalurl .Images.search.canonicalurl)
+        "url" .CanonicalURL
+        "genre" (default .Genre .ArticleSection)
+        "keywords" .Keywords
+      )
+    ) }}
+
+    {{- $specificEntityType := false }}
+    {{- with $page.Params.schemaorg.entitytype }}
+      {{- if (eq (lower .) "profilepage") }}
         {{- $specificEntityType = . }}
-        {{/* {{- warnf "%s[%s]: kind=%v: entityType=%v kindToEntity=%v" $page $template $page.Kind . $kindToEntity }} */}}
+        {{/* {{- warnf "%s[%s]: .Params.SchemaOrg.EntityType=%v" $page $template $specificEntityType }} */}}
+      {{- else }}
+        {{- errorf "%s[%s]: Invalid Schema.org EntityType specified in .Params.SchemaOrg.EntityType=%v" $page $template . }}
+      {{- end }}
+    {{- else }}
+      {{- with $page.Kind }}
+        {{- $kindToEntity := (dict
+          "home" "WebSite"
+          "page" "Article"
+          "section" "CollectionPage"
+          "term" "CollectionPage"
+          "taxonomy" "CollectionPage"
+        ) }}
+        {{- with index $kindToEntity . }}
+          {{- $specificEntityType = . }}
+          {{/* {{- warnf "%s[%s]: kind=%v: entityType=%v kindToEntity=%v" $page $template $page.Kind . $kindToEntity }} */}}
+        {{- end }}
       {{- end }}
     {{- end }}
-  {{- end }}
 
-  {{- with $specificEntityType }}
-    {{- if $debug }}
-      {{- warnf "%s[%s]: kind=%v: entityType=%v" $page $template $page.Kind $specificEntityType }}
+    {{- with $specificEntityType }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: kind=%v: entityType=%v" $page $template $page.Kind $specificEntityType }}
+      {{- end }}
+      {{- $entityParams = merge $entityParams (dict "SchemaOrgMeta" $schemaOrgMeta) }}
+      {{- $schemaOrgMeta = (merge $schemaOrgMeta
+        (partial (printf "claris/_functions/schema-org/%s" (lower .) ) $entityParams)
+      ) }}
+    {{/* {{- else }}
+      {{- warnf "%s[%s]: kind=%v: no entityType=%v" $page $template $page.Kind $specificEntityType }} */}}
     {{- end }}
-    {{- $entityParams = merge $entityParams (dict "SchemaOrgMeta" $schemaOrgMeta) }}
-    {{- $schemaOrgMeta = (merge $schemaOrgMeta
-      (partial (printf "claris/_functions/schema-org/%s" (lower .) ) $entityParams)
-    ) }}
-  {{/* {{- else }}
-    {{- warnf "%s[%s]: kind=%v: no entityType=%v" $page $template $page.Kind $specificEntityType }} */}}
-  {{- end }}
 
+  {{- end }}
+{{- else }}
+  {{- errorf "%s[%s]: Missing entity $schemaOrgMeta.Entities.Author" $page $template }}
 {{- end }}
 
 {{- if $debug }}

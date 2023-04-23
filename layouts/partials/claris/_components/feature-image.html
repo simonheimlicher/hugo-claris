@@ -1,46 +1,38 @@
 {{- $page := .Page }}
 {{- $meta := .Meta }}
 {{- $title := .Title }}
-{{- $debug := false }}
-{{- $debug = findRE "about" $page.RelPermalink }}
-{{- with .Debug }}
-  {{- $debug = or $debug . }}
-{{- end }}
+{{- $debug := default false .Debug }}
+{{/* {{- $debug = or $debug (not (not (findRE `about` $page.RelPermalink) ) ) }} */}}
 {{- $template := "claris/_components/feature-image" }}
 
-{{- if not $page.Params.heroImage }}
-  {{- $featureImage := false }}
-  {{/* {{- with partial "claris/_functions/resources/images" $page }} */}}
+{{- $featureImage := false }}
+{{- with .Meta.Single.Data.Images }}
+  {{- with .feature.variant.default }}
+    {{- $widest := 0 }}
+    {{- range $versionName, $versionMeta := .version }}
+      {{- if (gt .resource.Width $widest)  }}
+        {{- $featureImage = . }}
+        {{- $widest = .resource.Width }}
+      {{- end }}
+    {{- end }}
+    {{ if $featureImage }}
+      {{- $featureImageArgs := merge . (dict
+        "resource" $featureImage.resource
+        "FigureClass" "hero-image_above-main"
+        "ImgClass" "hero-image_above-main_img"
+        "Alt" .alt
+        "Title" .title
+        "LazyLoad" false) }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: Found feature image; now calling responsive-image with .resource=%v %v"
+            $page $template $featureImageArgs.resource (jsonify (dict "indent" "  ") $featureImageArgs) -}}
+      {{- end }}
+      {{- partial "responsive-image" (merge $featureImageArgs (dict "Page" $page)) $featureImageArgs }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- if not $featureImage }}
   {{- if $debug }}
-    {{- warnf "%s[%s]: Looking for feature image in page images=%v" $page $template (jsonify (dict "indent" "  ") .Meta.Single.Data.Images) -}}
-  {{- end }}
-  {{- with .Meta.Single.Data.Images }}
-    {{- with .Feature.Params }}
-      {{- $widest := 0 }}
-      {{- range $aspect, $resParam := . }}
-        {{- if (gt .Resource.Width $widest)  }}
-          {{- $featureImage = . }}
-          {{- $widest = .Resource.Width }}
-        {{- end }}
-      {{- end }}
-      {{ with $featureImage }}
-        {{- $featureImageArgs := merge . (dict
-            "FigureClass" "hero-image_above-main"
-            "ImgClass" "hero-image_above-main_img"
-            "Alt" .Alt
-            "Title" .Title
-            "LazyLoad" false) }}
-        {{- if $debug }}
-          {{- warnf "%s[%s]: Found feature image; now calling responsive-image with .Resource=%v %v"
-              $page $template $featureImageArgs.Resource (jsonify (dict "indent" "  ") $featureImageArgs) -}}
-        {{- end }}
-        {{- partial "responsive-image" (merge $featureImageArgs (dict "Page" $page)) $featureImageArgs }}
-      {{- end }}
-    {{- end }}
-  {{- end }}
-  {{- if not $featureImage }}
-    {{- if $debug }}
-      {{- warnf "%s[%s]: No feature image found: %v" $page $template (jsonify (dict "indent" "  ") $featureImage) -}}
-    {{- end }}
+    {{- warnf "%s[%s]: No feature image found: %v" $page $template (jsonify (dict "indent" "  ") $featureImage) -}}
   {{- end }}
 {{- end }}

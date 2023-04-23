@@ -17,12 +17,11 @@
 
   {{- $otherProfileURLs := slice }}
 
-
   {{- with site.Params.social }}
     {{- range $site, $profile := . }}
       {{- $siteTemplate := index $siteTemplates $site }}
       {{- with $siteTemplate }}
-        {{- $profileURL := (printf $siteTemplate $profile) }}
+        {{- $profileURL := (printf $siteTemplate $profile.id) }}
         {{- if $debug }}
           {{- warnf "%s[%s]: profileURL=%q [siteTemplate=%q profile=%q]"
               $page $template $profileURL $siteTemplate $profile }}
@@ -47,17 +46,21 @@
   {{- end }}
   {{- $authorProfilePage := site.GetPage $authorProfilePagePath }}
   {{/* {{- warnf "%s[%s]: authorProfilePagePath=%v authorProfilePage=%v" $page $template $authorProfilePagePath $authorProfilePage  }} */}}
-  {{- $authorProfileURL := partial "claris/_functions/canonical-url" $authorProfilePage }}
 
-  {{- $description := default "" $authorProfilePage.Summary }}
+  {{- $description := $authorProfilePage.Params.description | default $authorProfilePage.Summary | default $author }}
+  {{- $description = $description | $page.RenderString | plainify }}
 
+  {{- $authorProfileURL := $authorProfilePage.RelPermalink }}
+  {{- $authorProfileCanonicalURL := (partial "claris/_functions/canonical-url" $authorProfilePage) }}
   {{- $contentContainerID := "contentContainer" }}
   {{- $authorMeta = (dict "Author"
     (dict "Data"
       (dict
         "Name" $author
-        "ProfileID" $contentContainerID
-        "ProfileURL" $authorProfileURL
+        "ID" (printf "%s#%s" $authorProfileCanonicalURL $contentContainerID)
+        "URL" $authorProfileURL
+        "CanonicalURL" $authorProfileCanonicalURL
+        "ContentID" $contentContainerID
         "Description" $description
         "OtherProfiles" (dict
           "URL" $otherProfileURLs

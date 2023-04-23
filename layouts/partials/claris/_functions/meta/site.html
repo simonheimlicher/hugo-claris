@@ -1,7 +1,7 @@
 {{- $page := .Page }}
 {{- $template := "claris/_functions/meta/site" }}
 {{- $debug := default false .Debug }}
-{{/* {{- $debug = or $debug (findRE "/$" $page.RelPermalink) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `/$` $page.RelPermalink) ) ) }} */}}
 
 {{- $homePage := (site.GetPage "/") }}
 
@@ -23,7 +23,8 @@
 
 {{- $description := site.Params.description | $page.RenderString | plainify }}
 
-{{- $name := site.Params.website.name }}
+{{- $name := default site.Title site.Params.website.name }}
+{{- $title := site.Title }}
 
 {{- $organization := site.Params.organization.name }}
 
@@ -57,17 +58,19 @@
   {{- end }}
 {{- end }}
 
-{{- $canonicalURL := partial "claris/_functions/canonical-url" $homePage }}
 {{- $canonicalBaseURL := ( site.Params.canonicalBaseURL | default site.Params.BaseURL ) }}
+{{- $canonicalURL := partialCached "claris/_functions/canonical-url" $homePage $canonicalBaseURL }}
 
 <!-- HTML 'id' attribute of the DOM container of the main content -->
 {{- $websiteID := "mainContainer" }}
 
-{{- $metaImages := partial "claris/_functions/resources/images" (dict
+{{- $metaImagesParams := (dict
   "Page" $homePage
   "Params" (merge $homePage.Params site.Params)
   "Debug" $debug
 ) }}
+
+{{- $metaImages := partialCached "claris/_functions/meta/images/index" $metaImagesParams $metaImagesParams }}
 
 {{- $siteMeta = (dict
   "Site" (dict
@@ -82,7 +85,7 @@
       "WebsiteID" $websiteID
       "EntityID" (printf "%s#%s" $canonicalURL $websiteID)
       "Name" $name
-      "Headline" ( .Title | $page.RenderString | plainify )
+      "Title" $title
       "AlternativeHeadline" $alternativeHeadline
       "Description" $description
       "Images" $metaImages

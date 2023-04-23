@@ -8,7 +8,7 @@
 {{- $itemType := default "page" .ItemType }}
 {{- $headingLevel := default 3 .HeadingLevel }}
 {{- $debug := default false .Debug }}
-{{/* {{- $debug = or $debug (findRE "technology" $page.RelPermalink) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/leadership/` $page.RelPermalink) ) ) }} */}}
 
 {{- if $debug }}
   {{- warnf "%s[%s]: .Page=%v[%T] .Meta=%v" $page $template $page $page $meta }}
@@ -19,27 +19,29 @@
 {{- end }}
 
 {{- with $page }}
-  {{/* {{- $meta := partial "claris/_functions/meta/single" (dict "Page" . "Debug" $debug) }} */}}
-  {{- $thumbnailResource := false }}
-  {{/* {{- with partial "claris/_functions/resources/images" $page }} */}}
+  {{- $excerptImage := false }}
   {{- $imageMeta := $meta.Single.Data.Images }}
   {{- if not $imageMeta }}
     {{- with $meta.List }}
       {{- $imageMeta = .Data.Images }}
     {{- end }}
   {{- end }}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: imageMeta=%v"
+        $page $template
+        (jsonify (dict "indent" "  ") $imageMeta) }}
+  {{- end }}
   {{- with $imageMeta }}
-    {{- $thumbnailResource = (index .Excerpt.Params "1x1") }}
-    {{- with $thumbnailResource }}
-      {{- $thumbnailResource = .Resource }}
+    {{- with .excerpt.variant.default.version.aspect_16x9 }}
+      {{- $excerptImage = .resource }}
       {{- if $debug }}
-        {{- warnf "%s[%s]: Rendering excerpt of page with thumbnailResource=%v"
-            $page $template $thumbnailResource.RelPermalink }}
-      {{- end }}
-    {{- else }}
-      {{- if $debug }}
-        {{- warnf "%s[%s]: No .Excerpt.Params found in imageResources=%v"
-            $page $template (jsonify (dict "indent" "  ") .) }}
+        {{- with $excerptImage }}
+          {{- warnf "%s[%s]: Rendering excerpt of page with excerptImage=%v"
+              $page $template $excerptImage }}
+        {{- else }}
+          {{- warnf "%s[%s]: No .excerpt.variant.default.version.aspect_16x9 found in imageResources=%v"
+              $page $template (jsonify (dict "indent" "  ") .) }}
+        {{- end }}
       {{- end }}
     {{- end }}
   {{- end }}
@@ -47,34 +49,42 @@
   {{- $summary := "" }}
   {{- range (slice .Params.excerpt .Summary .Params.description .Params.summary) }}
     {{- with . }}
-      {{- $summary = . | markdownify | plainify }}
+      {{- $summary = . }}
     {{- end }}
   {{- end }}
-  {{- $title := .Title -}}
+  {{- $summary = $summary | $page.RenderString | plainify }}
+  {{- $title := default .Title $meta.Single.Data.Title -}}
   {{- $plainTitle := $title | plainify }}
   <div class="excerpt {{ if .Params.featured }} featured{{ end }}">
     <div class="excerpt_header">
       <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
         <h{{ $headingLevel }} class="excerpt_title">
-        {{ $title | markdownify }}
+        {{ $title | $page.RenderString }}
         </h{{ $headingLevel }}>
       </a>
       {{- with $headerPartial }}
-        {{- partial $headerPartial (dict "Page" $page "relativeDates" $relativeDates "showTags" $showTags) }}
+        {{- partial $headerPartial (dict
+          "Page" $page
+          "ContainerClass" "excerpt_meta"
+          "relativeDates"
+          $relativeDates
+          "showTags" $showTags) }}
       {{- end }}
     </div>
     <div class="excerpt_main{{ if $summary }} partition{{ end }}">
       <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
-      {{- with $thumbnailResource }}
+      {{- with $excerptImage }}
         <div class="excerpt_thumbnail">
-            {{- partial "html-comment" (printf "[%s]: using thumbnailResource=%v with spec=%v"
-            $template . $thumbnailSizeSpec)}}
+            {{- partial "html-comment" (printf "[%s]: using excerptImage=%v with spec=%v"
+                $template . $thumbnailSizeSpec)}}
             {{- partial "responsive-image" (dict
-            "Page" $page
-            "Resource" .
-            "Alt" $title
-            "Size" $thumbnailSizeSpec
-            "LazyLoad" true) }}
+              "Page" $page
+              "resource" .
+              "Title" $title
+              "Alt" (default $title $imageMeta.excerpt.variant.default.alt)
+              "Size" $thumbnailSizeSpec
+              "LazyLoad" true
+            ) }}
         </div>
       {{- end }}
         <div class="excerpt_content">

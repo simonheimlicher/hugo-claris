@@ -4,12 +4,23 @@
 {{- $p := .Params }}
 {{- $template := "_default/baseof" }}
 
+{{- $debug := false }}
+{{/* {{- $debug = or $debug (not (not (findRE `^tags` $page.RelPermalink) ) ) }} */}}
+
 {{- $outputFormat := partial "claris/_functions/output-format" . }}
 {{- $printViewScript := "pagination_preview" }}
 {{- $printView := default false ($page.Param "PrintView") }}
 
+{{- $assetVariant := (dict
+  "OutputFormat" $outputFormat
+  "OnlyMediaType" ($page.Param "onlyMediaType")
+  "ContentTypeList" (partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type)
+) }}
+
+{{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "Debug" $debug) $page.Permalink }}
+
 {{- $htmlClasses := "no-js" }}
-{{- if .Params.heroImage }}
+{{- if .Params.heroImageStyle }}
   {{- if (eq .Params.heroImageStyle "cover") }}
     {{- $htmlClasses = printf "%s %s" $htmlClasses "content-above-header" }}
   {{- else if (eq .Params.heroImageStyle "background") }}
@@ -42,8 +53,8 @@
 >
 <head>
   {{ partial "html-comment" (printf "[%s]: .Type=%s .Layout=%s .MediaType=%s $outputFormat=%s]" $template .Type .Layout .MediaType $outputFormat.Name ) }}
-  {{- partial "claris/head/index" . }}
-  {{- partial "claris/_hooks/head-end/index" . }}
+  {{- partial "claris/head/index" (dict "Page" $page "Meta" $meta) }}
+  {{- partialCached "claris/_hooks/head-end/index" . $assetVariant }}
 </head>
 {{ partial "html-comment" (printf "BASEOF [%s]: BEGIN body" $template) }}
 <body id="documentContainer" {{- block "body-data" . -}} {{- end -}}>
@@ -55,22 +66,7 @@
       <script src="{{ relURL . }}" ></script>
     {{- end }}
   {{- end }}
-  {{- /* FIXME: The below code should be removed. The script "pagination_preview" should
-        be added to the modern-late script bundle and determine at runtime if it
-        should do something */ -}}
-  {{/* {{- if or $printView (eq $outputFormat.Name "print") }}
-    {{- $assets := "" -}}
-    {{- with partial "claris/_functions/assets" . }}
-      {{- $assets = . -}}
-    {{- end }}
-    {{ warnf "%s[%s] BASEOF: outputFormat=%s: load printViewScript=%s" $page $template $outputFormat.Name $printViewScript }}
-    {{- with (index $assets.scripts $printViewScript ) }}
-      <script type="module" src="{{ .Permalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
-    {{- else }}
-      {{- errorf "%s[%s]: scriptID '%s' not found" $page $template .script }}
-    {{- end }}
-  {{- end }} */}}
-  {{- partial "claris/_hooks/body-end/index" . }}
+  {{- partialCached "claris/_hooks/body-end/index" . $assetVariant }}
 </body>
 {{ partial "html-comment" (printf "BASEOF [%s]: END  body" $template) }}
 </html>
@@ -102,30 +98,36 @@
 {{- define "body" }}
   {{- $page := . }}
   {{- $template := "_default/baseof" }}
-  {{- $heroImage := default "" ($page.Param "heroImage") }}
   {{- $mainClassList := slice "main" }}
   {{- $mainPartial := "main" }}
+  {{- $debug := false }}
+  {{/* {{- $debug = or $debug (not (not (findRE `^$` $page.RelPermalink) ) ) }} */}}
 
   {{- with partialCached "claris/_functions/alternative-type" . "Alternative" .Type }}
     {{- $mainClassList = append (slice .) $mainClassList }}
     {{- $mainPartial = printf "main/%s" . }}
   {{- end }}
 
-  {{- with $heroImage }}
-    {{- $mainClassList = append (slice (printf "hero-image_%s_main" .style) ) $mainClassList }}
+  {{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "Debug" $debug) $page.Permalink }}
+  {{- $heroImageStyle := false }}
+  {{- with $meta.Single.Data.Images.hero }}
+    {{- $heroImageStyle = .style }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: .hero.style=%v" $page $template .style }}
+    {{- end }}
+    {{- $mainClassList = append (slice (printf "hero-image_%s_main" $heroImageStyle) ) $mainClassList }}
   {{- end }}
   {{- /* FIXME: to top button needs to be rebuilt as it currently is not responsive */ -}}
   {{- $showToTopButton := default false ($page.Param "showToTopButton") }}
-  {{- /* {{- warnf "BASEOF        [%s] .Section=%s .Layout=%s" $page $template .Section .Layout -}} */ -}}
   {{ partial "html-comment" (printf "BASEOF [%s]: BEGIN define body" $template) }}
-    {{- with $heroImage }}
-      {{ partial "claris/_components/hero-image" $page }}
+    {{- with $heroImageStyle }}
+      {{ partial "claris/_components/hero-image" (dict "Page" $page "Meta" $meta "Debug" $debug) }}
     {{- end }}
     {{- partial "claris/header/index" . }}
     <main id="mainContainer" class="{{ delimit $mainClassList " " }}">
       {{- block "main" . -}}{{ end }}
-      {{- with $heroImage }}
-        {{ partial "claris/_components/hero-image" $page }}
+      {{- with $heroImageStyle }}
+        {{ partial "claris/_components/hero-image" (dict "Page" $page "Meta" $meta "Debug" $debug) }}
       {{- end }}
       {{- if $showToTopButton -}}
         {{- partialCached "claris/_components/top" . }}

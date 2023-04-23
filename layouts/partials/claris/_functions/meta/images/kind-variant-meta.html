@@ -1,0 +1,289 @@
+{{- $kindVariantMeta := dict }}
+{{- $page := .Page }}
+{{- $debug := default false .Debug }}
+{{/* {{- $debug = or $debug (not (not (findRE `powerful` $page.RelPermalink) ) ) }} */}}
+{{- $template := "claris/_functions/meta/image/kind-variant-meta" }}
+
+{{- $imageKindVariantMeta := .imagekindvariantmeta }}
+{{- $imageKind := .kind }}
+{{- $versions := .versions }}
+
+{{- $imageResourceBaseArgs := (dict
+  "Page" $page
+  "quality" (default false .quality)
+  "format" (default false .format)
+  "Debug" $debug
+) }}
+
+{{- if $debug }}
+  {{- warnf "%s[%s]: kind=%v: Processing imageKindVariantMeta=%v"
+      $page $template $imageKind
+      (jsonify (dict "indent" "  ") $imageKindVariantMeta) }}
+{{- end }}
+
+{{- with $imageKindVariantMeta }}
+
+  <!-- We will return $kindVariantMeta,
+  which will have the following structure:
+  $kindVariantMeta = (dict
+    "Variant" $processedImageKindVariantMeta
+    "URL" $processedImageKindURLs
+    "CanonicalURL" $processedImageKindCanonicalURLs
+  )
+
+  Whereas the values of "URL" and "CanonicalURL" are flat slices,
+  "Variant" is itself a map with the following structure:
+  $processedImageKindVariantMeta = (dict
+      $variantName $variantVersionMeta
+  )
+
+  $variantName refers to a set of alternative images (e.g., for light and dark mode)
+  and has the following structure:
+  $variantVersionMeta = (dict
+    "title" "Sun is rising"
+    "alt" "Photo of sunrise"
+    "version" (dict
+      "aspect_1x1" resource.ResourceAdapter
+    )
+  )
+  -->
+
+  {{- $defaultVersionID := "default" }}
+
+  {{- $processedImageKindVariantMeta := dict }}
+  {{- $processedImageKindURLs := slice }}
+  {{- $processedImageKindCanonicalURLs := slice }}
+
+  {{- range $variantName, $variantMeta := $imageKindVariantMeta }}
+
+    {{- $processedVersionMeta := dict }}
+
+    {{- range $verSpec := $versions }}
+
+      {{- if $debug }}
+        {{- warnf "%s[%s]: %v/%v/%v: Looking for closest matching image in variantMeta=%v"
+            $page $template $imageKind $variantName $verSpec
+            (jsonify (dict "indent" "  ") $variantMeta) }}
+      {{- end }}
+
+      {{- $targetAspect := div (mul 1.0 .width) .height }}
+      {{- $bestMatchVersionResource := false }}
+      {{- $lowestAspectDeviation := 100.0 }}
+      {{- $greatestSizeRatio := 0.0 }}
+
+      {{- range $versionID, $versionResource := $variantMeta.version }}
+        {{- $candAspect := div (mul 1.0 .Width) .Height }}
+        {{- $candDeviation := math.Pow (sub (div $candAspect $targetAspect ) 1) 2 }}
+
+        {{- if le $candDeviation $lowestAspectDeviation }}
+          {{- $widthRatio := div (mul 1.0 .Width) $verSpec.width }}
+          {{- $heightRatio := div (mul 1.0 .Height) $verSpec.height }}
+          {{- $sizeRatio := (mul (math.Pow $widthRatio 2) (math.Pow $heightRatio 2) ) }}
+          {{/* {{- if or (and (ge $widthRatio 0.9) (ge $heightRatio 0.4) ) (and (ge $widthRatio 0.4) (ge $heightRatio 0.9) ) }} */}}
+          {{- if ge $sizeRatio $greatestSizeRatio }}
+            {{- $bestMatchVersionResource = $versionResource }}
+            {{- $lowestAspectDeviation = $candDeviation}}
+            {{- $greatestSizeRatio = $sizeRatio }}
+            {{- if $debug }}
+              {{- warnf "%s[%s]: %v/%v/%v: targetAspect=%.3f valid cand: %vx%v aspect=%.3f aspectDeviation=%.3f widthRatio=%.3f heightRatio=%.3f sizeRatio=%.3f"
+                  $page $template $imageKind $variantName $verSpec
+                  $targetAspect .Width .Height
+                  $candAspect $candDeviation
+                  $widthRatio $heightRatio $sizeRatio }}
+            {{- end }}
+          {{- else }}
+            {{- if $debug }}
+              {{- warnf "%s[%s]: %v/%v/%v: targetAspect=%v too small: %vx%v candAspect=%.3f candDeviation=%.3f vs. lowestAspectDeviation=%.3f"
+                  $page $template $imageKind $variantName $verSpec
+                  $targetAspect .Width .Height $candAspect $candDeviation $lowestAspectDeviation }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+
+      {{- with $bestMatchVersionResource }}
+        {{- $versionResource := . }}
+        {{- $origin := "existing" }}
+
+        {{- if (gt $lowestAspectDeviation 0.001) }}
+          {{- $imageResourceArgs := merge $imageResourceBaseArgs (dict
+            "resource" .
+            "process" (dict
+              "method" "fill"
+              "args" (printf "%vx%v Smart" $verSpec.width $verSpec.height)
+            )
+          ) }}
+          {{- if (lt $greatestSizeRatio 1.0) }}
+            {{- $cropWidth := .Width }}
+            {{- $cropHeight := (int (math.Round (div .Width (mul 1.0 $targetAspect)) ) ) }}
+            {{- if gt (div (mul 1.0 .Width) .Height) $targetAspect }}
+              {{- $cropWidth = (int (math.Round (div .Height (mul 1.0 $targetAspect)) ) ) }}
+              {{- $cropHeight = .Height }}
+            {{- end }}
+            {{- $imageResourceArgs = merge $imageResourceArgs (dict
+              "process" (dict
+                "method" "crop"
+                "args" (printf "%vx%v Smart" $cropWidth $cropHeight)
+              )
+            ) }}
+          {{- end }}
+          {{- if $debug }}
+            {{- warnf "%s[%s]: %v/%v/%v: aspectDeviation=%.3f sizeRatio=%.3f Use method=%v to generate version from imgResource=%v[%T] in imageResourceArgs=%v"
+                $page $template $imageKind $variantName $verSpec
+                $lowestAspectDeviation $greatestSizeRatio
+                $imageResourceArgs.process.method
+                . . $imageResourceArgs }}
+          {{- end }}
+
+          {{- $versionResource = partial "claris/_functions/resources/images/image-resource" $imageResourceArgs }}
+          {{- with $versionResource }}
+            {{- $origin = "generated" }}
+            {{- if $debug }}
+              {{- warnf "%s[%s]: %v/%v/%v: Generated imgResource=%v [imageResourceArgs=%v]"
+                  $page $template $imageKind $variantName $verSpec
+                  $versionResource $imageResourceArgs }}
+            {{- end }}
+          {{- else }}
+            {{- errorf "%s[%s]: %v/%v/%v: Failed to generate imgResource from imageResourceArgs=%v"
+                $page $template $imageKind $variantName $verSpec
+                $imageResourceArgs }}
+          {{- end }}
+        {{- end }}
+
+        {{- with $versionResource }}
+          {{- $versionMeta := (dict
+            "resource" $versionResource
+            "url" $versionResource.Permalink
+            "canonicalurl" (partial "claris/_functions/canonical-url" $versionResource)
+          ) }}
+          {{- $processedVersionMeta = merge $processedVersionMeta (dict $verSpec.id $versionMeta) }}
+          {{- if not (in $processedImageKindURLs .RelPermalink) }}
+            {{- $processedImageKindURLs = append (slice .RelPermalink) $processedImageKindURLs }}
+            {{- $processedImageKindCanonicalURLs = append (slice
+              (partial "claris/_functions/canonical-url" .)
+            ) $processedImageKindCanonicalURLs }}
+          {{- end }}
+
+          {{- if $debug }}
+            {{- warnf "%s[%s]: %v/%v/%v: Added %v versionMeta=%v[%vx%v] that matches version=%v in required versions=%v to processedVersionMeta=\n%v\nprocessedImageKindURLs=%v"
+                $page $template $imageKind $variantName $verSpec $origin
+                (jsonify (dict "indent" "  ") $versionMeta)
+                .Width .Height  $verSpec $versions
+                (jsonify (dict "indent" "  ") $processedVersionMeta)
+                $processedImageKindURLs }}
+          {{- end }}
+        {{- end }}
+
+      {{- end }}
+      {{- $processedImageKindVariantMeta = merge $processedImageKindVariantMeta (dict
+        $variantName (merge (merge $variantMeta (dict "version" false)) (dict "version" $processedVersionMeta) )
+        ) }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: %v/%v/*: Merged processedVersionMeta=\n%v\n with processedImageKindVariantMeta=\n%v"
+            $page $template $imageKind $variantName
+            (jsonify (dict "indent" "  ") $processedVersionMeta)
+            .Width .Height  $verSpec $versions
+            (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
+      {{- end }}
+
+    {{- end }}
+  {{- end }}
+
+  <!-- Add any additional available versions -->
+  {{- if $debug }}
+    {{- warnf "%s[%s]: kind=%v Looking for additional images in imageKindVariantMeta=%v"
+        $page $template $imageKind $imageKindVariantMeta }}
+  {{- end }}
+  {{- range $variantName, $variantMeta := $imageKindVariantMeta }}
+
+    {{- $processedVersionMeta := dict }}
+
+    {{- if isset $variantMeta "version" }}
+      {{- range $versionID, $versionResource := $variantMeta.version }}
+        {{- if not (in $processedImageKindVariantMeta $variantName) }}
+          {{- $versionMeta := (dict
+            "resource" $versionResource
+            "url" $versionResource.Permalink
+            "canonicalurl" (partial "claris/_functions/canonical-url" $versionResource)
+          ) }}
+          {{- $processedVersionMeta = merge $processedVersionMeta (dict $versionID $versionMeta) }}
+          {{- if $debug }}
+            {{- warnf "%s[%s]: %v/%v/%v Added additional available versionMeta=\n%v\n to processedVersionMeta=\n%v"
+                $page $template $imageKind $variantName $versionID
+                (jsonify (dict "indent" "  ") $versionMeta)
+                (jsonify (dict "indent" "  ") $processedVersionMeta) }}
+          {{- end }}
+
+        {{- end }}
+      {{- end }}
+      {{- $processedImageKindVariantMeta = merge $processedImageKindVariantMeta (dict
+        $variantName (merge (merge $variantMeta (dict "version" false)) (dict "version" $processedVersionMeta) )
+        ) }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: %v/%v/*: Merged processedVersionMeta=\n%v\n with processedImageKindVariantMeta=\n%v"
+          $page $template $imageKind $variantName
+          (jsonify (dict "indent" "  ") $processedVersionMeta)
+          (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
+      {{- end }}
+  {{- else }}
+      {{- warnf "%s[%s]: Missing .version in variantMeta=%v"
+          $page $template (jsonify (dict "indent" "  ") $variantMeta) }}
+    {{- end }}
+  {{- end }}
+
+  <!-- Ensure that a default version exists -->
+  {{- with $processedImageKindVariantMeta }}
+    {{- range $variantName, $variantMeta := $imageKindVariantMeta }}
+      {{- if not (index $processedImageKindVariantMeta "version" $defaultVersionID) }}
+        {{- range $versionID, $versionResource := $variantMeta.version }}
+          {{- if not (index $processedImageKindVariantMeta "version" $defaultVersionID) }}
+            {{- if $debug }}
+              {{- warnf "%s[%s]: %v/%v/%v: Before adding default: processedImageKindVariantMeta=\n%v"
+                  $page $template $imageKind $variantName $versionID
+                  (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
+            {{- end }}
+            {{- $versionMeta := (dict
+              "resource" $versionResource
+              "url" $versionResource.Permalink
+              "canonicalurl" (partial "claris/_functions/canonical-url" $versionResource)
+            ) }}
+            {{- $cleanVariantMeta := merge $variantMeta (dict "version" false) }}
+            {{- $processedImageKindVariantMeta = merge $processedImageKindVariantMeta (dict
+              $variantName (merge (merge $variantMeta (dict "version" false)) (dict "version" (dict $defaultVersionID $versionMeta)) )
+            ) }}
+            {{- if $debug }}
+              {{- warnf "%s[%s]: %v/%v/%v: Using %v in versionMeta=%v as default version %v[%vx%v]: processedImageKindVariantMeta=\n%v"
+                  $page $template $imageKind $variantName $versionID $versionResource
+                  (jsonify (dict "indent" "  ") $versionMeta)
+                  $defaultVersionID $versionResource.Width $versionResource.Height
+                  (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- $kindVariantMeta = (dict
+        "variant" $processedImageKindVariantMeta
+        "url" $processedImageKindURLs
+        "canonicalurl" $processedImageKindCanonicalURLs
+      ) }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: kind=%v Added processedImageKindVariantMeta=\n%v\nto kindVariantMeta=\n%v"
+          $page $template $imageKind
+          (jsonify (dict "indent" "  ") $processedImageKindVariantMeta)
+          (jsonify (dict "indent" "  ") $kindVariantMeta) }}
+    {{- end }}
+  {{- end }}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: kind=%v: returning \n%v\n"
+        $page $template $imageKind
+        (jsonify (dict "indent" "  ") $kindVariantMeta) }}
+  {{- end }}
+{{- else }}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: kind=%v: Invalid imageKindVariantMeta: \n%v"
+        $page $template $imageKind (jsonify (dict "indent" "  ") $imageKindVariantMeta) }}
+  {{- end }}
+{{- end }}
+
+{{- return $kindVariantMeta }}

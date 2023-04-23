@@ -501,15 +501,16 @@
       min-height: 4rem
       max-height: 8rem
       @supports (aspect-ratio: 1)
-        aspect-ratio: 514229 / 317811 // golden ratio
+        // aspect-ratio: 514229 / 317811 // golden ratio
+        aspect-ratio: 16 / 9
         height: auto
         min-height: unset
         max-height: unset
     @media screen and (min-width: $screenViewBreakpointWidthMobile)
       border-radius: 0.5rem
-    @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
-      img
-        aspect-ratio: 1
+    // @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+    //   img
+    //     aspect-ratio: 1
   &_content
     height: 100% // Ensure the entire excerpt div is covered by <a> tags
     padding: var(--inner_padding-y-3) var(--inner_padding-x) var(--inner_padding-y) var(--inner_padding-x)

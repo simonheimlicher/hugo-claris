@@ -1,12 +1,18 @@
-{{- $imageResourceArgs := . }}
-{{- $page := .Page }}
-{{- $originalPage := default .Page .OriginalPage }}
-{{- $resource := .Resource }}
-{{- $pageBundleResourceGlob := "" }}
-{{- $siteResourceGlob := "" }}
 {{- $res := false }}
 {{- $template := "claris/_functions/resources" }}
-{{- $debug := default false (strings.Contains $resource "never-match-this_debugging_disabled") }}
+
+{{/* {{- $imageResourceArgs := . }} */}}
+{{- $page := .Page }}
+{{- $originalPage := default .Page .OriginalPage }}
+{{/* {{- $debug := default false (strings.Contains $resource "never-match-this_debugging_disabled") }} */}}
+{{- $debug := default false .Debug }}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+/)?leadership/$` $page.RelPermalink) ) ) }} */}}
+{{- $imageResourceArgs := merge . (dict "Debug" $debug) }}
+
+{{- $resource := .resource }}
+{{- $pageBundleResourceGlob := "" }}
+{{- $siteResourceGlob := "" }}
+
 {{- /* https://stackoverflow.com/a/74084154
 In branch bundles (directories with _index.md that contain leaf bundles, i.e., further sub directories that you want to render as pages)
 you can have resources ONLY in the same folder.

@@ -1,0 +1,46 @@
+{{- $entityParams := .}}
+{{- $page := .Page }}
+{{- $template := "claris/_functions/schema-org/_entities/article" }}
+{{- $debug := .Debug }}
+{{/* {{- $debug = or $debug (not (not (findRE `powerful` $page.RelPermalink) ) ) }} */}}
+{{- $entityParams := merge . (dict "Debug" $debug) }}
+
+<!-- [Schema.org entity Article](https://schema.org/Article)
+-->
+
+{{- $articleEntity := dict }}
+
+{{- with .Meta.Single.Data }}
+  {{- $articleEntity = (dict "Entity"
+    (dict
+      "@type" "Article"
+      "@id" (printf "%s#%s" .CanonicalURL .ArticleID)
+      "name" .Title
+      "headline" .Title
+      "description" .Description
+      "url" .CanonicalURL
+      "articleSection" .ArticleSection
+      "wordCount" .WordCount
+    )
+    "Reference"
+    (dict
+      "@type" "Article"
+      "@id" .CanonicalURL
+    )
+  ) }}
+{{- else }}
+  {{- errorf "%s[%s]: Missing parameter .Meta.Single.Data" $page $template }}
+{{- end }}
+
+{{- $schemaOrgArticle := (dict
+  "Entities" (dict
+    "Article" $articleEntity
+  )
+) }}
+
+{{- if $debug }}
+  {{- warnf "%s[%s]: returning %v" $page $template
+  (jsonify (dict "indent" "  ") $articleEntity) }}
+{{- end }}
+
+{{- return $schemaOrgArticle }}

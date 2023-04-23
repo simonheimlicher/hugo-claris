@@ -1,9 +1,9 @@
 {{- $page := .Page }}
 {{- $meta := .Meta }}
 {{- $template := "claris/_components/title" }}
-{{- $title := default .Meta.Single.Data.Title .Page.Title }}
-{{- $subTitle := .Params.subtitle }}
-{{- $superTitle := .Params.supertitle }}
+{{- $title := default .Page.Title .Meta.Single.Data.Title }}
+{{- $subTitle := $page.Params.subtitle }}
+{{- $superTitle := $page.Params.supertitle }}
 {{- $titleClass := "content-title" }}
 
 {{- with .SuperTitle }}

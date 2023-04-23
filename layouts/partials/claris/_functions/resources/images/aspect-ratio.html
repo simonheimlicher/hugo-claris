@@ -1,6 +1,6 @@
 {{- $res := . }}
 {{- $debug := false }}
-{{/* {{- $debug = findRE "never-match" .RelPermalink }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `never-match` $page.RelPermalink) ) ) }} */}}
 {{- $template := "claris/_functions/resources" }}
 
 {{- $aspectRatios := (slice
@@ -17,7 +17,7 @@
 ) }}
 
 {{- if reflect.IsMap $res }}
-  {{- $res = .Resource }}
+  {{- $res = .resource }}
   {{- $aspectRatios = default $aspectRatios .AspectRatios }}
 {{- end }}
 
@@ -26,7 +26,7 @@
 {{- $resAspect  := div $resShort $resLong }}
 
 {{- $bestMatch := (dict
-  "Deviation" 10.0
+  "Deviation" 100.0
   "AspectRatio" false
 ) }}
 

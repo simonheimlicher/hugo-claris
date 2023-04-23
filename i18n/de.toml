@@ -40,12 +40,6 @@ other = "Artikel in"
 one = "Artikel mit"
 other = "Artikel mit"
 
-[category_list_title]
-other = "Kategorien"
-
-[tag_list_title]
-other = "Tags"
-
 [404_title]
 other = "Verirrt?"
 
@@ -60,12 +54,15 @@ one = "Diese Seite gibt es auch in einer anderen Sprache"
 other = "Diese Seite gibt es auch in anderen Sprachen"
 
 [categories]
+one = "Kategorie"
 other = "Kategorien"
 
 [tags]
+one = "Tag"
 other = "Tags"
 
 [series]
+one = "Serie"
 other = "Serien"
 
 [all_categories]

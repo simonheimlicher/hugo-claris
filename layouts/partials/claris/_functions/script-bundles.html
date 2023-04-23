@@ -162,7 +162,7 @@ JavaScript equivalent of global variables in the dictionary
         {{- with $variantContentTypeResources }}
           {{- $testConcatResources := $variantContentTypeResources | resources.Concat $testTargetFile }}
           {{- $testVariantResource := js.Build $jsBuildOptionsTest $testConcatResources }}
-          {{- if (ne $hugoParamsTestResource.Content $testVariantResource.Content) }}
+          {{- if or (not $hugoParamsTestResource) (ne $hugoParamsTestResource.Content $testVariantResource.Content) }}
             {{- $variantResources = append $variantContentTypeResources $variantResources }}
           {{- else }}
             {{- if $debug }}

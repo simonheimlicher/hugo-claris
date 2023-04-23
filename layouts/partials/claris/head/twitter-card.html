@@ -1,8 +1,8 @@
-{{- $page := . }}
+{{- $page := .Page }}
 {{- $meta := .Meta }}
-{{- $template := "claris/head/schema-org" }}
-{{- $debug := false }}
-{{/* {{- $debug = findRE "never-match" $page.RelPermalink }} */}}
+{{- $template := "claris/head/twitter-card" }}
+{{- $debug := default false .Debug }}
+{{/* {{- $debug = or $debug (not (not (findRE `never-match` $page.RelPermalink) ) ) }} */}}
 
 {{- $pagePath := "" }}
 {{- with $page.File }}
@@ -16,16 +16,36 @@
 {{- $twitterCard := default $meta.Site.Classification.TwitterCard $meta.Single.Classification.TwitterCard }}
 {{- if $twitterCard }}
   {{- with $meta.Single.Data }}
-  {{- with (default (index $meta.Site.Images.Share.CanonicalURL 0) (index .Images.Share.CanonicalURL 0) ) }}
+    {{- $shareImageURL := false }}
+    {{- $shareImageAlt := false }}
+    {{- with (default $meta.Site.Data.Images.share.variant.default .Images.share.variant.default) }}
+      {{- with (default .version.default .version.aspect_2x1) }}
+        {{- $shareImageURL = partial "claris/_functions/canonical-url" .resource }}
+      {{- end }}
+      {{- with .alt }}
+        {{- $shareImageAlt = . }}
+      {{- end }}
+    {{- end }}
+    {{- with $shareImageURL }}
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="{{ . }}">
-  {{- else }}
+    <meta name="twitter:image" content="{{ $shareImageURL }}">
+    {{- with $shareImageAlt }}
+    <meta name="twitter:alt" content="{{ . }}">
+    {{- end }}
+    {{- else }}
     <meta name="twitter:card" content="summary">
+    {{- warnf "%s[%s]: Missing share image: $meta.Site.Data.Images.share.variant.default=%v .Images.share.variant.default=%v"
+    $page $template $meta.Site.Data.Images.share.variant.default .Images.share.variant.default }}
+
   {{- end }}
     <meta name="twitter:title" content="{{ .Title }}">
     <meta name="twitter:description" content="{{ with .Description }}{{ . }}{{ else }}{{if .IsPage}}{{ .Summary }}{{ else }}{{ with .Site.Params.description }}{{ . }}{{ end }}{{ end }}{{ end -}}">
-  {{- with site.Social.twitter }}
-    <meta name="twitter:site" content="@{{ . }}">
+  {{- with default site.Social.twitter site.Params.social.twitter.id }}
+    <meta name="twitter:creator" content="{{ . }}">
+    <meta name="twitter:site" content="{{ . }}">
+  {{- else }}
+    {{- errorf "%s[%s]: Missing Twitter profile: site.Social.twitter=%v site.Params.social.twitter.id=%v"
+    site.Social.twitter site.Params.social.twitter.id }}
   {{- end }}
 
   {{- end }}

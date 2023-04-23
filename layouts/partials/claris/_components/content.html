@@ -1,8 +1,8 @@
 {{- $page := .Page }}
 {{- $meta := .Meta }}
-{{- $template := "partials/claris/_componentes/content" }}
+{{- $template := "partials/claris/_components/content" }}
 
-{{- $itemType := .ItemType }}
+{{- $itemType := .Meta.Single.Data.ItemType }}
 
 {{- with $page }}
 {{- $mainSection := (in ($page.Param "mainSections") .Section) -}}
@@ -35,7 +35,8 @@
   {{- end -}}
   <div class="article_body">
   {{- if $outdated }}
-  {{- partial "claris/_components/outdated" . -}}
+    {{- warnf "%s[%s]: article is outdated" $page $template }}
+    {{- partial "claris/_components/outdated" . -}}
   {{- end -}}
   {{- .Content }}
   </div>

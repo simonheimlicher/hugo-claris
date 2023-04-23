@@ -1,19 +1,31 @@
-{{- $page := .Page }}
-{{- $imageResourceArgs := . }}
-{{- $resourceSpec := .Resource }}
-{{- $template := "claris/_functions/image-srcset" }}
+{{- $template := "claris/_functions/resources/images/image-srcset" }}
 {{- $imageSrcSet := dict }}
+
+{{- $page := .Page }}
+{{- $debug := default false .Debug }}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+/)?leadership/$` $page.RelPermalink) ) ) }} */}}
+{{/* {{- $imageResourceArgs := . }} */}}
+{{- $imageResourceArgs := merge . (dict "Debug" $debug) }}
+
+{{- $resourceSpec := .resource }}
 {{- $srcSet := "" }}
-{{- $processingQuality := default false .Quality -}}
-{{- $processingFormat := default false .Format -}}
+
+{{- $processingQuality := default false .quality -}}
+{{- $processingFormat := default false .format -}}
 {{- $processingHint := default false .Hint -}}
 {{- $includeOriginalImage := default false ($page.Param "responsiveImageIncludeOriginal") }}
 {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
 
 {{/* {{- warnf "%s[%s]: resourceSpec:%v[%T]" $page $template $resourceSpec $resourceSpec }} */}}
-{{- $img := $resourceSpec }}
-{{- if not (strings.Contains (printf "%T" $img) "resources.resourceAdapter") }}
-  {{- $img = partial "claris/_functions/image-resource" $imageResourceArgs }}
+{{- $img := false }}
+{{- $resType := printf "%T" $resourceSpec }}
+{{- if strings.Contains $resType "string" }}
+  {{- $img = partial "claris/_functions/resources/images/image-resource" $imageResourceArgs }}
+{{- else if strings.Contains $resType "resources.resourceAdapter" }}
+  {{- $img = $resourceSpec }}
+{{- else }}
+  {{- errorf "%s[%s]: invalid resourceSpec=%v[%v]"
+      $page $template $resourceSpec $resourceSpec }}
 {{- end }}
 
 {{- with $img }}
@@ -22,7 +34,7 @@
   {{- $placeholderInlineImg := printf "data:image/svg+xml,%s" $placeholderSvg | replaceRE " " "%20" | replaceRE "<" "%3c" | replaceRE ">" "%3e" | replaceRE "\"" "'" | safeURL }}
 
   {{- if default true site.Params.lazyLoadLowImageQualityPlaceholder }}
-    {{- $placeholder := ($img.Resize "48x q20") | images.Filter (images.GaussianBlur 6) -}}
+    {{- $placeholder := ($img.Resize "128x q20") | images.Filter (images.GaussianBlur 6) -}}
     {{- $placeholderInlineImg = printf "data:image/jpeg;base64,%s" ($placeholder.Content | base64Encode) | safeURL | safeHTMLAttr }}
   {{- end -}}
 
@@ -96,6 +108,6 @@
   {{- end }}
   {{- $imageSrcSet = (dict "Img" $img "SrcSet" $srcSet "Placeholder" $placeholderInlineImg) }}
 {{- else }}
-  {{- errorf "%s[%s]: No image matching parameter .Resource='%s'" $page $template $resourceSpec }}
+  {{- errorf "%s[%s]: No image matching parameter .resource='%s'" $page $template $resourceSpec }}
 {{- end }}
 {{- return $imageSrcSet }}

@@ -4,16 +4,30 @@
 
 <!-- [Schema.org entity ProfilePage](https://schema.org/ProfilePage) -->
 
+{{- $schemaOrgMeta = merge $schemaOrgMeta (partialCached "claris/_functions/schema-org/_entities/article"
+    (dict "Page" $page "Meta" .Meta)
+    .Meta.Single.Data.URL
+  ) }}
+
 {{- with $schemaOrgMeta.Entities.Author }}
   {{- $schemaOrgMeta = merge $schemaOrgMeta (dict
     "Root" (dict
       "@type" "ProfilePage"
       "about" .Reference
-      "mainEntity" $schemaOrgMeta.Entities.Article.Reference
     )
   ) }}
+  {{- with $schemaOrgMeta.Entities.Article }}
+    {{- $schemaOrgMeta = merge $schemaOrgMeta (dict
+      "Root" (dict
+        "mainEntity" .Reference
+      )
+    ) }}
+  {{- else }}
+    {{- warnf "%s[%s]: Missing entity $schemaOrgMeta.Entities.Article" $page $template }}
+  {{- end }}
+
 {{- else }}
-  {{- errorf "%s[%s]: Missing parameter $schemaOrgMeta.Entities.Author" $page $template }}
+  {{- errorf "%s[%s]: Missing entity $schemaOrgMeta.Entities.Author" $page $template }}
 {{- end }}
 
 {{- return $schemaOrgMeta }}

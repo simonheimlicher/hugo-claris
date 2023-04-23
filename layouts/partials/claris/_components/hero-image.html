@@ -1,22 +1,17 @@
 {{- $page := .Page }}
 {{- $template := "partials/hero-image" }}
-{{- $heroImage := .Page.Param "heroImage" }}
-{{- $style := "" }}
-{{- $resource := $heroImage }}
-{{- if reflect.IsMap $heroImage }}
-  {{- with $heroImage.style }}
-    {{- $style = printf "_%s" . }}
-  {{- end }}
-  {{- with $heroImage.images }}
-    {{- $resource = . }}
-  {{- else }}
-    {{- errorf "%s[%s]: Invalid page parameter 'heroImage': %v'" $page $template $heroImage }}
-  {{- end }}
+{{- $imagesMeta := .Meta.Single.Data.Images }}
+{{- with $imagesMeta.hero }}
+  {{/* {{- warnf "%s[%s]: Calling responsive-image with .style=%v and .resource=%v'"
+      $page $template .style .variant }} */}}
+  {{- partial "responsive-image" (dict
+    "Page" $page
+    "style" .style
+    "resource" .variant
+    "FigureClass" (printf "hero-image_%s_figure" $imagesMeta.hero.style)
+    "ImgClass" (printf "hero-image_%s_img" $imagesMeta.hero.style)
+    "LazyLoad" true) }}
+{{- else }}
+  {{- errorf "%s[%s]: Invalid page meta .Single.Image.Data.Images.hero: %v'"
+      $page $template .Meta.Single.Data.Images.hero }}
 {{- end }}
-{{/* {{- warnf "%s[%s]: .heroImage: %v Calling responsive-image with .Resource:%v'" $page $template (.Page.Param "heroImage") $resource }} */}}
-{{- partial "responsive-image" (dict
-  "Page" $page
-  "Resource" $resource
-  "FigureClass" (printf "hero-image%s_figure" $style)
-  "ImgClass" (printf "hero-image%s_img" $style)
-  "LazyLoad" true) }}

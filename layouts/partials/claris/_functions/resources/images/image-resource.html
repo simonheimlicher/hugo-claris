@@ -1,9 +1,16 @@
-{{- $page := .Page }}
-{{- $imageResourceArgs := . }}
 {{- $img := false }}
-{{- $template := "claris/_functions/image-resource" }}
-{{- $resourceSpec := .Resource }}
-{{- $process := .Process }}
+{{- $template := "claris/_functions/resources/images/image-resource" }}
+
+{{- $page := .Page }}
+{{- $debug := default false .Debug }}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+/)?leadership/$` $page.RelPermalink) ) ) }} */}}
+<!-- FIXME: Cannot merge . with any dict - otherwise, the call to
+partial "claris/_functions/resources" no longer works -->
+{{/* {{- $imageResourceArgs := merge . (dict "Debug" $debug) }} */}}
+{{- $imageResourceArgs := . }}
+
+{{- $resourceSpec := .resource }}
+{{- $process := .process }}
 {{- if $resourceSpec }}
   {{- if (strings.Contains (printf "%T" $resourceSpec) "resources.resourceAdapter") }}
     {{- $img = $resourceSpec }}
@@ -33,22 +40,32 @@
       {{- $process_method := "fill" }}
       {{- $process_args := $process }}
       {{- if reflect.IsMap $process }}
-        {{- $process_method = (index $process "method") }}
+        {{- $process_method = lower (index $process "method") }}
         {{- $process_args = (index $process "args") }}
       {{- end }}
-
-      {{- if (eq $process_method "fill")}}
-        {{- /* warnf "%s[%s]: %q.Fill '%s'" $page $template $resourceSpec $process_args */ -}}
+      {{- if (eq $process_method "fill") }}
         {{- $img = $img.Fill $process_args }}
-      {{- else if (eq $process_method "fit")}}
-        {{- /* warnf "%s[%s]: %q.Fit '%s'" $page $template $resourceSpec $process_args */ -}}
+      {{- else if (eq $process_method "fit") }}
         {{- $img = $img.Fit $process_args }}
-      {{- else if (eq $process_method "crop")}}
-        {{- /* warnf "%s[%s]: %q.Crop '%s'" $page $process_args */ -}}
+      {{- else if (eq $process_method "crop") }}
         {{- $img = $img.Crop $process_args }}
-      {{- else if (eq $process_method "resize")}}
-        {{- /* warnf "%s[%s]: %q.Resize '%s'" $page $template $resourceSpec $process_args */ -}}
+      {{- else if (eq $process_method "resize") }}
         {{- $img = $img.Resize $process_args }}
+      {{- else }}
+        {{- errorf "%s[%s]: invalid process=%v [method=%v args=%v] from imageResourceArgs=%v"
+            $page $template
+            $process $process_method $process_args
+            $imageResourceArgs }}
+      {{- end }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: Returning image=%v[%vx%v] after processing with method=%v args=%v from imageResourceArgs=%v"
+            $page $template $img $img.Width $img.Height $process_method $process_args
+            $imageResourceArgs }}
+      {{- end }}
+    {{- else }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: Returning image=%v[%vx%v] without processing from imageResourceArgs=%v"
+            $page $template $img $img.Width $img.Height $imageResourceArgs }}
       {{- end }}
     {{- end }}
   {{- else -}}

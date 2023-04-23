@@ -2,13 +2,12 @@
 {{- $meta := .Meta }}
 {{- $template := "claris/_components/list" }}
 {{- $debug := default false .Debug }}
-{{/* {{- $debug = or $debug (not (not (findRE "/_footer/recent" $page.RelPermalink))) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `leadership` $page.RelPermalink) ) ) }} */}}
 
 {{- if $debug }}
   {{- warnf "%s[%s]: .ListParams=%v" $page $template .ListParams }}
 {{- end }}
 
-{{- $itemType := default "section" .ItemType }}
 {{- $listParams := default dict .ListParams }}
 
 {{- $excerptPartial := default false .Partial }}
@@ -16,26 +15,24 @@
 {{- $headingLevel := default 2 .HeadingLevel }}
 {{- $containerClass := default "content_multicolumn content" .ContainerClass }}
 
-{{- with $page.Param "sectionsToShow" }}
-  {{- $itemType = "section" }}
-{{- end }}
-
 {{- $mainSection := (in ($page.Param "mainSections") $page.Section) -}}
 
 {{- with $meta }}
 {{- else }}
   {{- if $debug }}
-    {{- warnf "%s[%s]: Rendering page with type=%v kind=%v itemType=%v listParams=%v"
-        $page $template $page.Type $page.Kind $itemType $listParams }}
+    {{- warnf "%s[%s]: Rendering page with type=%v kind=%v listParams=%v"
+        $page $template $page.Type $page.Kind $listParams }}
   {{- end }}
   {{- $meta = partial "claris/_functions/meta/list" (dict "Page" $page "Debug" $debug "ListParams" $listParams) }}
 {{- end }}
 
 {{- $itemsMeta := $meta.List.Data.Items }}
 
+{{- $itemType := default "section" $meta.List.Data.ItemType }}
+
 {{/* {{- if $debug }}
-  {{- warnf "%s[%s]: itemsMeta=%v itemType=%v limit=%v excerptpartial=%v listLayout=%v headingLevel=%v containerClass=%v"
-      $page $template $itemsMeta $itemType $limit $excerptPartial $listLayout $headingLevel $containerClass }}
+  {{- warnf "%s[%s]: itemsMeta=%v itemType=%v excerptPartial=%v listLayout=%v headingLevel=%v containerClass=%v"
+      $page $template $itemsMeta $itemType $excerptPartial $listLayout $headingLevel $containerClass }}
 {{- end }} */}}
 
 {{- with $itemsMeta }}
@@ -60,7 +57,14 @@
     {{- range . }}
       {{/* {{- warnf "%s[%s]: Listing page=%v with .Single.Data=%v" $page $template .Single.Page .Single.Data }} */}}
       {{- if $excerptPartial }}
-        {{ partial $excerptPartial (dict "Page" .Single.Page "Meta" . "HeadingLevel" $headingLevel "RelativeDates" false "ShowTags" false) }}
+        {{ partial $excerptPartial (dict
+          "Page" .Single.Page
+          "Meta" .
+          "ItemType" $itemType
+          "HeadingLevel" $headingLevel
+          "RelativeDates" false
+          "ShowTags" false
+        ) }}
       {{- else }}
         <li><a href="{{ .Single.Page.RelPermalink }}" title="{{ .Single.Page.Title }}">{{ .Single.Page.Title }}</a></li>
       {{- end }}

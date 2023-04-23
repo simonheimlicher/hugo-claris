@@ -7,15 +7,18 @@
  * [Correct use of mainEntityOfPage schema](https://stackoverflow.com/a/52496080/617559)
 -->
 
+{{- $schemaOrgMeta = merge $schemaOrgMeta (partialCached "claris/_functions/schema-org/_entities/article"
+    (dict "Page" $page "Meta" .Meta)
+    .Meta.Single.Data.URL
+  ) }}
+
 {{- $mainEntityOfPage := (dict "@type" "WebPage" "@id" (partial "claris/_functions/canonical-url" .Page) ) }}
 
 {{- with .Meta.Single.Data }}
   {{- $schemaOrgMeta = merge $schemaOrgMeta (dict
-    "Root" (dict
-      "@type" "Article"
-      "articleSection" .ArticleSection
-      "mainEntityOfPage" $mainEntityOfPage
-      "wordCount" .WordCount
+    "Root" (merge $schemaOrgMeta.Entities.Article.Entity (dict
+        "mainEntityOfPage" $mainEntityOfPage
+      )
     )
   ) }}
 {{- else }}

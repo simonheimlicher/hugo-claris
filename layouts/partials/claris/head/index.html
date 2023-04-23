@@ -1,19 +1,13 @@
 {{- $page := .Page }}
+{{- $meta := .Meta }}
+{{- $template := "claris/head/index" }}
+
 {{- $themeColorLit := default "hsl(47, 20%, 98%)" (.Page.Param "themeColorLit") }}
 {{- $themeColorDim := default "hsl(47, 20%, 10%)" (.Page.Param "themeColorDim") }}
 
-{{- $debug := false }}
-{{/* {{- $debug = findRE "powerful" $page.RelPermalink }} */}}
-
-{{- $siteMeta := partialCached "claris/_functions/meta/site" (dict "Page" $page "Debug" $debug) site.BaseURL }}
-{{- $singleMeta := partialCached "claris/_functions/meta/single" (dict "Page" $page "Debug" $debug) $page.Permalink }}
-{{- $authorMeta := partialCached "claris/_functions/meta/author" (dict "Page" $page "Debug" $debug) $page.Permalink }}
-
-{{- $meta := (merge
-  $siteMeta
-  $singleMeta
-  $authorMeta
-) }}
+{{- $debug := default false .Debug }}
+{{/* {{- $debug = or $debug (not (not (findRE `about` $page.RelPermalink) ) ) }} */}}
+{{- with $page }}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="{{- $themeColorLit -}}">
@@ -36,9 +30,9 @@
     {{- partial "claris/head/opengraph" (dict "Page" $page "Meta" $meta) }}
     {{- partial "claris/head/twitter-card" (dict "Page" $page "Meta" $meta) }}
     {{- $partialHeadRobots := printf "%s/head/robots" $contentType }}
-    {{ partial "html-comment"
-        (printf "BASEOF: Looking for %s" (printf "partials/%s" $partialHeadRobots) ) }}
-    {{- if (templates.Exists (printf "partials/%s.html" $partialHeadRobots) ) }}
+    {{- if and $contentType (templates.Exists (printf "partials/%s.html" $partialHeadRobots) ) }}
+      {{ partial "html-comment"
+          (printf "BASEOF: Looking for %s" (printf "partials/%s" $partialHeadRobots) ) }}
       {{- partial $partialHeadRobots (dict "Page" $page "Meta" $meta "ContentType" $contentType) }}
     {{- else }}
       {{ partial "claris/head/robots" (dict "Page" $page "Meta" $meta "ContentType" $contentType) }}
@@ -53,9 +47,16 @@
 {{- end }}
     <link rel="canonical" type="text/html" href="{{ partial "claris/_functions/canonical-url" . }}" title="{{ $title }}">
     {{- partialCached "claris/head/favicon" . }}
-{{- partial "claris/head/assets" . -}} {{- /* (dict "Page" .Page "Type" .Type "Layout" .Layout) */ -}}
+{{- $assetVariant := (dict
+  "Kind" .Kind
+  "OnlyMediaType" ($page.Param "onlyMediaType")
+  "ContentTypeList" (partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type)
+) }}
+{{- partialCached "claris/head/assets" . $assetVariant -}} {{- /* (dict "Page" .Page "Type" .Type "Layout" .Layout) */ -}}
 {{- /* BEGIN Styles for JavaScript module lazysizes */}}
     <noscript>
       <style>.lazyload { display: none; }</style>
     </noscript>
 {{- /* END   Styles for JavaScript module lazysizes */ -}}
+
+{{- end }}

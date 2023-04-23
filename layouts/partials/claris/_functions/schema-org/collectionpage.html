@@ -2,7 +2,7 @@
 {{- $schemaOrgMeta := .SchemaOrgMeta }}
 {{- $template := "claris/_functions/schema-org/collectionpage" }}
 {{- $debug := .Debug }}
-{{/* {{- $debug = or $debug (findRE "technology" $page.Permalink) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `technology` $page.RelPermalink) ) ) }} */}}
 {{- $entityParams := merge . (dict "Debug" $debug) }}
 
 <!-- [Schema.org entity CollectionPage](https://schema.org/CollectionPage)
@@ -41,25 +41,20 @@
 
 {{- with $listMeta.List.Data }}
   {{- range .Items }}
-    {{- with .Single.Data }}
-      {{- $item := (dict
-        "@type" "Article"
-        "@id" .CanonicalURL
-        "name" .Title
-        "headline" .Title
-        "description" .Description
-        "url" .CanonicalURL
-      ) }}
-      {{- $itemList = append (slice $item) $itemList }}
+    {{- with . }}
+      {{- $item := partialCached "claris/_functions/schema-org/_entities/article"
+        (dict "Page" $page "Meta" .)
+        .Single.Data.URL }}
+      {{- $itemList = append (slice $item.Entities.Article.Entity) $itemList }}
     {{- else }}
-      {{- errorf "%s[%s]: Invalid entry at .Single.Data.Items: %v" $page $template . }}
+      {{- errorf "%s[%s]: Invalid entry at .List.Data.Items: %v" $page $template . }}
     {{- end }}
   {{- end }}
 
   {{- $schemaOrgMeta = merge $schemaOrgMeta (dict
     "Root" (dict
       "mainEntity" (dict
-        "@type" "itemList"
+        "@type" "ItemList"
         "itemListElement" $itemList
       )
     )

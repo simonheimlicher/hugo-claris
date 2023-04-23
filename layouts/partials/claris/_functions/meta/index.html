@@ -1,0 +1,16 @@
+{{- $page := .Page }}
+{{- $template := "claris/_functions/meta/index" }}
+{{- $debug := default false .Debug }}
+{{/* {{- $debug = or $debug (not (not (findRE `^/$` $page.RelPermalink) ) ) }} */}}
+
+{{- $siteMeta := partialCached "claris/_functions/meta/site" (dict "Page" $page "Debug" $debug) site.BaseURL }}
+{{- $singleMeta := partialCached "claris/_functions/meta/single" (dict "Page" $page "Debug" $debug) $page.Permalink }}
+{{- $authorMeta := partialCached "claris/_functions/meta/author" (dict "Page" $page "Debug" $debug) $page.Permalink }}
+
+{{- $meta := (merge
+  $siteMeta
+  $singleMeta
+  $authorMeta
+) }}
+
+{{- return $meta }}

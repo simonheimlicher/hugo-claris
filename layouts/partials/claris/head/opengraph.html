@@ -1,8 +1,8 @@
-{{- $page := . }}
+{{- $page := .Page }}
 {{- $meta := .Meta }}
-{{- $template := "claris/head/schema-org" }}
-{{- $debug := false }}
-{{/* {{- $debug = findRE "never-match" $page.RelPermalink }} */}}
+{{- $template := "claris/head/opengraph" }}
+{{- $debug := default false .Debug }}
+{{/* {{- $debug = or $debug (not (not (findRE `leadership` $page.RelPermalink) ) ) }} */}}
 
 {{- $pagePath := "" }}
 {{- with $page.File }}
@@ -11,27 +11,33 @@
 
 {{- $dateLocalISO8601 := "2006-01-02T15:04:05-07:00" -}}
 
-{{- $homePage := (site.GetPage "/") }}
-
 {{- $opengraph := default $meta.Site.Classification.Opengraph $meta.Single.Classification.Opengraph }}
 {{- if $opengraph }}
+  {{- with $meta.Site.Data }}
+    <meta property="og:site_name" content="{{ .Title }}">
+  {{- end }}
   {{- with $meta.Single.Data }}
     <meta property="og:title" content="{{ .Title }}">
     <meta property="og:description" content="{{ default $meta.Site.Description .Description }}">
     <meta property="og:type" content="{{ if $page.IsPage }}article{{ else }}website{{ end }}">
     <meta property="og:url" content="{{ .CanonicalURL }}">
 
-{{- with .Images.Share.CanonicalURL }}
-    {{- range first 6 . }}
-    <meta property="og:image" content="{{ . }}">
+    {{- with default $meta.Site.Data.Images.share .Images.share }}
+      {{- range $variantName, $variantMeta := .variant }}
+        {{- range $versionID, $versionResource := .version }}
+    <meta property="og:image" content="{{ .canonicalurl }}">
+    <meta property="og:image:type" content="{{ .resource.MediaType }}">
+    <meta property="og:image:width" content="{{ .resource.Width }}">
+    <meta property="og:image:height" content="{{ .resource.Height }}">
+    <meta property="og:image:alt" content="{{ $variantMeta.alt }}">
+    <meta property="og:image:secure_url" content="{{ .canonicalurl }}">
+        {{- end }}
+      {{- end }}
+    {{- else }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: No images: .Images=%v" $page $template .Images }}
+      {{- end }}
     {{- end }}
-{{- else -}}
-  {{- with $meta.Site.Images.Share.CanonicalURL }}
-    {{- range first 6 . }}
-    <meta property="og:image" content="{{ . }}">
-    {{- end }}
-  {{- end }}
-{{- end }}
 
     {{- if $page.IsPage }}
     <meta property="article:section" content="{{ .ArticleSection }}">
@@ -42,7 +48,7 @@
     {{- with .Audio }}<meta property="og:audio" content="{{ . }}">{{ end }}
     {{- with .Locale }}<meta property="og:locale" content="{{ . }}">{{ end }}
     {{- with $meta.Site.Name }}<meta property="og:site_name" content="{{ . }}">{{ end }}
-{{- with .Videos.Share.CanonicalURL }}
+{{- with .Videos.share.canonicalurl }}
   {{- range . }}
     <meta property="og:video" content="{{ . }}">
   {{- end }}

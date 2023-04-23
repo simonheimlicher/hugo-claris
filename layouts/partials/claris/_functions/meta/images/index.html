@@ -1,0 +1,170 @@
+{{- $imageMeta := dict }}
+{{- $page := .Page }}
+{{- $paramsImage := .Params.image }}
+{{- $debug := default false .Debug }}
+{{/* {{- $debug = or $debug (not (not (findRE `/([^/]+-demo/)?powerful` $page.RelPermalink) ) ) }} */}}
+{{- $template := "claris/_functions/meta/images/index" }}
+
+{{- with $paramsImage }}
+  <!-- Grab images provided by .Params.image
+
+  Images are expected to be of one of the kinds listed below:
+  * Hero: Hero image, e.g. as screen-filling background
+  * Feature: General large images, e.g. as feature image at top of page,
+    and serves as fallback for thumbnail
+  * Thumbnail: General thumbnail images and fallback for search and share image
+  * Search: Images to be displayed by search engines as "rich results"
+    Google recommendations:
+    multiple high-resolution images (minimum of 50K pixels when
+    multiplying width and height) with the following aspect ratios:
+    16x9, 4x3, and 1x1.
+  * Share: Images to be used as teaser for sharing
+  -->
+
+  {{- $defaultKind := "default" }}
+
+  {{- $requiredImageVersions := (slice
+    (dict "kind" "default"
+      "versions" (slice
+        (dict "id" "aspect_16x9"
+          "width" 3840 "height" 2160)
+      )
+    )
+    (dict "kind" "excerpt"
+      "versions" (slice
+        (dict "id" "aspect_16x9"
+          "width" 1200 "height" 675)
+      )
+    )
+    (dict "kind" "search"
+      "versions" (slice
+        (dict "id" "aspect_16x9"
+          "width" 1200 "height" 675)
+        (dict "id" "aspect_4x3"
+          "width" 1200 "height" 900)
+        (dict "id" "aspect_1x1"
+          "width" 1200 "height" 1200)
+      )
+    )
+    (dict "kind" "share"
+      "versions" (slice
+        (dict "id" "aspect_16x9"
+          "width" 1200 "height" 675)
+        (dict "id" "aspect_2x1"
+          "width" 1200 "height" 600)
+      )
+    )
+    (dict "kind" "feature"
+      "versions" (slice)
+    )
+    (dict "kind" "hero"
+      "versions" (slice)
+    )
+  ) }}
+  {{/* {{- $requiredImageVersions = (slice
+    (dict "kind" "feature"
+      "versions" (slice)
+    )
+    (dict "kind" "hero"
+      "versions" (slice)
+    )
+  ) }} */}}
+
+  {{- $availableImageMetaParams := (dict
+    "ParamsImage" $paramsImage
+    "DefaultKind" $defaultKind
+    "RequiredVersions" $requiredImageVersions
+    "Debug" $debug
+  ) }}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: Calling 'available-image-meta' with %v"
+        $page $template (jsonify (dict "indent" "  ") $availableImageMetaParams ) }}
+  {{- end }}
+  {{- $availableImageMeta := partial "claris/_functions/meta/images/available-image-meta" (merge
+    $availableImageMetaParams (dict "Page" $page)
+  ) }}
+
+  <!-- Continue only if there is at the very least an image resource of
+  the default kind from which we can generate image resources for all other kinds -->
+  {{- $defaultImageKindMeta := index $availableImageMeta $defaultKind }}
+  {{- with $defaultImageKindMeta }}
+    {{/* {{- if $debug }}
+      {{- warnf "%s[%s]: Parsed paramsImage=\n%v\nto availableImageMeta=\n%v"
+          $page $template
+          (jsonify (dict "indent" "  ") $paramsImage)
+          (jsonify (dict "indent" "  ") $availableImageMeta) }}
+    {{- end }} */}}
+
+    <!-- Pass through all kinds again and ensure that there
+    is an image for every required version -->
+    {{- range $kindVerSpec := $requiredImageVersions }}
+      {{- $imageKind := .kind }}
+      {{- $versions := .versions }}
+
+      {{- $imageKindMeta := (index $availableImageMeta $imageKind) }}
+      {{- if $imageKindMeta }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: kind=%v: Using dedicated images for this kind%s: imageKindMeta=\n%v"
+              $page $template $imageKind
+              (cond (gt (len $versions) 0) (printf " and generate required versions=%v" $versions) "")
+              (jsonify (dict "indent" "  ") $imageKindMeta) }}
+        {{- end }}
+      {{- else }}
+        {{- if $versions }}
+          {{- $imageKindMeta = $defaultImageKindMeta }}
+          {{- if $debug }}
+            {{- warnf "%s[%s]: kind=%v: Using images from default kind=%v to generate required versions=%v: imageKindMeta=\n%v"
+                $page $template $imageKind $defaultKind $versions
+                (jsonify (dict "indent" "  ") $imageKindMeta) }}
+          {{- end }}
+        {{- else }}
+          {{- if $debug }}
+            {{- warnf "%s[%s]: kind=%v: No images of this kind found and no versions required"
+                $page $template $imageKind }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+
+      {{- with $imageKindMeta }}
+        {{- $imageKindMetaParams := (dict
+          "imagekindvariantmeta" $imageKindMeta.variant
+          "kind" $imageKind
+          "versions" $versions
+          "Debug" $debug
+        ) }}
+        {{- $imageKindMeta = merge $imageKindMeta (partial "claris/_functions/meta/images/kind-variant-meta" (
+          merge $imageKindMetaParams (dict "Page" $page)
+        ) ) }}
+
+        {{- with $imageKindMeta }}
+          {{- $imageMeta = merge $imageMeta (dict
+            $imageKind $imageKindMeta
+          ) }}
+          {{- if $debug }}
+            {{- warnf "%s[%s]: kind=%v Added imageKindMeta=\n%v\nto imageMeta=\n%v"
+                $page $template $imageKind
+                (jsonify (dict "indent" "  ") $imageKindMeta)
+                (jsonify (dict "indent" "  ") $imageMeta) }}
+          {{- end }}
+        {{- end }}
+      {{- else }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: kind=%v: Not returning any image resources for this kind"
+              $page $template $imageKind }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- else }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: No image resources found in .Params.image: \n%v"
+          $page $template (jsonify (dict "indent" "  ") $page.Params.image) }}
+    {{- end }}
+  {{- end }}
+
+  {{- if $debug }}
+    {{- warnf "%s[%s]: returning \n%v\n"
+        $page $template (jsonify (dict "indent" "  ") $imageMeta) }}
+  {{- end }}
+{{- end }}
+
+{{- return $imageMeta }}
