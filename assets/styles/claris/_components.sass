@@ -2,7 +2,7 @@
   background: var(--choice-bg)
   z-index: $main-z-index
   &_inner
-    // margin-top: var(--inner_padding-y)
+    // margin-top: var(--inner_margin-y)
     @include element-padding('inner', 2, unset, unset, unset)
     h1:first-child
       margin-top: 0
@@ -31,9 +31,14 @@
   &_multicolumn
     // padding-top: inherit
     @include content_multicolumn
+  &-title
+    @include content_multicolumn
+    width: 100%
+
 
 .footer
-  font-size: 1rem
+  font-size: 1rem // For IE 11
+  font-size: var(--font-size-footer)
   // FIXME: IE 11 bug
   // https://github.com/philipwalton/flexbugs/issues/75
   // Setting a min-height on the container (body does not work)
@@ -65,7 +70,8 @@
   //     font-size: 120%
 
   @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
-    font-size: 1rem
+    font-size: 1rem // For IE 11
+    font-size: var(--font-size-footer)
     @supports (display: grid)
       .grid-footer
         display: grid
@@ -75,6 +81,9 @@
         .footer_page
           padding: var(--inner_padding-y) var(--inner_padding-x)
           margin: auto
+          & > *:first-child
+            margin-top: 0
+            padding-top: 0
         .grid-id-1
           grid-column: 1
           padding-left: 0
@@ -84,10 +93,6 @@
           grid-column: 3
         .grid-id-4
           grid-column: 4
-        .footer_page
-          *:first-child
-            margin-top: 0
-            padding-top: 0
 
   p
     padding: 0.5rem 0
@@ -163,7 +168,7 @@
           border: 1px solid var(--text-hover)
 
 .article
-  &_link, &_title
+  &_link //, &_title
     margin-top: 0
     margin-bottom: 0
   &s
@@ -207,7 +212,7 @@
     &, span
       display: inline-flex
       flex-flow: row wrap
-      align-items: baseline
+      align-items: center
       row-gap: 0.5rem
     span
       align-items: center
@@ -399,11 +404,11 @@
   align-items: center
   margin: 0 0.5rem
   &, img, svg
-    width: calc(var(--icon-height))
-    height: calc(var(--icon-height))
+    width: var(--icon-height)
+    height: var(--icon-height)
   &_2
-    width: calc(2 * var(--icon-height))
-    height: calc(2 * var(--icon-height))
+    width: calc(2 * var(--icon-height)
+    height: calc(2 * var(--icon-height)
 
 .fa-icon
   // width: 1em
@@ -594,7 +599,7 @@
   @include aside
   &_inner
     position: relative
-    margin-top: calc(#{$screenViewInnerPaddingOneColumn})
+    margin-top: var(--inner_margin_y)
     padding-top: 1rem
     padding-bottom: 3rem
     &:after
@@ -637,7 +642,7 @@
 
 .pagination
   display: flex
-  margin: calc(1 * #{$screenViewInnerPaddingOneColumn}) 0
+  margin: var(--inner_margin_y) 0
 
 .page
   &-item
@@ -715,11 +720,11 @@
     display: flex
     flex-direction: column
     align-items: flex-start
-    padding: ($screenViewInnerPaddingOneColumn / 1.5) ($screenViewInnerPaddingOneColumn)
+    padding: var(--inner_padding-y) var(--inner_padding-x)
     background: rgba(var(--RGB_choice-bg), 0.98)
     @include background-gradient-translucent("to top", 0.9)
   &__label
-    padding-bottom: ($screenViewInnerPaddingOneColumn / 3)
+    padding-bottom: var(--inner_padding-y-1)
 
   &__actions
     a, button
@@ -982,8 +987,8 @@ html[data-mode="dim"]
 
 .shortcode_responsive-figure
   display: block
-  margin: calc(#{$screenViewInnerPaddingOneColumn}) auto
-  // padding: calc(#{$screenViewInnerPaddingOneColumn}) calc(#{$screenViewInnerPaddingOneColumn})
+  margin: var(--inner_margin_y) auto
+  // padding: var(--inner_padding-y) var(--inner_padding-x)
   border-radius: 0.125rem
   & > picture
     display: block
@@ -1033,7 +1038,7 @@ html[data-mode="dim"]
     float: none
     max-width: 80%
     // max-width: calc(0.8 * (#{$screenViewBreakpointWidthMobile} - 2 * var(--inner_padding-x) ) )
-    margin: 0 auto
+    margin: var(--inner_margin-y) auto
   *:not(figure) + &
     clear: both
 
@@ -1050,11 +1055,11 @@ html[data-mode="dim"]
     &.relative-width-20
       &.float-left
         float: left
-        margin: 0 $screenViewInnerPaddingOneColumn 1rem 0
+        margin: var(--inner_margin-y) var(--inner_margin-x) var(--inner_margin-y) 0
     &.relative-width-20
       &.float-right
         float: right
-        margin: 0 0 1rem $screenViewInnerPaddingOneColumn
+        margin: var(--inner_margin-y) 0 var(--inner_margin-y) var(--inner_margin-x)
     &.relative-width-20
       max-width: 40%
     &.relative-width-30
@@ -1066,11 +1071,11 @@ html[data-mode="dim"]
     &.relative-width-30
       &.float-left
         float: left
-        margin: 0 $screenViewInnerPaddingOneColumn 1rem 0
+        margin: var(--inner_margin-y) var(--inner_margin-x) var(--inner_margin-y) 0
     &.relative-width-30
       &.float-right
         float: right
-        margin: 0 0 1rem $screenViewInnerPaddingOneColumn
+        margin: var(--inner_margin-y) 0 var(--inner_margin-y) var(--inner_margin-x)
     &.relative-width-20
       max-width: 30%
     &.relative-width-30
@@ -1085,10 +1090,10 @@ html[data-mode="dim"]
       max-width: 60%
     &.float-left
       float: left
-      margin: 0 $screenViewInnerPaddingOneColumn 1rem 0
+      margin: var(--inner_margin-y) var(--inner_margin-x) var(--inner_margin-y) 0
     &.float-right
       float: right
-      margin: 0 0 1rem $screenViewInnerPaddingOneColumn
+      margin: var(--inner_margin-y) 0 var(--inner_margin-y) var(--inner_margin-x)
     &.relative-width-20
       max-width: 20%
     &.relative-width-30

@@ -26,6 +26,11 @@ $images: '{{ absURL (printf "%s/" (default "images/" (strings.TrimLeft "/" (stri
 $screenViewWidthChrome: {{ default "100rem" ($page.Param "screenViewWidthChrome") }}
 
 // Padding around body up to narrow breakpoint
+$screenViewBodyMarginMobile: {{ default "0rem" ($page.Param "screenViewBodyMarginMobile") }}
+// Padding around main elements (header, main, footer) up to narrow breakpoint
+$screenViewInnerMarginMobile: {{ default "0.75rem" ($page.Param "screenViewInnerMarginMobile") }}
+
+// Padding around body up to narrow breakpoint
 $screenViewBodyPaddingMobile: {{ default "0rem" ($page.Param "screenViewBodyPaddingMobile") }}
 // Padding around main elements (header, main, footer) up to narrow breakpoint
 $screenViewInnerPaddingMobile: {{ default "0.75rem" ($page.Param "screenViewInnerPaddingMobile") }}
@@ -53,11 +58,19 @@ $screenViewBreakpointWidthWide: {{ default "76rem" ($page.Param "screenViewBreak
 $screenViewBreakpointWidthUltrawide: {{ default "96rem" ($page.Param "screenViewBreakpointWidthUltrawide") }}
 
 // Parameters for layout with one column
+// Margin around body up to one-column breakpoint
+$screenViewInnerMarginNarrow: {{ default "1rem" ($page.Param "screenViewInnerMarginNarrow") }}
+// Margin around main elements (header, main, footer) up to one-column breakpoint
+$screenViewBodyMarginNarrow: {{ default "0rem" ($page.Param "screenViewBodyMarginNarrow") }}
 // Padding around body up to one-column breakpoint
 $screenViewInnerPaddingNarrow: {{ default "1rem" ($page.Param "screenViewInnerPaddingNarrow") }}
 // Padding around main elements (header, main, footer) up to one-column breakpoint
 $screenViewBodyPaddingNarrow: {{ default "1rem" ($page.Param "screenViewBodyPaddingNarrow") }}
 
+// Margin around body from one-column breakpoint upward
+$screenViewInnerMarginOneColumn: {{ default "1.5rem" ($page.Param "screenViewInnerMarginOneColumn") }}
+// Margin around main elements (header, main, footer) from one-column breakpoint upward
+$screenViewBodyMarginOneColumn: {{ default "0rem" ($page.Param "screenViewBodyMarginOneColumn") }}
 // Padding around body from one-column breakpoint upward
 $screenViewInnerPaddingOneColumn: {{ default "1.5rem" ($page.Param "screenViewInnerPaddingOneColumn") }}
 // Padding around main elements (header, main, footer) from one-column breakpoint upward

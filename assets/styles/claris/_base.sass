@@ -102,6 +102,10 @@ a
   word-wrap: break-word
   overflow-wrap: break-word
 
+  // Allow hyphenation in block elements within a
+  div, section, article, aside, header, p
+    hyphens: auto
+
 h1,h2,h3,h4,h5,h6
   font-family: inherit
   font-weight: var(--font-weight-heading)
@@ -111,6 +115,7 @@ h1,h2,h3,h4,h5,h6
   margin: $heading-margin-top 0 calc(#{$heading-margin-top} * 0.25) 0
   color: var(--header-text)
   line-height: calc(var(--line-height-heading))
+  hyphens: manual
   &:hover .link
     opacity: 1
 h1

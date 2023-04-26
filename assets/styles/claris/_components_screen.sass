@@ -140,13 +140,16 @@
   // overflow-y: visible
   // img
   //   margin: auto 0
+  font-size: var(--font-size-nav)
+  .icon
+    width: var(--icon-height-nav)
+    height: var(--icon-height-nav)
 
   &_active
     padding: 0
     border-radius: 0.125rem
     &, &_is_menu.nav_menu, &_has_menu:not(.nav_open), &_parent_is_menu.nav_menu, &_parent_has_menu
       @include nav-active-background
-
       &:active
         color: var(--xaccent)
       &:focus
@@ -181,7 +184,7 @@
     position: fixed
     // width: 90%
     // max-width: 16.5rem
-    width: 100%
+    // width: 100%
     max-width: unset
     top: 0
     bottom: 0
@@ -247,16 +250,6 @@
     &_item:not(&_active):hover
       @include nav-hover-background
 
-  &_parent_follow &_item
-    margin: 0 0.25rem
-    line-height: 1.25rem
-    .icon
-      margin: 0
-    // &:first-child
-    //   margin-left: 0
-    // a
-    //   padding: 0.5rem
-
   &_group
     &_follow_mode
       display: flex
@@ -282,19 +275,24 @@
     display: flex
     align-items: center
     border-radius: 0.5rem
-    width: fit-content
     z-index: ($main-z-index + 1) // Required for IE 11
 
   &_parent
+    // Display as grid to position sub menus properly
     display: grid
     &_follow, &_mode
-      display: flex
       flex-wrap: wrap
       width: auto
     &_mode
       // .color_mode
       margin-right: 0
       margin-left: auto
+
+  &_parent_follow &_item
+    margin: 0 0.25rem
+    line-height: 1.25rem
+    .icon
+      margin: 0
 
   &_open
     @include nav-open-background
@@ -630,13 +628,14 @@
         transform: translateX(0)
         @include element-padding('inner', 0, 1)
         & > .nav_group
-          width: 100%
-          margin-left: (0.25rem - $screenViewInnerPaddingMobile)
+          // width: 100%
+          // margin-left: (0.25rem - $screenViewInnerPaddingMobile)
           .nav_item
+            width: 100% // Maximize size of clickable area
             padding-left: ($screenViewInnerPaddingMobile - 0.25rem)
             padding-right: ($screenViewInnerPaddingMobile - 0.25rem)
           @media screen and (min-width: $screenViewBreakpointWidthNarrow)
-            margin-left: (0.5rem - $screenViewInnerPaddingOneColumn)
+            // margin-left: (0.5rem - $screenViewInnerPaddingOneColumn)
             .nav_item
               padding-left: ($screenViewInnerPaddingOneColumn - 0.5rem)
               padding-right: ($screenViewInnerPaddingOneColumn - 0.5rem)
@@ -653,7 +652,8 @@
 @media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
   .nav
     &_header
-      font-size: 0.9rem
+      font-size: 0.9rem // For IE 11
+      font-size: var(--font-size-nav)
     &, &_body
       flex-direction: row
     &_body
@@ -689,9 +689,9 @@
       // padding: 0.25rem 0
     &_parent
       padding: 0.25rem 0
-    .icon
-      width: 1.25rem
-      height: 1.25rem
+    // .icon
+    //   width: 1.25rem
+    //   height: 1.25rem
 
     &_sub
       position: absolute
@@ -721,7 +721,8 @@
   .nav
     &_header, &_brand
       height: $screenViewNavHeight
-      font-size: 1.1rem
+      font-size: 1.1rem // For IE 11
+      font-size: var(--font-size-nav)
       line-height: 1.5rem
     &_item, &_follow
       padding: 0.5rem 0.5rem
@@ -740,9 +741,9 @@
     .color_mode_label
       display: flex
       line-height: 1.25rem
-    .icon
-      width: 1.5rem
-      height: 1.5rem
+    // .icon
+    //   width: 1.5rem
+    //   height: 1.5rem
     &_body
       &::after
         top: $screenViewNavHeight

@@ -158,40 +158,40 @@ $main-z-index: 1;
 }
 
 @mixin aside() {
+  font-size: var(--font-size-aside);
   @include content_base();
-  /*
   h1, h2 {
-    font-size: 150%;
+    font-size: 125%;
   }
   h3 {
-    font-size: 130%;
+    font-size: 112.5%;
   }
   h4, h5, h6 {
-    font-size: 110%;
+    font-size: 100%;
   }
-  */
 }
 
 @mixin aside-meta() {
   @include content_base();
   font-size: var(--font-size-meta);
   h1, h2 {
-    font-size: 150%;
+    font-size: 125%;
   }
   h3 {
-    font-size: 130%;
+    font-size: 112.5%;
   }
   h4, h5, h6 {
-    font-size: 110%;
+    font-size: 100%;
   }
 }
 
-@mixin list-style($padding-vertical: $screenViewInnerPaddingMobile / 2, $indent: $list-style-indent) {
+@mixin list-style($margin-vertical: $screenViewInnerPaddingMobile / 2, $padding-vertical: $screenViewInnerPaddingMobile / 2, $indent: $list-style-indent) {
   ul, ol {
     // list-style: disc outside none; // initial;
     padding: $padding-vertical 0;
     margin: 0 0 0 $indent;
     li {
+      margin: ($margin-vertical / 2) 0;
       padding: ($padding-vertical / 2) 0;
     }
   }
@@ -414,10 +414,22 @@ html {
   --font-article: var(--font-serif);
   --font-code: var(--font-mono);
   --font-size: 100%;
-  --font-size-meta: 87.5%;
+  --font-size-nav: 1.5rem;
+  --font-size-aside: 0.875rem;
+  --font-size-meta: 0.875rem;
+  --font-size-footer: 0.875rem;
+@media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
+    --font-size-nav: 0.875rem;
+  }
+  @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
+  }
   @media screen and (min-width: $screenViewBreakpointWidthOneColumn) {
     --font-size: 125%;
-    --font-size-meta: 100%;
+    --font-size-nav: 1.0rem;
+    --font-size-footer: 1.0rem;
+  }
+  @media screen and (min-width: $screenViewBreakpointWidthWide) {
+    --font-size-nav: 1.25rem;
   }
 
   --font-weight: 400;
@@ -431,8 +443,9 @@ html {
   --line-height-heading: 1.35;
   --line-height-label: 1.2;
 
-  --icon-height: 1.1rem;
-  --icon-height-meta: 0.9rem;
+  --icon-height: 1.5em;
+  --icon-height-nav: 1.5rem;
+  --icon-height-meta: 1.1em;
 
   // --ease: cubic-bezier(.19,1,.22,1);
   --ease: cubic-bezier(0.39, 0.575, 0.565, 1);
@@ -474,6 +487,19 @@ html {
     ),
   );
 
+  $screenViewMargin: (
+    'outer': (
+      'mobile': $screenViewBodyMarginMobile,
+      'narrow': $screenViewBodyMarginNarrow,
+      'onecolumn': $screenViewBodyMarginOneColumn,
+    ),
+    'inner': (
+      'mobile': $screenViewInnerMarginMobile,
+      'narrow': $screenViewInnerMarginNarrow,
+      'onecolumn': $screenViewInnerMarginOneColumn,
+    ),
+  );
+
   $screenViewPadding: (
     'outer': (
       'mobile': $screenViewBodyPaddingMobile,
@@ -487,12 +513,14 @@ html {
     ),
   );
 
-  @mixin screen-padding($breakpoint) {
+  @mixin screen-margin-padding($breakpoint) {
     @each $where in ('outer', 'inner') {
+      $marginBase: map-get(map-get($screenViewMargin, $where), $breakpoint);
       $paddingBase: map-get(map-get($screenViewPadding, $where), $breakpoint);
       @if $paddingBase {
         @each $sizeDesc, $numQuarters in ('-1': 1, '-2': 2, '-3': 3, '': 4) {
           @each $direction in ('x', 'y') {
+            --#{$where}_margin-#{$direction}#{$sizeDesc}: #{( $marginBase * $numQuarters / 4 )};
             --#{$where}_padding-#{$direction}#{$sizeDesc}: #{( $paddingBase * $numQuarters / 4 )};
           }
         }
@@ -506,11 +534,11 @@ html {
     $breakpoint: nth($breakpointKeys, $i);
     $breakpointWidth: map-get(map-get($screenViewBreakpoints, 'width'), $breakpoint);
     @if $i == 1 {
-      @include screen-padding($breakpoint);
+      @include screen-margin-padding($breakpoint);
     }
     @else {
       @media screen and (min-width: $breakpointWidth) {
-        @include screen-padding($breakpoint);
+        @include screen-margin-padding($breakpoint);
       }
     }
   }
