@@ -2,15 +2,15 @@
 {{- $meta := .Meta }}
 {{- $template := "claris/_components/title" }}
 {{- $title := default .Page.Title .Meta.Single.Data.Title }}
-{{- $subTitle := $page.Params.subtitle }}
-{{- $superTitle := $page.Params.supertitle }}
+{{- $subtitle := default $page.Params.subtitle .Meta.Single.Data.Subrtitle }}
+{{- $supertitle := default $page.Params.supertitle .Meta.Single.Data.Supertitle }}
 {{- $titleClass := "content-title" }}
 
-{{- with .SuperTitle }}
-  {{- $superTitle = . }}
+{{- with .Supertitle }}
+  {{- $supertitle = . }}
 {{- end }}
-{{- with .SubTitle }}
-  {{- $subTitle = . }}
+{{- with .Subtitle }}
+  {{- $subtitle = . }}
 {{- end }}
 
 {{- with .TitleClass }}
@@ -18,18 +18,21 @@
 {{- end }}
 
 {{- with $page -}}<!-- Restore "." to refer to page context from which the partial was called -->
-  {{/* {{- partial "html-comment" (printf "[%s]: BEGIN: Kind:%v .Params:%v" $template .Kind .Params) }} */}}
+  {{- with $meta.Single.Data }}
+    {{- partial "html-comment" (printf "[%s]: BEGIN: Kind=%v .Meta.Single.Title=%v .Supertitle=%v .Subtitle=%v .AlternativeHeadline=%v"
+        $template $page.Kind .Title .Supertitle .Subtitle .AlternativeHeadline ) }}
+  {{- end }}
 
   {{- if $title }}
           <h1  id="articleTop"{{- with $titleClass }} class="{{ . }}" {{ end -}}>
-  {{- with $superTitle }}
+  {{- with $supertitle }}
            <span class="supertitle">{{. | $page.RenderString }}</span>
   {{- end -}}
   {{ $title | $page.RenderString }}
-  {{- with $subTitle }}
+  {{- with $subtitle }}
             <span class="subtitle">{{. | $page.RenderString }}</span>
   {{- end -}}
          </h1>
   {{- end -}}
 {{- end -}}
-{{/* {{- partial "html-comment" (printf "[%s]:   END" $template) }} */}}
+{{- partial "html-comment" (printf "[%s]:   END" $template) }}

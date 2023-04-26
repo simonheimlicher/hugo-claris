@@ -68,13 +68,16 @@
   {{- $metaTwitterCard := or $metaRobots.Index $metaRobots.Follow }}
 
   {{- $title := .Title | $page.RenderString | plainify }}
+  {{- $subtitle := .Params.subtitle }}
+  {{- $supertitle := .Params.supertitle }}
 
   {{- $alternativeHeadline := "" }}
+
   {{- if .Params.subtitle }}
     {{- $alternativeHeadline = ( printf "%s: %s" .Title .Params.subtitle | $page.RenderString | plainify ) }}
 
   {{- else if in (slice "taxonomy") .Kind }}
-    {{- $alternativeHeadline = default (strings.FirstUpper .Data.Plural) (T .Data.Plural 2) }}
+    {{- $title = default .Data.Plural (T (printf "all_%s" .Data.Plural) ) | strings.FirstUpper }}
 
     {{- if $debug }}
       {{- warnf "%s[%s]: .Kind=%s: title=%s alternativeHeadline=%s from .Singular=%s .Plural=%s .Section=%s .Title=%s"
@@ -84,17 +87,19 @@
 
   {{- else if in (slice "term") .Kind }}
 
-    {{- $title = (default .Title (T (lower .Title) ) ) }}
+    {{- $title = (default .Title (T (lower .Title) ) ) | strings.FirstUpper }}
     {{- $alternativeHeadline = default .Data.Singular $title }}
-    {{- $titlePrefix := T "articles_in_taxonomy" }}
     {{ if in (slice "tag") .Data.Singular }}
-      {{ $titlePrefix = T "articles_with_taxonomy" }}
+      {{ $supertitle = printf "%s %s" (T "articles_with_taxonomy") (T .Data.Plural 1) }}
+    {{- else }}
+      {{- $supertitle = printf "%s %s" (T "articles_in_taxonomy") (T .Data.Plural 1) }}
     {{- end }}
-    {{- $alternativeHeadline = printf "%s %s %s" (humanize $titlePrefix) (T .Data.Plural 1) ($page.RenderString (printf "*%s*" (default .Title (T (lower .Title) ) ) ) ) | safeHTML }}
+    {{/* {{- $alternativeHeadline = printf "%s %s %s" (humanize $supertitle) (T .Data.Plural 1) ($page.RenderString (printf "*%s*" (default .Title (T (lower .Title) ) ) ) ) | safeHTML }} */}}
+    {{- $alternativeHeadline = printf "%s %s %s" (humanize $supertitle) (default .Title (T (lower .Title) ) ) | strings.FirstUpper }}
 
     {{- if $debug }}
-      {{- warnf "%s[%s]: .Kind=%s: title=%s alternativeHeadline=%s from .Singular=%s .Plural=%s .Section=%s .Title=%s"
-          $page $template .Kind $title $alternativeHeadline
+      {{- warnf "%s[%s]: .Kind=%s: title=%s supertitle=%v alternativeHeadline=%s from .Singular=%s .Plural=%s .Section=%s .Title=%s"
+          $page $template .Kind $title $supertitle $alternativeHeadline
           .Data.Singular .Data.Plural .Section .Title }}
     {{- end }}
 
@@ -182,6 +187,8 @@
         "ArticleID" $articleID
         "EntityID" (printf "%s#%s" $canonicalURL $articleID)
         "Title" $title
+        "Subtitle" $subtitle
+        "Supertitle" $supertitle
         "AlternativeHeadline" $alternativeHeadline
         "Description" $description
         "ItemType" $itemType
