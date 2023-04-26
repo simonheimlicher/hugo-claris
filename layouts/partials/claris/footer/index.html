@@ -1,14 +1,13 @@
 {{- $page := .Page }}
 {{- $title := site.Title }}
 {{- $siteAuthor := site.Author.name }}
-{{- $recentMaxYears := default 5 ($page.Param "recentMaxYears") }}
-{{- $footerPages := where site.RegularPages.ByWeight "Type" "in" site.Params.footer.section }}
 <footer class="footer">
   <div class="footer_inner inner_horizontal inner_bottom-0">
-    {{- if not (or .IsHome (and (isset .Params "footer") (eq .Params.footer false) ) )}}
+    {{- if not (and (isset .Params "footer") (eq .Params.footer false) ) }}
+      {{- $footerPages := where site.RegularPages.ByWeight "Type" "in" site.Params.footer.section }}
       {{- with $footerPages }}
         {{- with $title }}
-          <h2 class="footer_title">{{- . | markdownify }}</h2>
+          <h2 class="footer_title">{{- . | $page.RenderString }}</h2>
         {{- end }}
         <div class="grid-footer">
           {{- range $id, $page := $footerPages }}
@@ -17,38 +16,39 @@
             </div>
           {{- end }}
         </div>
-      {{- end }}
-    {{- else }}
-      {{- if (or ($page.Param "IntroDescription") ($page.Param "footerFreshArticles)") ) }}
-        <div class="grid-footer">
-        {{- if ($page.Param "IntroDescription") }}
-          <h2>{{ $siteAuthor }}</h2>
-          <div class="footer_description">
-            <div class="footer_intro">
-              {{ ($page.Param "IntroDescription") | markdownify }}
-            </div>
-            {{- if ( ($page.Param "introURL") ) }}
-              {{- $r := T "read_more_about" | strings.FirstUpper }}
-              <p>
-              {{ $r }} <a href='{{ absLangURL (default "about/" ($page.Param "introURL") ) }}' title='{{ $r }} {{ $siteAuthor }}'>{{ $siteAuthor }}</a>
-              </p>
-            {{- end }}
-          </div>
-        {{- end }}
-        {{- if ($page.Param "footerFreshArticles") }}
-          {{- $recentArticles := partialCached "claris/_functions/list-content" . }}
-          {{- with $recentArticles }}
-            <div class="footer_articles">
-              <h3>{{- T "recent_articles" (len $recentArticles) }}</h3>
-              <ul>
-                {{- range ($recentArticles | first 5) }}
-                  <li><a href="{{ .Permalink }}" title="{{ .Title }}">{{ .Title }}</a></li>
-                {{- end }}
-              </ul>
+      {{- else }}
+        {{- if (or ($page.Param "IntroDescription") ($page.Param "footer.recentarticles)") ) }}
+          <div class="grid-footer">
+          {{- if ($page.Param "IntroDescription") }}
+            <h2>{{ $siteAuthor }}</h2>
+            <div class="footer_description">
+              <div class="footer_intro">
+                {{ ($page.Param "IntroDescription") | $page.RenderString }}
+              </div>
+              {{- if ( ($page.Param "introURL") ) }}
+                {{- $r := T "read_more_about" | strings.FirstUpper }}
+                <p>
+                {{ $r }} <a href='{{ absLangURL (default "about/" ($page.Param "introURL") ) }}' title='{{ $r }} {{ $siteAuthor }}'>{{ $siteAuthor }}</a>
+                </p>
+              {{- end }}
             </div>
           {{- end }}
+          {{- with ($page.Param "footer.recentarticles") }}
+              <div class="footer_articles">
+                <h3>{{- T "recent_articles" . }}</h3>
+                  {{- $contentParams := (dict
+                    "ItemType" "article"
+                    "ListLayout" "list"
+                    "ListParams" (dict
+                      "IncludeSections" (default "/" ($page.Param "mainSections") )
+                      "Limit" .
+                    )
+                  ) }}
+                  {{- partial "claris/_components/list" (merge $contentParams (dict "Page" $page) ) }}
+              </div>
+          {{- end }}
+          </div>
         {{- end }}
-        </div>
       {{- end }}
     {{- end }}
     <div class="footer_copyright">

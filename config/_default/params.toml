@@ -70,8 +70,12 @@
 
 logoURL = "/"
 
+[home]
+  section = "_home"
+
 [footer]
   section = "_footer"
+  recentarticles = 3
 
 [website]
   name = "simon.heimlicher.com"
