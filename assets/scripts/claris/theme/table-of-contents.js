@@ -146,6 +146,7 @@ function injectTableOfContents() {
                 let sectionHeadings = [];
 
                 for (let idx = 0, navId = navigationElementIds[0]; idx < navigationElementIds.length; navId = navigationElementIds[++idx]) {
+                    navId = decodeURI(navId);
                     let sectionHeading = content.querySelector(`#${navId}`);
                     if (sectionHeading) {
                         // deb("    sectionHeading " + sectionHeading + " =  '" + navId + "'");
