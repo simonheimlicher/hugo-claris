@@ -3,11 +3,22 @@
 {{- $logoURL := .LogoURL }}
 {{- $logoClass := .LogoClass }}
 
+{{- with $logoURL }}
+  {{- if not (strings.HasPrefix . "http") }}
+    {{- with strings.TrimLeft "/" . }}
+      {{- $logoURL = absLangURL . }}
+    {{- else }}
+      {{- $logoURL = site.BaseURL }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+
 {{- $t := site.Title -}}
 
 {{- $logoImage := partialCached "claris/_functions/resources/images/logo-image" (dict "Page" $page "LogoImage" $logoImageSpec) -}}
 {{- with $logoURL }}
-        <a href='{{ absLangURL . }}' title='{{ $t }}' class='nav_brand_parent'>
+        <a href='{{ . }}' title='{{ $t }}' class='nav_brand_parent'>
 {{- end }}
           <div class="nav_brand nav_item{{ with $logoClass }} {{ . }}{{ end }}">
   {{- with $logoImage }}
