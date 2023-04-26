@@ -1,23 +1,25 @@
+{{- $page := .Page }}
+{{- $logoImageSpec := default site.Params.logo .LogoImage }}
+{{- $logoURL := .LogoURL }}
+{{- $logoClass := .LogoClass }}
+
 {{- $t := site.Title -}}
-{{- $logoImageHeight := 96 }}
-{{- $sizeSpec := printf "x%d" (int $logoImageHeight) }}
-{{- /* By specifying a second argument to partialCached "claris/_functions/logo-image",
-    we ensure that it creates a new version with the specified size */ -}}
-{{- $logoImage := partialCached "claris/_functions/logo-image" $sizeSpec $sizeSpec -}}
-{{- with .logoURL }}
+
+{{- $logoImage := partialCached "claris/_functions/resources/images/logo-image" (dict "Page" $page "LogoImage" $logoImageSpec) -}}
+{{- with $logoURL }}
         <a href='{{ absLangURL . }}' title='{{ $t }}' class='nav_brand_parent'>
 {{- end }}
-          <div class="nav_brand nav_item{{ with .class }} {{ . }}{{ end }}">
+          <div class="nav_brand nav_item{{ with $logoClass }} {{ . }}{{ end }}">
   {{- with $logoImage }}
             <img src="{{ absURL .Permalink }}" class="logo" width="{{ .Width }}" height="{{ .Height }}" alt="{{ $t }}">
   {{- else -}}
     {{- $t -}}
   {{- end }}
           </div>
-{{- with .logoURL }}
+{{- if $logoURL }}
         </a>
 {{- end }}
-        <div class="nav_mobile_toggle nav_item{{ with .class }} {{ . }}{{ end }}">
+        <div class="nav_mobile_toggle nav_item{{ with $logoClass }} {{ . }}{{ end }}">
           <div class="nav_mobile_toggle_open">{{- partialCached "sprite" (dict "icon" "open-menu") "open-menu" -}}</div>
           <div class="nav_mobile_toggle_close">{{- partialCached "sprite" (dict "icon" "closeme") "close-menu" -}}</div>
         </div>

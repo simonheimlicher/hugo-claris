@@ -3,8 +3,6 @@
 {{- $siteAuthor := site.Author.name }}
 {{- $recentMaxYears := default 5 ($page.Param "recentMaxYears") }}
 {{- $footerPages := where site.RegularPages.ByWeight "Type" "in" site.Params.footer.section }}
-{{- /* $defaultFooterLogo := printf "%s%s" $iconsDir "apple-touch-icon.png" */ -}}
-{{- /* Generate favicons with https://realfavicongenerator.net/favicon_result?file_id=p1f4mdr89t5lsk11g8au6b165q6#.YI6Qim6xUmo */}}
 <footer class="footer">
   <div class="footer_inner inner_horizontal inner_bottom-0">
     {{- if not (or .IsHome (and (isset .Params "footer") (eq .Params.footer false) ) )}}
@@ -30,15 +28,15 @@
               {{ ($page.Param "IntroDescription") | markdownify }}
             </div>
             {{- if ( ($page.Param "introURL") ) }}
-              {{- $r := T "read_more_about" }}
+              {{- $r := T "read_more_about" | strings.FirstUpper }}
               <p>
-              <a href='{{ absLangURL (default "about/" ($page.Param "introURL") ) }}' title='{{ $r }} {{ $siteAuthor }}'>{{ $r }} {{ $siteAuthor }}</a>
+              {{ $r }} <a href='{{ absLangURL (default "about/" ($page.Param "introURL") ) }}' title='{{ $r }} {{ $siteAuthor }}'>{{ $siteAuthor }}</a>
               </p>
             {{- end }}
           </div>
         {{- end }}
         {{- if ($page.Param "footerFreshArticles") }}
-          {{- $recentArticles := partialCached "claris/_functions/fresh-content" . }}
+          {{- $recentArticles := partialCached "claris/_functions/list-content" . }}
           {{- with $recentArticles }}
             <div class="footer_articles">
               <h3>{{- T "recent_articles" (len $recentArticles) }}</h3>

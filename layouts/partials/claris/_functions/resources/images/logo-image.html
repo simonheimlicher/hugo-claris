@@ -1,0 +1,27 @@
+{{- $page := .Page }}
+{{- $logoImageSpec := default site.Params.logo .LogoImage }}
+{{- $logoImageWidth := default 96 .Width }}
+{{- $logoImageHeight := default $logoImageWidth .Height }}
+{{- $template := "claris/_functions/logo-image" }}
+
+{{- $logoImageResource := false }}
+
+{{- with $logoImageSpec }}
+  {{- $sizeSpec := printf "%dx%d" (int $logoImageWidth) (int $logoImageHeight) }}
+  {{- $logoImageParams := (dict
+    "resource" .
+    "process" (dict
+      "method" "fill"
+      "args" $sizeSpec )
+    ) }}
+  {{- $logoImageResource = partialCached "claris/_functions/resources/images/image-resource" (merge
+    $logoImageParams (dict "Page" $page) ) $logoImageParams -}}
+
+  {{- if not $logoImageResource }}
+    {{- errorf "[%s]: Logo image resource '%v' not found" $template $logoImageResource }}
+  {{- end }}
+{{- else }}
+  {{- warnf "[%s]: invalid logo image: .LogoImageSpec='%v'" $template $logoImageSpec }}
+{{- end }}
+
+{{- return $logoImageResource -}}

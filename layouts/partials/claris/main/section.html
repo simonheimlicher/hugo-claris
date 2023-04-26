@@ -16,7 +16,7 @@
 
   {{- with .Content }}
     {{ partial "claris/_components/content" (dict "Page" $page "Meta" $meta "HeadingLevel" $headingLevel) }}
-    {{- $headingLevel = sub $headingLevel 1 }}
+    {{- $headingLevel = add $headingLevel 1 }}
   {{- else }}
     {{ partial "claris/_components/title" (dict "Page" $page "Meta" $meta "HeadingLevel" $headingLevel) }}
   {{- end }}

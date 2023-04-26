@@ -93,7 +93,7 @@ other = "Licht an"
 other = "Licht aus"
 
 [read_more_about]
-other = "Mehr dazu lesen"
+other = "Mehr lesen über "
 
 [meta_date_updated]
 other = "aktualisiert"
