@@ -75,7 +75,7 @@ $imageKindMeta = (dict
         the entire map as meta data for this particular image kind but still
         process the contents of .variant via assigning it to $imageKindVariantParam
         until it contains only valid image resourceAdapters -->
-        {{- $imageKindMeta = $imageKindParam }}
+        {{- $imageKindMeta = merge $imageKindParam (dict "variant" false) }}
         {{- if reflect.IsMap . }}
           {{- $imageKindVariantParam = . }}
         {{- else }}
@@ -91,7 +91,6 @@ $imageKindMeta = (dict
     <!-- All valid params for images are now captured as structured meta data in $imageKindVariantParam
     Next, we gather the actual image resources given by the meta data -->
     {{- range $variantName, $variantParam := $imageKindVariantParam }}
-      {{- $imgMeta := false }}
       {{/* {{- if $debug }}
         {{- warnf "%s[%s]: kind=%v Parsing variantParam=\n%v"
             $page $template $imageKind (jsonify (dict "indent" "  ") $variantParam) }}
@@ -104,6 +103,7 @@ $imageKindMeta = (dict
       {{- end }}
 
       {{- range $versionParam := $versionParamList }}
+        {{- $imgMeta := false }}
         {{- if (reflect.IsMap $versionParam) }}
           {{- with $res := .resource }}
             {{- $imgParam = $versionParam }}
@@ -147,8 +147,8 @@ $imageKindMeta = (dict
                 "resource" $imgResource
               ) }}
             {{- else }}
-              {{- errorf "%s[%s]: kind=%v: got invalid image resource=%q[%T] from .resource=%q in imageResourceArgs=%v"
-                  $page $template $imageKind $imgResource
+              {{- errorf "%s[%s]: kind=%v: got invalid image resource='%v'[%T] from .resource=%q in imageResourceArgs=%v"
+                  $page $template $imageKind $imgResource $imgResource
                   $imageResourceArgs.resource $imageResourceArgs }}
             {{- end }}
           {{- end }}
@@ -157,13 +157,15 @@ $imageKindMeta = (dict
         {{- with $imgMeta }}
           {{- $aspectRatio := partial "claris/_functions/resources/images/aspect-ratio" .resource }}
           {{- $imgVersionMeta := dict }}
+          {{- $versionName := printf "aspect_%s" $aspectRatio }}
+          {{- $versionResource := $imgMeta.resource }}
           {{- range $k, $v := $imgMeta }}
             {{- if (ne $k "resource") }}
               {{- $imgVersionMeta = merge $imgVersionMeta (dict $k $v) }}
             {{- end }}
           {{- end }}
           {{- $imgVersionMeta = merge $imgVersionMeta (dict "version" (dict
-              (printf "aspect_%s" $aspectRatio) $imgMeta.resource
+              $versionName $versionResource
             )
           ) }}
           {{- $imageKindVariantMeta = merge $imageKindVariantMeta (dict $variantName $imgVersionMeta) }}
@@ -174,22 +176,21 @@ $imageKindMeta = (dict
           {{- if not (isset $imageKindVariantMeta $defaultVariantName) }}
             {{- $imageKindVariantMeta = merge $imageKindVariantMeta (dict $defaultVariantName $imgVersionMeta) }}
           {{- end }}
-          {{/* {{- if $debug }}
-            {{- warnf "%s[%s]: kind=%v Added image %q[%T] in imgVersionMeta=\n%v\nto imageKindVariantMeta=\n%v"
-                $page $template $imageKind $imgVersionMeta $imgVersionMeta
+          {{- if $debug }}
+            {{- warnf "%s[%s]: kind=%v Added image version=%v with resource='%v'[%T] in imgVersionMeta=\n%v\nto imageKindVariantMeta=\n%v"
+                $page $template $imageKind $versionName $versionResource $versionResource
                 (jsonify (dict "indent" "  ") $imgVersionMeta)
                 (jsonify (dict "indent" "  ") $imageKindVariantMeta) }}
-          {{- end }} */}}
-        {{- else }}
-          {{- errorf "%s[%s]: kind=%v: invalid .resource in $variantParam=%v"
-              $page $template $imageKind
-              (jsonify (dict "indent" "  ") $variantParam) }}
+          {{- end }}
         {{- end }}
       {{- end }}
+
+      {{- with $imageKindVariantMeta }}
+        {{- $imageKindMeta = merge $imageKindMeta (dict "variant" $imageKindVariantMeta) }}
+      {{- end }}
+
     {{- end }}
   {{- end }}
-
-  {{- $imageKindMeta = merge $imageKindMeta (dict "variant" $imageKindVariantMeta) }}
 
   {{- if $debug }}
     {{- with $imageKindVariantMeta }}

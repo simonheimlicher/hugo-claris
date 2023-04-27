@@ -2,15 +2,15 @@
 {{- $template := "partials/hero-image" }}
 {{- $imagesMeta := .Meta.Single.Data.Images }}
 {{- with $imagesMeta.hero }}
+  {{- $imageParams := merge $imagesMeta.hero (dict
+      "Page" $page
+      "FigureClass" (printf "hero-image_%s_figure" $imagesMeta.hero.style)
+      "ImgClass" (printf "hero-image_%s_img" $imagesMeta.hero.style)
+      "LazyLoad" true
+    ) }}
   {{/* {{- warnf "%s[%s]: Calling responsive-image with .style=%v and .resource=%v'"
       $page $template .style .variant }} */}}
-  {{- partial "responsive-image" (dict
-    "Page" $page
-    "style" .style
-    "resource" .variant
-    "FigureClass" (printf "hero-image_%s_figure" $imagesMeta.hero.style)
-    "ImgClass" (printf "hero-image_%s_img" $imagesMeta.hero.style)
-    "LazyLoad" true) }}
+  {{- partial "responsive-image" $imageParams }}
 {{- else }}
   {{- errorf "%s[%s]: Invalid page meta .Single.Image.Data.Images.hero: %v'"
       $page $template .Meta.Single.Data.Images.hero }}

@@ -5,6 +5,7 @@
 {{- $imageResourceArgs := merge . (dict "Debug" $debug) }}
 
 {{- $resourceSpec := .resource -}}
+{{- $variantSpec := .variant -}}
 {{- $caption := default "" .Caption -}}
 {{- $alt := default $caption .Alt -}}
 {{- $title := default $alt .Title -}}
@@ -105,13 +106,14 @@
       "Hint" .Hint
     ) }}
   {{- end }}
-  {{- if reflect.IsMap $resourceSpec }}
+  {{- if reflect.IsMap $variantSpec }}
     {{- if $debug }}
-      {{- warnf "%s[%s]: .resource is map: %v" $page $template $resourceSpec -}}
+      {{- warnf "%s[%s]: .variant is map: %v" $page $template $variantSpec -}}
     {{- end }}
-    {{- range $variantName, $variantMeta := $resourceSpec }}
+    {{- range $variantName, $variantMeta := $variantSpec }}
       {{- $resMedia := .media }}
       {{- $resTitle := .title }}
+      {{- $resPosition := .position }}
       {{- $resAlt := default $resTitle .alt }}
       {{- $resCredit := default $resTitle .credit }}
       {{- $res := .version.default.resource }}
@@ -130,7 +132,7 @@
     {{- end }}
     {{- /* If none of the .media values match $defaultMedia, take the first image as the default */ -}}
     {{- if (not (where $pictureResources "media" $defaultMedia) ) }}
-      {{- with (index $resourceSpec $defaultVariantName) }}
+      {{- with (index $variantSpec $defaultVariantName) }}
         {{- $resTitle := .title }}
         {{- $resAlt := default $resTitle .alt }}
         {{- $resCredit := default $resTitle .credit }}
