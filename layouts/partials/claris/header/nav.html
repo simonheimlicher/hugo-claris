@@ -89,18 +89,18 @@
   {{- $relatedNavEntries := false }}
   {{ partial "html-comment" (printf "[%s]: Listing related pages if .Type=%v in %v and .Section=%v in %v"
     $template .Type (.Param "navListCurrentSectionForTypes")  .Section (.Param "navListCurrentSectionInSection")) }}
-  {{- $noIndexSections := slice }}
-  {{- with site.Params.robots.noIndexSections }}
-    {{- $noIndexSections = append . $noIndexSections }}
+  {{- $invisibleSections := slice }}
+  {{- with site.Params.hidden.sections }}
+    {{- $invisibleSections = append . $invisibleSections }}
   {{- end }}
   {{- with site.Params.robots.robotsTxtDisallowSections }}
-    {{- $noIndexSections = append . $noIndexSections }}
+    {{- $invisibleSections = append . $invisibleSections }}
   {{- end }}
   {{- if (and (in (.Param "navListCurrentSectionForTypes") .Type)
       (in (.Param "navListCurrentSectionInSection") .Section) ) }}
-    {{- /* Exclude sections that are in site.Params.robots.noIndexSections but
+    {{- /* Exclude sections that are in site.Params.hidden.sections but
     still list pages if the current page is in a hidden section */ -}}
-    {{- $excludeSections := complement (slice (printf "%s" .Section)) $noIndexSections }}
+    {{- $excludeSections := complement (slice (printf "%s" .Section)) $invisibleSections }}
     {{/* {{- partial "html-comment" (printf "%s[%s]: .Section=%v .CurrentSection=%v $excludeSections=%v" $page $template .Section .CurrentSection $excludeSections) }} */}}
     {{- with .CurrentSection }}
       {{- if not $relatedNavEntries }}
@@ -113,8 +113,8 @@
             <a href="{{ .Permalink }}" class="nav_item{{ $activeClass }}" title="{{ .Title }}">{{ $menuTitle }}</a>
           </div>
     {{- end }}
-    {{- partial "html-comment" (printf "[%s]: .Section=%v $noIndexSections=%v .Pages=%v"
-        $template .Section $noIndexSections (delimit .Pages ", ") ) }}
+    {{- partial "html-comment" (printf "[%s]: .Section=%v $invisibleSections=%v .Pages=%v"
+        $template .Section $invisibleSections (delimit .Pages ", ") ) }}
     {{- with .Pages }}
       {{- range (sort (where . "Section" "not in" $excludeSections) "Weight" "desc") -}}
         {{- if not $relatedNavEntries }}
@@ -129,15 +129,15 @@
       {{- end }}
     {{- else }}
       {{- with .Parent -}}
-        {{- partial "html-comment" (printf "[%s]: .Parent.Section=%v $noIndexSections=%v .Parent.Pages=%v"
-            $template .Section $noIndexSections (delimit .Pages ", ") ) }}
+        {{- partial "html-comment" (printf "[%s]: .Parent.Section=%v $invisibleSections=%v .Parent.Pages=%v"
+            $template .Section $invisibleSections (delimit .Pages ", ") ) }}
         {{- with .Pages -}}
           {{- range (sort (where . "Section" "not in" $excludeSections) "Weight" "desc") -}}
             {{- if not $relatedNavEntries }}
       <div class="nav_group nav_group_related">
               {{- $relatedNavEntries = true }}
             {{- end }}
-            {{- if not (in $noIndexSections .CurrentSection) }}
+            {{- if not (in $invisibleSections .CurrentSection) }}
             {{- $menuTitle := default .Title .Params.MenuTitle }}
         <div class="nav_parent nav_parent_section parent_pages">
             {{- $activeClass := cond (eq $page.Permalink .Permalink) " nav_active" "" }}

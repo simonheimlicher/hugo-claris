@@ -7,48 +7,14 @@
 {{- $singleMeta := dict -}}
 
 {{- with $page }}
-  {{- $pagePath := "" }}
-  {{- with $page.File }}
-    {{- $pagePath = .Path }}
-  {{- else }}
-    {{- $pagePath = .Path }}
-  {{- end }}
+  {{- $pageHidden := (partialCached "claris/_functions/is-page-hidden" (dict "Page" $page) .Permalink) }}
+  {{- $pageOutdated := partialCached "claris/_functions/is-page-outdated" (dict "Page" $page) .Permalink }}
+  <!-- Should this page be included when content is listed? -->
+  {{- $pageVisible := not (or $pageHidden $pageOutdated) }}
 
-  <!-- Determine if any part of the path to the file underlying this page is hidden -->
-  {{- $pathVisible := true }}
-  {{- $hiddenPathPrefix := default "_" ($page.Param "hiddenPathPrefix") }}
-  {{- with $pagePath }}
-    {{- $pathDirFile := (path.Split .) }}
-    {{- with $pathDirFile.Dir }}
-      {{- if strings.HasPrefix . $hiddenPathPrefix }}
-        {{- $pathVisible = false }}
-        {{/* {{- warnf "%s[%s]: Hiding pagePath=%v: it begins with %v"
-            $page $template $pagePath $hiddenPathPrefix }} */}}
-      {{- else }}
-        {{- $pathParts := split . "/" }}
-        {{- range $pathParts }}
-          {{- if strings.HasPrefix . $hiddenPathPrefix }}
-            {{- $pathVisible = false }}
-            {{/* {{- warnf "%s[%s]: Hiding pagePath=%v: part=%v begins with %v"
-                $page $template $pagePath . $hiddenPathPrefix }} */}}
-          {{- end }}
-        {{- end }}
-      {{- end }}
-    {{- else }}
-      {{- if and (ne $page.Kind "home") (strings.HasPrefix $pagePath $hiddenPathPrefix) }}
-        {{- $pathVisible = false }}
-        {{/* {{- warnf "%s[%s]: Hiding pagePath=%v: it begins with %v"
-            $page $template $pagePath $hiddenPathPrefix }} */}}
-      {{- end }}
-    {{- end }}
-  {{- end }}
-  {{- if $debug }}
-    {{- warnf "%s[%s]: pagePath=%s hiddenPathPrefix=%v" $page $template $pagePath $hiddenPathPrefix }}
-  {{- end }}
-
-  {{- $robotsIndex := and (default false site.Params.robots.index) (and $pathVisible (index ($page.Param "robots") "index") ) }}
-  {{- $robotsIndexImages := and (default false site.Params.robots.indeximages) (and $pathVisible (index ($page.Param "robots") "indeximages") ) }}
-  {{- $robotsFollow := and (default false site.Params.robots.follow) (and $pathVisible (index ($page.Param "robots") "follow") ) }}
+  {{- $robotsIndex := and (default false site.Params.robots.index) (and $pageVisible (index ($page.Param "robots") "index") ) }}
+  {{- $robotsIndexImages := and (default false site.Params.robots.indeximages) (and $pageVisible (index ($page.Param "robots") "indeximages") ) }}
+  {{- $robotsFollow := and (default false site.Params.robots.follow) (and $pageVisible (index ($page.Param "robots") "follow") ) }}
 
   <!-- Don't index taxonomy and term pages but follow links -->
   {{- if in (slice "taxonomy" "term") .Kind }}
@@ -68,13 +34,19 @@
   {{- $metaTwitterCard := or $metaRobots.Index $metaRobots.Follow }}
 
   {{- $title := .Title | $page.RenderString | plainify }}
-  {{- $subtitle := .Params.subtitle }}
-  {{- $supertitle := .Params.supertitle }}
+  {{- $subtitle := .Params.subtitle | $page.RenderString | plainify }}
+  {{- $supertitle := .Params.supertitle | $page.RenderString | plainify }}
 
-  {{- $alternativeHeadline := "" }}
+  {{- $alternativeHeadline := default "" .Params.headline }}
 
-  {{- if .Params.subtitle }}
-    {{- $alternativeHeadline = ( printf "%s: %s" .Title .Params.subtitle | $page.RenderString | plainify ) }}
+  {{- if $subtitle }}
+    {{- if findRE `^\s*[[:alnum:]]+` $subtitle }}
+      {{- $alternativeHeadline = ( printf "%s: %s" $title $subtitle ) }}
+    {{- else }}
+      {{- $alternativeHeadline = ( printf "%s%s" $title $subtitle ) }}
+      {{/* {{- warnf "%s[%s]: subtitle does not begin with alpha-numeric character: A%vZ"
+          $page $template (index (findRE `^\s*[[:alnum:]]+` $subtitle) 0) }} */}}
+    {{- end }}
 
   {{- else if in (slice "taxonomy") .Kind }}
     {{- $title = default .Data.Plural (T (printf "all_%s" .Data.Plural) ) | strings.FirstUpper }}
@@ -87,15 +59,15 @@
 
   {{- else if in (slice "term") .Kind }}
 
-    {{- $title = (default .Title (T (lower .Title) ) ) | strings.FirstUpper }}
+    {{- $title = (default $title (T (lower $title) ) ) | strings.FirstUpper }}
     {{- $alternativeHeadline = default .Data.Singular $title }}
     {{ if in (slice "tag") .Data.Singular }}
       {{ $supertitle = printf "%s %s" (T "articles_with_taxonomy") (T .Data.Plural 1) }}
     {{- else }}
       {{- $supertitle = printf "%s %s" (T "articles_in_taxonomy") (T .Data.Plural 1) }}
     {{- end }}
-    {{/* {{- $alternativeHeadline = printf "%s %s %s" (humanize $supertitle) (T .Data.Plural 1) ($page.RenderString (printf "*%s*" (default .Title (T (lower .Title) ) ) ) ) | safeHTML }} */}}
-    {{- $alternativeHeadline = printf "%s %s %s" (humanize $supertitle) (default .Title (T (lower .Title) ) ) | strings.FirstUpper }}
+    {{/* {{- $alternativeHeadline = printf "%s %s %s" (humanize $supertitle) (T .Data.Plural 1) ($page.RenderString (printf "*%s*" (default $title (T (lower $title) ) ) ) ) | safeHTML }} */}}
+    {{- $alternativeHeadline = printf "%s %s %s" (humanize $supertitle) (default $title (T (lower $title) ) ) | strings.FirstUpper }}
 
     {{- if $debug }}
       {{- warnf "%s[%s]: .Kind=%s: title=%s supertitle=%v alternativeHeadline=%s from .Singular=%s .Plural=%s .Section=%s .Title=%s"
@@ -164,7 +136,7 @@
   {{- end }}
 
   {{- $genre := default (index .Params.categories 0) .Params.genre }}
-  {{- $keywords := apply (default (default (split (anchorize .Title) "-") .Params.tags) .Params.keywords) "lower" "." }}
+  {{- $keywords := apply (default (default (split (anchorize $title) "-") .Params.tags) .Params.keywords) "lower" "." }}
 
   <!-- HTML 'id' attribute of the DOM container of the main content -->
   {{- $articleID := default "contentContainer" ($page.Param "articleID") }}
@@ -174,6 +146,9 @@
   {{- $singleMeta = (dict
     "Single" (dict
       "Classification" (dict
+        "Hidden" $pageHidden
+        "Outdated" $pageOutdated
+        "Visible" $pageVisible
         "Robots" $metaRobots
         "SchemaOrg" $metaSchemaOrg
         "Opengraph" $metaOpengraph

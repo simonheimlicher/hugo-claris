@@ -78,6 +78,15 @@
   section = "_footer"
   recentarticles = 3
 
+# Invisible pages:
+# Add robots = noindex, nofollow to meta
+# No OpenGraph meta
+# No Schema.org (JSON+LD) meta
+[hidden]
+  # Sections within which all pages will be hidden
+  sections = ["_error", "_home", "_footer"]
+  pathelements = ['hidden', 'confidential']
+
 [website]
   name = "simon.heimlicher.com"
 
@@ -85,16 +94,14 @@
   # notice of the footer.
   since = 1999
 
-  [website.license]
-    text = "simon.heimlicher.com © 1999 by Simon Heimlicher is licensed under CC BY-NC-ND 4.0"
+  # [website.license]
+  #   text = "simon.heimlicher.com © 1999 by Simon Heimlicher is licensed under CC BY-NC-ND 4.0"
 
 # configuration of robots tag in head
 [robots]
   index = true
   indeximages = true
   follow = true
-  # Sections within which all pages will automatically include robots = noindex, nofollow
-  # noIndexSections = ["confidential", "private"]
   # Sections to be listed in robots.txt as being excluded from indexing
   # CAUTION: This will cause attackers to look at these sections in particular, so do not use this parameter to hide a section
-  robotsTxtDisallowSections = ["_error", "_home", "_footer"]
+  # robotsTxtDisallowSections = ["_error", "_home", "_footer"]

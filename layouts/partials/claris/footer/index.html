@@ -52,7 +52,7 @@
       {{- end }}
     {{- end }}
     <div class="footer_copyright">
-      <p>{{ T "copyright" }}&nbsp;{{ with ($page.Param "since") }}{{ . }}–{{ end }}<span class="year">{{ string (now.Format "2006") }}</span>{{ with $siteAuthor }}&nbsp;{{ . }}{{ end }}. {{ T "all_rights" }}
+      <p>{{ T "copyright" }}&nbsp;{{ with ($page.Param "since") }}{{ if (lt (int .) (int (now.Format "2006") ) ) }}{{ . }}–{{- end }}{{- end }}<span class="year">{{ string (now.Format "2006") }}</span>{{ with $siteAuthor }}&nbsp;{{ . }}{{ end }}. {{ T "all_rights" }}
       </p>
     </div>
   </div>

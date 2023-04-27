@@ -28,25 +28,29 @@
 
 {{- $organization := site.Params.organization.name }}
 
-{{- $licenseParams := (dict
-    "Count" 1
-    "WebsiteName" $name
-    "SiteAuthor" $author
-    "Date" (dict
-      "Established" site.Params.website.established
-      "Current" $currentYear
-    )
-    "License" (dict
-      "Identifier" site.Params.website.license.identifier
-      "URLa" (site.Params.website.license.URL | safeHTML | safeJS)
-      "URL" "simon.heimlicher.com © 1999–2023 by Simon Heimlicher is licensed under <a href=\"https://creativecommons.org/licenses/by-nc-nd/4.0/\" title=\"CC BY-NC-ND 4.0\">CC BY-NC-ND 4.0</a>"
-    )
-  ) }}
-{{- $licenseText := T "license_website" $licenseParams }}
-{{- $licenseHTML := T "license_website_HTML" $licenseParams }}
-{{- if $debug }}
-  {{- warnf "%s[%s]: licenseHTML=%s [licenseParams=%v]" $page $template
-      $licenseHTML $licenseParams }}
+{{- $licenseText := "" }}
+{{- $licenseHTML := "" }}
+
+{{- with site.Params.website.license.identifier }}
+  {{- $licenseParams := (dict
+      "Count" 1
+      "WebsiteName" $name
+      "SiteAuthor" $author
+      "Date" (dict
+        "Established" site.Params.website.established
+        "Current" $currentYear
+      )
+      "License" (dict
+        "Identifier" site.Params.website.license.identifier
+        "URL" (site.Params.website.license.URL | safeHTML | safeJS)
+      )
+    ) }}
+  {{- (T "license_website" $licenseParams) }}
+  {{- (T "license_website_HTML" $licenseParams) }}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: licenseHTML=%s [licenseParams=%v]" $page $template
+        $licenseHTML $licenseParams }}
+  {{- end }}
 {{- end }}
 
 {{- $language := site.Language.Lang }}

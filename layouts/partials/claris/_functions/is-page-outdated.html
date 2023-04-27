@@ -1,0 +1,31 @@
+{{- $pageOutdated := false }}
+{{- $page := .Page }}
+{{- $template := "claris/_functions/is-page-outdated" }}
+{{- $debug := default false .Debug }}
+{{/* {{- $debug = or $debug (not (not (findRE `^/$` $page.RelPermalink) ) ) }} */}}
+
+{{- with $page }}
+
+  {{- $ephemeralSections := default slice ($page.Param "ephemeralSections") }}
+  {{- $paramOutdated := $page.Param "BestBefore" }}
+  {{- with $paramOutdated }}
+    {{- if ge now (time . ) }}
+      {{- $pageOutdated = true }}
+    {{- end }}
+  {{- else }}
+    {{- $ephemeralSection := (in $ephemeralSections .Section) }}
+    {{- $outdatedAfterYears := default 0 ($page.Param "outdatedAfterYears") }}
+    {{- if (and $outdatedAfterYears $ephemeralSection) }}
+      {{- if (lt .Page.Lastmod (now.AddDate (int (sub 0 $outdatedAfterYears)) 0 0) ) }}
+        {{- $pageOutdated = true }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+
+  {{- if $debug }}
+    {{- warnf "%s[%s]: .BestBefore=%v .Section=%s ephemeralSections=%v"
+      $page $template $paramOutdated .Section $ephemeralSections }}
+  {{- end }}
+
+{{- end }}
+{{- return $pageOutdated }}

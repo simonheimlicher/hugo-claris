@@ -1,19 +1,21 @@
-{{- $noIndexSections := slice }}
-{{- with site.Params.robots.noIndexSections }}
-  {{- $noIndexSections = append . $noIndexSections }}
+{{- $page := . }}
+{{- $template := "_default/sitemap.xml" }}
+{{- $invisibleSections := slice }}
+{{- with site.Params.hidden.sections }}
+  {{- $invisibleSections = append . $invisibleSections }}
 {{- end }}
 {{- with site.Params.robots.robotsTxtDisallowSections }}
-  {{- $noIndexSections = append . $noIndexSections }}
+  {{- $invisibleSections = append . $invisibleSections }}
 {{- end }}
 {{- $hiddenPages := slice }}
-{{- range $noIndexSections }}
+{{- range $invisibleSections }}
   {{- $hiddenPages = append $hiddenPages (slice (printf "/%s/" .) ) }}
 {{- end }}
 {{- $hiddenMedia := default (slice "print") site.Params.hiddenMedia -}}
 {{ printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\" ?>" | safeHTML }}
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  {{- $notHiddenSections := where .Data.Pages "Section" "not in" $noIndexSections }}
+  {{- $notHiddenSections := where .Data.Pages "Section" "not in" $invisibleSections }}
   {{- $notHiddenPages := where .Data.Pages "RelPermalink" "not in" $hiddenPages -}}
   {{- /* range $notHiddenPages }}
   {{ .RelPermalink }}
@@ -22,6 +24,9 @@
   {{- $notHiddenMedia = (append $notHiddenMedia (where .Data.Pages "Params.media" "=" nil) ) -}}
   {{- $filtered := $notHiddenSections | intersect $notHiddenPages | intersect $notHiddenMedia }}
   {{- range $filtered }}
+    {{- $pageHidden := partialCached "claris/_functions/is-page-hidden" (dict "Page" .) .Permalink }}
+    {{- $pageOutdated := partialCached "claris/_functions/is-page-outdated" (dict "Page" .) .Permalink }}
+    {{- if not (or $pageHidden $pageOutdated) }}
   <url>
     <loc>{{ .Permalink }}</loc>{{ if not .Lastmod.IsZero }}
     <lastmod>{{ safeHTML ( .Lastmod.Format "2006-01-02T15:04:05-07:00" ) }}</lastmod>{{ end }}{{ with .Sitemap.ChangeFreq }}
@@ -38,5 +43,9 @@
                 href="{{ .Permalink }}"
                 />{{ end }}
   </url>
+    {{/* {{ else }}
+      {{- warnf "%s[%s]: \n%v at %v is not visible: hidden=%v outdated=%v" $page $template
+      . .RelPermalink $pageHidden $pageOutdated }} */}}
+    {{ end }}
   {{ end }}
 </urlset>

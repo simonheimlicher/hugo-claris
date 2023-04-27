@@ -3,24 +3,10 @@
 {{- $template := "partials/claris/_components/content" }}
 
 {{- $itemType := .Meta.Single.Data.ItemType }}
+{{- $outdated := .Meta.Single.Classification.Outdated }}
 
 {{- with $page }}
 {{- $mainSection := (in ($page.Param "mainSections") .Section) -}}
-{{- $outdated := false }}
-{{- with $page.Param "BestBefore" }}
-  {{- if ge now (time . ) }}
-    {{- $outdated = true }}
-  {{- end }}
-{{- else }}
-  {{- $ephemeralSections := default slice ($page.Param "ephemeralSections") }}
-  {{- $ephemeralSection := (in $ephemeralSections .Section) }}
-  {{- $outdatedAfterYears := default 0 ($page.Param "outdatedAfterYears") }}
-  {{- if (and $outdatedAfterYears $ephemeralSection) }}
-    {{- if (lt .Page.Lastmod (now.AddDate (int (sub 0 $outdatedAfterYears)) 0 0) ) }}
-      {{- $outdated = true }}
-    {{- end }}
-  {{- end }}
-{{- end }}
 
 {{- $displayTableOfContents := and (default true ($page.Param "toc") ) (ge (strings.Count "<li>" .TableOfContents) 2) -}}
 {{- $showComments := default true ($page.Param "comments") }}

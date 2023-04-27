@@ -48,10 +48,10 @@ paginate = 20
 
 # Render custom 404 page
 # FIXME: does not seem to work for 'hugo server'
-[[redirects]]
-    from   = "/**"
-    to     = "/error/404/"
-    status = 404
+# [[redirects]]
+#     from   = "/**"
+#     to     = "/error/404/"
+#     status = 404
 
 [security]
   # Merge security from theme for asset pipeline

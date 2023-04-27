@@ -13,11 +13,11 @@
     {{- $robotsFollow = false }}
     {{/* {{- warnf "%s[%s]: $outputFormatsRobotsExcluded=%v outputFormat=%v: index=%v follow=%v" $page $template $outputFormatsRobotsExcluded $outputFormat.Name $robotsIndex $robotsFollow }} */}}
   {{ end -}}
-  {{- $noIndexSections := site.Params.robots.noIndexSections }}
-  {{- if in $noIndexSections $page.Section }}
+  {{- $invisibleSections := site.Params.hidden.sections }}
+  {{- if in $invisibleSections $page.Section }}
     {{- $robotsIndex = false }}
     {{- $robotsFollow = false }}
-    {{/* {{- warnf "%s[%s]: noIndexSections=%v: index=%v follow=%v" $page $template $noIndexSections $robotsIndex $robotsFollow }} */}}
+    {{/* {{- warnf "%s[%s]: invisibleSections=%v: index=%v follow=%v" $page $template $invisibleSections $robotsIndex $robotsFollow }} */}}
   {{ end -}}
   {{- with $meta.Single.Classification.Robots }}
     {{- $robotsIndex = and $robotsIndex .Index }}
