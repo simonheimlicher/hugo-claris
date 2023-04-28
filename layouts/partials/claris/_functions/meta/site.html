@@ -13,20 +13,23 @@
 
 {{- $author :=  site.Author.name }}
 
+{{- $name := default site.Title site.Params.website.name }}
+{{- $title := site.Title }}
+{{- $tagline := site.Params.website.tagline | $page.RenderString | plainify }}
+{{- $fulltitle := $title }}
+{{- with $tagline }}
+  {{- $fulltitle = printf "%s: %s" $title $tagline }}
+{{- end }}
+
+{{- $description := site.Params.description | $page.RenderString | plainify }}
+
+{{- $organization := site.Params.organization.name }}
+
 {{- $currentYear := (string now.Year) }}
 {{- $copyright := default (T "copyright") (printf "%s %s %s. %s" (string now.Year) $author (T "all_rights") ) }}
 {{- with site.Params.website.established }}
   {{- $copyright = printf "%s %s–%s %s. %s" (T "copyright") (string .) $currentYear $author (T "all_rights" ) }}
 {{- end }}
-
-{{- $alternativeHeadline := site.Params.alternativeHeadline | $page.RenderString | plainify }}
-
-{{- $description := site.Params.description | $page.RenderString | plainify }}
-
-{{- $name := default site.Title site.Params.website.name }}
-{{- $title := site.Title }}
-
-{{- $organization := site.Params.organization.name }}
 
 {{- $licenseText := "" }}
 {{- $licenseHTML := "" }}
@@ -90,7 +93,8 @@
       "EntityID" (printf "%s#%s" $canonicalURL $websiteID)
       "Name" $name
       "Title" $title
-      "AlternativeHeadline" $alternativeHeadline
+      "Fulltitle" $fulltitle
+      "Tagline" $tagline
       "Description" $description
       "Images" $metaImages
       "Language" $language

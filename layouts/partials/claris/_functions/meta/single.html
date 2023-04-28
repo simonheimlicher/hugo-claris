@@ -37,13 +37,12 @@
   {{- $subtitle := .Params.subtitle | $page.RenderString | plainify }}
   {{- $supertitle := .Params.supertitle | $page.RenderString | plainify }}
 
-  {{- $alternativeHeadline := default "" .Params.headline }}
-
+  {{- $fulltitle := $title }}
   {{- if $subtitle }}
     {{- if findRE `^\s*[[:alnum:]]+` $subtitle }}
-      {{- $alternativeHeadline = ( printf "%s: %s" $title $subtitle ) }}
+      {{- $fulltitle = ( printf "%s: %s" $title $subtitle ) }}
     {{- else }}
-      {{- $alternativeHeadline = ( printf "%s%s" $title $subtitle ) }}
+      {{- $fulltitle = ( printf "%s%s" $title $subtitle ) }}
       {{/* {{- warnf "%s[%s]: subtitle does not begin with alpha-numeric character: A%vZ"
           $page $template (index (findRE `^\s*[[:alnum:]]+` $subtitle) 0) }} */}}
     {{- end }}
@@ -52,30 +51,36 @@
     {{- $title = default .Data.Plural (T (printf "all_%s" .Data.Plural) ) | strings.FirstUpper }}
 
     {{- if $debug }}
-      {{- warnf "%s[%s]: .Kind=%s: title=%s alternativeHeadline=%s from .Singular=%s .Plural=%s .Section=%s .Title=%s"
-          $page $template .Kind $title $alternativeHeadline
+      {{- warnf "%s[%s]: .Kind=%s: title=%s fulltitle=%s from .Singular=%s .Plural=%s .Section=%s .Title=%s"
+          $page $template .Kind $title $fulltitle
           .Data.Singular .Data.Plural .Section .Title }}
     {{- end }}
 
   {{- else if in (slice "term") .Kind }}
 
     {{- $title = (default $title (T (lower $title) ) ) | strings.FirstUpper }}
-    {{- $alternativeHeadline = default .Data.Singular $title }}
+    {{- $fulltitle = default .Data.Singular $title }}
     {{ if in (slice "tag") .Data.Singular }}
       {{ $supertitle = printf "%s %s" (T "articles_with_taxonomy") (T .Data.Plural 1) }}
     {{- else }}
       {{- $supertitle = printf "%s %s" (T "articles_in_taxonomy") (T .Data.Plural 1) }}
     {{- end }}
-    {{/* {{- $alternativeHeadline = printf "%s %s %s" (humanize $supertitle) (T .Data.Plural 1) ($page.RenderString (printf "*%s*" (default $title (T (lower $title) ) ) ) ) | safeHTML }} */}}
-    {{- $alternativeHeadline = printf "%s %s %s" (humanize $supertitle) (default $title (T (lower $title) ) ) | strings.FirstUpper }}
+    {{/* {{- $fulltitle = printf "%s %s %s" (humanize $supertitle) (T .Data.Plural 1) ($page.RenderString (printf "*%s*" (default $title (T (lower $title) ) ) ) ) | safeHTML }} */}}
+    {{- $fulltitle = printf "%s %s" (humanize $supertitle) (default $title (T (lower $title) ) ) | strings.FirstUpper }}
 
     {{- if $debug }}
-      {{- warnf "%s[%s]: .Kind=%s: title=%s supertitle=%v alternativeHeadline=%s from .Singular=%s .Plural=%s .Section=%s .Title=%s"
-          $page $template .Kind $title $supertitle $alternativeHeadline
+      {{- warnf "%s[%s]: .Kind=%s: title=%s supertitle=%v fulltitle=%s from .Singular=%s .Plural=%s .Section=%s .Title=%s"
+          $page $template .Kind $title $supertitle $fulltitle
           .Data.Singular .Data.Plural .Section .Title }}
     {{- end }}
-
   {{- end }}
+
+  {{- with .Params.fulltitle }}
+    {{- $fulltitle = . }}
+  {{- end }}
+  {{ $fulltitle = (default $title $fulltitle) }}
+
+  {{- $tagline := .Params.tagline }}
 
   {{- $description := "" }}
   {{- with .Description }}
@@ -115,7 +120,6 @@
       {{- warnf "%s[%s]: no .Page.Kind: .Page=%v" $page $template .Page }}
     {{- end }}
   {{- end }}
-
 
   {{- $metaImagesParams := (dict
     "Page" $page
@@ -164,7 +168,8 @@
         "Title" $title
         "Subtitle" $subtitle
         "Supertitle" $supertitle
-        "AlternativeHeadline" $alternativeHeadline
+        "Fulltitle" $fulltitle
+        "Tagline" $tagline
         "Description" $description
         "ItemType" $itemType
         "Language" $language

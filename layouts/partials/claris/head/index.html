@@ -13,7 +13,7 @@
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="{{- $themeColorLit -}}">
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="{{- $themeColorDim -}}">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    {{- $title := default $meta.Single.Data.Title $meta.Single.Data.AlternativeHeadline | safeHTML }}
+    {{- $title := default $meta.Site.Data.Fulltitle $meta.Single.Data.Fulltitle | safeHTML }}
     {{- $contentType := partialCached "claris/_functions/alternative-type" (dict "Page" .Page "Current" false) . .Type }}
     {{- with $contentType }}
       {{- $partialHeadTitle := printf "%s/head/title" $contentType }}

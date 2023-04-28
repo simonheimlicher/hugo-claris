@@ -26,7 +26,7 @@
 
   {{- $schemaOrgMeta := partial "claris/_functions/schema-org/webpage" $entityParams }}
     <script type="application/ld+json">
-      {{ $schemaOrgMeta.Root | jsonify (dict "indent" "  " "prefix" "      " "noHTMLEscape" true) | safeJS }}
+      {{ $schemaOrgMeta.Root | jsonify (dict "indent" "  " "prefix" "      " "noHTMLEscape" true) | safeJS | }}
     </script>
 
 {{- end -}}

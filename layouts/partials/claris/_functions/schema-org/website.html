@@ -15,6 +15,8 @@
         "@type" "WebSite"
         "@id" .EntityID
         "name" .Name
+        "headline" .Title
+        "alternativeHeadline" .Fulltitle
         "description" .Description
         "image" .Images.search.canonicalurl
         "thumbnailUrl" .Images.search.canonicalurl
@@ -27,8 +29,5 @@
 {{- else }}
   {{- errorf "%s[%s]: Missing parameter .Meta.Site.Data" $page $template }}
 {{- end }}
-    {{/* "headline" .Headline */}}
-    {{/* "alternativeHeadline" .AlternativeHeadline */}}
-    {{/* "availableLanguage" .AlternativeLanguages */}}
 
 {{- return $schemaOrgMeta }}
