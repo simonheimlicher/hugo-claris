@@ -580,29 +580,30 @@
 // https://browserstrangeness.bitbucket.io/css_hacks.html#safari
 // https://syntaxfix.com/question/5666/css-media-query-to-target-only-ios-devices
 @supports (position: sticky) and (not (-webkit-touch-callout: none))
-  .hero-image_background
-    &_main
-      .main_inner
-        min-height: 100vh
-        min-height: 100lvh
-        padding-top: 3rem
-        margin: -3rem auto -100vh auto
-        margin-bottom: -100lvh
-        z-index: ($main-z-index + 2)
-      & ~ .footer
+  @media screen and (min-width: $screenViewBreakpointWidthNarrow) and (min-height: $screenViewBreakpointHeightStickyFooter)
+    .hero-image_background
+      &_main
+        .main_inner
+          min-height: 100vh
+          min-height: 100lvh
+          padding-top: 3rem
+          margin: -3rem auto -100vh auto
+          margin-bottom: -100lvh
+          z-index: ($main-z-index + 2)
+        & ~ .footer
+          position: sticky
+          bottom: 0
+          z-index: ($main-z-index - 1)
+      &_figure
+        display: none
+      &_main &_figure
+        display: block
         position: sticky
         bottom: 0
-        z-index: ($main-z-index - 1)
-    &_figure
-      display: none
-    &_main &_figure
-      display: block
-      position: sticky
-      bottom: 0
-      margin: 0
-      padding: 0
-      z-index: ($main-z-index + 1)
-      margin-top: (-1 * $screenViewNavHeight)
+        margin: 0
+        padding: 0
+        z-index: ($main-z-index + 1)
+        margin-top: (-1 * $screenViewNavHeight)
 
 @media screen and (max-width: #{$screenViewBreakpointWidthMobileMenu - 0.01})
   html.jsopen
