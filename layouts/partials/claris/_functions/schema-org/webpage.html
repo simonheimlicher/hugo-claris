@@ -27,7 +27,7 @@
         "name" .Title
         "headline" .Title
         "alternativeHeadline" .Fulltitle
-        "description" .Description
+        "description" (default $meta.Site.Data.Description .Description)
         "inLanguage" .Language
         "isFamilyFriendly" "true"
         "author" $schemaOrgMeta.Entities.Author.Entity

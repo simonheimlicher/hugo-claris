@@ -26,7 +26,7 @@
     <title>{{ $title }}</title>
     {{ hugo.Generator }}
     {{- partial "claris/head/schema-org" (dict "Page" $page "Meta" $meta) }}
-    <meta name="description" content="{{ $meta.Single.Data.Description }}">
+    <meta name="description" content="{{ default $meta.Site.Data.Description $meta.Single.Data.Description }}">
     {{- partial "claris/head/opengraph" (dict "Page" $page "Meta" $meta) }}
     {{- partial "claris/head/twitter-card" (dict "Page" $page "Meta" $meta) }}
     {{- $partialHeadRobots := printf "%s/head/robots" $contentType }}

@@ -21,7 +21,10 @@
   {{- $fulltitle = printf "%s: %s" $title $tagline }}
 {{- end }}
 
-{{- $description := site.Params.description | $page.RenderString | plainify }}
+{{- $description := site.Params.website.description | $page.RenderString | plainify }}
+{{- if not $description }}
+  {{- warnf "%s[%s]: invalid parameter site.Params.website.description=%v" $page $template $description }}
+{{- end }}
 
 {{- $organization := site.Params.organization.name }}
 

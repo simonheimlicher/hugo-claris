@@ -1,5 +1,6 @@
 {{- $entityParams := .}}
 {{- $page := .Page }}
+{{- $meta := .Meta }}
 {{- $template := "claris/_functions/schema-org/_entities/article" }}
 {{- $debug := .Debug }}
 {{/* {{- $debug = or $debug (not (not (findRE `powerful` $page.RelPermalink) ) ) }} */}}
@@ -17,7 +18,7 @@
       "@id" (printf "%s#%s" .CanonicalURL .ArticleID)
       "name" .Title
       "headline" .Title
-      "description" .Description
+      "description" (default $meta.Site.Data.Description .Description)
       "url" .CanonicalURL
       "articleSection" .ArticleSection
       "wordCount" .WordCount

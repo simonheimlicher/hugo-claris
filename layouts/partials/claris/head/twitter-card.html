@@ -36,10 +36,11 @@
     <meta name="twitter:card" content="summary">
     {{- warnf "%s[%s]: Missing share image: $meta.Site.Data.Images.share.variant.default=%v .Images.share.variant.default=%v"
     $page $template $meta.Site.Data.Images.share.variant.default .Images.share.variant.default }}
-
-  {{- end }}
+    {{- end }}
     <meta name="twitter:title" content="{{ .Title }}">
-    <meta name="twitter:description" content="{{ with .Description }}{{ . }}{{ else }}{{if .IsPage}}{{ .Summary }}{{ else }}{{ with .Site.Params.description }}{{ . }}{{ end }}{{ end }}{{ end -}}">
+    {{- with (default $meta.Site.Data.Description .Description) }}
+    <meta name="twitter:description" content="{{ . }}">
+    {{- end }}
   {{- with default site.Social.twitter site.Params.social.twitter.id }}
     <meta name="twitter:creator" content="{{ . }}">
     <meta name="twitter:site" content="{{ . }}">
