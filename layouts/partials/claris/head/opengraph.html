@@ -2,7 +2,7 @@
 {{- $meta := .Meta }}
 {{- $template := "claris/head/opengraph" }}
 {{- $debug := default false .Debug }}
-{{/* {{- $debug = or $debug (not (not (findRE `leadership` $page.RelPermalink) ) ) }} */}}
+{{- /* {{- $debug = or $debug (not (not (findRE `leadership` $page.RelPermalink) ) ) }} */ -}}
 
 {{- $pagePath := "" }}
 {{- with $page.File }}

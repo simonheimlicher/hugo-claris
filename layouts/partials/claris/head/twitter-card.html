@@ -2,7 +2,7 @@
 {{- $meta := .Meta }}
 {{- $template := "claris/head/twitter-card" }}
 {{- $debug := default false .Debug }}
-{{/* {{- $debug = or $debug (not (not (findRE `never-match` $page.RelPermalink) ) ) }} */}}
+{{- /* {{- $debug = or $debug (not (not (findRE `never-match` $page.RelPermalink) ) ) }} */ -}}
 
 {{- $pagePath := "" }}
 {{- with $page.File }}

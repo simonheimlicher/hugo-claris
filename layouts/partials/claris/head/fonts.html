@@ -1,4 +1,4 @@
-<!-- Fonts: Determine if CSS from Google Fonts should be inclucded-->
+{{- /* <!-- Fonts: Determine if CSS from Google Fonts should be inclucded--> */ -}}
 {{- $page := .Page }}
 {{- $template := "claris/head/fonts" }}
 
@@ -11,10 +11,10 @@
 {{- $fontsSelfHosted := default false ($page.Param "fontsSelfHosted") }}
 {{- $customFonts := default false ($page.Param "customFonts") }}
 
-{{/* {{- warnf "%s[%s]: fontFamilies:%v customFonts:%v $fontsSelfHosted:%v"
-  $page $template $fontFamilies ($page.Param "customFonts") ($page.Param "fontsSelfHosted") }} */}}
+{{- /* {{- warnf "%s[%s]: fontFamilies:%v customFonts:%v $fontsSelfHosted:%v"
+  $page $template $fontFamilies ($page.Param "customFonts") ($page.Param "fontsSelfHosted") }} */ -}}
 {{- if and (not $fontsSelfHosted) (not $customFonts) -}}
-  {{/* {{- warnf "%s[%s]: Loading fonts in fontFamilies:%v from Google " $page $template $fontFamilies }} */}}
+  {{- /* {{- warnf "%s[%s]: Loading fonts in fontFamilies:%v from Google " $page $template $fontFamilies }} */ -}}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -74,4 +74,4 @@
   {{- if in $fontFamilies "DM Mono" }}
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
   {{- end }}
-{{- end }}
+{{- end -}}

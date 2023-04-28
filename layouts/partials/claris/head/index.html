@@ -32,17 +32,17 @@
     {{- $partialHeadRobots := printf "%s/head/robots" $contentType }}
     {{- if and $contentType (templates.Exists (printf "partials/%s.html" $partialHeadRobots) ) }}
       {{ partial "html-comment"
-          (printf "BASEOF: Looking for %s" (printf "partials/%s" $partialHeadRobots) ) }}
+          (printf "BASEOF: Looking for %s" (printf "partials/%s" $partialHeadRobots) ) -}}
       {{- partial $partialHeadRobots (dict "Page" $page "Meta" $meta "ContentType" $contentType) }}
     {{- else }}
-      {{ partial "claris/head/robots" (dict "Page" $page "Meta" $meta "ContentType" $contentType) }}
+    {{ partial "claris/head/robots" (dict "Page" $page "Meta" $meta "ContentType" $contentType) }}
     {{- end }}
 {{- with .Page.Param "googleSiteVerification" }}
     <meta name="google-site-verification" content="{{ . }}">
-{{- end }}
+{{- end -}}
 {{- range .AlternativeOutputFormats -}}
-  {{- if (ne .Rel "canonical" )}}
-    {{ printf `<link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .Permalink site.Title | safeHTML }}
+  {{- if (ne .Rel "canonical" ) -}}
+    {{ printf `    <link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .Permalink site.Title | safeHTML }}
   {{- end }}
 {{- end }}
     <link rel="canonical" type="text/html" href="{{ partial "claris/_functions/canonical-url" . }}" title="{{ $title }}">
@@ -51,12 +51,10 @@
   "Kind" .Kind
   "OnlyMediaType" ($page.Param "onlyMediaType")
   "ContentTypeList" (partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type)
-) }}
-{{- partialCached "claris/head/assets" . $assetVariant -}} {{- /* (dict "Page" .Page "Type" .Type "Layout" .Layout) */ -}}
-{{- /* BEGIN Styles for JavaScript module lazysizes */}}
+) -}}
+{{ partialCached "claris/head/assets" . $assetVariant }}
     <noscript>
       <style>.lazyload { display: none; }</style>
     </noscript>
-{{- /* END   Styles for JavaScript module lazysizes */ -}}
 
-{{- end }}
+{{- end -}}
