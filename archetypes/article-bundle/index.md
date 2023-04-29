@@ -2,13 +2,30 @@
 title: "{{ .Name | humanize | strings.FirstUpper }}"
 date: {{ .Date }}
 lastmod: {{ .Date }}
-description: "Article description." # Description used for search engine.
+description: "Article description."
 featured: false
 draft: true
 image:
-  feature: "images/hugo_theme_claris-feature"
-  thumbnail: "images/hugo_theme_claris-thumbnail"
-  share: "images/hugo_theme_claris-share"
+  feature: 
+    resource: "images/hugo_theme_claris-feature"
+    alt: 
+    title: 
+    credit: ''
+  excerpt: 
+    resource: "images/hugo_theme_claris-thumbnail"
+    alt: 
+    title: 
+    credit: ''
+  share: 
+    resource: "images/hugo_theme_claris-share"
+    alt: 
+    title: 
+    credit: ''
+  search: 
+    resource: "images/hugo_theme_claris-share"
+    alt: 
+    title: 
+    credit: ''
 categories:
   - Category_name
 tags:
