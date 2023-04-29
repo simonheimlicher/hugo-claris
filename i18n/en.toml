@@ -155,3 +155,6 @@ one = "{{ .WebsiteName }} © {{ .Date.Established }}–{{ .Date.Current }} by {{
 
 [license_website_HTML]
 one = "{{ .WebsiteName }} © {{ .Date.Established }}–{{ .Date.Current }} by {{ .SiteAuthor }} is licensed under <a href=\"{{ .License.URL }}\" title=\"{{ .License.Identifier }}\">{{ .License.Identifier }}</a>"
+
+[obfuscated-link_mailto]
+other = "Send email to"

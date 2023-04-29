@@ -143,6 +143,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const node = nodeList[idx];
     const parentNode = node.parentNode;
     const scheme = node.dataset['obfuscatedLinkScheme'];
+    const text = node.dataset['obfuscatedLinkText'];
     const title = node.dataset['obfuscatedLinkTitle'];
     const encrypted = node.dataset['obfuscatedLinkEncrypted'];
     const oneTimePassword = node.dataset['obfuscatedLinkOneTimePassword'];
@@ -163,7 +164,7 @@ window.addEventListener("DOMContentLoaded", () => {
     // console.log('encrypted: ', encrypted, ' oneTimePassword: ', oneTimePassword, ' decryptedEncoded: ', decryptedEncoded, ' address: ', address);
     let unobfuscatedNode = document.createElement(node.tagName)
     unobfuscatedNode.innerHTML = '<' + 'a hr' + 'ef="' + scheme + address
-      + '" title="' + title.replace('OBFUSCATED', address) + '">' + address + '</a>';
+      + '" title="' + title.replace('OBFUSCATED', address) + '">' + (text ? text : address) + '</a>';
     parentNode.replaceChild(unobfuscatedNode, node)
     parentNode.innerHTML = parentNode.innerHTML.replace(/^(.*[^ ])\n/, '$1').replace(/\n+(.)$/, '$1')
   }

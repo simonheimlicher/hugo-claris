@@ -153,3 +153,6 @@ one = "Website in {{ .Language }} lesen"
 
 [license_website]
 one = "{{ .WebsiteName }} © {{ .Date.Established }}–{{ .Date.Current }} {{ .SiteAuthor }} ist lizenziert unter {{ .License }}"
+
+[obfuscated-link_mailto]
+other = "E-Mail an"

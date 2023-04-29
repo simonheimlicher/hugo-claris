@@ -1,1 +1,7 @@
-{{- partial "claris/_components/obfuscated-email" (dict "Page" .Page "Plain" (.Get "plain") "NoScript" (.Get "noscript") ) }}
+{{- partial "claris/_components/obfuscated-email" (dict
+  "Page" .Page
+  "Text" (default (.Get "text") (.Get 0))
+  "Plain" (default (.Get "plain") (.Get 1))
+  "NoScript" (.Get "noscript"
+  )
+) }}

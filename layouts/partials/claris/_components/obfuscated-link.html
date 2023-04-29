@@ -1,5 +1,6 @@
 {{- $page := .Page }}
 {{- $template := "claris/_components/obfuscated-link" }}
+{{- $text := .Text }}
 {{- $plain := .Plain }}
 {{- $noScript := .NoScript }}
 {{- $obfuscated := partial "claris/_functions/obfuscate-link" (dict "Page" $page "Plain" $plain "NoScript" $noScript) }}
@@ -8,7 +9,8 @@
       $template $plain (jsonify (dict "indent" "  ") $obfuscated) ) }} */}}
   {{- $noScript = default $noScript .NoScript }}
   <span data-obfuscated-link-scheme="{{ .Scheme }}"
-    data-obfuscated-link-title="{{ T (printf "obfuscated-link-%s" (urlize .Scheme)) }} OBFUSCATED"
+    data-obfuscated-link-text="{{ $text }}"
+    data-obfuscated-link-title="{{ T (printf "obfuscated-link_%s" (anchorize .Scheme) ) }} OBFUSCATED"
     data-obfuscated-link-encrypted="{{ .Encrypted }}"
     data-obfuscated-link-one-time-password="{{ .OneTimePassword }}">{{- $noScript -}}</span>
 {{- else }}

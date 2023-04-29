@@ -1,5 +1,6 @@
 {{- $page := .Page }}
 {{- $template := "claris/_components/obfuscated-email" }}
+{{- $text := .Text }}
 {{- $plain := .Plain }}
 {{- $noScript := default (T "private-data-requires-javascript") .NoScript }}
 {{- if not $plain }}
@@ -25,7 +26,7 @@
   {{- $plain = printf "%s" $url }}
   {{/* {{- warnf "%s[%s]: .Plain=%v $plain=%v $url=%v .Scheme=%v .Host=%v .RequestURI=%v"
       $page $template .Plain $plain $url  $url.Scheme $url.Host $url.RequestURI }} */}}
-  {{- partial "claris/_components/obfuscated-link" (dict "Page" $page "Plain" $plain "NoScript" $noScript) }}
+  {{- partial "claris/_components/obfuscated-link" (dict "Page" $page "Plain" $plain "Text" $text "NoScript" $noScript) }}
 {{- else }}
   {{- errorf "%s[%s]: Failed to fix invalid email address: .Plain=%v $plain=%v $url=%v .Scheme=%v .Host=%v .RequestURI=%v"
       $page $template .Plain $plain $url $url.Scheme $url.Host $url.RequestURI }}
