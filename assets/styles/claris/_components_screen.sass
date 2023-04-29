@@ -919,7 +919,7 @@ body:not(.modern-js) .article_aside .table_of_contents
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.15), inset 0 0 2px rgba(255, 255, 255, 0.8)
     opacity: 1
 
-.article_content, .sidebar, .footer
+.article_content
   a:not(.button):not(nav a):not(sup a)
     color: inherit // Same as surrounding text should be ok for background contrast
     text-decoration: none
@@ -953,7 +953,11 @@ body:not(.modern-js) .article_aside .table_of_contents
     &:focus
       outline: var(--accent)
 
+.sidebar
+  @include link-lvhfa
 
+.footer
+  @include link-lvhfa-dark
 
 @media screen and (min-height: $screenViewBreakpointHeightShallow)
   html

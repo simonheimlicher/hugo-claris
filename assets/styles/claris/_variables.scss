@@ -105,6 +105,73 @@ $main-z-index: 1;
   }
 }
 
+@mixin background_dark() {
+  background: var(--bg-dark);
+  color: var(--text-dark);
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--text-dark);
+  }
+  a {
+    color: var(--link-dark);
+    @supports (any-hover:hover) {
+      &:hover {
+        color: var(--link-dark-hover);
+      }
+      &:active {
+        color: var(--link-dark-active);
+      }
+    }
+  }
+  svg.icon {
+    fill: var(--text-dark);
+  }
+  .icon {
+    img {
+      background: none;
+    }
+    svg {
+      fill: var(--text-dark);
+    }
+  }
+}
+
+@mixin link-lvhfa($link: var(--link), $visited: var(--link), $hover: var(--link-hover), $focus: var(--link-hover), $active: var(--link-active)) {
+  a:not(.button):not(nav a):not(sup a) {
+    color: $link;
+    text-decoration: none;
+    &:link {
+      color: $link;
+    }
+    &:visited {
+      color: $link;
+    }
+    &:hover {
+      @media (any-hover: hover) {
+        color: $hover;
+        text-decoration: underline;
+        text-underline-position: under;
+        text-underline-offset: 0.1em;
+      }
+    }
+    &:focus {
+      color: $focus;
+      text-decoration: underline;
+      text-underline-position: under;
+      text-underline-offset: 0.1em;
+    }
+    &:active {
+      color: $active;
+      text-decoration: underline;
+      text-underline-position: under;
+      text-underline-offset: 0.1em;
+    }
+  }
+}
+
+@mixin link-lvhfa-dark() {
+  @include link-lvhfa($link: var(--link-dark), $visited: var(--link-dark), $hover: var(--link-dark-hover), $focus: var(--link-dark-hover), $active: var(--link-dark-active));
+}
+
 @mixin content_base() {
   clear: both;
 }
@@ -415,8 +482,8 @@ html {
   --font-code: var(--font-mono);
   --font-size: 100%;
   --font-size-nav: 1.5rem;
-  --font-size-aside: 0.875rem;
   --font-size-meta: 0.875rem;
+  --font-size-aside: 0.875rem;
   --font-size-footer: 0.875rem;
 @media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
     --font-size-nav: 0.875rem;
@@ -426,6 +493,8 @@ html {
   @media screen and (min-width: $screenViewBreakpointWidthOneColumn) {
     --font-size: 125%;
     --font-size-nav: 1.0rem;
+    --font-size-meta: 1.0rem;
+    --font-size-aside: 1.0rem;
     --font-size-footer: 1.0rem;
   }
   @media screen and (min-width: $screenViewBreakpointWidthWide) {
