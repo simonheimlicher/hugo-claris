@@ -134,7 +134,18 @@
 
   {{- $language := $page.Language.Lang }}
 
-  {{- $locale := $page.Language.Lang }}
+  <!-- Get proper case for locale for use in OpenGraph meta tags
+  See Hugo issue: https://github.com/gohugoio/hugo/issues/7344 -->
+  {{- $locale := site.LanguageCode }}
+  {{- $localeRE := `^[a-zA-Z][-_][a-zA-Z]$` }}
+  {{- with replaceRE $localeRE "$1-$2" $locale }}
+    {{- with split . "-" }}
+      {{- $locale = printf "%s-%s" (lower (index . 0) ) (upper (index . 1) )  }}
+    {{- end }}
+  {{- else }}
+    {{- errorf "%s[%s]: Invalid locale=%v does not match %v"
+        $page $template $locale $localeRE }}
+  {{- end }}
 
   {{- $alternativeLanguages := slice }}
   {{- range $page.Translations }}
