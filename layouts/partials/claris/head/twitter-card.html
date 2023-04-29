@@ -13,7 +13,7 @@
 
 {{- $homePage := (site.GetPage "/") }}
 
-{{- $twitterCard := default $meta.Site.Classification.TwitterCard $meta.Single.Classification.TwitterCard }}
+{{- $twitterCard := default $meta.Site.Classification.TwitterCard $meta.Classification.TwitterCard }}
 {{- if $twitterCard }}
   {{- with $meta.Single.Data }}
     {{- $shareImageURL := false }}

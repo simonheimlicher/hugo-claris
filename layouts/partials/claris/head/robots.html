@@ -24,11 +24,11 @@
       {{- warnf "%s[%s]: invisibleSections=%v: index=%v follow=%v" $page $template $invisibleSections $robotsIndex $robotsFollow }}
     {{- end }}
   {{- end }}
-  {{- with $meta.Single.Classification.Robots }}
+  {{- with $meta.Classification.Robots }}
     {{- $robotsIndex = and $robotsIndex .Index }}
     {{- $robotsFollow = and $robotsFollow .Follow }}
     {{- if $debug }}
-      {{- warnf "%s[%s]: $meta.Single.Classification.Robots=%v: index=%v follow=%v" $page $template . $robotsIndex $robotsFollow }}
+      {{- warnf "%s[%s]: $meta.Classification.Robots=%v: index=%v follow=%v" $page $template . $robotsIndex $robotsFollow }}
     {{- end }}
   {{- end }}
   {{- if $debug }}

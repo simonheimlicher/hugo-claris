@@ -1,37 +1,12 @@
 {{- $page := .Page }}
 {{- $template := "claris/_functions/meta/single" }}
 {{- $debug := page.Scratch.Get "clarisdebug" }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/$` $page.RelPermalink) ) ) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `confidential` $page.RelPermalink) ) ) }} */}}
 
 {{/* {{- warnf "%s[%s]: .Page=%T page=%T" $page $template .Page page }} */}}
 {{- $singleMeta := dict -}}
 
 {{- with $page }}
-  {{- $pageHidden := (partialCached "claris/_functions/is-page-hidden" (dict "Page" $page) .Permalink) }}
-  {{- $pageOutdated := partialCached "claris/_functions/is-page-outdated" (dict "Page" $page) .Permalink }}
-  <!-- Should this page be included when content is listed? -->
-  {{- $pageVisible := not (or $pageHidden $pageOutdated) }}
-
-  {{- $robotsIndex := and (default false site.Params.robots.index) (and $pageVisible (index ($page.Param "robots") "index") ) }}
-  {{- $robotsIndexImages := and (default false site.Params.robots.indeximages) (and $pageVisible (index ($page.Param "robots") "indeximages") ) }}
-  {{- $robotsFollow := and (default false site.Params.robots.follow) (and $pageVisible (index ($page.Param "robots") "follow") ) }}
-
-  <!-- Don't index taxonomy and term pages but follow links -->
-  {{- if in (slice "taxonomy" "term") .Kind }}
-    {{- $robotsIndex = false }}
-    {{- $robotsIndexImages = false }}
-  {{- end }}
-
-  {{- $metaRobots := (dict
-    "Index" $robotsIndex
-    "IndexImages" $robotsIndexImages
-    "Follow" $robotsFollow
-  ) }}
-
-  <!-- Only include SchemaOrg meta if the page should be indexed or followed -->
-  {{- $metaSchemaOrg := or $metaRobots.Index $metaRobots.Follow }}
-  {{- $metaOpengraph := or $metaRobots.Index $metaRobots.Follow }}
-  {{- $metaTwitterCard := or $metaRobots.Index $metaRobots.Follow }}
 
   {{- $title := .Title | $page.RenderString | plainify }}
   {{- $subtitle := .Params.subtitle | $page.RenderString | plainify }}
@@ -162,16 +137,6 @@
 
   {{- $singleMeta = (dict
     "Single" (dict
-      "Classification" (dict
-        "Hidden" $pageHidden
-        "Outdated" $pageOutdated
-        "Visible" $pageVisible
-        "Robots" $metaRobots
-        "SchemaOrg" $metaSchemaOrg
-        "Opengraph" $metaOpengraph
-        "TwitterCard" $metaTwitterCard
-      )
-
       "Data" (dict
         "URL" $page.RelPermalink
         "CanonicalURL" $canonicalURL
@@ -208,9 +173,9 @@
 {{- end }}
 
 {{- if $debug }}
+  {{/* {{- warnf "%s[%s]: returning .Data=\n%v" $page $template
+      (jsonify (dict "indent" "  ") $singleMeta.Single.Data) }} */}}
   {{/* {{- warnf "%s[%s]: returning %v" $page $template
-      (jsonify (dict "indent" "  ") $singleMeta) }} */}}
-  {{- warnf "%s[%s]: returning %v" $page $template
-      $singleMeta }}
+      $singleMeta }} */}}
 {{- end }}
 {{- return $singleMeta }}

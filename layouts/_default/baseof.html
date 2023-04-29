@@ -5,16 +5,19 @@
 {{- $template := "_default/baseof" }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^tags` $page.RelPermalink) ) ) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `confidential` $page.RelPermalink) ) ) }} */}}
 {{- .Scratch.Set "clarisdebug" $debug }}
 
-{{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "Debug" $debug) $page.Permalink }}
+{{- $outputFormat := partial "claris/_functions/output-format" . }}
+{{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "OutputFormat" $outputFormat "Debug" $debug) $page.Permalink $outputFormat }}
 {{- .Scratch.Set "clarismeta" $meta }}
 
-
-{{- $outputFormat := partial "claris/_functions/output-format" . }}
-{{- $printViewScript := "pagination_preview" }}
-{{- $printView := default false ($page.Param "PrintView") }}
+{{- /* {{- if (and $outputFormat (strings.Contains (lower $outputFormat.Name) "print") ) }}
+  {{- warnf "%s[%s]: outputFormat=%v: meta.Output=\n%v\n.Classification=\n%v"
+    $page $template $outputFormat.Name
+    (jsonify (dict "indent" "  ") $meta.Output)
+    (jsonify (dict "indent" "  ") $meta.Classification ) }}
+{{- end }} */ -}}
 
 {{- $assetVariant := (dict
   "OutputFormat" $outputFormat
@@ -37,7 +40,7 @@
   {{- with default false (default $p.enforceDarkMode $s.enforceDarkMode) }}
     {{- $forceColorScheme = " data-mode=\"dim\"" }}
   {{- else }}
-    {{- if (and $outputFormat (strings.Contains $outputFormat.Name "print") ) }}
+    {{- if (and $outputFormat (strings.Contains (lower $outputFormat.Name) "print") ) }}
       {{- $forceColorScheme = " data-mode=\"lit\"" }}
     {{- end -}}
   {{- end -}}
@@ -50,12 +53,14 @@
   {{- with .Type }}{{ $htmlClasses = (printf "%s type-%s" $htmlClasses .) }}{{ end -}}
   {{- with .Kind }}{{ $htmlClasses = (printf "%s kind-%s" $htmlClasses .) }}{{ end -}}
   {{- with (default .Layout .Params.layout) }}{{ $htmlClasses = (printf "%s layout-%s" $htmlClasses .) }}{{ end -}}
+  {{- with $outputFormat.Name }}{{ $htmlClasses = (printf "%s outputformat-%s" $htmlClasses .) }}{{ end -}}
   {{/* {{- if (in .Type ($page.Param "mainSections")) }}{{ $htmlClasses = (printf "%s %s" $htmlClasses "main") }}{{ end -}} */}}
   {{- with $htmlClasses }}{{ printf " class=%q" $htmlClasses | safeHTMLAttr }}{{ end -}}
   {{- with $forceColorScheme }}{{ safeHTMLAttr . }}{{ end -}}
 >
 <head>
-  {{ partial "html-comment" (printf "[%s]: .Type=%s .Layout=%s .MediaType=%s $outputFormat=%s]" $template .Type .Layout .MediaType $outputFormat.Name ) }}
+  {{ partial "html-comment" (printf "[%s]: .Type=%s .Layout=%s .MediaType=%s $outputFormat=%s meta.Classification=%v]"
+    $template .Type .Layout .MediaType $outputFormat.Name (jsonify (dict "indent" "  ") $meta.Classification)) }}
   {{- partial "claris/head/index" . }}
   {{- partialCached "claris/_hooks/head-end/index" . $assetVariant }}
 </head>

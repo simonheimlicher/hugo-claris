@@ -1,8 +1,8 @@
 {{- $pageHidden := true }}
 {{- $page := .Page }}
 {{- $template := "claris/_functions/is-page-hidden" }}
-{{- $debug := page.Scratch.Get "clarisdebug" }}
-{{/* {{- $debug = or $debug (not (not (findRE `confidential` $page.RelPermalink) ) ) }} */}}
+{{- $debug := or ($page.Scratch.Get "clarisdebug") .Debug }}
+{{/* {{- $debug = or $debug (not (not (findRE `profile` $page.RelPermalink) ) ) }} */}}
 
 {{- with $page }}
 
@@ -10,52 +10,75 @@
   {{- $hiddenParam := .Params.hidden }}
   {{- if or $draftParam $hiddenParam }}
     {{- if $debug }}
-      {{- warnf "%s[%s]: pagePath=%s .Params.draft = %v .Params.hidden=%v"
-          $page $template .Params.draft .Params.hidden }}
-    {{- end }}
-  {{- else }}
-    {{- $pagePath := "" }}
-    {{- with $page.File }}
-      {{- $pagePath = .Path }}
-    {{- else }}
-      {{- $pagePath = .Path }}
+      {{- warnf "%s[%s]: \nRelPermalink=%v\npageHidden=%v based on .Params.draft=%v .Params.hidden=%v"
+          $page $template .RelPermalink $pageHidden .Params.draft .Params.hidden }}
     {{- end }}
 
-    <!-- Determine if any part of the path to the file underlying this page is hidden -->
-    {{- $hiddenSections := $page.Param "hidden.sections" }}
-    {{- $hiddenPathPrefix := default "_" ($page.Param "hidden.pathprefix") }}
-    {{- $hiddenPathElements := $page.Param "hidden.pathelements" }}
+  {{- else }}
 
     {{- $pageHidden = false }}
-    {{- with $pagePath }}
-      {{- $pathDirFile := (path.Split .) }}
-      {{- with $pathDirFile.Dir }}
-        {{- if or (strings.HasPrefix . $hiddenPathPrefix) (in $hiddenPathElements .) }}
-          {{- $pageHidden = true }}
-          {{/* {{- warnf "%s[%s]: Hiding pagePath=%v: it begins with %v"
-              $page $template $pagePath $hiddenPathPrefix }} */}}
-        {{- else }}
-          {{- $pathParts := split . "/" }}
-          {{- range $pathParts }}
-            {{- if or (strings.HasPrefix . $hiddenPathPrefix) (in $hiddenPathElements .) }}
-              {{- $pageHidden = true }}
-              {{/* {{- warnf "%s[%s]: Hiding pagePath=%v: part=%v begins with %v"
-                  $page $template $pagePath . $hiddenPathPrefix }} */}}
-            {{- end }}
-          {{- end }}
-        {{- end }}
-      {{- else }}
-        {{- if and (ne $page.Kind "home") (or (strings.HasPrefix . $hiddenPathPrefix) (in $hiddenPathElements .)) }}
-          {{- $pageHidden = true }}
-          {{/* {{- warnf "%s[%s]: Hiding pagePath=%v: it begins with %v"
-              $page $template $pagePath $hiddenPathPrefix }} */}}
-        {{- end }}
+
+    {{- $outputFormat := partial "claris/_functions/output-format" $page }}
+    {{- $visibleOutputFormats := default (slice "HTML") ($page.Param ".visible.outputFormats") }}
+    {{- $hiddenOutputFormats := default (slice "print") ($page.Param ".hidden.outputFormats") }}
+
+    {{- if not (in $visibleOutputFormats $outputFormat.Name) }}
+      {{- $pageHidden = true }}
+    {{- else if in $hiddenOutputFormats $outputFormat.Name }}
+      {{- $pageHidden = true }}
+    {{- end }}
+
+    {{- if ne (lower $outputFormat.Name) "html" }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: \nRelPermalink=%v\npageHidden=%v based on $hiddenOutputFormats=%v outputFormat=%v"
+            $page $template .RelPermalink $pageHidden $hiddenOutputFormats $outputFormat.Name -}}
       {{- end }}
     {{- end }}
-    {{- if $debug }}
-      {{- warnf "%s[%s]: pagePath=%s hiddenPathPrefix=%v" $page $template $pagePath $hiddenPathPrefix }}
+
+    {{- if $pageHidden }}
+    {{- else }}
+      {{- $pagePath := "" }}
+      {{- with $page.File }}
+        {{- $pagePath = .Path }}
+      {{- else }}
+        {{- $pagePath = .Path }}
+      {{- end }}
+
+      <!-- Determine if any part of the path to the file underlying this page is hidden -->
+      {{- $hiddenSections := $page.Param "hidden.sections" }}
+      {{- $hiddenPathPrefix := default "_" ($page.Param "hidden.pathprefix") }}
+      {{- $hiddenPathElements := $page.Param "hidden.pathelements" }}
+
+      {{- with $pagePath }}
+        {{- $pathDirFile := (path.Split .) }}
+        {{- with $pathDirFile.Dir }}
+          {{- if or (strings.HasPrefix . $hiddenPathPrefix) (in $hiddenPathElements .) }}
+            {{- $pageHidden = true }}
+            {{/* {{- warnf "%s[%s]: Hiding pagePath=%v: it begins with %v"
+                $page $template $pagePath $hiddenPathPrefix }} */}}
+          {{- else }}
+            {{- $pathParts := split . "/" }}
+            {{- range $pathParts }}
+              {{- if or (strings.HasPrefix . $hiddenPathPrefix) (in $hiddenPathElements .) }}
+                {{- $pageHidden = true }}
+                {{/* {{- warnf "%s[%s]: Hiding pagePath=%v: part=%v begins with %v"
+                    $page $template $pagePath . $hiddenPathPrefix }} */}}
+              {{- end }}
+            {{- end }}
+          {{- end }}
+        {{- else }}
+          {{- if and (ne $page.Kind "home") (or (strings.HasPrefix . $hiddenPathPrefix) (in $hiddenPathElements .)) }}
+            {{- $pageHidden = true }}
+            {{/* {{- warnf "%s[%s]: Hiding pagePath=%v: it begins with %v"
+                $page $template $pagePath $hiddenPathPrefix }} */}}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+      {{/* {{- if $debug }}
+        {{- warnf "%s[%s]: pageHidden=%v based on pagePath=%s hiddenSections=%v hiddenPathElements=%v hiddenPathPrefix=%v"
+            $page $template $pageHidden $pagePath $hiddenSections $hiddenPathElements $hiddenPathPrefix }}
+      {{- end }} */}}
     {{- end }}
   {{- end }}
-
 {{- end }}
 {{- return $pageHidden }}

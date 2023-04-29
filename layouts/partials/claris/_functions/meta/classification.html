@@ -1,0 +1,53 @@
+{{- $page := .Page }}
+{{- $template := "claris/_functions/meta/classification" }}
+{{- $debug := page.Scratch.Get "clarisdebug" }}
+{{- $debug = or $debug (not (not (findRE `.` $page.RelPermalink) ) ) }}
+
+{{/* {{- warnf "%s[%s]: .Page=%T page=%T" $page $template .Page page }} */}}
+{{- $classificationMeta := dict -}}
+
+{{- with $page }}
+  {{- $pageHidden := (partialCached "claris/_functions/is-page-hidden" (dict "Page" $page) .Permalink $.OutputFormat) }}
+  {{- $pageOutdated := partialCached "claris/_functions/is-page-outdated" (dict "Page" $page) .Permalink }}
+  <!-- Should this page be included when content is listed? -->
+  {{- $pageVisible := not (or $pageHidden $pageOutdated) }}
+
+  {{- $robotsIndex := and (default false site.Params.robots.index) (and $pageVisible (index ($page.Param "robots") "index") ) }}
+  {{- $robotsIndexImages := and (default false site.Params.robots.indeximages) (and $pageVisible (index ($page.Param "robots") "indeximages") ) }}
+  {{- $robotsFollow := and (default false site.Params.robots.follow) (and $pageVisible (index ($page.Param "robots") "follow") ) }}
+
+  <!-- Don't index taxonomy and term pages but follow links -->
+  {{- if in (slice "taxonomy" "term") .Kind }}
+    {{- $robotsIndex = false }}
+    {{- $robotsIndexImages = false }}
+  {{- end }}
+
+  {{- $metaRobots := (dict
+    "Index" $robotsIndex
+    "IndexImages" $robotsIndexImages
+    "Follow" $robotsFollow
+  ) }}
+
+  <!-- Only include SchemaOrg meta if the page should be indexed or followed -->
+  {{- $metaSchemaOrg := or $metaRobots.Index $metaRobots.Follow }}
+  {{- $metaOpengraph := or $metaRobots.Index $metaRobots.Follow }}
+  {{- $metaTwitterCard := or $metaRobots.Index $metaRobots.Follow }}
+
+  {{- $classificationMeta = (dict "Classification" (dict
+      "Hidden" $pageHidden
+      "Outdated" $pageOutdated
+      "Visible" $pageVisible
+      "Robots" $metaRobots
+      "SchemaOrg" $metaSchemaOrg
+      "Opengraph" $metaOpengraph
+      "TwitterCard" $metaTwitterCard
+    )
+  ) }}
+
+{{- end }}
+
+{{- if $debug }}
+  {{/* {{- warnf "%s[%s]: returning .Classification=\n%v" $page $template
+      (jsonify (dict "indent" "  ") $classificationMeta.Classification ) }} */}}
+{{- end }}
+{{- return $classificationMeta }}

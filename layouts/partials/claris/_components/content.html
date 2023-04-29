@@ -3,7 +3,7 @@
 {{- $template := "partials/claris/_components/content" }}
 
 {{- $itemType := $meta.Single.Data.ItemType }}
-{{- $outdated := $meta.Single.Classification.Outdated }}
+{{- $outdated := $meta.Classification.Outdated }}
 
 {{- with $page }}
 {{- $mainSection := (in ($page.Param "mainSections") .Section) -}}

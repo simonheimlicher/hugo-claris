@@ -3,12 +3,28 @@
 {{- $debug := page.Scratch.Get "clarisdebug" }}
 {{/* {{- $debug = or $debug (not (not (findRE `^/$` $page.RelPermalink) ) ) }} */}}
 
-{{- $siteMeta := partialCached "claris/_functions/meta/site" .  site.BaseURL }}
+{{- $siteMeta := partialCached "claris/_functions/meta/site" . site.BaseURL }}
 {{- $singleMeta := partialCached "claris/_functions/meta/single" . $page.Permalink }}
+
+{{- $outputMeta := (dict "Output" (dict
+    "Format" .OutputFormat.Name
+  )
+) }}
+
+{{- $classificationMeta := partialCached "claris/_functions/meta/classification" . $page.Permalink .OutputFormat }}
 
 {{- $meta := (merge
   $siteMeta
   $singleMeta
+  $outputMeta
+  $classificationMeta
 ) }}
+
+{{- /* {{- if (and .OutputFormat (strings.Contains (lower .OutputFormat.Name) "print") ) }}
+  {{- warnf "%s[%s]: .OutputFormat=%v: meta.Output=\n%v\n.Classification=\n%v"
+    $page $template .OutputFormat.Name
+    (jsonify (dict "indent" "  ") $meta.Format)
+    (jsonify (dict "indent" "  ") $meta.Classification ) }}
+{{- end }} */ -}}
 
 {{- return $meta }}
