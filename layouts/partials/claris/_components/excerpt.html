@@ -45,16 +45,16 @@
     {{- end }}
   {{- end }}
 
-  {{- $summary := "" }}
+  {{- $excerptContent := "" }}
   {{- range (slice .Params.excerpt .Summary .Params.description .Params.summary) }}
     {{- with . }}
-      {{- $summary = . }}
+      {{- $excerptContent = . }}
     {{- end }}
   {{- end }}
-  {{- $summary = $summary | $page.RenderString | plainify }}
-  {{- $title := default .Title $meta.Single.Data.Title -}}
+  {{- $excerptContent = $excerptContent | $page.RenderString | plainify }}
+  {{- $title := default .Title $meta.Single.Data.Title }}
   {{- $plainTitle := $title | plainify }}
-  <div class="excerpt {{ if .Params.featured }} featured{{ end }}">
+  <div class="excerpt_container {{ if .Params.featured }} featured{{ end }}">
     <div class="excerpt_header">
       <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
         <h{{ $headingLevel }} class="excerpt_title">
@@ -70,29 +70,24 @@
           "showTags" $showTags) }}
       {{- end }}
     </div>
-    <div class="excerpt_main{{ if $summary }} partition{{ end }}">
+    <div class="excerpt_main{{ if $excerptImage }} image{{ end }}{{ if $excerptContent }} content{{ end }}">
       <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
       {{- with $excerptImage }}
         <div class="excerpt_thumbnail">
-            {{- partial "html-comment" (printf "[%s]: using excerptImage=%v with spec=%v"
-                $template . $thumbnailSizeSpec)}}
             {{- partial "responsive-image" (dict
               "Page" $page
               "resource" .
               "Title" $title
               "Alt" (default $title $imageMeta.excerpt.variant.default.alt)
-              "Size" $thumbnailSizeSpec
               "LazyLoad" true
             ) }}
         </div>
       {{- end }}
+        {{- with $excerptContent }}
         <div class="excerpt_content">
-        {{- with $summary }}
-          <p>
-          {{- . -}}
-          </p>
-        {{- end }}
+          {{- page.RenderString . -}}
         </div>
+        {{- end }}
       </a>
     </div>
     <div class="excerpt_footer">

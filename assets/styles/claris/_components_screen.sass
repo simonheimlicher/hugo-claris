@@ -140,7 +140,10 @@
   // overflow-y: visible
   // img
   //   margin: auto 0
-  font-size: var(--font-size-nav)
+  @supports (color: var(--color-test))
+    font-size: var(--font-size-nav)
+  @media screen and (max-width: $screenViewBreakpointWidthMobileMenu)
+    font-size: 1.5rem // For IE 11
   .icon
     width: var(--icon-height-nav)
     height: var(--icon-height-nav)
@@ -627,6 +630,9 @@
     .nav
       &_body
         transform: translateX(0)
+        width: 100% // For IE 11
+        @supports (display: flex) // For modern browsers
+          width: auto
         @include element-padding('inner', 0, 1)
         & > .nav_group
           // width: 100%
@@ -653,8 +659,9 @@
 @media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
   .nav
     &_header
-      font-size: 0.9rem // For IE 11
-      font-size: var(--font-size-nav)
+      font-size: 0.875rem // For IE 11
+      @supports (color: var(--color-test))
+        font-size: var(--font-size-nav)
     &, &_body
       flex-direction: row
     &_body
@@ -722,8 +729,6 @@
   .nav
     &_header, &_brand
       height: $screenViewNavHeight
-      font-size: 1.1rem // For IE 11
-      font-size: var(--font-size-nav)
       line-height: 1.5rem
     &_item, &_follow
       padding: 0.5rem 0.5rem

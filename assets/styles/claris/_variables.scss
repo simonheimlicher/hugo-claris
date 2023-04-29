@@ -3,6 +3,8 @@
  */
 
 $list-excerpt-width: 20rem;
+$list-excerpt-width: (($screenViewBreakpointWidthOneColumn - (3 * $screenViewInnerPaddingOneColumn) ) / 2);
+
 $list-style-indent: 0;
 $list-style-ul-indent: $list-style-indent;
 $list-style-ol-indent: $list-style-indent;

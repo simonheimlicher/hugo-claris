@@ -45,7 +45,13 @@ function initializeObjectFitImages() {
 }
 window.addEventListener("DOMContentLoaded", initializeObjectFitImages);
 
-import 'lazysizes';
+// It is recommended to include all lazysizes plugins before the main import
+// https://github.com/aFarkas/lazysizes#available-plugins-in-this-repo
 import 'lazysizes/plugins/parent-fit/ls.parent-fit';
+import 'lazysizes';
+
+// Try loading all JS in the head
+import 'scripts/claris/theme/minimal';
+import 'scripts/claris/theme/enhanced';
 
 // console.log('END   claris-head_legacy');

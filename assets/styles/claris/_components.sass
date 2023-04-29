@@ -62,9 +62,6 @@
     font-size: 1rem // For IE 11
     font-size: var(--font-size-footer)
 
-  // p
-  //   padding: 0.5rem 0
-
   &_inner
     @include footer
 
@@ -98,14 +95,21 @@
   &_main
     display: flex
     flex-wrap: wrap
-
     @media only screen and (min-width: $screenViewBreakpointWidthNarrow)
       &
         justify-content: space-evenly
 
     &-item
       padding-bottom: var(--inner_padding-y-3)
-      flex: 1 1 auto
+      // FIXME: IE 11 bug
+      // https://github.com/philipwalton/flexbugs/issues/75
+      // Setting a min-height on the container (body does not work)
+      // avoids scaled images taking up as much space as they would if not scaled
+      // FIXME: Does not work. responsive-figure images still blow up
+      min-height: 1px // For IE 11
+      flex: 1 1 10%
+      @supports (display: flex)
+        flex: 1 1 auto
 
   // Footer main | Newsletter form
   form
@@ -507,63 +511,57 @@
         right: 0.45rem
 
 .excerpt
-  width: 100%
-  height: 100%
-  display: block
-  grid-gap: 0
-  margin-bottom: 1rem
-  border-radius: 0.25rem
-  background: var(--bg)
-  @include drop-shadow(3rem, 0.1, 0.3)
-  @media (any-hover: hover)
-    &:hover, &:focus
-      color: var(--text-hover)
-      background: var(--bg-hover)
-  &.featured
-    grid-column: auto / span 2
-    @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
-      .excerpt
-        font-size: 125%
+  &_container
+    width: 100%
+    height: 100%
+    display: block
+    grid-gap: 0
+    border-radius: 0.25rem
+    background: var(--bg)
+    margin-bottom: var(--inner_margin-y)
+    &:last-child
+      margin-bottom: 0
+    @include drop-shadow(3rem, 0.1, 0.3)
+    @media (any-hover: hover)
+      &:hover, &:focus
+        color: var(--text-hover)
+        background: var(--bg-hover)
+  &_header, &_title, &_meta, &_main, &_thumbnail, &_content, &_footer
+    width: 100%
   &_title, &_meta
-    width: 100%
     padding: 0 var(--inner_padding-x)
-  &_header, &_footer
-    width: 100%
   &_title
-    width: 100%
     padding-top: var(--inner_padding-y)
     @extend h3
     margin: 0
   &_main
-    width: 100%
     padding: 0
     @media screen and (min-width: $screenViewBreakpointWidthNarrow)
-      &.partition
+      &.image.content
         .excerpt_thumbnail
           float: left
-          padding: var(--inner_padding-y) var(--inner_padding-x-2) var(--inner_padding-y-1) var(--inner_padding-x)
+          padding: var(--inner_padding-y-3) var(--inner_padding-x-2) var(--inner_padding-y-2) var(--inner_padding-x)
+          max-width: 60%
+    @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+      &.image.content
+        .excerpt_thumbnail
           max-width: 40%
   &_thumbnail
-    width: 100%
-    padding: var(--inner_padding-y) var(--inner_padding-x) var(--inner_padding-y-1) var(--inner_padding-x)
+    padding: var(--inner_padding-y-3) var(--inner_padding-x) var(--inner_padding-y-2) var(--inner_padding-x)
     img
       margin: 0
       min-height: 4rem
       max-height: 8rem
       @supports (aspect-ratio: 1)
-        // aspect-ratio: 514229 / 317811 // golden ratio
         aspect-ratio: 16 / 9
         height: auto
         min-height: unset
         max-height: unset
     @media screen and (min-width: $screenViewBreakpointWidthMobile)
       border-radius: 0.5rem
-    // @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
-    //   img
-    //     aspect-ratio: 1
   &_content
-    height: 100% // Ensure the entire excerpt div is covered by <a> tags
-    padding: var(--inner_padding-y-3) var(--inner_padding-x) var(--inner_padding-y) var(--inner_padding-x)
+    height: auto // Avoid overflow at bottom
+    padding: var(--inner_padding-y-2) var(--inner_padding-x) var(--inner_padding-y) var(--inner_padding-x)
   &_footer
     clear: both
     &_read-on, &_page-count
@@ -582,62 +580,125 @@
       &_read-on
         display: block
 
-  @supports (display: grid)
+  &_container
     display: flex
     flex-direction: column
-    align-items: flex-start
-    margin-bottom: 0
-    &_main
-      height: 100%
-      min-height: unset // For everything other than IE 11
-    &_grid
-      display: flex
-      flex-direction: column
-      justify-content: space-between
-      align-items: flex-start
-      margin: 0
-      .excerpt
-        margin: 1rem 0 0 0
-      @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
-        flex-grow: 1
-        flex-basis: calc((#{$screenViewBreakpointWidthOneColumn} - 2 * #{$screenViewInnerPaddingOneColumn} - 2rem) / 2)
+  &_main
+    display: flex
+    flex-direction: column
+    flex: 1 1 auto
 
+  @supports (display: grid)
+    &_content
+      min-height: unset // For everything other than IE 11
+    @media screen and (min-width: $screenViewBreakpointWidthNarrow)
+      &_container
+        margin: var(--inner-margin-y) 0 0 0
+      &_grid
         /* Auto-fit as many items on a row as possible without going under $list-excerpt-width */
         display: grid
         grid-template-columns: repeat(auto-fit, minmax(#{$list-excerpt-width}, 1fr))
         grid-auto-flow: dense
-        grid-gap: 1rem
-        margin: 0
-        .excerpt
-          margin: 0
-
-      @media screen and (min-width: $screenViewBreakpointWidthWide)
         grid-gap: var(--inner_padding-y)  var(--inner_padding-x)
-      &_thumbnail
-        height: auto
-
-
-.hero-image_background_main
-  @supports (display: grid)
+        margin: 0
+        .excerpt_container
+          margin: 0
+      &_container
+        .excerpt_main
+          &.image.content
+            .excerpt_thumbnail
+              float: none
+              padding-right: var(--inner_padding-x)
+              max-width: 100%
+            .excerpt_content
+              height: auto // Avoid overflow at bottom
     @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
-      .excerpt_grid
-        // Allow 1 column, not 2
-        grid-template-columns: 1fr
-    @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
-      .excerpt_grid
-        // Allow 2 columns, not 3
-        grid-template-columns: repeat(2, 1fr)
-      @supports (aspect-ratio: 1)
-        .excerpt_thumbnail img
-          aspect-ratio: 1 // square
-    @media screen and (min-width: $screenViewBreakpointWidthWide)
-      @supports (aspect-ratio: 1)
-        .excerpt_thumbnail img
-          aspect-ratio: 514229 / 317811 // golden ratio
-    @media screen and (min-width: $screenViewBreakpointWidthUltrawide)
-      .excerpt_grid
-        // Allow 4 columns only when 4 columns fit, not 3
-        grid-template-columns: repeat(4, 1fr)
+      &_container.featured
+        grid-column: auto / span 2
+        .excerpt_main
+          &.image.content
+            .excerpt_thumbnail
+              float: left
+              padding: var(--inner_padding-y-3) var(--inner_padding-x-2) var(--inner_padding-y-2) var(--inner_padding-x)
+              max-width: 50%
+    // @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+    //   &
+    //     font-size: 125%
+
+@supports (display: grid)
+  .hero-image_background_main
+    .excerpt
+      @media screen and (min-width: $screenViewBreakpointWidthNarrow)
+        &_grid
+          // Allow 1 column, not 2
+          grid-template-columns: 1fr
+        &_container
+          .excerpt_main
+            &.image.content
+              .excerpt_thumbnail
+                float: none
+                padding-right: var(--inner_padding-x)
+                max-width: 100%
+      @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+        &_grid
+          // Allow 2 columns, not 3
+          grid-template-columns: repeat(2, minmax(#{$list-excerpt-width}, 1fr) )
+      @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+        &_grid
+          // Allow 2 columns, not 3
+          grid-template-columns: repeat(2, minmax(#{$list-excerpt-width}, 1fr) )
+      @media screen and (min-width: $screenViewBreakpointWidthWide)
+        &_container
+          .excerpt_main
+            &.image.content
+              .excerpt_thumbnail
+                float: left
+                padding: var(--inner_padding-y-3) var(--inner_padding-x-2) var(--inner_padding-y-2) var(--inner_padding-x)
+                max-width: 50%
+      @media screen and (min-width: $screenViewBreakpointWidthUltrawide)
+        &_container
+          .excerpt_main
+            &.image.content
+              .excerpt_thumbnail
+                float: none
+                padding-right: var(--inner_padding-x)
+                max-width: 100%
+        &_grid
+          // Allow 4 columns only when 4 columns fit, not 3
+          grid-template-columns: repeat(4, 1fr)
+
+// .hero-image_background_main
+//   @supports (display: grid)
+//     @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+//       .excerpt
+//         &_grid
+//           // Allow 1 column, not 2
+//           grid-template-columns: 1fr
+//         &_main
+//           &.image.content
+//             .excerpt_thumbnail
+//               float: left
+//               padding-right: var(--inner_padding-x-2)
+//               max-width: 60%
+//             .excerpt_content
+//               height: 100% // Ensure the entire excerpt div is covered by <a> tags
+//     @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+//       .excerpt
+//         &_grid
+//           // Allow 2 columns, not 3
+//           grid-template-columns: repeat(2, minmax(#{$list-excerpt-width}, 1fr) )
+//         &_main
+//           &.image.content
+//             .excerpt_thumbnail
+//               float: none
+//               padding-right: var(--inner_padding-x)
+//               max-width: 100%
+//             .excerpt_content
+//               height: auto // Avoid overflow at bottom
+//     @media screen and (min-width: $screenViewBreakpointWidthUltrawide)
+//       .excerpt_grid
+//         // Allow 4 columns only when 4 columns fit, not 3
+//         grid-template-columns: repeat(4, 1fr)
 
 
 .sidebar
@@ -1035,10 +1096,14 @@ html[data-mode="dim"]
   margin: var(--inner_margin_y) auto
   // padding: var(--inner_padding-y) var(--inner_padding-x)
   border-radius: 0.125rem
-  & > picture
-    display: block
-    max-width: 100% // IE 11
-    max-height: 100% // IE 11
+  // FIXME: The below hacks does no longer seem to be required
+  // The picture element should not be displayed as a block element
+  // as it is meant to be a grouping element only
+  // Commened out on 2023-04-29
+  // & > picture
+  //   display: block
+  //   max-width: 100% // IE 11
+  //   max-height: 100% // IE 11
   @supports (display: flex)
     display: flex;
     flex-direction: column
