@@ -1,0 +1,53 @@
+# Hugo Claris — responsive, modular, modern
+
+[*Hugo Claris*](https://simonheimlicher.github.io/hugo-claris-demo/) &middot;
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/simonheimlicher/hugo-claris/blob/main/LICENSE)
+[![hugo version](https://img.shields.io/go/v/hugo.svg?style=flat)](https://gohugo.io/)  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTE.md) 
+[![hugo-claris](https://img.shields.io/badge/Hugo--Themes-Hugo%20Claris-blue)](https://themes.gohugo.io/themes/hugo-claris/)
+[![GitHub](https://img.shields.io/github/license/simonheimlicher/hugo-claris)](https://github.com/simonheimlicher/hugo-claris/blob/main/LICENSE)
+![code-size](https://img.shields.io/github/languages/code-size/simonheimlicher/hugo-claris)
+![Screenshot Hugo Claris Theme](https://raw.githubusercontent.com/simonheimlicher/hugo-claris/main/images/thumbnail.png)
+
+*Claris* is a theme for [Hugo, the world’s fastest static website generator](https://gohugo.io/)
+
+* **Mobile-first:** *Claris* works great on mobile devices as well as on laptops, iMacs, and desktop PCs
+* **Responsive:** Adapts its layout and design to the device and orientation of the user
+* **Modular:** Implemented as a Hugo module, which is just a Go module
+
+## Responsive
+
+### Mobile
+
+[![iPhone 12 Pro portrait](./static/images/hugo-claris-demo_home_iPhone_12_Pro-portrait.png)
+
+[![iPhone 12 Pro landscape](./static/images/hugo-claris-demo_home_iPhone_12_Pro-landscape.png)
+
+### Desktop
+
+[![Desktop WXGA 1280x720](./static/images/hugo-claris-demo_footer_Desktop_1280x720.png)
+
+[![Desktop WXGA 1280x720](./static/images/hugo-claris-demo_home_Desktop_1280x720.png)
+
+
+## Installation
+
+You can use *Claris* as a `Hugo module` from [GithUb](https://github.com/simonheimlicher/hugo-claris/), or as a `Hugo theme` by [cloning its Github repository](https://github.com/simonheimlicher/hugo-claris/).
+
+## Contributing
+
+The main purpose of this repository is to continue to evolve *Claris* core, making it faster and easier to use. Development of *Claris* happens in the open on GitHub, and we are grateful to the community for contributing bugfixes and improvements. Read below to learn how you can take part in improving *Claris*.
+
+### [Code of Conduct](./CODE_OF_CONDUCT.md)
+
+We have adopted a Code of Conduct that we expect project participants to adhere to.
+Please read [the full text](./CODE_OF_CONDUCT.md) so that you can understand what actions will and will not be tolerated.
+
+### [Contributing Guide](./CONTRIBUTE.md)
+
+Read our [contributing guide](./CONTRIBUTE.md) to learn about our development
+process, how to propose bugfixes and improvements, and how to build and test
+your changes to *Claris*.
+
+### License
+
+Hugo Claris is [MIT licensed](./LICENSE).
