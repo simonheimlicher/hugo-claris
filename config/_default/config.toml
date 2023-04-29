@@ -19,6 +19,9 @@ ignoreFiles = [
 
 paginate = 20
 
+# https://gohugo.io/getting-started/configuration/#enablemissingtranslationplaceholders
+enableMissingTranslationPlaceholders = true
+
 ###############################################################################
 # NOTICE: After introducing the first section in TOML (e.g. "[Author]"),
 # nothing is added to the root namespace
