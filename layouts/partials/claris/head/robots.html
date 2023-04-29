@@ -1,6 +1,6 @@
 {{- $page := .Page }}
-{{- $meta := .Meta }}
-{{- $debug := default false .Debug }}
+{{- $meta := page.Scratch.Get "clarismeta" }}
+{{- $debug := page.Scratch.Get "clarisdebug" }}
 {{- $contentType := .ContentType }}
 {{- $template := "claris/head/robots" }}
 {{- $robotsGenerate := false -}}
@@ -28,7 +28,7 @@
     {{- $robotsIndex = and $robotsIndex .Index }}
     {{- $robotsFollow = and $robotsFollow .Follow }}
     {{- if $debug }}
-      {{- warnf "%s[%s]: .Meta.Single.Classification.Robots=%v: index=%v follow=%v" $page $template . $robotsIndex $robotsFollow }}
+      {{- warnf "%s[%s]: $meta.Single.Classification.Robots=%v: index=%v follow=%v" $page $template . $robotsIndex $robotsFollow }}
     {{- end }}
   {{- end }}
   {{- if $debug }}

@@ -1,28 +1,37 @@
-{{- $authorEntity := dict }}
+{{- $schemaOrgEntities := dict }}
 {{- $page := .Page }}
+{{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/_functions/schema-org/_entities/author" }}
-{{- $debug := .Debug }}
-{{/* {{- $debug = or $debug (not (not (findRE `powerful` $page.RelPermalink) ) ) }} */}}
+{{- $debug := page.Scratch.Get "clarisdebug" }}
+{{/* {{- $debug = true }} */}}
+
 {{- $entityParams := merge . (dict "Debug" $debug) }}
 
 <!-- [Schema.org entity Author](https://schema.org/Author)
 -->
 
-{{/* {{- if $debug }}
+{{- /* if $debug }}
   {{- warnf "%s[%s]: got entityParams.Meta=%v" $page $template
-  (jsonify (dict "indent" "  ") $entityParams.Meta) }}
-{{- end }} */}}
+  $entityParams.Meta }}
+{{- end */ -}}
 
+{{- $socialProfileURLs := slice }}
+{{- range $site := $meta.Site.Data.Author.Social }}
+  {{- $socialProfileURLs = append (slice .Profile.URL) $socialProfileURLs }}
+{{- end }}
 
-{{- with .Meta.Author.Data }}
-  {{- $authorEntity = (dict "Entity"
+{{- $siteAuthorEntity := false }}
+{{- $pageAuthorEntity := false }}
+
+{{- with $meta.Site.Data.Author }}
+  {{- $siteAuthorEntity = (dict "Entity"
     (dict
       "@type" "Person"
       "@id" .ID
       "name" .Name
       "url" .CanonicalURL
       "description" .Description
-      "sameAs" .OtherProfiles.URL
+      "sameAs" $socialProfileURLs
     )
     "Reference"
     (dict
@@ -30,16 +39,48 @@
       "@id" .ID
     )
   ) }}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: SiteAuthor=%v from $meta.Site.Data.Author=%v" $page $template
+    (jsonify (dict "indent" "  ") $siteAuthorEntity)
+    (jsonify (dict "indent" "  ") $meta.Site.Data.Author) }}
+  {{- end }}
+{{- else }}
+  {{- errorf "%s[%s]: Missing meta data $meta.Site.Data.Author: .Data=%v"
+    $page $template $meta.Site.Data }}
+{{- end }}
+{{- with $meta.Single.Data.Author }}
+  {{- $pageAuthorEntity = (dict
+    "Entity" (dict
+        "@type" "Person"
+        "@id" .ID
+        "name" .Name
+        "url" .CanonicalURL
+        "description" .Description
+        "sameAs" $socialProfileURLs
+    )
+    "Reference" (dict
+      "@type" "Person"
+      "@id" .ID
+    )
+  ) }}
+{{- else }}
+  {{- errorf "%s[%s]: Missing meta data $meta.Single.Data.Author: .Data=%v"
+    $page $template $meta.Single.Data }}
 {{- end }}
 
-{{- $schemaOrgAuthor := (dict
-  "Entities" (dict
-    "Author" $authorEntity
-  )
-) }}
+{{- with and $siteAuthorEntity $pageAuthorEntity }}
+  {{- $schemaOrgEntities = (dict
+    "Entities" (dict
+      "SiteAuthor" $siteAuthorEntity
+      "PageAuthor" $pageAuthorEntity
+    )
+  ) }}
+{{- else }}
+  {{- errorf "%s[%s]: Either $siteAuthorEntity $pageAuthorEntity is invalid" $page $template }}
+{{- end }}
 
 {{- if $debug }}
   {{- warnf "%s[%s]: returning %v" $page $template
-  (jsonify (dict "indent" "  ") $authorEntity) }}
+  (jsonify (dict "indent" "  ") $schemaOrgEntities) }}
 {{- end }}
-{{- return $schemaOrgAuthor }}
+{{- return $schemaOrgEntities }}

@@ -1,11 +1,11 @@
 {{- $page := .Page }}
-{{- $meta := .Meta }}
+{{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/head/index" }}
 
 {{- $themeColorLit := default "hsl(47, 20%, 98%)" (.Page.Param "themeColorLit") }}
 {{- $themeColorDim := default "hsl(47, 20%, 10%)" (.Page.Param "themeColorDim") }}
 
-{{- $debug := default false .Debug }}
+{{- $debug := page.Scratch.Get "clarisdebug" }}
 {{/* {{- $debug = or $debug (not (not (findRE `about` $page.RelPermalink) ) ) }} */}}
 {{- with $page }}
     <meta charset="utf-8">

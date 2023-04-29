@@ -2,8 +2,7 @@
 {{- $template := "_default/single" }}
 {{- $debug := false }}
 {{/* {{- $debug = or $debug (not (not (findRE `^$` .RelPermalink) ) ) }} */}}
-{{- $meta := partialCached "claris/_functions/meta/single" (dict "Page" . "Debug" $debug) .RelPermalink }}
 {{ partial "html-comment" (printf "[%s]: BEGIN define main" $template) }}
-{{ partial "claris/main/index" (dict "Page" . "Meta" $meta) }}
+{{ partial "claris/main/index" . }}
 {{ partial "html-comment" (printf "[%s]: END   define main" $template) }}
 {{- end }}

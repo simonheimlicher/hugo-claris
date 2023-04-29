@@ -1,6 +1,6 @@
 {{- $page := .Page }}
 {{- $template := "claris/_functions/meta/site" }}
-{{- $debug := default false .Debug }}
+{{- $debug := page.Scratch.Get "clarisdebug" }}
 {{/* {{- $debug = or $debug (not (not (findRE `/$` $page.RelPermalink) ) ) }} */}}
 
 {{- $homePage := (site.GetPage "/") }}
@@ -12,6 +12,8 @@
 {{- $metaTwitterCard := site.Params.robots.index }}
 
 {{- $author :=  site.Author.name }}
+{{- $authorMeta := partialCached "claris/_functions/meta/author" (dict "Page" $homePage "Author" $author "Debug" $debug) $homePage.Permalink }}
+{{- $socialMeta := partialCached "claris/_functions/meta/social" (dict "Page" $homePage "Author" $author "Debug" $debug) $homePage.Permalink }}
 
 {{- $name := default site.Title site.Params.website.name }}
 {{- $title := site.Title }}
@@ -99,6 +101,8 @@
       "Fulltitle" $fulltitle
       "Tagline" $tagline
       "Description" $description
+      "Author" $authorMeta
+      "Social" $socialMeta
       "Images" $metaImages
       "Language" $language
       "AlternativeLanguages" $alternativeLanguages

@@ -2,7 +2,7 @@
 {{- $template := "claris/_functions/resources/images/image-resource" }}
 
 {{- $page := .Page }}
-{{- $debug := default false .Debug }}
+{{- $debug := page.Scratch.Get "clarisdebug" }}
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+/)?leadership/$` $page.RelPermalink) ) ) }} */}}
 <!-- FIXME: Cannot merge . with any dict - otherwise, the call to
 partial "claris/_functions/resources" no longer works -->

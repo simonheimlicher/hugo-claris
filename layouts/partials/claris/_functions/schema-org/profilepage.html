@@ -1,15 +1,16 @@
 {{- $page := .Page }}
+{{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $schemaOrgMeta := .SchemaOrgMeta }}
 {{- $template := "claris/_functions/schema-org/profilepage" }}
 
 <!-- [Schema.org entity ProfilePage](https://schema.org/ProfilePage) -->
 
 {{- $schemaOrgMeta = merge $schemaOrgMeta (partialCached "claris/_functions/schema-org/_entities/article"
-    (dict "Page" $page "Meta" .Meta)
-    .Meta.Single.Data.URL
+    (dict "Page" $page "Meta" $meta)
+    $meta.Single.Data.URL
   ) }}
 
-{{- with $schemaOrgMeta.Entities.Author }}
+{{- with $schemaOrgMeta.Entities.PageAuthor }}
   {{- $schemaOrgMeta = merge $schemaOrgMeta (dict
     "Root" (dict
       "@type" "ProfilePage"
@@ -27,7 +28,7 @@
   {{- end }}
 
 {{- else }}
-  {{- errorf "%s[%s]: Missing entity $schemaOrgMeta.Entities.Author" $page $template }}
+  {{- warnf "%s[%s]: Missing entity $schemaOrgMeta.Entities.PageAuthor" $page $template }}
 {{- end }}
 
 {{- return $schemaOrgMeta }}

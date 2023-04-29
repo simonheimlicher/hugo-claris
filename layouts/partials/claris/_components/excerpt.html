@@ -3,15 +3,14 @@
 {{- $template := "partials/_components/excerpt" }}
 {{- $relativeDates := default true .RelativeDates }}
 {{- $showTags := default true .ShowTags }}
-{{- $thumbnailSizeSpec := "256x256 Smart" }}
 {{- $headerPartial := default "" .HeaderPartial }}
 {{- $itemType := default "page" .ItemType }}
 {{- $headingLevel := default 3 .HeadingLevel }}
-{{- $debug := default false .Debug }}
+{{- $debug := page.Scratch.Get "clarisdebug" }}
 {{/* {{- $debug = or $debug (not (not (findRE `^/leadership/` $page.RelPermalink) ) ) }} */}}
 
 {{- if $debug }}
-  {{- warnf "%s[%s]: .Page=%v[%T] .Meta=%v" $page $template $page $page $meta }}
+  {{- warnf "%s[%s]: .Page=%v[%T] $meta=%v" $page $template $page $page $meta }}
 {{- end }}
 
 {{- if (eq $itemType "article") }}

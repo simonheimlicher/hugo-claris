@@ -1,10 +1,11 @@
 {{- $page := .Page }}
+{{- $rootPage := default $page .RootPage }}
 {{- $template := "claris/_functions/meta/list" }}
-{{- $debug := default false .Debug }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/$` $page.RelPermalink) ) ) }} */}}
+{{- $debug := default (page.Scratch.Get "clarisdebug") .Debug }}
+{{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/$` $page.RelPermalink) ) ) }}
 
 {{- if $debug }}
-  {{- warnf "%s[%s]: .ListParams=%v" $page $template .ListParams }}
+  {{- warnf "%s[%s]: .ListItems=%v .ListParams=%v" $page $template .ListItems .ListParams }}
 {{- end }}
 
 {{- $limit := 0 }}
@@ -22,7 +23,7 @@
   {{- with .ListParams }}
     {{/* {{- warnf "%s[%s]: listing items according to ListParams=%v" $page $template . }} */}}
     {{- with .SectionsToShow }}
-      {{- $candidateListItems = sort (where $page.Pages "Section" "IN" .) "Weight" }}
+      {{- $candidateListItems = sort (where $page.Pages "Section" "in" .) "Weight" }}
       {{/* {{- partial "html-comment" (printf "[%s]: listing SectionsToShow: %v" $template $candidateListItems) }} */}}
       {{/* {{- warnf "%s[%s]: listing sections provided by SectionsToShow=%v: %v" $page $template . $candidateListItems }} */}}
     {{- end }}
@@ -46,7 +47,7 @@
 {{- if eq $candidateListItems false }}
   {{- $candidateListItems = $page.Pages.ByDate.Reverse }}
   {{- if $debug }}
-    {{- warnf "%s[%s]: List all pages from .Pages=%v: %v" $page $template $page $candidateListItems }}
+    {{- warnf "%s[%s]: List all pages from .Pages=%v: candidateListItems=%v" $page $template $page.Pages $candidateListItems }}
   {{- end }}
 {{- end }}
 
@@ -78,18 +79,28 @@
     {{- with $limit }}
       {{- $validListItems = first . $validListItems }}
     {{- end }}
-    {{- range $validListItems }}
-      {{- $itemMeta := partial "claris/_functions/meta/single" (dict "Page" . "Debug" $debug) }}
-      {{- if (ne .Kind "page") }}
-        {{- if $debug }}
-          {{- warnf "%s[%s]: .Kind=%v: adding list meta" $page $template .Kind }}
-        {{- end }}
-        {{- $itemMeta = merge $itemMeta (partial "claris/_functions/meta/list" (dict "Page" . "Debug" $debug) ) }}
-      {{- end }}
-      {{- $listMetaItems = append (slice $itemMeta) $listMetaItems }}
-    {{- end }}
     {{- if $debug }}
       {{- warnf "%s[%s]: Found items to list: validListItems=%v" $page $template $validListItems }}
+    {{- end }}
+    {{- range $validListItems }}
+      {{- $itemMeta := partial "claris/_functions/meta/single" (dict "Page" . "Debug" $debug) }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: Page=%v .Kind=%v: itemMeta for page=%v" $page $template . .Kind $itemMeta.Single.Page }}
+      {{- end }}
+      {{- if (eq .Kind "page") }}
+      {{- else }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: .Kind=%v: $page=%v $rootPage=%v" $page $template .Kind $page $rootPage }}
+        {{- end }}
+        {{- if (eq $rootPage $page) }}
+          {{- $itemListMeta := (partial "claris/_functions/meta/list" (dict "Page" . "RootPage" $rootPage "Debug" $debug) ) }}
+          {{- $itemMeta = merge $itemMeta $itemListMeta }}
+          {{- if $debug }}
+            {{- warnf "%s[%s]: .Kind=%v: added itemListMeta for %d items" $page $template .Kind (len $itemMeta.List.Data.Items) }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+      {{- $listMetaItems = append (slice $itemMeta) $listMetaItems }}
     {{- end }}
   {{- else }}
     {{- if $debug }}
@@ -151,7 +162,7 @@
 
 {{- end }}
 
-{{/* {{- if $debug }}
-  {{- warnf "%s[%s]: returning %v" $page $template $listMeta }}
-{{- end }} */}}
+{{- if $debug }}
+  {{- warnf "%s[%s]: returning meta for %v items" $page $template (len $listMeta.List.Data.Items) }}
+{{- end }}
 {{- return $listMeta }}

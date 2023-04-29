@@ -1,25 +1,26 @@
 {{- $page := .Page }}
-{{- $meta := .Meta }}
+{{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/_components/title" }}
-{{- $title := default .Page.Title .Meta.Single.Data.Title }}
-{{- $subtitle := default $page.Params.subtitle .Meta.Single.Data.Subrtitle }}
-{{- $supertitle := default $page.Params.supertitle .Meta.Single.Data.Supertitle }}
+{{- $title := default .Page.Title $meta.Single.Data.Title }}
+{{- $subtitle := default $page.Params.subtitle $meta.Single.Data.Subrtitle }}
+{{- $supertitle := default $page.Params.supertitle $meta.Single.Data.Supertitle }}
 {{- $titleClass := "content-title" }}
 
-{{- with .Supertitle }}
-  {{- $supertitle = . }}
-{{- end }}
-{{- with .Subtitle }}
-  {{- $subtitle = . }}
-{{- end }}
-
-{{- with .TitleClass }}
-  {{- $titleClass = . }}
+{{- if reflect.IsMap . }}
+  {{- with .Supertitle }}
+    {{- $supertitle = . }}
+  {{- end }}
+  {{- with .Subtitle }}
+    {{- $subtitle = . }}
+  {{- end }}
+  {{- with .TitleClass }}
+    {{- $titleClass = . }}
+  {{- end }}
 {{- end }}
 
 {{- with $page -}}<!-- Restore "." to refer to page context from which the partial was called -->
   {{- with $meta.Single.Data }}
-    {{- partial "html-comment" (printf "[%s]: BEGIN: Kind=%v .Meta.Single.Title=%v .Supertitle=%v .Subtitle=%v .Tagline=%v"
+    {{- partial "html-comment" (printf "[%s]: BEGIN: Kind=%v $meta.Single.Title=%v .Supertitle=%v .Subtitle=%v .Tagline=%v"
         $template $page.Kind .Title .Supertitle .Subtitle .Tagline ) }}
   {{- end }}
 

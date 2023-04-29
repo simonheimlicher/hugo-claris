@@ -3,12 +3,15 @@
 {{- $logoURL := .LogoURL }}
 {{- $logoClass := .LogoClass }}
 
+{{- $template := "claris/header/logo" }}
+
 {{- with $logoURL }}
   {{- if not (strings.HasPrefix . "http") }}
     {{- with strings.TrimLeft "/" . }}
       {{- $logoURL = absLangURL . }}
+      {{- warnf "%s[%s]: logoURL: '%v' --> %v" $page $template $logoURL }}
     {{- else }}
-      {{- $logoURL = site.BaseURL }}
+      {{- $logoURL = (site.GetPage "/").Permalink }}
     {{- end }}
   {{- end }}
 {{- end }}

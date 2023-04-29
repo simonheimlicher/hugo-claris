@@ -1,4 +1,5 @@
 {{- $page := .Page }}
+{{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $schemaOrgMeta := .SchemaOrgMeta }}
 {{- $template := "claris/_functions/schema-org/collectionpage" }}
 {{- $debug := .Debug }}
@@ -9,30 +10,16 @@
 # Background
 * [Usage for a category page]
 (https://webmasters.stackexchange.com/a/99106/135400)
-  "mainEntity": {
-    "@type": "ItemList",
-    "itemListElement": [
-      {
-        "@type": "BlogPosting",
-        "name": "Top 10 booze-infused getaways",
-        "headline": "Top 10 booze-infused getaways",
-        "description": "Vacations are all about letting loose, so it’s no surprise that more and more travelers are opting for locations known for their libations. Whether you’re a former keg stand ..",
-        "url": "http://www.cheapflight.com.uk/news/top-10-booze-infused-getaways/",
-        "dateCreated": "2016-04-08",
-        "author": {"@id": "http://www.cheapflight.com.uk/authors/stephanie-schaefer/#i"}
-      },
-    ]
-  }
 -->
 
-{{- with .Meta.Single.Data }}
+{{- with $meta.Single.Data }}
   {{- $schemaOrgMeta = merge $schemaOrgMeta (dict
     "Root" (dict
       "@type" "CollectionPage"
     )
   ) }}
 {{- else }}
-  {{- errorf "%s[%s]: Missing parameter .Meta.Single.Data" $page $template }}
+  {{- errorf "%s[%s]: Missing parameter $meta.Single.Data" $page $template }}
 {{- end }}
 
 {{- $itemList := slice }}

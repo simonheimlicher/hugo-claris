@@ -1,6 +1,6 @@
 {{- $page := .Page }}
-{{- $meta := .Meta }}
-{{- $debug := default false .Debug }}
+{{- $meta := page.Scratch.Get "clarismeta" }}
+{{- $debug := page.Scratch.Get "clarisdebug" }}
 {{- /* {{- $debug = or $debug (not (not (findRE `about` $page.RelPermalink) ) ) }} */ -}}
 {{- $template := "claris/head/schema-org" }}
 

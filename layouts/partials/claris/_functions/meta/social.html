@@ -1,0 +1,74 @@
+{{- $socialMeta := dict }}
+{{- $page := .Page }}
+{{- $template := "claris/_functions/meta/social" }}
+{{- $debug := page.Scratch.Get "clarisdebug" }}
+{{/* {{- $debug = or $debug (not (not (findRE `^/(?:[^/]*-demo/)?(.*powerful|$)` $page.RelPermalink) ) ) }} */}}
+
+{{- $socialSites := (dict
+  "twitter" (dict
+    "URLTemplate" "https://twitter.com/%s"
+    "Name" "Twitter"
+    "Icon" "twitter"
+  )
+  "linkedin" (dict
+    "URLTemplate" "https://www.linkedin.com/in/%s/"
+    "Name" "LinkedIn"
+    "Icon" "linkedin"
+  )
+  "github" (dict
+    "URLTemplate" "https://github.com/%s"
+    "Name" "GitHub"
+    "Icon" "github"
+  )
+  "stackoverflow" (dict
+    "URLTemplate" "https://stackoverflow.com/users/%s/"
+    "Name" "stackoverflow"
+    "Icon" "stackoverflow"
+  )
+  "superuser" (dict
+    "URLTemplate" "https://superuser.com/users/%s/"
+    "Name" "superuser"
+    "Icon" "superuser"
+  )
+  "crossvalidated" (dict
+    "URLTemplate" "https://stats.stackexchange.com/users/%s/"
+    "Name" "Cross Validated"
+    "Icon" "crossvalidated"
+  )
+  "resumesocial" (dict
+    "Name" "ResumeSocial"
+    "URLTemplate" "https://resume.social/profile/%s/"
+  )
+) }}
+{{- with $page }}
+
+  {{- $otherProfileURLs := slice }}
+
+  {{- with site.Params.social }}
+    {{- range $site, $profile := . }}
+      {{- $siteTemplate := index $socialSites $site "URLTemplate" }}
+      {{- with $siteTemplate }}
+        {{- $profileURL := (printf $siteTemplate $profile.id) }}
+        {{- $otherProfileURLs = append (slice $profileURL) $otherProfileURLs }}
+        {{- $socialMeta = merge $socialMeta (dict $site (merge
+          (index $socialSites $site)
+          (dict "Profile" (merge $profile (dict "URL" $profileURL) )
+        ))) }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: profileURL=%q [siteTemplate=%q profile=%q]"
+              $page $template $profileURL $siteTemplate $profile }}
+        {{- end }}
+      {{- else }}
+        {{- warnf "%s[%s]: No siteTemplate for site=%q profile=%q"
+            $page $template $site $profile }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+
+{{- end }}
+
+{{- if $debug }}
+  {{- warnf "%s[%s]: returning %v"
+      $page $template (jsonify (dict "indent" "  ") $socialMeta) }}
+{{- end }}
+{{- return $socialMeta }}

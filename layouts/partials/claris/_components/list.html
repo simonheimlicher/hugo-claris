@@ -1,12 +1,9 @@
 {{- $page := .Page }}
-{{- $meta := .Meta }}
+{{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/_components/list" }}
-{{- $debug := default false .Debug }}
-{{/* {{- $debug = or $debug (not (not (findRE `leadership` $page.RelPermalink) ) ) }} */}}
-
-{{- if $debug }}
-  {{- warnf "%s[%s]: .ListParams=%v" $page $template .ListParams }}
-{{- end }}
+{{- $debug := default (page.Scratch.Get "clarisdebug") .Debug }}
+{{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/$` $page.RelPermalink) ) ) }} */}}
+{{/* {{- page.Scratch.Set "clarisdebug" $debug }} */}}
 
 {{- $listParams := default dict .ListParams }}
 
@@ -17,23 +14,17 @@
 
 {{- $mainSection := (in ($page.Param "mainSections") $page.Section) -}}
 
-{{- with $meta }}
-{{- else }}
-  {{- if $debug }}
-    {{- warnf "%s[%s]: Rendering page with type=%v kind=%v listParams=%v"
-        $page $template $page.Type $page.Kind $listParams }}
-  {{- end }}
-  {{- $meta = partial "claris/_functions/meta/list" (dict "Page" $page "Debug" $debug "ListParams" $listParams) }}
+{{- $listMeta := partial "claris/_functions/meta/list" . $page.Permalink }}
+
+{{- $itemsMeta := $listMeta.List.Data.Items }}
+
+{{- $itemType := default "section" $listMeta.Data.ItemType }}
+
+{{- if $debug }}
+  {{- warnf "%s[%s]: excerptPartial=%v listLayout=%v headingLevel=%v containerClass=%v .ListParams=%v yielded itemsMeta for %d items of itemType=%v "
+      $page $template $excerptPartial $listLayout $headingLevel $containerClass
+      .ListParams (len $itemsMeta) $itemType }}
 {{- end }}
-
-{{- $itemsMeta := $meta.List.Data.Items }}
-
-{{- $itemType := default "section" $meta.List.Data.ItemType }}
-
-{{/* {{- if $debug }}
-  {{- warnf "%s[%s]: itemsMeta=%v itemType=%v excerptPartial=%v listLayout=%v headingLevel=%v containerClass=%v"
-      $page $template $itemsMeta $itemType $excerptPartial $listLayout $headingLevel $containerClass }}
-{{- end }} */}}
 
 {{- with $itemsMeta }}
 
@@ -55,7 +46,9 @@
   {{- end }} */}}
   {{- with $paginated }}
     {{- range . }}
-      {{/* {{- warnf "%s[%s]: Listing page=%v with .Single.Data=%v" $page $template .Single.Page .Single.Data }} */}}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: Listing page=%v with %d items" $page $template .Single.Page (len .List.Data.Items) }}
+      {{- end }}
       {{- if $excerptPartial }}
         {{ partial $excerptPartial (dict
           "Page" .Single.Page

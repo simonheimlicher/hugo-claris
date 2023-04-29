@@ -1,5 +1,5 @@
 {{- $page := .Page }}
-{{- $meta := .Meta }}
+{{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "partials/claris/main/section" }}
 {{- $headingLevel := default 1 .HeadingLevel }}
 {{- $itemType := "article" }}
@@ -8,7 +8,7 @@
   {{- $itemType = "section" }}
 {{- end }}
 
-{{- $debug := default false .Debug }}
+{{- $debug := page.Scratch.Get "clarisdebug" }}
 {{/* {{- $debug = or $debug (not (not (findRE `/index` $page.RelPermalink) ) ) }} */}}
 
 {{- with $page }}

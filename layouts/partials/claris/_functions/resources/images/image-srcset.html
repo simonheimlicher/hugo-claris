@@ -2,7 +2,7 @@
 {{- $imageSrcSet := dict }}
 
 {{- $page := .Page }}
-{{- $debug := default false .Debug }}
+{{- $debug := page.Scratch.Get "clarisdebug" }}
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+/)?leadership/$` $page.RelPermalink) ) ) }} */}}
 {{/* {{- $imageResourceArgs := . }} */}}
 {{- $imageResourceArgs := merge . (dict "Debug" $debug) }}

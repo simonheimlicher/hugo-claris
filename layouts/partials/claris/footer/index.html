@@ -1,13 +1,50 @@
 {{- $page := .Page }}
+{{- $meta := $page.Scratch.Get "clarismeta" }}
+{{- $template := "claris/footer/index" }}
 {{- $title := site.Title }}
-{{- $siteAuthor := site.Author.name }}
+{{- $siteAuthor := $meta.Site.Data.Author.Name }}
+{{- $footerSection := site.Params.footer.section }}
+
+{{- if true }}
+<footer class="footer">
+  <div class="footer_inner inner_bottom-0">
+    {{- $footerPages := where site.RegularPages.ByWeight "Type" "in" site.Params.footer.section }}
+    {{- with $footerPages }}
+    <section class="footer_main">
+    {{- range $id, $page := $footerPages }}
+      {{- $inlineStyle := false }}
+      {{- with .Params.flexbasis }}
+        {{- $inlineStyle = printf ` style="flex-basis: %v"` . | safeHTMLAttr }}
+      {{- end }}
+      <div class="footer_main-item inner_horizontal"{{ with $inlineStyle }}{{ . }}{{ end }}>
+      {{- with .Title }}
+        <h2 class="footer_title">{{ . }}</h2>
+      {{- end }}
+      {{ $page.Page.Content }}
+      </div>
+    {{- end }}
+    </section>
+    {{- end }}
+
+    {{- partialCached "claris/footer/social" $page }}
+    <section class="footer_legal inner_horizontal ">
+      <ul class="footer_legal-list">
+        <li>{{ T "copyright" }}&nbsp;{{ with ($page.Param "website.established") }}{{ if (lt (int .) (int (now.Format "2006") ) ) }}{{ . }}–{{- end }}{{- end }}<span class="year">{{ string (now.Format "2006") }}</span>{{ with $siteAuthor }}&nbsp;{{ . }}{{ end }}. {{ T "all_rights" }}</li>
+      </ul>
+    </section>
+  </div>
+</footer>
+
+{{- else }}
+
 <footer class="footer">
   <div class="footer_inner inner_horizontal inner_bottom-0">
     {{- if not (and (isset .Params "footer") (eq .Params.footer false) ) }}
       {{- $footerPages := where site.RegularPages.ByWeight "Type" "in" site.Params.footer.section }}
       {{- with $footerPages }}
+        {{- warnf "%s[%s]: footerSection=%v footerPages=%v" $page $template $footerSection $footerPages }}
         {{- with $title }}
-          <h2 class="footer_title">{{- . | $page.RenderString }}</h2>
+        <h2 class="footer_title">{{- . | $page.RenderString }}</h2>
         {{- end }}
         <div class="grid-footer">
           {{- range $id, $page := $footerPages }}
@@ -17,34 +54,39 @@
           {{- end }}
         </div>
       {{- else }}
-        {{- if (or ($page.Param "IntroDescription") ($page.Param "footer.recentarticles)") ) }}
-          <div class="grid-footer">
-          {{- if ($page.Param "IntroDescription") }}
-            <h2>{{ $siteAuthor }}</h2>
-            <div class="footer_description">
-              <div class="footer_intro">
-                {{ ($page.Param "IntroDescription") | $page.RenderString }}
-              </div>
-              {{- if ( ($page.Param "introURL") ) }}
-                {{- $r := T "read_more_about" | strings.FirstUpper }}
-                <p>
-                {{ $r }} <a href='{{ absLangURL (default "about/" ($page.Param "introURL") ) }}' title='{{ $r }} {{ $siteAuthor }}'>{{ $siteAuthor }}</a>
-                </p>
+        {{- $profileHeadline := $page.Param "website.profile.headline" }}
+        {{- $profileText := $page.Param "website.profile.text" }}
+        {{- $profileLink := default $siteAuthor ($page.Param "website.profile.link") }}
+        {{- $profileURL := $page.Param "website.profile.url" }}
+        {{- $recentArticles := $page.Param "footer.recentarticles" }}
+          {{- with $profileHeadline }}
+          <h2 class="footer_title">{{- . | $page.RenderString }}</h2>
+          {{- end }}
+        {{- if (or $profileText $recentArticles ) }}
+          <div class="footer_profile">
+          {{- with $profileText }}
+            <div class="footer_profile_text">
+              <p>
+              {{- $profileText | $page.RenderString }}
+              {{- with $profileURL }}
+              {{- $r := T "read_more_about" | strings.FirstUpper }}
+              <a href="{{ absLangURL . }}" title="{{ $r }} {{ $profileLink }}">{{ $profileLink }}</a>
               {{- end }}
+              </p>
             </div>
           {{- end }}
-          {{- with ($page.Param "footer.recentarticles") }}
-              <div class="footer_articles">
-                <h3>{{- T "recent_articles" . }}</h3>
-                  {{- $contentParams := (dict
-                    "ItemType" "article"
-                    "ListLayout" "list"
-                    "ListParams" (dict
-                      "IncludeSections" (default "/" ($page.Param "mainSections") )
-                      "Limit" .
-                    )
-                  ) }}
-                  {{- partial "claris/_components/list" (merge $contentParams (dict "Page" $page) ) }}
+          {{- with $recentArticles }}
+            <div class="footer_recent-articles">
+              <h3>{{- T "recent_articles" . }}</h3>
+                {{- $contentParams := (dict
+                  "ItemType" "article"
+                  "ListLayout" "list"
+                  "ListParams" (dict
+                    "IncludeSections" (default "/" ($page.Param "mainSections") )
+                    "Limit" .
+                  )
+                ) }}
+                {{- partial "claris/_components/list" (merge $contentParams (dict "Page" $page) ) }}
               </div>
           {{- end }}
           </div>
@@ -52,8 +94,9 @@
       {{- end }}
     {{- end }}
     <div class="footer_copyright">
-      <p>{{ T "copyright" }}&nbsp;{{ with ($page.Param "since") }}{{ if (lt (int .) (int (now.Format "2006") ) ) }}{{ . }}–{{- end }}{{- end }}<span class="year">{{ string (now.Format "2006") }}</span>{{ with $siteAuthor }}&nbsp;{{ . }}{{ end }}. {{ T "all_rights" }}
+      <p>{{ T "copyright" }}&nbsp;{{ with ($page.Param "website.established") }}{{ if (lt (int .) (int (now.Format "2006") ) ) }}{{ . }}–{{- end }}{{- end }}<span class="year">{{ string (now.Format "2006") }}</span>{{ with $siteAuthor }}&nbsp;{{ . }}{{ end }}. {{ T "all_rights" }}
       </p>
     </div>
   </div>
 </footer>
+{{- end }}

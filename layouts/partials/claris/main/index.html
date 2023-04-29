@@ -1,5 +1,5 @@
 {{- $page := .Page }}
-{{- $meta := .Meta }}
+{{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "partials/claris/main/index" }}
 {{- $itemType := "article" }}
 {{- $type := "claris" }}

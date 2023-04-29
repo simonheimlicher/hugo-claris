@@ -1,7 +1,7 @@
 {{- $page := .Page }}
-{{- $meta := .Meta }}
+{{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/head/twitter-card" }}
-{{- $debug := default false .Debug }}
+{{- $debug := page.Scratch.Get "clarisdebug" }}
 {{- /* {{- $debug = or $debug (not (not (findRE `never-match` $page.RelPermalink) ) ) }} */ -}}
 
 {{- $pagePath := "" }}

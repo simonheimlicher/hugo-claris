@@ -6,6 +6,11 @@
 
 {{- $debug := false }}
 {{/* {{- $debug = or $debug (not (not (findRE `^tags` $page.RelPermalink) ) ) }} */}}
+{{- .Scratch.Set "clarisdebug" $debug }}
+
+{{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "Debug" $debug) $page.Permalink }}
+{{- .Scratch.Set "clarismeta" $meta }}
+
 
 {{- $outputFormat := partial "claris/_functions/output-format" . }}
 {{- $printViewScript := "pagination_preview" }}
@@ -16,8 +21,6 @@
   "OnlyMediaType" ($page.Param "onlyMediaType")
   "ContentTypeList" (partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type)
 ) }}
-
-{{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "Debug" $debug) $page.Permalink }}
 
 {{- $htmlClasses := "no-js" }}
 {{- if .Params.heroImageStyle }}
@@ -53,7 +56,7 @@
 >
 <head>
   {{ partial "html-comment" (printf "[%s]: .Type=%s .Layout=%s .MediaType=%s $outputFormat=%s]" $template .Type .Layout .MediaType $outputFormat.Name ) }}
-  {{- partial "claris/head/index" (dict "Page" $page "Meta" $meta) }}
+  {{- partial "claris/head/index" . }}
   {{- partialCached "claris/_hooks/head-end/index" . $assetVariant }}
 </head>
 {{ partial "html-comment" (printf "BASEOF [%s]: BEGIN body" $template) }}
@@ -108,7 +111,7 @@
     {{- $mainPartial = printf "main/%s" . }}
   {{- end }}
 
-  {{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "Debug" $debug) $page.Permalink }}
+  {{- $meta := .Scratch.Get "clarismeta" }}
   {{- $heroImageStyle := false }}
   {{- with $meta.Single.Data.Images.hero }}
     {{- $heroImageStyle = .style }}
@@ -121,13 +124,13 @@
   {{- $showToTopButton := default false ($page.Param "showToTopButton") }}
   {{ partial "html-comment" (printf "BASEOF [%s]: BEGIN define body" $template) }}
     {{- with $heroImageStyle }}
-      {{ partial "claris/_components/hero-image" (dict "Page" $page "Meta" $meta "Debug" $debug) }}
+      {{ partial "claris/_components/hero-image" . }}
     {{- end }}
     {{- partial "claris/header/index" . }}
     <main id="mainContainer" class="{{ delimit $mainClassList " " }}">
       {{- block "main" . -}}{{ end }}
       {{- with $heroImageStyle }}
-        {{ partial "claris/_components/hero-image" (dict "Page" $page "Meta" $meta "Debug" $debug) }}
+        {{ partial "claris/_components/hero-image" . }}
       {{- end }}
       {{- if $showToTopButton -}}
         {{- partialCached "claris/_components/top" . }}

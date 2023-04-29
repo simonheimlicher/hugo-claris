@@ -1,6 +1,6 @@
 {{- $page := .Page }}
 {{- $template := "claris/_functions/meta/single" }}
-{{- $debug := default false .Debug }}
+{{- $debug := page.Scratch.Get "clarisdebug" }}
 {{/* {{- $debug = or $debug (not (not (findRE `^/$` $page.RelPermalink) ) ) }} */}}
 
 {{/* {{- warnf "%s[%s]: .Page=%T page=%T" $page $template .Page page }} */}}
@@ -121,12 +121,14 @@
     {{- end }}
   {{- end }}
 
+  {{- $authorMeta := partialCached "claris/_functions/meta/author" (dict "Page" $page "Debug" $debug) $page.Permalink }}
+
   {{- $metaImagesParams := (dict
     "Page" $page
     "Params" $page.Params
     "Debug" $debug
   ) }}
-  {{- $metaImages := partialCached "claris/_functions/meta/images/index" $metaImagesParams $metaImagesParams }}
+  {{- $imageMeta := partialCached "claris/_functions/meta/images/index" $metaImagesParams $metaImagesParams }}
 
   {{- $license := .Param "license" }}
 
@@ -181,7 +183,8 @@
           "Published" .PublishDate
           "Modified" .Lastmod
         )
-        "Images" $metaImages
+        "Author" $authorMeta
+        "Images" $imageMeta
         "WordCount" .WordCount
         "License" $license
         "Genre" $genre

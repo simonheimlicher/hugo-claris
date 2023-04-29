@@ -1,6 +1,6 @@
 {{- $entityParams := .}}
 {{- $page := .Page }}
-{{- $meta := .Meta }}
+{{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/_functions/schema-org/_entities/article" }}
 {{- $debug := .Debug }}
 {{/* {{- $debug = or $debug (not (not (findRE `powerful` $page.RelPermalink) ) ) }} */}}
@@ -11,7 +11,7 @@
 
 {{- $articleEntity := dict }}
 
-{{- with .Meta.Single.Data }}
+{{- with $meta.Single.Data }}
   {{- $articleEntity = (dict "Entity"
     (dict
       "@type" "Article"
@@ -30,7 +30,7 @@
     )
   ) }}
 {{- else }}
-  {{- errorf "%s[%s]: Missing parameter .Meta.Single.Data" $page $template }}
+  {{- errorf "%s[%s]: Missing parameter $meta.Single.Data" $page $template }}
 {{- end }}
 
 {{- $schemaOrgArticle := (dict

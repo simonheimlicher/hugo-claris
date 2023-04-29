@@ -6,7 +6,7 @@
 {{- $minifyBundles := default false .MinifyBundles }}
 {{- $template := "claris/_functions/script-bundles" }}
 {{- $skeletonOnly := false }}
-{{- $debug := default false .Debug }}
+{{- $debug := page.Scratch.Get "clarisdebug" }}
 
 {{- $contentTypeListID := delimit $contentTypeList "-" }}
 {{/* {{- warnf "%s[%s]: $contentTypeList:%s $supportIE11:%v" $page $template $contentTypeList $supportIE11 -}} */}}
