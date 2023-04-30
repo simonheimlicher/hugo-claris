@@ -4,9 +4,6 @@
 import 'scripts/claris/theme/init';
 import 'scripts/claris/theme/color-mode';
 
-// FIXME: Try loading all JS in the head
-import 'scripts/claris/theme/minimal';
-import 'scripts/claris/theme/enhanced';
 
 import 'lazysizes';
 
@@ -17,4 +14,5 @@ import 'lazysizes';
 // https://github.com/aFarkas/lazysizes/tree/gh-pages/plugins/parent-fit
 // https://github.com/aFarkas/lazysizes/issues/508#issuecomment-397545775
 import 'lazysizes/plugins/parent-fit/ls.parent-fit';
+
 // console.log('END   claris-head');
