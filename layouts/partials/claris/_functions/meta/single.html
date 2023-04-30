@@ -36,12 +36,12 @@
     {{- $title = (default $title (T (lower $title) ) ) | strings.FirstUpper }}
     {{- $fulltitle = default .Data.Singular $title }}
     {{ if in (slice "tag") .Data.Singular }}
-      {{ $supertitle = printf "%s %s" (T "articles_with_taxonomy") (T .Data.Plural 1) }}
+      {{ $supertitle = printf "%s %s" (T "articles_with_taxonomy") (T .Data.Singular) }}
     {{- else }}
-      {{- $supertitle = printf "%s %s" (T "articles_in_taxonomy") (T .Data.Plural 1) }}
+      {{- $supertitle = printf "%s %s" (T "articles_in_taxonomy") (T .Data.Singular) }}
     {{- end }}
     {{/* {{- $fulltitle = printf "%s %s %s" (humanize $supertitle) (T .Data.Plural 1) ($page.RenderString (printf "*%s*" (default $title (T (lower $title) ) ) ) ) | safeHTML }} */}}
-    {{- $fulltitle = printf "%s %s" (humanize $supertitle) (default $title (T (lower $title) ) ) | strings.FirstUpper }}
+    {{- $fulltitle = printf "%s %s" (humanize $supertitle) $title | strings.FirstUpper }}
 
     {{- if $debug }}
       {{- warnf "%s[%s]: .Kind=%s: title=%s supertitle=%v fulltitle=%s from .Singular=%s .Plural=%s .Section=%s .Title=%s"

@@ -53,11 +53,11 @@ other = "Zurück"
 one = "Diese Seite gibt es auch in einer anderen Sprache"
 other = "Diese Seite gibt es auch in anderen Sprachen"
 
-[categories]
+[category]
 one = "Kategorie"
 other = "Kategorien"
 
-[tags]
+[tag]
 one = "Tag"
 other = "Tags"
 

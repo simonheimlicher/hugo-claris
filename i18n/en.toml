@@ -53,11 +53,11 @@ other = "Go back"
 one = "This page is also available in another language"
 other = "This page is also available in other languages"
 
-[categories]
+[category]
 one = "Category"
 other = "Categories"
 
-[tags]
+[tag]
 one = "Tag"
 other = "Tags"
 
