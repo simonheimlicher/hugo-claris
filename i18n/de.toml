@@ -156,3 +156,6 @@ one = "{{ .WebsiteName }} © {{ .Date.Established }}–{{ .Date.Current }} {{ .S
 
 [obfuscated-link_mailto]
 other = "E-Mail an"
+
+[obfuscated-link_tel]
+other = "Erreichbar unter"

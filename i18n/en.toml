@@ -158,3 +158,6 @@ one = "{{ .WebsiteName }} © {{ .Date.Established }}–{{ .Date.Current }} by {{
 
 [obfuscated-link_mailto]
 other = "Send email to"
+
+[obfuscated-link_tel]
+other = "Call"
