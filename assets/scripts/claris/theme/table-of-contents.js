@@ -140,14 +140,13 @@ function injectTableOfContents() {
             deb('Run addScrollObserver()');
             const navigationElementList = Array.from(navigationElements);
             const sectionHeadings = function (navigationElementList, content) {
-                const navigationElementIds = navigationElementList.map(elem => elem.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
+                const navigationElementIds = navigationElementList.map(elem => decodeURI(elem.querySelector('a').href.replace(/.*#([^#]+)/, '$1')));
                 // deb("navigationElementIds:"); deb(navigationElementIds);
 
                 let sectionHeadings = [];
 
                 for (let idx = 0, navId = navigationElementIds[0]; idx < navigationElementIds.length; navId = navigationElementIds[++idx]) {
-                    navId = decodeURI(navId);
-                    let sectionHeading = content.querySelector(`#${navId}`);
+                    let sectionHeading = document.getElementById(navId);
                     if (sectionHeading) {
                         // deb("    sectionHeading " + sectionHeading + " =  '" + navId + "'");
                         sectionHeadings.push(sectionHeading);
