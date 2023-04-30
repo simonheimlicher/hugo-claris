@@ -1,6 +1,7 @@
 {{- $page := .Page }}
 {{- $meta := .Meta }}
 {{- $template := "partials/_components/excerpt" }}
+{{- $lazyLoad := default false .LazyLoad }}
 {{- $relativeDates := default true .RelativeDates }}
 {{- $showTags := default true .ShowTags }}
 {{- $headerPartial := default "" .HeaderPartial }}
@@ -79,7 +80,7 @@
               "resource" .
               "Title" $title
               "Alt" (default $title $imageMeta.excerpt.variant.default.alt)
-              "LazyLoad" true
+              "LazyLoad" $lazyLoad
             ) }}
         </div>
       {{- end }}

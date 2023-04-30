@@ -10,7 +10,7 @@
     <ul class="footer_social-list">
     {{- range $site := $footerSocialSites }}
       {{- with index $socialSiteMeta . }}
-      <a href="{{ .Profile.URL }}"><li class="icon_link">{{ partial "sprite" (dict "icon" .Icon) }}{{ .Name }}</li></a>
+      <li class="icon_link"><a href="{{ .Profile.URL }}" title="{{ .Name }}">{{ partial "sprite" (dict "icon" .Icon) }}{{ .Name }}</a></li>
       {{- end }}
     {{- end }}
     </ul>

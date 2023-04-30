@@ -45,7 +45,7 @@
     {{- $paginated = ($page.Paginate $itemsMeta).Pages }}
   {{- end }} */}}
   {{- with $paginated }}
-    {{- range . }}
+    {{- range $idx, $item := . }}
       {{- if $debug }}
         {{- warnf "%s[%s]: Listing page=%v with %d items" $page $template .Single.Page (len .List.Data.Items) }}
       {{- end }}
@@ -53,6 +53,7 @@
         {{ partial $excerptPartial (dict
           "Page" .Single.Page
           "Meta" .
+          "LazyLoad" (gt $idx 0)
           "ItemType" $itemType
           "HeadingLevel" $headingLevel
           "RelativeDates" false
