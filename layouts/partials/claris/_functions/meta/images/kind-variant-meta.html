@@ -1,7 +1,7 @@
 {{- $kindVariantMeta := dict }}
 {{- $page := .Page }}
 {{- $debug := page.Scratch.Get "clarisdebug" }}
-{{/* {{- $debug = or $debug (not (not (findRE `powerful` $page.RelPermalink) ) ) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `ownership` $page.RelPermalink) ) ) }} */}}
 {{- $template := "claris/_functions/meta/image/kind-variant-meta" }}
 
 {{- $imageKindVariantMeta := .imagekindvariantmeta }}
@@ -182,7 +182,6 @@
         {{- warnf "%s[%s]: %v/%v/*: Merged processedVersionMeta=\n%v\n with processedImageKindVariantMeta=\n%v"
             $page $template $imageKind $variantName
             (jsonify (dict "indent" "  ") $processedVersionMeta)
-            .Width .Height  $verSpec $versions
             (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
       {{- end }}
 

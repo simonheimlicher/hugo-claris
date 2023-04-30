@@ -1,7 +1,7 @@
 {{- $template := "partials/responsive-image" }}
 {{- $page := .Page }}
 {{- $debug := page.Scratch.Get "clarisdebug" }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+/)?leadership/$` $page.RelPermalink) ) ) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+/)?ownership/$` $page.RelPermalink) ) ) }} */}}
 {{- $imageResourceArgs := merge . (dict "Debug" $debug) }}
 
 {{- $resourceSpec := .resource -}}
@@ -17,6 +17,10 @@
 {{- end }}
 {{- $containerClass := "" }}
 
+{{- if or (and $resourceSpec (not $alt)) (and $variantSpec (not $variantSpec.default.alt) ) }}
+  {{- warnf "%s[%s]: Missing attribute .Alt in args=%v"
+  $page $template (jsonify (dict "indent" "  ") (merge . (dict "Page" false) ) ) }}
+{{- end }}
 {{/* {{- warnf "%s[%s]: .resource has type [%T]" $page $template $resourceSpec -}} */}}
 
 {{- with .Float -}}

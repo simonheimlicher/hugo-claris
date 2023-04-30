@@ -2,33 +2,27 @@
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $title := .Title }}
 {{- $debug := page.Scratch.Get "clarisdebug" }}
-{{/* {{- $debug = or $debug (not (not (findRE `about` $page.RelPermalink) ) ) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `ownership` $page.RelPermalink) ) ) }} */}}
 {{- $template := "claris/_components/feature-image" }}
 
 {{- $featureImage := false }}
 {{- with $meta.Single.Data.Images }}
-  {{- with .feature.variant.default }}
-    {{- $widest := 0 }}
-    {{- range $versionName, $versionMeta := .version }}
-      {{- if (gt .resource.Width $widest)  }}
-        {{- $featureImage = . }}
-        {{- $widest = .resource.Width }}
-      {{- end }}
+  {{- with $featureImage = .feature.variant.default }}
+    {{- $featureImageArgs := (dict
+      "resource" .version.aspect_16x9.resource
+      "FigureClass" "hero-image_above-main"
+      "ImgClass" "hero-image_above-main_img"
+      "Alt" $featureImage.alt
+      "Title" $featureImage.title
+      "LazyLoad" false) }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: Found feature image resource $featureImage.version.aspect_16x9.resource=%v in \nfeatureImage=%v\nNow calling responsive-image with .resource=%v in featureImageArgs=%v"
+          $page $template $featureImage.version.aspect_16x9.resource
+          (jsonify (dict "indent" "  ") $featureImage)
+          $featureImageArgs.resource
+          (jsonify (dict "indent" "  ") $featureImageArgs) -}}
     {{- end }}
-    {{ if $featureImage }}
-      {{- $featureImageArgs := merge . (dict
-        "resource" $featureImage.resource
-        "FigureClass" "hero-image_above-main"
-        "ImgClass" "hero-image_above-main_img"
-        "Alt" .alt
-        "Title" .title
-        "LazyLoad" false) }}
-      {{- if $debug }}
-        {{- warnf "%s[%s]: Found feature image; now calling responsive-image with .resource=%v %v"
-            $page $template $featureImageArgs.resource (jsonify (dict "indent" "  ") $featureImageArgs) -}}
-      {{- end }}
-      {{- partial "responsive-image" (merge $featureImageArgs (dict "Page" $page)) $featureImageArgs }}
-    {{- end }}
+    {{- partial "responsive-image" (merge $featureImageArgs (dict "Page" $page)) $featureImageArgs }}
   {{- end }}
 {{- end }}
 {{- if not $featureImage }}
