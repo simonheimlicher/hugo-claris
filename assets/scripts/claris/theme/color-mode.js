@@ -7,18 +7,27 @@ import {
 } from './functions';
 
 const initColorMode = function () {
-  const htmlRootElement = clarisHugoParams.htmlRootElement;
-  const htmlRootClassNoCSSProperties = clarisHugoParams.htmlRootClassNoCSSProperties;
-  const doc = document.documentElement;
-
-  const colorModeNav = elem('.color_mode');
-  if (!colorModeNav) {
-    return;
+  const DEBUG = false;
+  // console.print: console.log without filename/line number
+  let deb = null;
+  if ('queueMicrotask' in window) {
+    console.print = function (...args) {
+      queueMicrotask(console.log.bind(console, ...args));
+    }
+    deb = function (...args) {
+      if (DEBUG) {
+        console.print(...args);
+      }
+    }
   }
-  if (containsClass(htmlRootElement, htmlRootClassNoCSSProperties)) {
-    return;
+  else {
+    deb = function (...args) {
+      if (DEBUG) {
+        console.log(...args);
+      }
+    }
   }
-  colorModeNav.style = "display: flex";
+  deb('claris/theme/color-mode: DEBUG on');
 
   const light = 'lit';
   const dark = 'dim';
@@ -26,6 +35,7 @@ const initColorMode = function () {
   const css_var = '--color-mode';
   const data_var = 'data-mode';
 
+  const doc = document.documentElement;
   var bank;
   try {
     var storage = window.localStorage;
@@ -48,7 +58,7 @@ const initColorMode = function () {
    * Otherwise the `media` preference will only respond to the OS-level setting
    * Source: https://larsmagnus.co/blog/how-to-make-images-react-to-light-and-dark-mode
    */
-  function updateSourceMedia (mode) {
+  function updateSourceMedia(mode) {
     const colorScheme = {
       lit: 'light',
       dim: 'dark',
@@ -148,15 +158,34 @@ const initColorMode = function () {
 
   setUserColorMode();
 
-  doc.addEventListener('click', function (event) {
-    let target = eventTarget(event);
-    let modeClass = 'color_choice';
-    let animateClass = 'color_animate';
-    let isModeToggle = containsClass(target, modeClass);
-    if (isModeToggle) {
-      pushClass(target, animateClass);
-      setUserColorMode(true);
+  const initColorModeToggle = function () {
+    const htmlRootElement = clarisHugoParams.htmlRootElement;
+    const htmlRootClassNoCSSProperties = clarisHugoParams.htmlRootClassNoCSSProperties;
+
+    if (containsClass(htmlRootElement, htmlRootClassNoCSSProperties)) {
+      deb(`claris/theme/color-mode: #{htmlRootElement} contains class #{htmlRootClassNoCSSProperties}}`);
+      return;
     }
-  });
-};
-window.addEventListener('DOMContentLoaded', initColorMode);
+
+    const doc = document.documentElement;
+    const colorModeNav = elem('.color_mode');
+    if (!colorModeNav) {
+      deb('claris/theme/color-mode: .color_mode not found');
+      return;
+    }
+    colorModeNav.style = "display: flex";
+
+    doc.addEventListener('click', function (event) {
+      let target = eventTarget(event);
+      let modeClass = 'color_choice';
+      let animateClass = 'color_animate';
+      let isModeToggle = containsClass(target, modeClass);
+      if (isModeToggle) {
+        pushClass(target, animateClass);
+        setUserColorMode(true);
+      }
+    });
+  };
+  window.addEventListener('DOMContentLoaded', initColorModeToggle);
+}();
+

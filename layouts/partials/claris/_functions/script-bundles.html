@@ -47,6 +47,11 @@
 
 {{- $targetBundles := (slice
   (dict
+    "Target" "head_async"
+    "IncludeLegacy" false
+    "Media" "all"
+  )
+  (dict
     "Target" "head"
     "IncludeLegacy" true
     "Media" "all"

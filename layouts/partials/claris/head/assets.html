@@ -12,6 +12,9 @@
 {{- $scriptBundles := index $assets "Scripts" }}
 {{- $styleBundles := index $assets "Styles" }}
 {{- $bundleParams := index $assets "Params" }}
+{{- with $scriptBundles.head_async }}
+    <script type="module" async src="{{ .Permalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
+{{- end }}
 {{- with $scriptBundles.head }}
     <script type="module" src="{{ .Permalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
 {{- end }}
