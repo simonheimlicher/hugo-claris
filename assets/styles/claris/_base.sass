@@ -235,7 +235,7 @@ blockquote
   // moving slightly even when 'position: fixed' is set
   --box-padding-right: 1.0rem
   --box-padding-bottom: calc(1.2 * var(--box-padding-top))
-  --box-padding-left: calc(1.5 * var(--box-padding-top))
+  --box-padding-left: calc(var(--quotation-mark-open-height))
 
   --quotation-mark-font-size-to-height-factor: 4
   --quotation-mark-open-height: 1rem
@@ -252,7 +252,9 @@ blockquote
 
   color: var(--text)
   position: relative
-  overflow: visible
+  // Setting overflow: hidden ensures that the blockquote only takes up
+  // the available horizontal space when it is next to a float
+  overflow: hidden
   background: transparent
 
   width: calc(100% - var(--box-margin-left) - var(--box-margin-right))
@@ -267,7 +269,7 @@ blockquote
       content: "“"
       position: absolute
       top: calc(var(--box-padding-top) + 2 * var(--quotation-mark-open-height))
-      left: calc(var(--box-padding-left) - 1.5 * var(--quotation-mark-open-height))
+      left: 0
       line-height: calc(var(--quotation-mark-open-line-height))
       font-size: 5em
       font-size: calc(var(--quotation-mark-open-font-size))
