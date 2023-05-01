@@ -25,7 +25,7 @@ const mediumZoomInit = function () {
       bottom: 48,
       left: 24
     },
-    background: 'var(--bg-light)',
+    background: 'inherit',
   };
 
   mediumZoom('[data-zoomable]', mediumZoomOptions);
