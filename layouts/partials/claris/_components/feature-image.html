@@ -14,7 +14,8 @@
       "ImgClass" "hero-image_above-main_img"
       "Alt" $featureImage.alt
       "Title" $featureImage.title
-      "LazyLoad" false) }}
+      "Prioritize" true
+    ) }}
     {{- if $debug }}
       {{- warnf "%s[%s]: Found feature image resource $featureImage.version.aspect_16x9.resource=%v in \nfeatureImage=%v\nNow calling responsive-image with .resource=%v in featureImageArgs=%v"
           $page $template $featureImage.version.aspect_16x9.resource

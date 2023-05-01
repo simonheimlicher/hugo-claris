@@ -52,7 +52,14 @@
 {{ $supportIE11 := default true site.Params.supportIE11 }}
 
 {{- $lightbox := default false .LightBox -}}
-{{- $lazy := default true .LazyLoad -}}
+{{- $prioritize := default false .Prioritize -}}
+{{- $lazy := default (not $prioritize) .LazyLoad -}}
+{{- $fetchPriority := default false }}
+{{- if $prioritize }}
+  {{- $fetchPriority = "high" }}
+{{- else if $lazy }}
+  {{- $fetchPriority = "low" }}
+{{- end }}
 
 {{- $defaultMedia := "default" }}
 {{- $defaultVariantName := "default" }}
@@ -244,6 +251,7 @@
           {{- $placeholderInlineImg := .ImageResource.Placeholder }}
           {{- $srcSet := .ImageResource.SrcSet }}
           <img  class="{{ with $imgClass }}{{ . }}{{ end }}{{ if $lazy }} lazyload{{ end }}" src="{{ $srcURL }}"
+            {{- with $fetchPriority }} fetchpriority="{{ . | safeHTMLAttr }}"{{- end -}}
             {{- with $lightbox }} data-zoomable="{{ . | safeHTMLAttr }}"{{- end -}}
             {{- if $lazy }}
            data-sizes="auto"
