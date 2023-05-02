@@ -1,7 +1,7 @@
 {{- $page := .Page }}
 {{- $meta := .Meta }}
 {{- $template := "partials/_components/excerpt" }}
-{{- $lazyLoad := default false .LazyLoad }}
+{{- $fetchPriority := default "low" .FetchPriority }}
 {{- $relativeDates := default true .RelativeDates }}
 {{- $showTags := default true .ShowTags }}
 {{- $headerPartial := default "" .HeaderPartial }}
@@ -32,14 +32,14 @@
         (jsonify (dict "indent" "  ") $imageMeta) }}
   {{- end }}
   {{- with $imageMeta }}
-    {{- with .excerpt.variant.default.version.aspect_16x9 }}
+    {{- with .excerpt.variant.default.version.default }}
       {{- $excerptImage = .resource }}
       {{- if $debug }}
         {{- with $excerptImage }}
           {{- warnf "%s[%s]: Rendering excerpt of page with excerptImage=%v"
               $page $template $excerptImage }}
         {{- else }}
-          {{- warnf "%s[%s]: No .excerpt.variant.default.version.aspect_16x9 found in imageResources=%v"
+          {{- warnf "%s[%s]: No .excerpt.variant.default.version.default found in imageResources=%v"
               $page $template (jsonify (dict "indent" "  ") .) }}
         {{- end }}
       {{- end }}
@@ -80,7 +80,7 @@
               "resource" .
               "Title" $title
               "Alt" (default $title $imageMeta.excerpt.variant.default.alt)
-              "LazyLoad" $lazyLoad
+              "FetchPriority" $fetchPriority
             ) }}
         </div>
       {{- end }}

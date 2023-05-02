@@ -161,3 +161,6 @@ other = "Send email to"
 
 [obfuscated-link_tel]
 other = "Call"
+
+[view_author_profile]
+other = "View profile of {{ .Name }}"

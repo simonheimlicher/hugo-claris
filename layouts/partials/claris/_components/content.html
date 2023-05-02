@@ -17,7 +17,7 @@
 <article class="article_content content_singlecolumn content{{ if $mainSection }} main-section{{ end }}">
   {{- partial "claris/_components/title" . }}
   {{- if (and (eq $itemType "article") $mainSection) -}}
-    {{- partial "claris/_components/meta" . }}
+    {{- partial "claris/_components/meta" (dict "Page" $page) }}
   {{- end -}}
   <div class="article_body">
   {{- if $outdated }}

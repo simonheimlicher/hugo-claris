@@ -527,12 +527,14 @@
     width: 100%
     height: auto
     max-height: 40vh
-    max-height: calc(min(40vh, 50vw))
+    // Minimal aspect ratio is 3:1
+    max-height: calc(min(40vh, 33vw))
     object-fit: cover
     object-position: center center
     border-radius: 0
     @media screen and (min-height: $screenViewBreakpointHeightTall)
       max-height: 30vh
+      // Maximal aspect ratio is 2:1
       max-height: calc(min(30vh, 50vw))
 
 .hero-image_background
@@ -925,19 +927,7 @@ body:not(.modern-js) .article_aside .table_of_contents
     opacity: 1
 
 .article_content
-  a:not(.button):not(nav a):not(sup a)
-    color: inherit // Same as surrounding text should be ok for background contrast
-    text-decoration: none
-    &:hover
-      @media (any-hover: hover)
-        color: var(--theme-hover)
-        text-decoration: underline
-        text-underline-position: under
-        text-underline-offset: 0.1em
-    &:active
-      color: var(--xaccent)
-    &:focus
-      outline: var(--accent)
+  @include link-lvhfa
 
   p a:not(.button):not(nav a):not(sup a), li a:not(.button):not(nav a):not(sup a)
     color: inherit // Same as surrounding text should be ok for background contrast

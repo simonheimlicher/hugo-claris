@@ -87,13 +87,13 @@ $theme-text-opa-90-dim: hsla($theme-hue-dim, $theme-sat-dim, $theme-text-lum-dim
 $theme-text-active-dim: darken($theme-text-dim, 100%);
 $theme-text-hover-dim: darken($theme-text-dim, 100%);
 
-$link-lit: hsl($theme-hue-lit, 100%, 30%);
-$link-active-lit: hsl($theme-hue-lit, 100%, 20%);
-$link-hover-lit: hsl($theme-hue-lit, 100%, 5%);
+$link-lit: hsl($theme-hue-lit, 100%, 20%);
+$link-hover-lit: hsl($theme-hue-lit, 100%, 30%);
+$link-active-lit: hsl($theme-hue-lit, 100%, 40%);
 
-$link-dim: hsl($theme-hue-dim, 100%, 70%);
-$link-active-dim: hsl($theme-hue-dim, 100%, 80%);
-$link-hover-dim: hsl($theme-hue-dim, 100%, 95%);
+$link-dim: hsl($theme-hue-dim, 100%, 75%);
+$link-hover-dim: hsl($theme-hue-dim, 100%, 85%);
+$link-active-dim: hsl($theme-hue-dim, 100%, 90%);
 
 // $theme-bg-lit: darken($theme-lit, 5%);
 $theme-bg-lit: darken(saturate($theme-lit, 50%), 2%);

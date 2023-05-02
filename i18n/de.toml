@@ -159,3 +159,6 @@ other = "E-Mail an"
 
 [obfuscated-link_tel]
 other = "Erreichbar unter"
+
+[view_author_profile]
+other = "Profil von {{ .Name }} ansehen"
