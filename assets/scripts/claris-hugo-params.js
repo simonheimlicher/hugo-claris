@@ -1,15 +1,17 @@
 /* File='scripts/claris/hugo-params.js': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .MediaType='{{ .MediaType }}' */
 
+// console.log('BEGIN claris-hugo-params');
+
 // Parameters read from Hugo configuration
 const clarisHugoParamsInit = function() {
-  window.clarisHugoParams = {
+  // console.log('BEGIN clarisHugoParamsInit');
+  window.clarisHugoParams = window.clarisHugoParams || {
     baseURL: '{{ default "/" site.BaseURL }}',
     iconsPath: '{{ absURL (printf "%s/" (default "icons/" (strings.TrimLeft "/" (strings.TrimRight "/" site.Params.iconsDir) ) ) ) }}',
-    showImagePosition: '{{ site.Params.figurePositionShow }}',
-    showImagePositionLabel: '{{ site.Params.figurePositionLabel }}',
 
     envDevel: `{{ partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}`,
-    envProd : `{{ partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}`,
+    envProd: `{{ partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}`,
+
 
     parentURL: window.location.protocol + "//" + window.location.host + "/",
     // The DOM element that we use to indicate properties of the browser and state of the page
@@ -21,4 +23,7 @@ const clarisHugoParamsInit = function() {
     htmlRootClassNoCSSGrid: 'no-css-grid',
     inline: ':inline',
   };
+  // console.log('END   clarisHugoParamsInit');
 }();
+
+// console.log('END   claris-hugo-params');
