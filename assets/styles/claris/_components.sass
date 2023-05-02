@@ -486,10 +486,50 @@
     // height: 2.4em
 
 .qrcode-svg
+  background: var(--bg)
   min-width: 64px
   width: 80%
-  max-width: 100%
+  max-width: 96px
   height: auto
+
+svg.qrcode-svg
+  fill: var(--text)
+  stroke: var(--text)
+.qrcode-svg
+  svg
+    fill: transparent
+
+html[data-mode="dim"]
+  svg.qrcode-svg
+    fill: var(--text)
+    stroke: var(--text)
+  .qrcode-svg
+    svg
+      background: transparent !important
+      fill: transparent !important
+      path
+        stroke: var(--text) !important
+        fill: var(--text) !important
+      text
+        stroke: var(--text) !important
+        fill: var(--text) !important
+
+@media only screen and (prefers-color-scheme: dark)
+  html:not([data-mode="lit"])
+    svg.qrcode-svg
+      fill: var(--text)
+      stroke: var(--text)
+    .qrcode-svg
+      svg
+        background: transparent !important
+        fill: transparent !important
+        path
+          stroke: var(--text) !important
+          fill: var(--text) !important
+        text
+          stroke: var(--text) !important
+          fill: var(--text) !important
+
 
 .link
   opacity: 0

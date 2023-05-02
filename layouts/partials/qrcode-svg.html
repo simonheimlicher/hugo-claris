@@ -1,1 +1,8 @@
-<div class="qrcode-svg" data-width="512" data-height="512" data-color="black" data-background="transparent" data-content={{ .Content }}></div>
+{{- $page := .Page }}
+{{- $template := "qrcode-svg" }}
+{{- $content := .Content }}
+{{- with $page }}
+  {{- .Scratch.Set "claris.module.qrcode.count" (default 0 (add (default 0 (.Scratch.Get "claris.module.qrcode.count")) 1) ) }}
+  {{- warnf "%s[%s]: claris.module.qrcode.count=%v" $page $template (.Scratch.Get "claris.module.qrcode.count") }}
+  <div class="qrcode-svg" data-width="192" data-height="192" data-color="black" data-background="transparent" data-content={{ $content }}></div>
+{{- end }}
