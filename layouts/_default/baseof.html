@@ -8,6 +8,8 @@
 {{/* {{- $debug = or $debug (not (not (findRE `confidential` $page.RelPermalink) ) ) }} */}}
 {{- .Scratch.Set "clarisdebug" $debug }}
 
+{{- .Scratch.Set "claris.module.qrcode.count" 1 }}
+
 {{- $outputFormat := partial "claris/_functions/output-format" . }}
 {{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "OutputFormat" $outputFormat "Debug" $debug) $page.Permalink $outputFormat }}
 {{- .Scratch.Set "clarismeta" $meta }}
