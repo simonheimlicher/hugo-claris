@@ -2,7 +2,7 @@
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/_components/list" }}
 {{- $debug := default (page.Scratch.Get "clarisdebug") .Debug }}
-{{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/$` $page.RelPermalink) ) ) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/transformation/$` $page.RelPermalink) ) ) }} */}}
 {{/* {{- page.Scratch.Set "clarisdebug" $debug }} */}}
 
 {{- $listParams := default dict .ListParams }}
@@ -18,7 +18,7 @@
 
 {{- $itemsMeta := $listMeta.List.Data.Items }}
 
-{{- $itemType := default "section" $listMeta.Data.ItemType }}
+{{- $itemType := default "section" $listMeta.List.Data.ItemType }}
 
 {{- if $debug }}
   {{- warnf "%s[%s]: excerptPartial=%v listLayout=%v headingLevel=%v containerClass=%v .ListParams=%v yielded itemsMeta for %d items of itemType=%v "
@@ -47,13 +47,13 @@
   {{- with $paginated }}
     {{- range $idx, $item := . }}
       {{- if $debug }}
-        {{- warnf "%s[%s]: Listing page=%v with %d items" $page $template .Single.Page (len .List.Data.Items) }}
+        {{- warnf "%s[%s]: Listing Item=%v of ItemType=%v" $page $template .Single.Page $itemType }}
       {{- end }}
       {{- if $excerptPartial }}
         {{ partial $excerptPartial (dict
           "Page" .Single.Page
           "Meta" .
-          "LazyLoad" (gt $idx 0)
+          "FetchPriority" (cond (le $idx 0) "high" "low")
           "ItemType" $itemType
           "HeadingLevel" $headingLevel
           "RelativeDates" false

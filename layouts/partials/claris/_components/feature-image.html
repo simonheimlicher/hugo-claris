@@ -9,16 +9,16 @@
 {{- with $meta.Single.Data.Images }}
   {{- with $featureImage = .feature.variant.default }}
     {{- $featureImageArgs := (dict
-      "resource" .version.aspect_16x9.resource
+      "resource" .version.default.resource
       "FigureClass" "hero-image_above-main"
       "ImgClass" "hero-image_above-main_img"
       "Alt" $featureImage.alt
       "Title" $featureImage.title
-      "Prioritize" true
+      "FetchPriority" "high"
     ) }}
     {{- if $debug }}
-      {{- warnf "%s[%s]: Found feature image resource $featureImage.version.aspect_16x9.resource=%v in \nfeatureImage=%v\nNow calling responsive-image with .resource=%v in featureImageArgs=%v"
-          $page $template $featureImage.version.aspect_16x9.resource
+      {{- warnf "%s[%s]: Found feature image resource $featureImage.version.default.resource=%v in \nfeatureImage=%v\nNow calling responsive-image with .resource=%v in featureImageArgs=%v"
+          $page $template $featureImage.version.default.resource
           (jsonify (dict "indent" "  ") $featureImage)
           $featureImageArgs.resource
           (jsonify (dict "indent" "  ") $featureImageArgs) -}}

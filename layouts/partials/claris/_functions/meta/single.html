@@ -36,9 +36,9 @@
     {{- $title = (default $title (T (lower $title) ) ) | strings.FirstUpper }}
     {{- $fulltitle = default .Data.Singular $title }}
     {{ if in (slice "tag") .Data.Singular }}
-      {{ $supertitle = printf "%s %s" (T "articles_with_taxonomy") (T .Data.Singular) }}
+      {{ $supertitle = printf "%s %s" (T "articles_with_taxonomy") (T .Data.Singular 1) }}
     {{- else }}
-      {{- $supertitle = printf "%s %s" (T "articles_in_taxonomy") (T .Data.Singular) }}
+      {{- $supertitle = printf "%s %s" (T "articles_in_taxonomy") (T .Data.Singular 1) }}
     {{- end }}
     {{/* {{- $fulltitle = printf "%s %s %s" (humanize $supertitle) (T .Data.Plural 1) ($page.RenderString (printf "*%s*" (default $title (T (lower $title) ) ) ) ) | safeHTML }} */}}
     {{- $fulltitle = printf "%s %s" (humanize $supertitle) $title | strings.FirstUpper }}

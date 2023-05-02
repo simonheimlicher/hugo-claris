@@ -7,7 +7,7 @@
 {{- $resourceSpec := .resource -}}
 {{- $variantSpec := .variant -}}
 {{- $caption := default "" .Caption -}}
-{{- $alt := default $caption .Alt -}}
+{{- $alt := default (humanize (path.BaseName $resourceSpec) ) .Alt -}}
 {{- $title := default $alt .Title -}}
 {{- $imgClass := default "" .ImgClass -}}
 {{- $imgPosition := default "center center" .position -}}
@@ -52,14 +52,9 @@
 {{ $supportIE11 := default true site.Params.supportIE11 }}
 
 {{- $lightbox := default false .LightBox -}}
-{{- $prioritize := default false .Prioritize -}}
-{{- $lazy := default (not $prioritize) .LazyLoad -}}
-{{- $fetchPriority := default false }}
-{{- if $prioritize }}
-  {{- $fetchPriority = "high" }}
-{{- else if $lazy }}
-  {{- $fetchPriority = "low" }}
-{{- end }}
+
+{{- $fetchPriority := default "low" .FetchPriority -}}
+{{- $lazy := or (ne $fetchPriority "high") .LazyLoad -}}
 
 {{- $defaultMedia := "default" }}
 {{- $defaultVariantName := "default" }}
@@ -251,7 +246,7 @@
           {{- $placeholderInlineImg := .ImageResource.Placeholder }}
           {{- $srcSet := .ImageResource.SrcSet }}
           <img  class="{{ with $imgClass }}{{ . }}{{ end }}{{ if $lazy }} lazyload{{ end }}" src="{{ $srcURL }}"
-            {{- with $fetchPriority }} fetchpriority="{{ . | safeHTMLAttr }}"{{- end -}}
+            {{- with $fetchPriority }} fetchPriority="{{ . | safeHTMLAttr }}"{{- end -}}
             {{- with $lightbox }} data-zoomable="{{ . | safeHTMLAttr }}"{{- end -}}
             {{- if $lazy }}
            data-sizes="auto"

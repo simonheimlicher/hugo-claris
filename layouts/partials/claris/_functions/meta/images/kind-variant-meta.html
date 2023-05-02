@@ -1,7 +1,7 @@
 {{- $kindVariantMeta := dict }}
 {{- $page := .Page }}
 {{- $debug := page.Scratch.Get "clarisdebug" }}
-{{/* {{- $debug = or $debug (not (not (findRE `ownership` $page.RelPermalink) ) ) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `transformation/$` $page.RelPermalink) ) ) }} */}}
 {{- $template := "claris/_functions/meta/image/kind-variant-meta" }}
 
 {{- $imageKindVariantMeta := .imagekindvariantmeta }}
@@ -105,52 +105,72 @@
         {{- $versionResource := . }}
         {{- $origin := "existing" }}
 
-        {{- if (gt $lowestAspectDeviation 0.001) }}
-          {{- $imageResourceArgs := merge $imageResourceBaseArgs (dict
-            "resource" .
-            "process" (dict
-              "method" "fill"
-              "args" (printf "%vx%v Smart" $verSpec.width $verSpec.height)
-            )
-          ) }}
-          {{- if (lt $greatestSizeRatio 1.0) }}
-            {{- $cropWidth := .Width }}
-            {{- $cropHeight := (int (math.Round (div .Width (mul 1.0 $targetAspect)) ) ) }}
-            {{- if gt (div (mul 1.0 .Width) .Height) $targetAspect }}
-              {{- $cropWidth = (int (math.Round (div .Height (mul 1.0 $targetAspect)) ) ) }}
-              {{- $cropHeight = .Height }}
-            {{- end }}
-            {{- $imageResourceArgs = merge $imageResourceArgs (dict
-              "process" (dict
-                "method" "crop"
-                "args" (printf "%vx%v Smart" $cropWidth $cropHeight)
-              )
-            ) }}
-          {{- end }}
+        {{- $processMethod := "fill" }}
+        {{- $centerMethod := "Center" }}
+
+        {{- $cropWidth := $verSpec.width }}
+        {{- $cropHeight := $verSpec.height }}
+
+        {{- if (gt $lowestAspectDeviation 0.01) }}
+          <!-- If the target aspect ratio differs too much from the original,
+          we rely on the "Smart" method to identify the center -->
+          {{- $centerMethod = "Smart" }}
           {{- if $debug }}
-            {{- warnf "%s[%s]: %v/%v/%v: aspectDeviation=%.3f sizeRatio=%.3f Use method=%v to generate version from imgResource=%v[%T] in imageResourceArgs=%v"
+            {{- warnf "%s[%s]: %v/%v/%v: aspectDeviation=%.3f sizeRatio=%.3f: aspect deviation is too large; use center method=%v"
                 $page $template $imageKind $variantName $verSpec
                 $lowestAspectDeviation $greatestSizeRatio
-                $imageResourceArgs.process.method
-                . . $imageResourceArgs }}
-          {{- end }}
-
-          {{- $versionResource = partial "claris/_functions/resources/images/image-resource" $imageResourceArgs }}
-          {{- with $versionResource }}
-            {{- $origin = "generated" }}
-            {{- if $debug }}
-              {{- warnf "%s[%s]: %v/%v/%v: Generated imgResource=%v [imageResourceArgs=%v]"
-                  $page $template $imageKind $variantName $verSpec
-                  $versionResource $imageResourceArgs }}
-            {{- end }}
-          {{- else }}
-            {{- errorf "%s[%s]: %v/%v/%v: Failed to generate imgResource from imageResourceArgs=%v"
-                $page $template $imageKind $variantName $verSpec
-                $imageResourceArgs }}
+                $centerMethod }}
           {{- end }}
         {{- end }}
 
+        {{- if (lt $greatestSizeRatio 1.0) }}
+          {{- $processMethod = "crop" }}
+          {{- $originalAspect := div (mul 1.0 .Width) .Height }}
+          {{- if gt $originalAspect $targetAspect }}
+            <!-- Original aspect ratio > target aspect ratio:
+            use height of original but reduce width to match target aspect ratio -->
+            {{- $cropWidth = (int (math.Round (mul .Height (mul 1.0 $targetAspect)) ) ) }}
+            {{- $cropHeight = .Height }}
+          {{- else }}
+            <!-- Original aspect ratio < target aspect ratio:
+            use width of original but reduce height to match target aspect ratio -->
+            {{- $cropWidth = .Width }}
+            {{- $cropHeight = (int (math.Round (div .Width (mul 1.0 $targetAspect)) ) ) }}
+          {{- end }}
+          {{- if $debug }}
+            {{- warnf "%s[%s]: %v/%v/%v: aspectDeviation=%.3f sizeRatio=%.3f: original is too small; use method %v to scale from %dx%d to %dx%d"
+                $page $template $imageKind $variantName $verSpec
+                $lowestAspectDeviation $greatestSizeRatio
+                $processMethod .Width .Height $cropWidth $cropHeight }}
+          {{- end }}
+        {{- end }}
+
+        {{- $imageResourceArgs := merge $imageResourceBaseArgs (dict
+          "resource" .
+          "process" (dict
+            "method" $processMethod
+            "args" (printf "%vx%v %s" $cropWidth $cropHeight $centerMethod)
+          )
+        ) }}
+
+        {{- if $debug }}
+          {{- warnf "%s[%s]: %v/%v/%v: aspectDeviation=%.3f sizeRatio=%.3f Use processing method=%v and center method=%v to generate version from imgResource=%v[%T] in imageResourceArgs=%v"
+              $page $template $imageKind $variantName $verSpec
+              $lowestAspectDeviation $greatestSizeRatio
+              $imageResourceArgs.process.method $centerMethod
+              . . $imageResourceArgs }}
+        {{- end }}
+
+        {{- $versionResource = partial "claris/_functions/resources/images/image-resource" $imageResourceArgs }}
+
         {{- with $versionResource }}
+          {{- $origin = "generated" }}
+          {{- if $debug }}
+            {{- warnf "%s[%s]: %v/%v/%v: Generated imgResource=%v [imageResourceArgs=%v]"
+                $page $template $imageKind $variantName $verSpec
+                $versionResource $imageResourceArgs }}
+          {{- end }}
+
           {{- $versionMeta := (dict
             "resource" $versionResource
             "url" $versionResource.Permalink
@@ -172,6 +192,10 @@
                 (jsonify (dict "indent" "  ") $processedVersionMeta)
                 $processedImageKindURLs }}
           {{- end }}
+        {{- else }}
+          {{- errorf "%s[%s]: %v/%v/%v: Failed to generate imgResource from imageResourceArgs=%v"
+              $page $template $imageKind $variantName $verSpec
+              $imageResourceArgs }}
         {{- end }}
 
       {{- end }}
@@ -199,7 +223,7 @@
 
     {{- if isset $variantMeta "version" }}
       {{- range $versionID, $versionResource := $variantMeta.version }}
-        {{- if not (in $processedImageKindVariantMeta $variantName) }}
+        {{- if not (in (index $processedImageKindVariantMeta $variantName) $versionID) }}
           {{- $versionMeta := (dict
             "resource" $versionResource
             "url" $versionResource.Permalink
@@ -231,56 +255,65 @@
   {{- end }}
 
   <!-- Ensure that a default version exists -->
-  {{- with $processedImageKindVariantMeta }}
-    {{- range $variantName, $variantMeta := $imageKindVariantMeta }}
-      {{- if not (index $processedImageKindVariantMeta "version" $defaultVersionID) }}
-        {{- range $versionID, $versionResource := $variantMeta.version }}
-          {{- if not (index $processedImageKindVariantMeta "version" $defaultVersionID) }}
-            {{- if $debug }}
-              {{- warnf "%s[%s]: %v/%v/%v: Before adding default: processedImageKindVariantMeta=\n%v"
-                  $page $template $imageKind $variantName $versionID
-                  (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
-            {{- end }}
-            {{- $versionMeta := (dict
-              "resource" $versionResource
-              "url" $versionResource.Permalink
-              "canonicalurl" (partial "claris/_functions/canonical-url" $versionResource)
-            ) }}
-            {{- $cleanVariantMeta := merge $variantMeta (dict "version" false) }}
-            {{- $processedImageKindVariantMeta = merge $processedImageKindVariantMeta (dict
-              $variantName (merge (merge $variantMeta (dict "version" false)) (dict "version" (dict $defaultVersionID $versionMeta)) )
-            ) }}
-            {{- if $debug }}
-              {{- warnf "%s[%s]: %v/%v/%v: Using %v in versionMeta=%v as default version %v[%vx%v]: processedImageKindVariantMeta=\n%v"
-                  $page $template $imageKind $variantName $versionID $versionResource
-                  (jsonify (dict "indent" "  ") $versionMeta)
-                  $defaultVersionID $versionResource.Width $versionResource.Height
-                  (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
-            {{- end }}
-          {{- end }}
+  {{/* {{- with $processedImageKindVariantMeta }} */}}
+  {{- range $variantName, $variantMeta := $processedImageKindVariantMeta }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: %v/%v/*: Looking for version with versionID=%v in variantMeta=\n%v"
+          $page $template $imageKind $variantName $defaultVersionID
+          (jsonify (dict "indent" "  ") $variantMeta) }}
+    {{- end }}
+    {{- if (index $variantMeta "version" $defaultVersionID) }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: %v/%v/*: variant already has a version with versionID=%v: processedImageKindVariantMeta=\n%v"
+              $page $template $imageKind $variantName $defaultVersionID
+              (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
+        {{- end }}
+    {{- else }}
+      {{- range $versionID, $versionResource := $variantMeta.version }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: %v/%v/%v: Before adding default versionID=%v: processedImageKindVariantMeta=\n%v"
+              $page $template $imageKind $variantName $versionID $defaultVersionID
+              (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
+        {{- end }}
+        {{- $versionMeta := (dict
+          "resource" $versionResource
+          "url" $versionResource.Permalink
+          "canonicalurl" (partial "claris/_functions/canonical-url" $versionResource)
+        ) }}
+        {{- $cleanVariantMeta := merge $variantMeta (dict "version" false) }}
+        {{- $processedImageKindVariantMeta = merge $processedImageKindVariantMeta (dict
+          $variantName (merge (merge $variantMeta (dict "version" false)) (dict "version" (dict $defaultVersionID $versionMeta)) )
+        ) }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: %v/%v/%v: Using %v in versionMeta=%v as default version %v[%vx%v]: processedImageKindVariantMeta=\n%v"
+              $page $template $imageKind $variantName $versionID $versionResource
+              (jsonify (dict "indent" "  ") $versionMeta)
+              $defaultVersionID $versionResource.Width $versionResource.Height
+              (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
         {{- end }}
       {{- end }}
     {{- end }}
-    {{- $kindVariantMeta = (dict
-        "variant" $processedImageKindVariantMeta
-        "url" $processedImageKindURLs
-        "canonicalurl" $processedImageKindCanonicalURLs
-      ) }}
-    {{- if $debug }}
-      {{- warnf "%s[%s]: kind=%v Added processedImageKindVariantMeta=\n%v\nto kindVariantMeta=\n%v"
-          $page $template $imageKind
-          (jsonify (dict "indent" "  ") $processedImageKindVariantMeta)
-          (jsonify (dict "indent" "  ") $kindVariantMeta) }}
-    {{- end }}
   {{- end }}
+  {{- $kindVariantMeta = (dict
+      "variant" $processedImageKindVariantMeta
+      "url" $processedImageKindURLs
+      "canonicalurl" $processedImageKindCanonicalURLs
+    ) }}
   {{- if $debug }}
+    {{- warnf "%s[%s]: kind=%v Added processedImageKindVariantMeta=\n%v\nto kindVariantMeta=\n%v"
+        $page $template $imageKind
+        (jsonify (dict "indent" "  ") $processedImageKindVariantMeta)
+        (jsonify (dict "indent" "  ") $kindVariantMeta) }}
+  {{- end }}
+  {{/* {{- end }} */}}
+  {{/* {{- if $debug }}
     {{- warnf "%s[%s]: kind=%v: returning \n%v\n"
         $page $template $imageKind
         (jsonify (dict "indent" "  ") $kindVariantMeta) }}
-  {{- end }}
+  {{- end }} */}}
 {{- else }}
   {{- if $debug }}
-    {{- warnf "%s[%s]: kind=%v: Invalid imageKindVariantMeta: \n%v"
+    {{- errorf "%s[%s]: kind=%v: Invalid imageKindVariantMeta: \n%v"
         $page $template $imageKind (jsonify (dict "indent" "  ") $imageKindVariantMeta) }}
   {{- end }}
 {{- end }}

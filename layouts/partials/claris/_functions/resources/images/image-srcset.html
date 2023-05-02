@@ -2,7 +2,7 @@
 {{- $imageSrcSet := dict }}
 
 {{- $page := .Page }}
-{{- $debug := page.Scratch.Get "clarisdebug" }}
+{{- $debug := default false .Debug }}
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+/)?leadership/$` $page.RelPermalink) ) ) }} */}}
 {{/* {{- $imageResourceArgs := . }} */}}
 {{- $imageResourceArgs := merge . (dict "Debug" $debug) }}
@@ -34,7 +34,7 @@
   {{- $placeholderInlineImg := printf "data:image/svg+xml,%s" $placeholderSvg | replaceRE " " "%20" | replaceRE "<" "%3c" | replaceRE ">" "%3e" | replaceRE "\"" "'" | safeURL }}
 
   {{- if default true site.Params.lazyLoadLowImageQualityPlaceholder }}
-    {{- $placeholder := ($img.Resize "128x q20") | images.Filter (images.GaussianBlur 6) -}}
+    {{- $placeholder := ($img | images.Filter (images.GaussianBlur 32)).Resize "32x q40" | images.Filter (images.GaussianBlur 2) -}}
     {{- $placeholderInlineImg = printf "data:image/jpeg;base64,%s" ($placeholder.Content | base64Encode) | safeURL | safeHTMLAttr }}
   {{- end -}}
 
