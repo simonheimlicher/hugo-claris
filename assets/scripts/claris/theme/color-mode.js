@@ -7,7 +7,8 @@ import {
 } from './functions';
 
 const initColorMode = function () {
-  const DEBUG = false;
+  // console.log('claris/theme/color-mode: window.clarisHugoParams=', window.clarisHugoParams);
+  const DEBUG = window.clarisHugoParams ? window.clarisHugoParams.envDevel : false;
   // console.print: console.log without filename/line number
   let deb = null;
   if ('queueMicrotask' in window) {
