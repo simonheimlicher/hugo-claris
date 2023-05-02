@@ -1,0 +1,81 @@
+{{- $preloadFonts := slice }}
+{{- $page := .Page }}
+{{- $template := "claris/_functions/resources/fonts/preload" }}
+{{- $debug := default ($page.Scratch.Get "clarisdebug") .Debug }}
+{{/* {{- $debug = or $debug (not (not (findRE `.` $page.RelPermalink) ) ) }} */}}
+
+{{- $styleSheet := .StyleSheet }}
+
+{{- $preloadFontStyles := default (slice "normal") ($page.Param "assets.fonts.preload.styles") }}
+{{- $preloadFontWeights := default (slice "400") ($page.Param "assets.fonts.preload.weights") }}
+{{- $preloadFontFormats := default (slice "woff2") ($page.Param "assets.fonts.preload.weights") }}
+
+{{- $fontMatchRE := `@font-face[^{]*\{[^}]*[^}]+?src:[^;]*url\(['"]http[^'"]+\.[a-z0-9]+['"]` }}
+{{- $fontStyleRE := `@font-face[^{]*\{[^}]*[^}]+?font-style:\s*([^;:\s]+)[^}]+?src:[^;]*url\(['"]http[^'"]+\.[a-z0-9]+['"]` }}
+{{- $fontWeightRE := `@font-face[^{]*\{[^}]*[^}]+?font-weight:\s*([^;:\s]+)[^}]+?src:[^;]*url\(['"]http[^'"]+\.[a-z0-9]+['"]` }}
+
+{{- $availableFontFilesRE := `(url\(['"](http[^'"]+\.[a-z0-9]+)['"]\)\s*format\([^)]+\))` }}
+{{- $fontTypeRE := `url\(['"]http[^'"]+\.[a-z0-9]+['"]\)\s*format\(\s*['"]([^'"]+)['"]\)` }}
+{{- $fontFileURLRE := `url\(\s*['"](http[^'"]+\.[a-z0-9]+)['"]\s*\)` }}
+
+{{- with $styleSheet }}
+  {{- $fontURLMatches := findRE $fontMatchRE .resource.Content }}
+  {{- with $fontURLMatches }}
+    {{- range $fontURLMatches }}
+      {{- $fontStyle := findRESubmatch $fontStyleRE . }}
+      {{- with $fontStyle }}
+        {{- $fontStyle = index (last 1 (index . 0) ) 0 }}
+      {{- else }}
+        {{- warnf "%s[%s]: No match for fontStyleRE=%v in %v" $page $template $fontStyleRE . }}
+      {{- end }}
+      {{- $fontWeight := findRESubmatch $fontWeightRE . }}
+      {{- with $fontWeight }}
+        {{- $fontWeight = index (last 1 (index . 0) ) 0 }}
+      {{- else }}
+        {{- warnf "%s[%s]: No match for fontWeightRE=%v in %v" $page $template $fontWeightRE . }}
+      {{- end }}
+      {{- if and (in $preloadFontStyles $fontStyle) (in $preloadFontWeights $fontWeight) }}
+        {{- $availableFontFiles := findRE $availableFontFilesRE . }}
+        {{- with $availableFontFiles }}
+          {{- range $availableFontFiles }}
+            {{- $fontType := findRESubmatch $fontTypeRE . }}
+            {{- with $fontType }}
+              {{- $fontType = index (last 1 (index . 0) ) 0 }}
+            {{- else }}
+              {{- warnf "%s[%s]: No match for fontTypeRE=%v in %v" $page $template $fontTypeRE . }}
+            {{- end }}
+            {{- if (in $preloadFontFormats $fontType) }}
+              {{- $preloadFontURL := findRESubmatch $fontFileURLRE . }}
+              {{- with $preloadFontURL }}
+                {{- $preloadFontURL = index (last 1 (index . 0) ) 0 }}
+                {{- if $debug }}
+                  {{- warnf "%s[%s]: preloadFontURL=%v" $page $template $preloadFontURL }}
+                {{- end }}
+                {{- $preloadFonts = append (slice (dict "URL" $preloadFontURL "Type" $fontType) ) $preloadFonts }}
+              {{- else }}
+                {{- warnf "%s[%s]: No match for fontFileURLRE=%v in %v" $page $template $fontFileURLRE . }}
+              {{- end }}
+            {{- else }}
+              {{- if $debug }}
+                {{- warnf "%s[%s]: Not preloading font=%v: format=%v not in %v"
+                  $page $template . $fontType $preloadFontFormats -}}
+              {{- end }}
+            {{- end }}
+          {{- end }}
+        {{- else }}
+          {{- warnf "%s[%s]: No match for availableFontFilesRE=%v in %v" $page $template $availableFontFilesRE . }}
+        {{- end }}
+      {{- else }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: Not preloading font=%v: style=%v not in %v or weight=%v not in %v"
+            $page $template . $fontStyle $preloadFontStyles
+            $fontWeight $preloadFontWeights -}}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- else }}
+    {{- warnf "%s[%s]: No fonts found to preload. regex=%v stylesheet=%v .Content=\n%v"
+        $page $template $fontMatchRE $styleSheet.resource $styleSheet.resource.Content -}}
+  {{- end }}
+{{- return $preloadFonts }}
+{{- end }}

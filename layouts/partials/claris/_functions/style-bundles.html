@@ -31,12 +31,16 @@
 {{/* {{- warnf "%s[%s]: contentTypeList:%s supportIE11=%v minifyBundles=%v site.Params.supportIE11=%v toCSSoptionsBase=%v postCSSoptions=%v "
     $page $template $contentTypeList $supportIE11 $minifyBundles site.Params.supportIE11 $toCSSoptionsBase $postCSSoptions -}} */}}
 
-{{- $styleResources := (dict
+  {{/* NOTE: Increasing fetchpriority of fonts CSS did not help.
+  The file assets/styles/claris-fonts.sass is not in use.
+  Instead, we now preload fonts in head/assets.html
   "fonts_all" (dict
     "file" "fonts"
     "supportIE11" true
-    "fetchpriority" "high"
-  )
+    "fetchpriority" "low"
+  ) */}}
+
+{{- $styleResources := (dict
   "main_all" (dict
     "file" "main"
     "supportIE11" true

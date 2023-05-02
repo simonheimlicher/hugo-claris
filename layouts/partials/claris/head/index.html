@@ -42,17 +42,23 @@
 {{- end -}}
 {{- range .AlternativeOutputFormats -}}
   {{- if (ne .Rel "canonical" ) -}}
-    {{ printf `    <link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .Permalink site.Title | safeHTML }}
+    {{ printf `    <link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .Permalink site.Title | safeHTML -}}
   {{- end }}
 {{- end }}
     <link rel="canonical" type="text/html" href="{{ partial "claris/_functions/canonical-url" . }}" title="{{ $title }}">
     {{- partialCached "claris/head/favicon" . }}
+
 {{- $assetVariant := (dict
   "Kind" .Kind
-  "OnlyMediaType" ($page.Param "onlyMediaType")
   "ContentTypeList" (partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type)
 ) -}}
-{{ partialCached "claris/head/assets" . $assetVariant }}
+{{- with ($page.Param "onlyMediaType") }}
+  {{- $assetVariant = merge $assetVariant (dict
+  "OnlyMediaType" .
+) -}}
+{{- end }}
+
+{{- partialCached "claris/head/assets" (dict "Page" $page "Debug" $debug "AssetVariant" $assetVariant) $assetVariant }}
     <noscript>
       <style>.lazyload { display: none; }</style>
     </noscript>
