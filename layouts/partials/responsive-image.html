@@ -54,7 +54,8 @@
 {{- $lightbox := default false .LightBox -}}
 
 {{- $fetchPriority := default "low" .FetchPriority -}}
-{{- $lazy := or (ne $fetchPriority "high") .LazyLoad -}}
+
+{{- $lazy := default (eq $fetchPriority "low") .LazyLoad -}}
 
 {{- $defaultMedia := "default" }}
 {{- $defaultVariantName := "default" }}
@@ -198,6 +199,10 @@
             {{- $imgHeight := default .ImageResource.Img.Height $imageResourceArgs.Height }}
             <img class="{{ with $imgClass }}{{ . }}{{ end }}" src="{{ $srcURL }}"
                  width="{{ $imgWidth }}" height="{{ $imgHeight }}"
+              {{- with $fetchPriority }} fetchPriority="{{ . | safeHTMLAttr }}"{{- end -}}
+              {{- if $lazy }}
+               loading="lazy"
+              {{ end }}
               {{- with .Title }}
                  title="{{ . | safeHTMLAttr }}"
               {{- end }}
@@ -250,6 +255,7 @@
             {{- with $lightbox }} data-zoomable="{{ . | safeHTMLAttr }}"{{- end -}}
             {{- if $lazy }}
            data-sizes="auto"
+              loading="lazy"
                {{ printf "srcset=%q" $placeholderInlineImg | safeHTMLAttr }} data-src="{{ $srcURL }}" data-srcset="{{ $srcSet }}"
             {{- else }}
               srcset="{{ $srcSet }}"

@@ -14,7 +14,7 @@
       "ImgClass" "hero-image_above-main_img"
       "Alt" $featureImage.alt
       "Title" $featureImage.title
-      "FetchPriority" "high"
+      "FetchPriority" "low"
     ) }}
     {{- if $debug }}
       {{- warnf "%s[%s]: Found feature image resource $featureImage.version.default.resource=%v in \nfeatureImage=%v\nNow calling responsive-image with .resource=%v in featureImageArgs=%v"

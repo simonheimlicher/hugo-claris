@@ -3,8 +3,8 @@
 
 {{- $page := .Page }}
 {{- $debug := default false .Debug }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+/)?leadership/$` $page.RelPermalink) ) ) }} */}}
-{{/* {{- $imageResourceArgs := . }} */}}
+{{- /* $debug = or $debug (not (not (findRE `^/([^/]+/)?leadership/$` $page.RelPermalink) ) ) */ -}}
+{{- /* {{- $imageResourceArgs := . }} */ -}}
 {{- $imageResourceArgs := merge . (dict "Debug" $debug) }}
 
 {{- $resourceSpec := .resource }}
@@ -38,13 +38,22 @@
     {{- $placeholderInlineImg = printf "data:image/jpeg;base64,%s" ($placeholder.Content | base64Encode) | safeURL | safeHTMLAttr }}
   {{- end -}}
 
-  {{- $numVersions := 3 }}
-  {{- $sizeRange := 8.0 }}
   {{- $roundBase := 2.0 }}
-
-  {{- if $envProd }}
-    {{- $numVersions = 7 }}
+  {{- $sizeRange := 4.0 }}
+  {{- $numVersions := int (add $sizeRange 1) }}
+  {{- if gt (div $img.Width $sizeRange) 512 }}
+    {{- $sizeRange = int (math.Ceil (div $img.Width 512) ) }}
+    {{- $numVersions = int (add $sizeRange 1) }}
+      {{- if $debug }}
+        {{- warnf "img=%v[%dx%d] Increased sizeRange=%d numVersions=%d"
+          $img.Name $img.Width $img.Height $sizeRange $numVersions -}}
+      {{- end }}
   {{- end }}
+  {{- $numVersions := int (add $sizeRange 1) }}
+
+  {{/* {{- if $envProd }}
+    {{- $numVersions = 7 }}
+  {{- end }} */}}
 
   <!-- No changes below this line -->
   {{- $powerBase := math.Pow $sizeRange (div 1.0 (sub $numVersions 1.0) ) }}
@@ -83,27 +92,41 @@
     {{- else }}
       {{- warnf "    [%s]: i=%d exp=%d width=%d [widthCalculated=%d, roundToNearest=%.0f]" $template $i $exp $width $widthCalculated $roundToNearest -}} */}}
     {{- end }}
+
     {{- $srcSetWidths = $srcSetWidths | append $width }}
     {{- $resizeSpec := printf "%dx" $width }}
+
     {{- with $processingFormat }}
-    {{- $resizeSpec = printf "%s %s" $resizeSpec . }}
+      {{- $resizeSpec = printf "%s %s" $resizeSpec . }}
+    {{- end }}
+
+    {{- if not $processingQuality }}
+      {{- $processingQuality = 50 }}
     {{- end }}
     {{- with $processingQuality }}
-    {{- $resizeSpec = printf "%s q%s" $resizeSpec . }}
+      {{- $processingQuality = int $processingQuality }}
+      {{- $resizeSpec = printf "%s q%d" $resizeSpec . }}
     {{- end }}
+
     {{- with $processingHint }}
-    {{- $resizeSpec = printf "%s %s" $resizeSpec . }}
+      {{- $resizeSpec = printf "%s %s" $resizeSpec . }}
     {{- end }}
+
     {{- with ($img.Resize $resizeSpec ) }}
       {{- $srcURL := .RelPermalink }}
       {{- $srcSet = printf "%s%s%s %dw" $srcSet $sep .RelPermalink $width -}}
       {{- $sep = ", " }}
-      {{- /* warnf "img.Width=%d width=%d" $img.Width $width */ -}}
+      {{- if $debug }}
+        {{- warnf "img=%v[%dx%d] -> [%dx%d] resizeSpec=%v"
+          $img.Name $img.Width $img.Height .Width .Height $resizeSpec -}}
+      {{- end }}
     {{- end }}
   {{- end -}}
 
+  {{- $defaultImg := (index $srcSet 0) }}
   {{- /* Offer the original image in the srcset */ -}}
   {{- if $includeOriginalImage }}
+    {{- $defaultImg = $img }}
     {{- $srcSet = printf "%s, %s %dw" $srcSet $img.RelPermalink $img.Width -}}
   {{- end }}
   {{- $imageSrcSet = (dict "Img" $img "SrcSet" $srcSet "Placeholder" $placeholderInlineImg) }}
