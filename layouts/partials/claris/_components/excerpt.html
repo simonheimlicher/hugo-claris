@@ -3,7 +3,8 @@
 {{- $template := "partials/_components/excerpt" }}
 {{- $fetchPriority := default "low" .FetchPriority }}
 {{- $relativeDates := default true .RelativeDates }}
-{{- $showTags := default true .ShowTags }}
+{{- $showTags := default false .ShowTags }}
+{{- $showAuthorAvatar := default false .AuthorAvatar }}
 {{- $headerPartial := default "" .HeaderPartial }}
 {{- $itemType := default "page" .ItemType }}
 {{- $headingLevel := default 3 .HeadingLevel }}
@@ -66,9 +67,9 @@
         {{- partial $headerPartial (dict
           "Page" $page
           "ContainerClass" "excerpt_meta"
-          "relativeDates"
-          $relativeDates
-          "showTags" $showTags) }}
+          "AuthorAvatar" $showAuthorAvatar
+          "RelativeDates" $relativeDates
+          "ShowTags" $showTags) }}
       {{- end }}
     </div>
     <div class="excerpt_main{{ if $excerptImage }} image{{ end }}{{ if $excerptContent }} content{{ end }}">

@@ -1,5 +1,6 @@
 {{- $page := .Page }}
 {{- $meta := $page.Scratch.Get "clarismeta" }}
+{{- $showAuthorAvatar := default false .AuthorAvatar }}
 {{- $relativeDates := default false .RelativeDates }}
 {{- $showTags := default true .ShowTags }}
 {{- $containerClass := "article_meta" }}
@@ -18,16 +19,18 @@
                     {{- end -}}
                     <div class="article_meta_author">
                     {{- $authorName := $meta.Single.Data.Author.Name }}
-                    {{- $authorAvatarWidth := 96 }}
-                    {{- $avatarImage := partial "claris/_functions/resources/images/logo-image" (dict
-                      "Page" $page
-                      "LogoImage" $meta.Single.Data.Author.Avatar
-                      "Width" $authorAvatarWidth
-                    ) }}
-                    {{- with $avatarImage }}
+                    {{- if $showAuthorAvatar }}
+                      {{- $authorAvatarWidth := 96 }}
+                      {{- $avatarImage := partial "claris/_functions/resources/images/logo-image" (dict
+                        "Page" $page
+                        "LogoImage" $meta.Single.Data.Author.Avatar
+                        "Width" $authorAvatarWidth
+                      ) }}
+                      {{- with $avatarImage }}
                       <a href="{{ $meta.Single.Data.Author.URL }}" title="{{ T `view_author_profile` (dict `Count` 1 `Name` $authorName) }}" class="article_meta_author_link">
                         <img src="{{ absURL .Permalink }}" class="article_meta_author_avatar_img" width="{{ $authorAvatarWidth }}" height="{{ $authorAvatarWidth }}" alt="{{ $authorName }}">
                       </a>
+                      {{- end }}
                     {{- end }}
                       <a href="{{ $meta.Single.Data.Author.URL }}" title="{{ T `view_author_profile` (dict `Count` 1 `Name` $authorName) }}" class="article_meta_author_link">
                         <span class="article_meta_author_name">
