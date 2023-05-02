@@ -32,16 +32,21 @@
     $page $template $contentTypeList $supportIE11 $minifyBundles site.Params.supportIE11 $toCSSoptionsBase $postCSSoptions -}} */}}
 
 {{- $styleResources := (dict
-  "all" (dict
+  "fonts_all" (dict
+    "file" "fonts"
+    "supportIE11" true
+    "fetchpriority" "high"
+  )
+  "main_all" (dict
     "file" "main"
     "supportIE11" true
   )
-  "screen" (dict
+  "main_screen" (dict
     "file" "main"
     "media" "screen"
   "supportIE11" true
   )
-  "print"  (dict
+  "main_print"  (dict
     "file" "main"
     "media" "print"
     "supportIE11" false
@@ -52,6 +57,7 @@
 
 {{- range $resourceID, $params := $styleResources }}
   {{- $mediaType := default "all" $params.media }}
+  {{- $fetchPriority := default "" $params.fetchpriority }}
   {{- if (in $mediaTypeList $mediaType) }}
     {{/* {{- warnf "%s[%s]: Generating style bundle with contentTypeList=%s contentTypeListID=%s for MediaType=%s in MediaTypeList=%v"
     $page $template $contentTypeList $contentTypeListID $mediaType $mediaTypeList }} */}}
@@ -113,7 +119,7 @@
     {{/* {{- warnf "%s[%s]: $bundle[%s] %#v: MediaType:%s Content:\n%v\n...\n%v"
         $page $template $bundle $resourceID $bundle.MediaType (substr $bundle.Content 0 100) (substr $bundle.Content -100) }} */}}
 
-    {{- $styleBundles = merge $styleBundles (dict $resourceID $bundle) -}}
+    {{- $styleBundles = merge $styleBundles (dict $resourceID (dict "resource" $bundle "media" $mediaType "fetchpriority" $fetchPriority) ) -}}
 
     {{- if (and $supportIE11 $params.supportIE11) }}
       {{- $legacyResourceID := printf "%s%s" $resourceID $legacySuffix }}

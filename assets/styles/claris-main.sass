@@ -1,6 +1,6 @@
 {{- $page := .Page }}
 {{- $mediaType := .MediaType }}
-/* File='styles/claris.sass': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .ContentTypeList='{{ printf "%v" .ContentTypeList }}' .ContentTypeListID='{{ .ContentTypeListID }}' .ContentType='{{ .ContentType }}' .MediaType='{{ .MediaType }}' */
+/* File='styles/claris-main.sass': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .ContentTypeList='{{ printf "%v" .ContentTypeList }}' .ContentTypeListID='{{ .ContentTypeListID }}' .ContentType='{{ .ContentType }}' .MediaType='{{ .MediaType }}' */
 
 // Core stylesheets that are included for all media types
 @import 'claris/functions'
@@ -15,18 +15,19 @@
 @import 'claris/variables'
 @import 'claris/override'
 
-{{- $fontsSelfHosted := default false ($page.Param "fontsSelfHosted") }}
-{{- $customFonts := default false ($page.Param "customFonts") }}
-{{- if and $fontsSelfHosted (not $customFonts) -}}
-{{- $fontFamilySans := default "Source Sans 3" ($page.Param "fontFamilySans") }}
-{{- $fontFamilySerif := default "Merriweather" ($page.Param "fontFamilySerif") }}
-{{- $fontFamilyMono := default "DM Mono" ($page.Param "fontFamilyMono") }}
-{{- $fontFamilies := (slice $fontFamilySans $fontFamilySerif $fontFamilyMono) }}
-$hostedFontPath: '{{ default (absURL "fonts") ($page.Param "hostedFontPath") }}'
-{{- range $fontFamilies }}
-@import 'claris/fonts/{{ urlize . }}'
-{{- end }}
-{{- end }}
+// Moved to claris-fonts.sass to enable pre-loading with fetchpriority="high"
+// {{- $fontsSelfHosted := default false ($page.Param "fontsSelfHosted") }}
+// {{- $customFonts := default false ($page.Param "customFonts") }}
+// {{- if and $fontsSelfHosted (not $customFonts) -}}
+// {{- $fontFamilySans := default "Source Sans 3" ($page.Param "fontFamilySans") }}
+// {{- $fontFamilySerif := default "Merriweather" ($page.Param "fontFamilySerif") }}
+// {{- $fontFamilyMono := default "DM Mono" ($page.Param "fontFamilyMono") }}
+// {{- $fontFamilies := (slice $fontFamilySans $fontFamilySerif $fontFamilyMono) }}
+// $hostedFontPath: '{{ default (absURL "fonts") ($page.Param "hostedFontPath") }}'
+// {{- range $fontFamilies }}
+// @import 'claris/fonts/{{ urlize . }}'
+// {{- end }}
+// {{- end }}
 
 // Additional stylesheets
 @import 'claris/base'
