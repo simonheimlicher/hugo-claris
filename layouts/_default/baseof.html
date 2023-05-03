@@ -51,7 +51,6 @@
 <!DOCTYPE html>
 {{ partial "html-comment" (printf "BASEOF %s[%s]: BEGIN" $page $template) }}
 <html lang="{{ .Lang }}"
-{{- with $p.figurePositionShow }} data-figures="{{ . }}"{{ end -}}
   {{- with .Type }}{{ $htmlClasses = (printf "%s type-%s" $htmlClasses .) }}{{ end -}}
   {{- with .Kind }}{{ $htmlClasses = (printf "%s kind-%s" $htmlClasses .) }}{{ end -}}
   {{- with (default .Layout .Params.layout) }}{{ $htmlClasses = (printf "%s layout-%s" $htmlClasses .) }}{{ end -}}
