@@ -11,8 +11,10 @@
 {{- $srcSet := "" }}
 
 {{- $processingQuality := default false .quality -}}
-{{- $processingFormat := default false .format -}}
 {{- $processingHint := default false .Hint -}}
+
+{{- $targetFormat := default (slice "webp" "original") .format -}}
+
 {{- $includeOriginalImage := default false ($page.Param "responsiveImageIncludeOriginal") }}
 {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
 
@@ -29,6 +31,8 @@
 {{- end }}
 
 {{- with $img }}
+  {{- $originalFormat := $img.MediaType -}}
+
   {{ $maxWidth := $img.Width }}
   {{- $placeholderSvg := printf "<svg xmlns=%q viewBox=%q></svg>" "http://www.w3.org/2000/svg" (printf "0 0 %d %d" $img.Width $img.Height) | safeHTML }}
   {{- $placeholderInlineImg := printf "data:image/svg+xml,%s" $placeholderSvg | replaceRE " " "%20" | replaceRE "<" "%3c" | replaceRE ">" "%3e" | replaceRE "\"" "'" | safeURL }}
@@ -96,7 +100,7 @@
     {{- $srcSetWidths = $srcSetWidths | append $width }}
     {{- $resizeSpec := printf "%dx" $width }}
 
-    {{- with $processingFormat }}
+    {{- with $targetFormat }}
       {{- $resizeSpec = printf "%s %s" $resizeSpec . }}
     {{- end }}
 
@@ -125,7 +129,7 @@
 
   {{- $defaultImg := (index $srcSet 0) }}
   {{- /* Offer the original image in the srcset */ -}}
-  {{- if $includeOriginalImage }}
+  {{- if and (eq $targetFormat $originalFormat) $includeOriginalImage }}
     {{- $defaultImg = $img }}
     {{- $srcSet = printf "%s, %s %dw" $srcSet $img.RelPermalink $img.Width -}}
   {{- end }}

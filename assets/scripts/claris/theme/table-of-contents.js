@@ -1,4 +1,5 @@
 import {
+  deb,
   eventTarget,
   elem,
   elems,
@@ -9,29 +10,6 @@ import {
 let addScrollObserver = null;
 
 function injectTableOfContents() {
-    // console.log("injectTableOfContents() called");
-    const DEBUG = false;
-    // console.print: console.log without filename/line number
-    let deb = null;
-    if ('queueMicrotask' in window) {
-        console.print = function (...args) {
-            queueMicrotask(console.log.bind(console, ...args));
-        }
-        deb = function (...args) {
-            if (DEBUG) {
-                console.print(...args);
-            }
-        }
-    }
-    else {
-        deb = function (...args) {
-            if (DEBUG) {
-                console.log(...args);
-            }
-        }
-    }
-    deb('table-of-contents.js: DEBUG on');
-
     // Retrieve all elements
     const articleElement = elem('.article_content');
     if (!articleElement) return;

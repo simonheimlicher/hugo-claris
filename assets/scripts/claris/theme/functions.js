@@ -1,4 +1,28 @@
 // global variables
+
+const DEBUG = window.clarisHugoParams ? window.clarisHugoParams.envDevel : false;
+// console.print: console.log without filename/line number
+let deb = function () { };
+if ('queueMicrotask' in window) {
+  console.print = function (...args) {
+    queueMicrotask(console.log.bind(console, ...args));
+  }
+  deb = function (...args) {
+    if (DEBUG) {
+      console.print(...args);
+    }
+  }
+}
+else {
+  deb = function (...args) {
+    if (DEBUG) {
+      console.log(...args);
+    }
+  }
+}
+deb('claris/theme/functions: DEBUG on');
+export { deb };
+
 const doc = document.documentElement;
 export function isObj(obj) {
   return (obj && typeof obj === 'object' && obj !== null) ? true : false;

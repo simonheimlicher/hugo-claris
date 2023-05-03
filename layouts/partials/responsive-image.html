@@ -9,7 +9,7 @@
 {{- $caption := default "" .Caption -}}
 {{- $alt := default (humanize (path.BaseName $resourceSpec) ) .Alt -}}
 {{- $title := default $alt .Title -}}
-{{- $imgClass := default "" .ImgClass -}}
+{{- $imgClass := default "responsive" .ImgClass -}}
 {{- $imgPosition := default "center center" .position -}}
 {{- $figureClass := cond (ne "" $caption) "caption" "" -}}
 {{- with .FigureClass -}}
@@ -189,16 +189,21 @@
           <picture>
           {{- range where $pictureResources "media" "ne" $defaultMedia}}
             {{- $srcURL := .ImageResource.Img.RelPermalink }}
+            {{- $srcSet := .ImageResource.SrcSet }}
             {{- $imgWidth := default .ImageResource.Img.Width $imageResourceArgs.Width }}
             {{- $imgHeight := default .ImageResource.Img.Height $imageResourceArgs.Height }}
-            <source srcset="{{ .ImageResource.SrcSet }}" media="{{ .media }}">
+            <source srcset="{{ $srcSet }}" media="{{ .media }}">
           {{- end }}
           {{- range where $pictureResources "media" "eq" $defaultMedia}}
             {{- $srcURL := .ImageResource.Img.RelPermalink }}
+            {{- $srcSet := .ImageResource.SrcSet }}
             {{- $imgWidth := default .ImageResource.Img.Width $imageResourceArgs.Width }}
             {{- $imgHeight := default .ImageResource.Img.Height $imageResourceArgs.Height }}
-            <img class="{{ with $imgClass }}{{ . }}{{ end }}" src="{{ $srcURL }}"
+            <img class="{{ with $imgClass }}{{ . }}{{ end }}"
                  width="{{ $imgWidth }}" height="{{ $imgHeight }}"
+                   src="{{ $srcURL }}"
+                srcset="{{ $srcSet }}"
+                 sizes="auto"
               {{- with $fetchPriority }} fetchPriority="{{ . | safeHTMLAttr }}"{{- end -}}
               {{- if $lazy }}
                loading="lazy"
@@ -238,10 +243,10 @@
         <picture>
         {{- range where $pictureResources "media" "ne" $defaultMedia}}
           {{- $srcURL := .ImageResource.Img.RelPermalink }}
+          {{- $srcSet := .ImageResource.SrcSet }}
           {{- $imgWidth := default .ImageResource.Img.Width $imageResourceArgs.Width }}
           {{- $imgHeight := default .ImageResource.Img.Height $imageResourceArgs.Height }}
           {{- $placeholderInlineImg := .ImageResource.Placeholder }}
-          {{- $srcSet := .ImageResource.SrcSet }}
           <source srcset="{{ $srcSet }}" media="{{ .media }}">
         {{- end }}
         {{- range where $pictureResources "media" "eq" $defaultMedia}}
@@ -250,17 +255,21 @@
           {{- $imgHeight := default .ImageResource.Img.Height $imageResourceArgs.Height }}
           {{- $placeholderInlineImg := .ImageResource.Placeholder }}
           {{- $srcSet := .ImageResource.SrcSet }}
-          <img  class="{{ with $imgClass }}{{ . }}{{ end }}{{ if $lazy }} lazyload{{ end }}" src="{{ $srcURL }}"
+          <img  class="{{ with $imgClass }}{{ . }}{{ end }}{{ if $lazy }} lazyload{{ end }}"
+                width="{{ $imgWidth }}" height="{{ $imgHeight }}"
+            {{- if $lazy }}
+                  src="{{- $placeholderInlineImg }}"
+                  {{ printf "srcset=%q" $placeholderInlineImg | safeHTMLAttr }}
+             data-src="{{ $srcURL }}"
+          data-srcset="{{ $srcSet }}"
+              loading="lazy"
+            {{- else }}
+                  src="{{ $srcURL }}"
+               srcset="{{ $srcSet }}"
+            {{- end }}
             {{- with $fetchPriority }} fetchPriority="{{ . | safeHTMLAttr }}"{{- end -}}
             {{- with $lightbox }} data-zoomable="{{ . | safeHTMLAttr }}"{{- end -}}
-            {{- if $lazy }}
-           data-sizes="auto"
-              loading="lazy"
-               {{ printf "srcset=%q" $placeholderInlineImg | safeHTMLAttr }} data-src="{{ $srcURL }}" data-srcset="{{ $srcSet }}"
-            {{- else }}
-              srcset="{{ $srcSet }}"
-            {{- end }}
-                width="{{ $imgWidth }}" height="{{ $imgHeight }}"
+                sizes="auto"
             {{- with .Title }}
                 title="{{ . | safeHTMLAttr }}"
             {{- end }}

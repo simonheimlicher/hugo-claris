@@ -1,4 +1,5 @@
 // console.log('BEGIN claris/theme/minimal');
+import "./lazy-loading";
 import "./tags";
 import "./obfuscated-link";
 import "./mobile-nav";
