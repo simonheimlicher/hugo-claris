@@ -1,19 +1,26 @@
 {{- $template := "claris/_functions/resources/images/image-srcset" }}
-{{- $imageSrcSet := dict }}
+{{- $imageFormatSrcsets := dict }}
 
 {{- $page := .Page }}
-{{- $debug := default false .Debug }}
-{{- /* $debug = or $debug (not (not (findRE `^/([^/]+/)?leadership/$` $page.RelPermalink) ) ) */ -}}
+{{- $debug := false }}
+{{- $debug = or $debug .Debug -}}
+{{- /* {{- $debug = or $debug (not (not (findRE `^/([^/]+/)?leadership/$` $page.RelPermalink) ) ) -}} */ -}}
 {{- /* {{- $imageResourceArgs := . }} */ -}}
 {{- $imageResourceArgs := merge . (dict "Debug" $debug) }}
 
 {{- $resourceSpec := .resource }}
-{{- $srcSet := "" }}
+{{- $formatSrcsets := slice }}
 
-{{- $processingQuality := default false .quality -}}
-{{- $processingHint := default false .Hint -}}
+{{- $defaultQuality := 50 }}
 
-{{- $targetFormat := default (slice "webp" "original") .format -}}
+{{- $processingParams := default (dict "quality" $defaultQuality) .processingparams -}}
+
+{{- $preferredFormat := "webp" }}
+{{- $defaultFormat := default "original" .format }}
+{{- $targetFormats := (slice $preferredFormat $defaultFormat) }}
+{{- with .targetformats }}
+  {{- $targetFormats = . }}
+{{- end }}
 
 {{- $includeOriginalImage := default false ($page.Param "responsiveImageIncludeOriginal") }}
 {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
@@ -66,7 +73,6 @@
   {{- $roundToNearest := math.Pow $roundBase (math.Floor (div (math.Log (div (sub $baseWidthCalculated $baseWidthCalculatedPrev) 2) ) (math.Log $roundBase) ) ) }}
   {{- $baseWidth := int (math.Round (mul (math.Round (div $baseWidthCalculated $roundToNearest) ) $roundToNearest) ) }} */}}
 
-  {{- $sep := "" }}
   {{- $srcSetWidths := slice -}}
 
   {{- $widthCalculated := int (div $maxWidth $sizeRange) }}
@@ -98,43 +104,61 @@
     {{- end }}
 
     {{- $srcSetWidths = $srcSetWidths | append $width }}
-    {{- $resizeSpec := printf "%dx" $width }}
+  {{- end }}
 
-    {{- with $targetFormat }}
-      {{- $resizeSpec = printf "%s %s" $resizeSpec . }}
+  {{- $resizeSpecBase := printf "" }}
+
+  {{- with $processingParams }}
+    {{- with .quality }}
+      {{- $resizeSpecBase = printf "%s q%d" $resizeSpecBase . }}
+    {{- end }}
+    {{- with .hint }}
+      {{- $resizeSpecBase = printf "%s %s" $resizeSpecBase . }}
+    {{- end }}
+  {{- end }}
+
+  {{- range $format := $targetFormats }}
+    {{- $largest := false }}
+    {{- $srcSet := "" }}
+    {{- $sep := "" }}
+    {{- $resizeSpecFormat := $resizeSpecBase }}
+    {{- if ne $format "original" }}
+      {{- $resizeSpecFormat = printf "%s %s" $resizeSpecFormat $format }}
     {{- end }}
 
-    {{- if not $processingQuality }}
-      {{- $processingQuality = 50 }}
-    {{- end }}
-    {{- with $processingQuality }}
-      {{- $processingQuality = int $processingQuality }}
-      {{- $resizeSpec = printf "%s q%d" $resizeSpec . }}
-    {{- end }}
+    {{- range $widthIdx, $width := $srcSetWidths }}
 
-    {{- with $processingHint }}
-      {{- $resizeSpec = printf "%s %s" $resizeSpec . }}
-    {{- end }}
-
-    {{- with ($img.Resize $resizeSpec ) }}
-      {{- $srcURL := .RelPermalink }}
-      {{- $srcSet = printf "%s%s%s %dw" $srcSet $sep .RelPermalink $width -}}
-      {{- $sep = ", " }}
-      {{- if $debug }}
-        {{- warnf "img=%v[%dx%d] -> [%dx%d] resizeSpec=%v"
-          $img.Name $img.Width $img.Height .Width .Height $resizeSpec -}}
+      {{- $resizeSpec := printf "%s %dx" $resizeSpecFormat $width }}
+      {{- with ($img.Resize $resizeSpec ) }}
+        {{- $largest = . }}
+        {{- $srcSet = printf "%s%s%s %dw" $srcSet $sep .RelPermalink $width -}}
+        {{- $sep = ", " }}
+        {{- if $debug }}
+          {{- warnf "img=%v[%dx%d] -> %v[%dx%d] resizeSpec=%v"
+            $img.Name $img.Width $img.Height $format .Width .Height $resizeSpec -}}
+        {{- end }}
       {{- end }}
-    {{- end }}
+
+    {{- end -}}
+
+    {{- $formatParams := (dict
+      "resource" $largest
+      "format" $format
+      "srcset" $srcSet
+      ) }}
+    {{- $formatSrcsets = append (slice $formatParams) $formatSrcsets }}
+
   {{- end -}}
 
-  {{- $defaultImg := (index $srcSet 0) }}
-  {{- /* Offer the original image in the srcset */ -}}
-  {{- if and (eq $targetFormat $originalFormat) $includeOriginalImage }}
-    {{- $defaultImg = $img }}
-    {{- $srcSet = printf "%s, %s %dw" $srcSet $img.RelPermalink $img.Width -}}
+  {{- $imageFormatSrcsets = (dict
+    "placeholder" $placeholderInlineImg
+    "formats" $formatSrcsets
+  ) }}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: Returning imageFormatSrcsets=%v"
+        $page $template (jsonify (dict "indent" "  ") $imageFormatSrcsets) }}
   {{- end }}
-  {{- $imageSrcSet = (dict "Img" $img "SrcSet" $srcSet "Placeholder" $placeholderInlineImg) }}
 {{- else }}
   {{- errorf "%s[%s]: No image matching parameter .resource='%s'" $page $template $resourceSpec }}
 {{- end }}
-{{- return $imageSrcSet }}
+{{- return $imageFormatSrcsets }}
