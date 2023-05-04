@@ -8,10 +8,10 @@
 
 {{- $resourceSpec := .resource -}}
 {{- $variantSpec := .variant -}}
-{{- $caption := default "" .Caption -}}
-{{- $imgAlt := default (humanize (path.BaseName $resourceSpec) ) .Alt -}}
-{{- $imgTitle := default $imgAlt .Title -}}
-{{- $imgCredit := default false .Credit -}}
+{{- $caption := default "" .caption -}}
+{{- $imgAlt := default (humanize (path.BaseName $resourceSpec) ) .alt -}}
+{{- $imgTitle := default $imgAlt .title -}}
+{{- $imgCredit := default false .credit -}}
 
 {{- $imgClass := default "responsive" .imgclass -}}
 {{- $defaultPosition := "center center" }}
@@ -34,15 +34,15 @@
 {{- end }}
 {{/* {{- warnf "%s[%s]: .resource has type [%T]" $page $template $resourceSpec -}} */}}
 
-{{- with .Float -}}
+{{- with .float -}}
   {{- $containerClass = printf "%s float-%s" $containerClass . -}}
 {{- end -}}
 
-{{- with .RelativeWidth -}}
+{{- with .relativewidth -}}
   {{- $containerClass = printf "%s relative-width-%s" $containerClass . -}}
 {{- end -}}
 
-{{- $background := default false .Background -}}
+{{- $background := default false .background -}}
 {{- with $background }}
   {{- $containerClass = printf "%s background-%s" $containerClass . -}}
 {{- end }}
@@ -55,7 +55,7 @@
   {{- end }}
 {{- end }}
 
-{{- $shape := default false .Shape -}}
+{{- $shape := default false .shape -}}
 {{- with $shape }}
   {{- $imgClass = printf "%s shape-%s" $imgClass . }}
 {{- end }}
@@ -83,14 +83,14 @@
 
 {{- $imgInlineStyleSlice := slice -}}
 {{- range $attr, $value := (dict
-  "width" $imageResourceArgs.Width
-  "height" $imageResourceArgs.Height
+  "width" $imageResourceArgs.width
+  "height" $imageResourceArgs.height
   "aspect-ratio" $imageResourceArgs.AspectRatio
   "border-radius" $imageResourceArgs.BorderRadius
   "min-width" $imageResourceArgs.MinWidth
-  "max-width" $imageResourceArgs.MaxWidth
+  "max-width" $imageResourceArgs.maxwidth
   "min-height" $imageResourceArgs.MinHeight
-  "max-height" $imageResourceArgs.MaxHeight) -}}
+  "max-height" $imageResourceArgs.maxheight) -}}
   {{- if $value -}}
     {{- $imgInlineStyleSlice = append $imgInlineStyleSlice (slice (printf "%s: %s" $attr $value) ) -}}
   {{- end -}}
@@ -112,8 +112,8 @@
   {{- $imageResourceVariant := dict }}
   {{- with $imageResourceArgs }}
     {{- $imageResourceVariant = merge $imageResourceVariant (dict
-      "width" .Width
-      "height" .Height
+      "width" .width
+      "height" .height
       "targetformats" .targetformats
       "processingparams" .processingparams
     ) }}

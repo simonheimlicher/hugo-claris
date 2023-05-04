@@ -1,7 +1,7 @@
 {{- $page := .Page }}
-{{- $logoImageSpec := default site.Params.logo .LogoImage }}
-{{- $logoURL := .LogoURL }}
-{{- $logoClass := .LogoClass }}
+{{- $logoImageSpec := default site.Params.logo .resource }}
+{{- $logoURL := .logourl }}
+{{- $logoClass := .logoclass }}
 
 {{- $template := "claris/header/logo" }}
 
@@ -19,7 +19,7 @@
 
 {{- $t := site.Title -}}
 
-{{- $logoImage := partialCached "claris/_functions/resources/images/logo-image" (dict "Page" $page "LogoImage" $logoImageSpec) -}}
+{{- $logoImage := partialCached "claris/_functions/resources/images/logo-image" (dict "Page" $page "resource" $logoImageSpec) -}}
 {{- with $logoURL }}
         <a href='{{ . }}' title='{{ $t }}' class='nav_brand_parent'>
 {{- end }}

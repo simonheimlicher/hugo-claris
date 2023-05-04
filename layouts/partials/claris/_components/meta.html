@@ -30,8 +30,8 @@
                         {{- $authorAvatarWidth := 96 }}
                         {{- $avatarImage := partial "claris/_functions/resources/images/logo-image" (dict
                           "Page" $page
-                          "LogoImage" $subjectMeta.Single.Data.Author.Avatar
-                          "Width" $authorAvatarWidth
+                          "resource" $subjectMeta.Single.Data.Author.Avatar
+                          "width" $authorAvatarWidth
                         ) }}
                         {{- with $avatarImage }}
                           <img src="{{ absURL .Permalink }}" class="article_meta_author_avatar_img" width="{{ $authorAvatarWidth }}" height="{{ $authorAvatarWidth }}" alt="{{ $authorName }}">
