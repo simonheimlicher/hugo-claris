@@ -19,6 +19,8 @@
   {{- if (and (eq $itemType "article") $mainSection) -}}
     {{- partial "claris/_components/meta" (dict
       "Page" $page
+      "ShowAuthor" true
+      "ShowDate" true
       "AuthorLink" true
       "AuthorAvatar" true
     ) }}

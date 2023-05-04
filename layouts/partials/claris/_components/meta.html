@@ -1,6 +1,7 @@
 {{- $page := .Page }}
-{{- $meta := $page.Scratch.Get "clarismeta" }}
-{{- $subjectPage := .SubjectPage }}
+{{- $subjectPage := default $page .SubjectPage }}
+{{- $subjectMeta := default ($subjectPage.Scratch.Get "clarismeta")
+    (partialCached "claris/_functions/meta/index" (dict "Page" $subjectPage) $subjectPage.Permalink) }}
 {{- $showAuthor := default ($page.Param "showauthor") .ShowAuthor }}
 {{- $showDate := default ($page.Param "showdate") .ShowDate }}
 {{- $dateFormat := default "Jan 2, 2006" ($page.Param "dateformat") }}
@@ -21,15 +22,15 @@
                     {{- $article_meta = true }}
                     {{- end }}
                       <div class="article_meta_author article_meta_item">
-                      {{- $authorName := $meta.Single.Data.Author.Name }}
+                      {{- $authorName := $subjectMeta.Single.Data.Author.Name }}
                           {{- if $showAuthorLink }}
-                        <a href="{{ $meta.Single.Data.Author.URL }}" title="{{ T `view_author_profile` (dict `Count` 1 `Name` $authorName) }}" class="article_meta_author_link">
+                        <a href="{{ $subjectMeta.Single.Data.Author.URL }}" title="{{ T `view_author_profile` (dict `Count` 1 `Name` $authorName) }}" class="article_meta_author_link">
                           {{- end }}
                       {{- if $showAuthorAvatar }}
                         {{- $authorAvatarWidth := 96 }}
                         {{- $avatarImage := partial "claris/_functions/resources/images/logo-image" (dict
                           "Page" $page
-                          "LogoImage" $meta.Single.Data.Author.Avatar
+                          "LogoImage" $subjectMeta.Single.Data.Author.Avatar
                           "Width" $authorAvatarWidth
                         ) }}
                         {{- with $avatarImage }}
