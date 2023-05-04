@@ -14,8 +14,8 @@
 {{- range $styleBundleID := (slice "main_all") }}
   {{- $styleSheet := (index $styleBundles $styleBundleID) }}
   {{- with $styleSheet }}
-    {{- $preloadFonts := partialCached "claris/_functions/resources/fonts/preload" (dict "Page" $page "StyleSheet" .) }}
-    {{- range $preloadFonts }}
+    {{- $preloadFonts := partialCached "claris/_functions/resources/fonts/preload" (dict "Page" $page "StyleSheet" .) $assetVariant }}
+    {{- range first 2 $preloadFonts }}
     <link rel="preload" href="{{ .URL | safeHTMLAttr }}" as="font" type="font/{{ .Type | safeHTMLAttr }}" crossorigin="anonymous">
     {{- end }}
     {{- if not (eq $styleBundleID "print") }}
@@ -47,7 +47,7 @@
         CSS.supports('color', 'var(--CSS-property-support-validation)') &&
         CSS.supports('position', 'sticky')
       ))) {
-      let legacyStylesURL = "{{ (index $styleBundles (printf "%s%s" $bundleParams.LegacyMediaType $bundleParams.LegacySuffix)).Permalink | safeJS }}".replace('\\/', '/');
+      let legacyStylesURL = "{{ (index $styleBundles (printf "main_%s%s" $bundleParams.LegacyMediaType $bundleParams.LegacySuffix)).Permalink | safeJS }}".replace('\\/', '/');
       document.write('<link rel="stylesheet" type="text/css" media="{{ $bundleParams.LegacyMediaType }}" href="' + legacyStylesURL + '" integrity="{{ $styleBundles.main_screen_legacy.Data.Integrity | safeJS }}" crossorigin="anonymous">');
     }
   </script>

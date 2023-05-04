@@ -48,7 +48,7 @@
   "main_screen" (dict
     "file" "main"
     "media" "screen"
-  "supportIE11" true
+    "supportIE11" true
   )
   "main_print"  (dict
     "file" "main"
@@ -115,7 +115,7 @@
     {{- $importFile := printf "%s/%s-%s.%s" $resourcePathBase $contentTypeListID $resourceID $sourceExt }}
     {{- $concatResource := $executedResourceList | resources.Concat $importFile }}
     {{/* {{- warnf "%s[%s]: $concatResource '%s'.Content:\n%v\n...\n%v"
-        $page $template $concatResource (substr $concatResource.Content 0 100) (substr $concatResource.Content -100) }} */}}
+        $page $template $concatResource (substr $concatResource.Content 0 500) (substr $concatResource.Content -500) }} */}}
 
     {{- $toCSSoptions := merge $toCSSoptionsBase (dict "targetPath" $targetFile) -}}
     {{- $bundle := $concatResource | resources.ToCSS $toCSSoptions | resources.Fingerprint $fingerprintOptions }}

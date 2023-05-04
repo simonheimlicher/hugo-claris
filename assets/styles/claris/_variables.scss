@@ -476,9 +476,9 @@ html {
 }
 
 html {
-  --font-sans: "#{$fontFamilySans}", "Helvetica Neue", "Helvetica", "Verdana", sans-serif;
-  --font-serif: "#{$fontFamilySerif}", "Georgia", "Palatino", serif;
-  --font-mono: "#{$fontFamilyMono}", "Inconsolata", "Menlo", "Lucida Sans Typewriter", "Monaco", "Courier New", "Courier", monospace;
+  --font-sans: "#{$fontFamilySans}", "#{$fontFamilySansFallback}", "#{$fontFamilySansFallbackAndroid}", "Helvetica Neue", "Helvetica", sans-serif;
+  --font-serif: "#{$fontFamilySerif}", "#{$fontFamilySerifFallback}", "#{$fontFamilySerifFallbackAndroid}", "Georgia", "Palatino", serif;
+  --font-mono: "#{$fontFamilyMono}", "#{$fontFamilyMonoFallback}", "#{$fontFamilyMonoFallbackAndroid}", "Inconsolata", "Menlo", "Lucida Sans Typewriter", "Monaco", "Courier New", "Courier", monospace;
   --font: var(--font-sans);
   --font-article: var(--font-serif);
   --font-code: var(--font-mono);

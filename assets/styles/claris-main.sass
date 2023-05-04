@@ -12,21 +12,30 @@
 @import 'claris/{{ $themeColorSchemeFile }}'
 {{- end }}
 
-@import 'claris/variables'
-@import 'claris/override'
-
 {{- $fontsSelfHosted := default false ($page.Param "fontsSelfHosted") }}
 {{- $customFonts := default false ($page.Param "customFonts") }}
 {{- if and $fontsSelfHosted (not $customFonts) -}}
 {{- $fontFamilySans := default "Source Sans 3" ($page.Param "fontFamilySans") }}
 {{- $fontFamilySerif := default "Merriweather" ($page.Param "fontFamilySerif") }}
 {{- $fontFamilyMono := default "DM Mono" ($page.Param "fontFamilyMono") }}
-{{- $fontFamilies := (slice $fontFamilySans $fontFamilySerif $fontFamilyMono) }}
+{{- $fontFamilies := (slice
+  (dict "key" "fontFamilySans"  "family" $fontFamilySans)
+  (dict "key" "fontFamilySerif" "family" $fontFamilySerif)
+  (dict "key" "fontFamilyMono"  "family" $fontFamilyMono)
+) }}
 $hostedFontPath: '{{ default (absURL "fonts") ($page.Param "hostedFontPath") }}'
 {{- range $fontFamilies }}
-@import 'claris/fonts/{{ urlize . }}'
+{{- $fontFamilyKey := .key }}
+{{- $fontFamilyUrlized :=  (urlize .family) }}
+@import 'claris/fonts/{{ $fontFamilyUrlized }}'
+{{ printf "$%sFallback: '%s-fallback'" $fontFamilyKey $fontFamilyUrlized }}
+{{ printf "$%sFallbackAndroid: '%s-fallback-android'" $fontFamilyKey $fontFamilyUrlized }}
+@import 'claris/fonts/fallback/{{ $fontFamilyUrlized }}'
 {{- end }}
 {{- end }}
+
+@import 'claris/variables'
+@import 'claris/override'
 
 // Additional stylesheets
 @import 'claris/base'
