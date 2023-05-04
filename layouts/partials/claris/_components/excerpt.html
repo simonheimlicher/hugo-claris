@@ -4,6 +4,7 @@
 
 {{- $subjectPage := .SubjectPage }}
 {{- $fetchPriority := default "auto" .fetchpriority }}
+{{- $showDate := default true .ShowDate }}
 {{- $relativeDates := default true .RelativeDates }}
 {{- $showTags := default false .ShowTags }}
 {{- $showAuthor := default false .ShowAuthor }}
@@ -76,6 +77,7 @@
           "ShowAuthor" $showAuthor
           "AuthorAvatar" $showAuthorAvatar
           "AuthorLink" $showAuthorLink
+          "ShowDate" $showDate
           "RelativeDates" $relativeDates
           "ShowTags" $showTags) }}
       {{- end }}
@@ -103,8 +105,8 @@
             {{- partial "responsive-image" (dict
               "Page" $page
               "resource" .
-              "Title" $title
-              "Alt" (default $title $imageMeta.excerpt.variant.default.alt)
+              "title" $title
+              "alt" (default $title $imageMeta.excerpt.variant.default.alt)
               "fetchpriority" $fetchPriority
               "quality" "low"
             ) }}
