@@ -4,16 +4,16 @@
 {{- $page := .Page }}
 {{- $debug := false }}
 {{- $debug = or $debug .Debug -}}
-{{- /* {{- $debug = or $debug (not (not (findRE `^/([^/]+/)?leadership/$` $page.RelPermalink) ) ) -}} */ -}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?$` $page.RelPermalink) ) ) -}} */}}
 {{- /* {{- $imageResourceArgs := . }} */ -}}
 {{- $imageResourceArgs := merge . (dict "Debug" $debug) }}
 
 {{- $resourceSpec := .resource }}
 {{- $formatSrcsets := slice }}
 
-{{- $defaultQuality := 50 }}
+{{- $targetQuality := default "default" .quality }}
 
-{{- $processingParams := default (dict "quality" $defaultQuality) .processingparams -}}
+{{- $processingParams := default (dict) .processingparams -}}
 
 {{- $preferredFormat := "webp" }}
 {{- $defaultFormat := default "original" .format }}
@@ -21,6 +21,7 @@
 {{- with .targetformats }}
   {{- $targetFormats = . }}
 {{- end }}
+{{/* {{- $targetFormats = (slice "original") }} */}}
 
 {{- $includeOriginalImage := default false ($page.Param "responsiveImageIncludeOriginal") }}
 {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
@@ -79,8 +80,27 @@
   {{- $widthCalculatedPrev := int (div $widthCalculated $powerBase) }}
   {{- $baseWidth := 0 }}
 
+  {{- $qualityParams := (dict
+    "default" (dict
+      "min" 40
+      "max" 60
+    )
+    "low" (dict
+      "min" 20
+      "max" 50
+    )
+    "high" (dict
+      "min" 60
+      "max" 80
+    )
+  ) -}}
+
+  {{- $minQuality := index $qualityParams $targetQuality "min" }}
+  {{- $maxQuality := index $qualityParams $targetQuality "max" }}
+
   {{- range $i, $exp := (seq $numVersions) }}
     {{- $width := 0 }}
+    {{- $quality := int (math.Round (add $minQuality (mul $i (div (mul 1.0 (sub $maxQuality $minQuality)) $numVersions) ) ) ) }}
     {{- if gt $i 0 }}
       {{- $widthCalculated = int (mul $baseWidth (math.Pow $powerBase $i)) }}
     {{- end }}
@@ -98,20 +118,22 @@
 
     {{- if (eq $i (sub $numVersions 1) ) }}
       {{- $width = $maxWidth }}
-      {{/* {{- warnf "    [%s]: i=%d exp=%d width=maxWidth=%d [widthCalculated=%d]" $template $i $exp $width $widthCalculated -}}
+      {{- $quality = $maxQuality }}
+      {{- if and $debug (ne $targetQuality "default") }}
+        {{- warnf "    [%s]: i=%d exp=%d width=maxWidth=%d quality=%d in [%d,%d] [widthCalculated=%d]" $template $i $exp $width $quality $minQuality $maxQuality $widthCalculated -}}
+      {{- end }}
     {{- else }}
-      {{- warnf "    [%s]: i=%d exp=%d width=%d [widthCalculated=%d, roundToNearest=%.0f]" $template $i $exp $width $widthCalculated $roundToNearest -}} */}}
+      {{- if and $debug (ne $targetQuality "default") }}
+        {{- warnf "    [%s]: i=%d exp=%d width=%d quality=%d in [%d,%d] [widthCalculated=%d, roundToNearest=%.0f]" $template $i $exp $width $quality $minQuality $maxQuality $widthCalculated $roundToNearest -}}
+      {{- end }}
     {{- end }}
 
-    {{- $srcSetWidths = $srcSetWidths | append $width }}
+    {{- $srcSetWidths = $srcSetWidths | append (dict "width" $width "quality" $quality) }}
   {{- end }}
 
   {{- $resizeSpecBase := printf "" }}
 
   {{- with $processingParams }}
-    {{- with .quality }}
-      {{- $resizeSpecBase = printf "%s q%d" $resizeSpecBase . }}
-    {{- end }}
     {{- with .hint }}
       {{- $resizeSpecBase = printf "%s %s" $resizeSpecBase . }}
     {{- end }}
@@ -126,16 +148,16 @@
       {{- $resizeSpecFormat = printf "%s %s" $resizeSpecFormat $format }}
     {{- end }}
 
-    {{- range $widthIdx, $width := $srcSetWidths }}
+    {{- range $widthIdx, $widthSpec := $srcSetWidths }}
 
-      {{- $resizeSpec := printf "%s %dx" $resizeSpecFormat $width }}
+      {{- $resizeSpec := printf "%dx q%d %s" $widthSpec.width $widthSpec.quality $resizeSpecFormat }}
       {{- with ($img.Resize $resizeSpec ) }}
         {{- $largest = . }}
-        {{- $srcSet = printf "%s%s%s %dw" $srcSet $sep .RelPermalink $width -}}
+        {{- $srcSet = printf "%s%s%s %dw" $srcSet $sep .RelPermalink $widthSpec.width -}}
         {{- $sep = ", " }}
         {{- if $debug }}
-          {{- warnf "img=%v[%dx%d] -> %v[%dx%d] resizeSpec=%v"
-            $img.Name $img.Width $img.Height $format .Width .Height $resizeSpec -}}
+          {{- warnf "img=%v[%dx%d] -> %v[%dx%d] size=%dkB resizeSpec=%v"
+            $img.Name $img.Width $img.Height $format .Width .Height (div (len .Content) 1024) $resizeSpec -}}
         {{- end }}
       {{- end }}
 

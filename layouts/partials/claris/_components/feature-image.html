@@ -2,27 +2,35 @@
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $title := .Title }}
 {{- $debug := page.Scratch.Get "clarisdebug" }}
-{{/* {{- $debug = or $debug (not (not (findRE `ownership` $page.RelPermalink) ) ) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?leadership` $page.RelPermalink) ) ) -}} */}}
+{{/* {{- $debug = or $debug (eq $page.Kind "home" ) -}} */}}
+
 {{- $template := "claris/_components/feature-image" }}
 
 {{- $featureImage := false }}
 {{- with $meta.Single.Data.Images }}
   {{- with $featureImage = .feature.variant.default }}
+    {{- $page.Scratch.Add "claris.image.prioritized" 1 }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: claris.image.prioritized incremented to %d" $page $template ($page.Scratch.Get "claris.image.prioritized") }}
+    {{- end }}
     {{- $featureImageArgs := (dict
       "resource" .version.default.resource
-      "FigureClass" "hero-image_above-main"
-      "ImgClass" "hero-image_above-main_img"
-      "Alt" $featureImage.alt
-      "Title" $featureImage.title
-      "FetchPriority" "low"
+      "position" $featureImage.position
+      "alt" $featureImage.alt
+      "title" $featureImage.title
+      "figureclass" "hero-image_above-main"
+      "imgclass" "hero-image_above-main_img"
+      "fetchpriority" "high"
     ) }}
-    {{- if $debug }}
+    {{/* {{- if $debug }}
       {{- warnf "%s[%s]: Found feature image resource $featureImage.version.default.resource=%v in \nfeatureImage=%v\nNow calling responsive-image with .resource=%v in featureImageArgs=%v"
           $page $template $featureImage.version.default.resource
           (jsonify (dict "indent" "  ") $featureImage)
           $featureImageArgs.resource
           (jsonify (dict "indent" "  ") $featureImageArgs) -}}
-    {{- end }}
+    {{- end }} */}}
+
     {{- partial "responsive-image" (merge $featureImageArgs (dict "Page" $page)) $featureImageArgs }}
   {{- end }}
 {{- end }}

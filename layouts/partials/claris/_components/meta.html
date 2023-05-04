@@ -1,5 +1,10 @@
 {{- $page := .Page }}
 {{- $meta := $page.Scratch.Get "clarismeta" }}
+{{- $subjectPage := .SubjectPage }}
+{{- $showAuthor := default ($page.Param "showauthor") .ShowAuthor }}
+{{- $showDate := default ($page.Param "showdate") .ShowDate }}
+{{- $dateFormat := default "Jan 2, 2006" ($page.Param "dateformat") }}
+{{- $showAuthorLink := default false .AuthorLink }}
 {{- $showAuthorAvatar := default false .AuthorAvatar }}
 {{- $relativeDates := default false .RelativeDates }}
 {{- $showTags := default true .ShowTags }}
@@ -8,75 +13,75 @@
   {{- $containerClass = printf "%s %s" . $containerClass }}
 {{- end }}
 
-{{- with $page -}}<!-- Restore "." to refer to page context from which the partial was called -->
-  {{- $s := site.Params }}
-  {{- $p := .Params }}
+{{- with $subjectPage -}}
   {{- $article_meta := false -}}
-                  {{- if ( ne $p.showAuthor false ) }}
+                  {{- if $showAuthor }}
                     {{- if not $article_meta }}
                     <div class="{{ $containerClass }}">
                     {{- $article_meta = true }}
-                    {{- end -}}
-                    <div class="article_meta_author">
-                    {{- $authorName := $meta.Single.Data.Author.Name }}
-                    {{- if $showAuthorAvatar }}
-                      {{- $authorAvatarWidth := 96 }}
-                      {{- $avatarImage := partial "claris/_functions/resources/images/logo-image" (dict
-                        "Page" $page
-                        "LogoImage" $meta.Single.Data.Author.Avatar
-                        "Width" $authorAvatarWidth
-                      ) }}
-                      {{- with $avatarImage }}
-                      <a href="{{ $meta.Single.Data.Author.URL }}" title="{{ T `view_author_profile` (dict `Count` 1 `Name` $authorName) }}" class="article_meta_author_link">
-                        <img src="{{ absURL .Permalink }}" class="article_meta_author_avatar_img" width="{{ $authorAvatarWidth }}" height="{{ $authorAvatarWidth }}" alt="{{ $authorName }}">
-                      </a>
-                      {{- end }}
                     {{- end }}
-                      <a href="{{ $meta.Single.Data.Author.URL }}" title="{{ T `view_author_profile` (dict `Count` 1 `Name` $authorName) }}" class="article_meta_author_link">
+                      <div class="article_meta_author article_meta_item">
+                      {{- $authorName := $meta.Single.Data.Author.Name }}
+                          {{- if $showAuthorLink }}
+                        <a href="{{ $meta.Single.Data.Author.URL }}" title="{{ T `view_author_profile` (dict `Count` 1 `Name` $authorName) }}" class="article_meta_author_link">
+                          {{- end }}
+                      {{- if $showAuthorAvatar }}
+                        {{- $authorAvatarWidth := 96 }}
+                        {{- $avatarImage := partial "claris/_functions/resources/images/logo-image" (dict
+                          "Page" $page
+                          "LogoImage" $meta.Single.Data.Author.Avatar
+                          "Width" $authorAvatarWidth
+                        ) }}
+                        {{- with $avatarImage }}
+                          <img src="{{ absURL .Permalink }}" class="article_meta_author_avatar_img" width="{{ $authorAvatarWidth }}" height="{{ $authorAvatarWidth }}" alt="{{ $authorName }}">
+                        {{- end }}
+                      {{- end }}
                         <span class="article_meta_author_name">
-                        {{- $authorName }}
-                        </span>
-                      </a>
+                          {{- $authorName }}
+                          </span>
+                        {{- if $showAuthorLink }}
+                        </a>
+                        {{- end }}
                     </div>
-                  {{- end -}}
-                  {{- if ( ne $p.showDate false ) }}
+                  {{- end }}
+                  {{- if $showDate }}
                     {{- if not $article_meta }}
                     <div class="{{ $containerClass }}">
                     {{- $article_meta = true }}
-                    {{- end -}}
-                    <div class="article_meta_date">
-                      <span>{{ partial "sprite" (dict "icon" "calendar") }}</span>
-                      <span class="article_meta_date_published article_meta_date">
-                      {{- if $relativeDates }}
-                      {{- if eq .Lastmod .Date -}}
-                      {{- humanize (T "meta_date_published" ) -}}
-                      {{ partial "relative-date" .Date -}}
-                      {{- else }}
-                      {{- humanize (T "meta_date_updated" ) -}}{{ partial "relative-date" .Lastmod -}},</span>
-                      <span class="article_meta_date_published article_meta_date">{{ (T "meta_date_published" ) -}}
-                      &nbsp;
-                      {{- (.Date.Format (default "Jan 2, 2006" $s.dateFormat)) -}}
-                      {{- end }}
-                      {{- else }}
-                      {{- if eq .Lastmod .Date -}}
-                      {{ (.Date.Format (default "Jan 2, 2006" $s.dateFormat)) -}}
-                      {{- else }}
-                      {{- (.Date.Format (default "Jan 2, 2006" $s.dateFormat)) }}</span>
-                      <span class="article_meta_date_updated article_meta_date">({{ (T "meta_date_updated" ) -}}&nbsp;{{- (.Lastmod.Format (default "Jan 2, 2006" $s.dateFormat)) -}})
-                      {{- end }}
-                      {{- end -}}
-                      </span>
-                    </div>
-                  {{- end -}}
+                    {{- end }}
+                      <div class="article_meta_date article_meta_item">
+                        <span>{{ partial "sprite" (dict "icon" "calendar") }}</span>
+                        <span class="article_meta_date_published article_meta_date">
+                        {{- if $relativeDates }}
+                        {{- if eq .Lastmod .Date -}}
+                        {{- humanize (T "meta_date_published" ) -}}
+                        {{ partial "relative-date" .Date -}}
+                        {{- else }}
+                        {{- humanize (T "meta_date_updated" ) -}}{{ partial "relative-date" .Lastmod -}},</span>
+                        <span class="article_meta_date_published article_meta_date">{{ (T "meta_date_published" ) -}}
+                        &nbsp;
+                        {{- (.Date.Format $dateFormat) -}}
+                        {{- end }}
+                        {{- else }}
+                        {{- if eq .Lastmod .Date -}}
+                        {{ (.Date.Format $dateFormat) -}}
+                        {{- else }}
+                        {{- (.Date.Format $dateFormat) }}</span>
+                        <span class="article_meta_date_updated article_meta_date">({{ (T "meta_date_updated" ) -}}&nbsp;{{- (.Lastmod.Format $dateFormat) -}})
+                        {{- end }}
+                        {{- end -}}
+                        </span>
+                      </div>
+                  {{- end }}
                   {{- if ne .Params.showReadTime false -}}
                     {{- if not $article_meta }}
                     <div class="{{ $containerClass }}">
                     {{- $article_meta = true }}
-                    {{- end -}}
-                    <div class="article_meta_reading-time">
-                      <span>{{ partial "sprite" (dict "icon" "clock") }}</span>
-                      <span>{{ T "reading_time" . }}</span>
-                    </div>
+                    {{- end }}
+                      <div class="article_meta_reading-time article_meta_item">
+                        <span>{{ partial "sprite" (dict "icon" "clock") }}</span>
+                        <span>{{ T "reading_time" $subjectPage }}</span>
+                      </div>
                   {{- end }}
                   {{- if ne $showTags false -}}
                   {{- with .Params.tags -}}
@@ -84,7 +89,9 @@
                     <div class="{{ $containerClass }}">
                     {{- $article_meta = true }}
                     {{- end }}
-                    {{- partial "claris/_components/taxonomy-inline" (dict "Page" $page "Taxonomy" "tags" "RelativeDates" $relativeDates) }}
+                      <div class="article_meta_taxonomy article_meta_item">
+                        {{- partial "claris/_components/taxonomy-inline" (dict "Page" $page "SubjectPage" $subjectPage "Taxonomy" "tags" "RelativeDates" $relativeDates) }}
+                      </div>
                   {{- end }}
                   {{ end }}
                   {{- if default true ($page.Param "showShare") }}
@@ -92,7 +99,7 @@
                     <div class="{{ $containerClass }}">
                     {{- $article_meta = true }}
                     {{- end }}
-                      <div class="page_only"> · {{- partial "claris/_components/share" . }}</div>
+                      <div class="article_meta_taxonomy article_meta_item"> · {{- partial "claris/_components/share" . }}</div>
                     {{- end }}
                   {{- if $article_meta }}
                   </div>

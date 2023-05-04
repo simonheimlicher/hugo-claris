@@ -3,7 +3,12 @@
 {{- $args := (dict
   "Page" $.Page
   "resource" (.Get "resource")
-  "Position" (.Get "position")
+  "position" (.Get "position")
+  "lazy" (default true (.Get "lazy") )
+  "fetchpriority" (.Get "fetchpriority")
+  "lightbox" (.Get "lightbox")
+  "imgclass" (printf "shortcode_responsive-figure_img %s" (default "" (.Get "img_class")) )
+  "figureclass" (printf "shortcode_responsive-figure shortcode_responsive-figure_image %s" (default "" (.Get "figure_class")) )
   "Caption" (.Get "caption")
   "Title" (.Get "title")
   "Alt" (.Get "alt")
@@ -15,11 +20,6 @@
   "MaxWidth" (.Get "max-width")
   "MaxHeight" (.Get "max-height")
   "Background" (.Get "background")
-  "LazyLoad" (.Get "lazy")
-  "FetchPriority" (.Get "fetchpriority")
-  "LightBox" (.Get "lightbox")
-  "ImgClass" (printf "shortcode_responsive-figure_img %s" (default "" (.Get "img_class")) )
-  "FigureClass" (printf "shortcode_responsive-figure shortcode_responsive-figure_image %s" (default "" (.Get "figure_class")) )
 ) }}
 {{/* {{- warnf "%s[%s]: %#v" $page $template $args -}} */}}
 {{- partialCached "responsive-image" $args .Page $args }}

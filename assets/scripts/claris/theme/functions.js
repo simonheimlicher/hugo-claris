@@ -1,6 +1,6 @@
 // global variables
 
-const DEBUG = window.clarisHugoParams ? window.clarisHugoParams.envDevel : false;
+const DEBUG = window.clarisHugoParams ? (window.clarisHugoParams.envDevel === true) : false;
 // console.print: console.log without filename/line number
 let deb = function () { };
 if ('queueMicrotask' in window) {

@@ -4,9 +4,9 @@
 {{- with $imagesMeta.hero }}
   {{- $imageParams := merge $imagesMeta.hero (dict
       "Page" page
-      "FigureClass" (printf "hero-image_%s_figure" $imagesMeta.hero.style)
-      "ImgClass" (printf "hero-image_%s_img" $imagesMeta.hero.style)
-      "FetchPriority" "low"
+      "figureclass" (printf "hero-image_%s_figure" $imagesMeta.hero.style)
+      "imgclass" (printf "hero-image_%s_img" $imagesMeta.hero.style)
+      "lazy" false
     ) }}
   {{/* {{- warnf "%s[%s]: Calling responsive-image with .style=%v and .resource=%v'"
       page $template .style .variant }} */}}

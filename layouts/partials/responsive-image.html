@@ -13,13 +13,20 @@
 {{- $imgTitle := default $imgAlt .Title -}}
 {{- $imgCredit := default false .Credit -}}
 
-{{- $imgClass := default "responsive" .ImgClass -}}
-{{- $imgPosition := default "center center" .position -}}
+{{- $imgClass := default "responsive" .imgclass -}}
+{{- $defaultPosition := "center center" }}
+{{- $imgPosition := default $defaultPosition .position -}}
+
+{{- $defaultSizes := "100vw" }}
+{{- $imgSizes := default $defaultSizes .sizes -}}
+
 {{- $figureClass := cond (ne "" $caption) "caption" "" -}}
-{{- with .FigureClass -}}
+{{- with .figureclass -}}
   {{- $figureClass = printf "%s %s" $figureClass . -}}
 {{- end }}
 {{- $containerClass := "" }}
+
+{{- $defaultVersionName := "default" }}
 
 {{- if or (and $resourceSpec (not $imgAlt)) (and $variantSpec (not $variantSpec.default.alt) ) }}
   {{- warnf "%s[%s]: Missing attribute .alt in args=%v"
@@ -55,11 +62,11 @@
 
 {{ $supportIE11 := default true site.Params.supportIE11 }}
 
-{{- $lightbox := default false .LightBox -}}
+{{- $lightbox := default false .lightbox -}}
 
-{{- $fetchPriority := default "low" .FetchPriority -}}
+{{- $fetchPriority := default "auto" .fetchpriority -}}
 
-{{- $lazy := default (eq $fetchPriority "low") .LazyLoad -}}
+{{- $lazy := default (eq $fetchPriority "low") .lazy -}}
 
 {{- $defaultMedia := "default" }}
 {{- $defaultVariantName := "default" }}
@@ -85,12 +92,13 @@
   "min-height" $imageResourceArgs.MinHeight
   "max-height" $imageResourceArgs.MaxHeight) -}}
   {{- if $value -}}
-    {{- /* printf "<h6>style='%s' attr='%s' value='%s'</h6>" $imgInlineStyle $attr $value | safeHTML */ -}}
     {{- $imgInlineStyleSlice = append $imgInlineStyleSlice (slice (printf "%s: %s" $attr $value) ) -}}
   {{- end -}}
 {{- end }}
-{{- $imgInlineStyle := delimit $imgInlineStyleSlice "; " -}}
-{{- /* printf "<span class='hugo_debug'>style='%s'</span>" $imgInlineStyle | safeHTML */ -}}
+{{- $imgInlineStyle := "" }}
+{{- with $imgInlineStyleSlice }}
+{{- $imgInlineStyle = delimit $imgInlineStyleSlice "; " -}}
+{{- end }}
 {{- $imgInlineStyle_attr := "" -}}
 
 {{- with $page }}<!-- Restore "." to refer to page context from which the partial was called -->
@@ -106,9 +114,8 @@
     {{- $imageResourceVariant = merge $imageResourceVariant (dict
       "width" .Width
       "height" .Height
-      "quality" .quality
       "targetformats" .targetformats
-      "processinghint" .processinghint
+      "processingparams" .processingparams
     ) }}
   {{- end }}
   {{- if reflect.IsMap $variantSpec }}
@@ -118,14 +125,18 @@
     {{- range $variantName, $variantMeta := $variantSpec }}
       {{- $resMedia := .media }}
       {{- $imgTitle = .title }}
-      {{- $imgPosition = .position }}
+      {{- $imgSizes = default $defaultSizes .sizes }}
+      {{- $imgPosition = default $defaultPosition .position }}
       {{- $imgAlt = default $imgTitle .alt }}
       {{- $imgCredit = default $imgTitle .credit }}
-      {{- $res := .version.default.resource }}
+      {{- $version := default $defaultVersionName .aspect }}
+      {{- $res := (index .version $version).resource }}
       {{- $imageResourceArgs = merge $imageResourceArgs (dict "resource" $res ) }}
       {{- with (partialCached "claris/_functions/resources/images/image-srcset" $imageResourceArgs $res $imageResourceVariant) }}
         {{- $pictureResources = append $pictureResources (slice (dict
+          "variant" $variantName
           "media" $resMedia
+          "sizes" $imgSizes
           "position" $imgPosition
           "formatsrcsets" .
           "title" $imgTitle
@@ -136,17 +147,18 @@
         {{- warnf "%s[%s]: failed to get srcSet with %s" $page $template $imageResourceArgs -}}
       {{- end }}
     {{- end }}
-    {{- /* If none of the .media values match $defaultMedia, take the first image as the default */ -}}
-    {{- if (not (where $pictureResources "media" $defaultMedia) ) }}
+    {{- /* If none of the .media values match $defaultVariantName, take the first image as the default */ -}}
+    {{- if (not (where $pictureResources "variant" $defaultVariantName) ) }}
       {{- with (index $variantSpec $defaultVariantName) }}
         {{- $imgTitle = .title }}
         {{- $imgAlt = default $imgTitle .alt }}
         {{- $imgCredit = default $imgTitle .credit }}
         {{- $res := .version.default.resource }}
-        {{- $imgPosition = .position }}
+        {{- $imgPosition = default $defaultPosition .position }}
         {{- $imageResourceArgs = merge $imageResourceArgs (dict "resource" $res ) }}
         {{- with (partialCached "claris/_functions/resources/images/image-srcset" $imageResourceArgs $res $imageResourceVariant) }}
           {{- $pictureResources = append $pictureResources (slice (dict
+            "variant" $defaultVariantName
             "media" $defaultMedia
             "position" $imgPosition
             "formatsrcsets" .
@@ -162,6 +174,7 @@
   {{- else }}
     {{- with (partialCached "claris/_functions/resources/images/image-srcset" $imageResourceArgs $resourceSpec $imageResourceVariant) }}
       {{- $pictureResources = append $pictureResources (slice (dict
+          "variant" $defaultVariantName
           "media" $defaultMedia
           "position" $imgPosition
           "formatsrcsets" .
@@ -184,7 +197,7 @@
           $page $template (jsonify (dict "indent" "  ") . ) }}
     {{- end }}
     {{- $defaultSrcURL := "" }}
-    {{- with (where $pictureResources "media" "eq" $defaultMedia) }}
+    {{- with (where $pictureResources "variant" "eq" $defaultVariantName) }}
       {{- with last 1 (index . 0).formatsrcsets.formats }}
         {{- $defaultSrcURL = (index . 0).resource.RelPermalink }}
       {{- end }}
@@ -206,16 +219,19 @@
         <a href='{{ $defaultSrcURL }}'>
       {{- end }}
           <picture>
-          {{- range $variant := where $pictureResources "media" "ne" $defaultMedia }}
+          {{- range $variant := where $pictureResources "variant" "ne" $defaultVariantName }}
+            {{- $media := .media }}
+            {{- $imgSizes := .sizes }}
             {{- if $debug }}
               {{- warnf "%s[%s]: media=%v: pictureResource=%v"
                   $page $template .media (jsonify (dict "indent" "  ") . ) }}
             {{- end }}
             {{- range .formatsrcsets.formats }}
-            <source format="{{ .resource.MediaType }}" media="{{ .media }}" srcset="{{ .srcset }}">
+            <source type="{{ .resource.MediaType }}" media="{{ $media }}" sizes="{{ $imgSizes | safeHTMLAttr }}" srcset="{{ .srcset }}">
             {{- end }}
           {{- end }}
-          {{- range $variant := where $pictureResources "media" "eq" $defaultMedia }}
+          {{- range $variant := where $pictureResources "variant" "eq" $defaultVariantName }}
+            {{- $media := .media }}
             {{- if $supportIE11 }}
               {{ $imgInlineStyle_attr = (printf " style=%q" (printf "object-fit: cover; object-position: %s; font-family: 'object-fit: cover; object-position: %s;'; %s"
                   .position .position $imgInlineStyle | safeCSS)) }}
@@ -227,11 +243,11 @@
             {{- if gt $numFormats 1 }}
               {{- $nonDefaultFormats := first (sub $numFormats 1) .formatsrcsets.formats }}
               {{- if $debug }}
-                {{- warnf "%s[%s]: media=%v: nonDefaultFormats=%v"
-                    $page $template $defaultMedia (jsonify (dict "indent" "  ") $nonDefaultFormats ) }}
+                {{- warnf "%s[%s]: variant=%v: nonDefaultFormats=%v"
+                    $page $template $variant (jsonify (dict "indent" "  ") $nonDefaultFormats ) }}
               {{- end }}
               {{- range $nonDefaultFormats }}
-            <source format="{{ .resource.MediaType }}" media="{{ .media }}" srcset="{{ .srcset }}">
+            <source type="{{ .resource.MediaType }}" sizes="{{ $imgSizes | safeHTMLAttr }}" srcset="{{ .srcset }}">
               {{- end }}
             {{- end }}
             {{- range (last 1 .formatsrcsets.formats) }}
@@ -242,11 +258,13 @@
                  width="{{ $imgWidth }}" height="{{ $imgHeight }}"
                    src="{{ $srcURL }}"
                 srcset="{{ .srcset }}"
-                 sizes="auto"
-              {{- with $fetchPriority }} fetchPriority="{{ . | safeHTMLAttr }}"{{- end -}}
+                 sizes="{{ $imgSizes | safeHTMLAttr }}"
+              {{- with $fetchPriority }}
+         fetchpriority="{{ . | safeHTMLAttr }}"
+              {{- end }}
               {{- if $lazy }}
                loading="lazy"
-              {{ end }}
+              {{- end }}
               {{- with $variant.title }}
                  title="{{ . | safeHTMLAttr }}"
               {{- end }}
@@ -281,17 +299,17 @@
     {{- end }}
         <!-- HTML element is a grouping element and must not contain any styles -->
         <picture>
-        {{- range $variant := where $pictureResources "media" "ne" $defaultMedia }}
+        {{- range $variant := where $pictureResources "variant" "ne" $defaultVariantName }}
           {{- $media := .media }}
           {{- if $debug }}
             {{- warnf "%s[%s]: media=%v: pictureResource=%v"
                 $page $template .media (jsonify (dict "indent" "  ") . ) }}
           {{- end }}
           {{- range .formatsrcsets.formats }}
-          <source format="{{ .resource.MediaType }}" media="{{ $media }}" srcset="{{ .srcset }}">
+          <source type="{{ .resource.MediaType }}" media="{{ $media }}" sizes="{{ $imgSizes | safeHTMLAttr }}" srcset="{{ .srcset }}">
           {{- end }}
         {{- end }}
-        {{- range $variant := where $pictureResources "media" "eq" $defaultMedia }}
+        {{- range $variant := where $pictureResources "variant" "eq" $defaultVariantName }}
           {{- if $supportIE11 }}
             {{ $imgInlineStyle_attr = (printf " style=%q" (printf "object-fit: cover; object-position: %s; font-family: 'object-fit: cover; object-position: %s;'; %s"
                 .position .position $imgInlineStyle | safeCSS)) }}
@@ -308,7 +326,7 @@
                   $page $template $media (jsonify (dict "indent" "  ") $nonDefaultFormats ) }}
             {{- end }}
             {{- range $nonDefaultFormats }}
-          <source format="{{ .resource.MediaType }}" media="{{ $media }}" srcset="{{ .srcset }}">
+          <source type="{{ .resource.MediaType }}" sizes="{{ $imgSizes | safeHTMLAttr }}" srcset="{{ .srcset }}">
             {{- end }}
           {{- end }}
           {{- $placeholderInlineImg := .formatsrcsets.placeholder }}
@@ -320,7 +338,7 @@
                 width="{{ $imgWidth }}" height="{{ $imgHeight }}"
             {{- if $lazy }}
                   {{ printf "src=%q" $placeholderInlineImg | safeHTMLAttr }}
-               {{ printf "srcset=%q" $placeholderInlineImg | safeHTMLAttr }}
+               {{ printf "srcset=%q" (printf  "%s %dw" $placeholderInlineImg $imgWidth) | safeHTMLAttr }}
              data-src="{{ $srcURL }}"
           data-srcset="{{ .srcset }}"
               loading="lazy"
@@ -328,9 +346,13 @@
                   src="{{ $srcURL }}"
                srcset="{{ .srcset }}"
             {{- end }}
-            {{- with $fetchPriority }} fetchPriority="{{ . | safeHTMLAttr }}"{{- end -}}
-            {{- with $lightbox }} data-zoomable="{{ . | safeHTMLAttr }}"{{- end -}}
-                sizes="auto"
+            {{- with $fetchPriority }}
+        fetchpriority="{{ . | safeHTMLAttr }}"
+            {{- end }}
+            {{- with $lightbox }}
+        data-zoomable="{{ . | safeHTMLAttr }}"
+            {{- end }}
+                sizes="{{ $imgSizes | safeHTMLAttr }}"
             {{- with $variant.title }}
                 title="{{ . | safeHTMLAttr }}"
             {{- end }}

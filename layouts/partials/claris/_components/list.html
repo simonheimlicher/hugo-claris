@@ -51,12 +51,13 @@
       {{- end }}
       {{- if $excerptPartial }}
         {{ partial $excerptPartial (dict
-          "Page" .Single.Page
+          "Page" $page
           "Meta" .
-          "FetchPriority" (cond (le $idx 0) "high" "low")
+          "SubjectPage" .Single.Page
           "ItemType" $itemType
           "HeadingLevel" $headingLevel
           "RelativeDates" false
+          "ShowAuthor" false
           "ShowTags" false
         ) }}
       {{- else }}

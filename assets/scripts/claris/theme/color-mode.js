@@ -64,7 +64,7 @@ const initColorMode = function () {
         // override it to 'all' to show
         // or set it to 'none' to hide
         if (source?.dataset.media.includes(scheme)) {
-          source.media = 'all'
+          source.media = source.dataset.media.replace(/(\s*and\s*)?\(\s*prefers-color-scheme[^)]+\)(\s*and\s*)?/, '')
         } else if (source) {
           source.media = 'none'
         }

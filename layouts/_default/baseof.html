@@ -8,7 +8,13 @@
 {{/* {{- $debug = or $debug (not (not (findRE `confidential` $page.RelPermalink) ) ) }} */}}
 {{- .Scratch.Set "clarisdebug" $debug }}
 
-{{- .Scratch.Set "claris.module.qrcode.count" 1 }}
+{{- .Scratch.Set "claris.module.qrcode.count" 0 }}
+{{- .Scratch.Set "claris.image.prioritized" 0 }}
+{{- if in (slice "page") .Kind }}
+  {{- .Scratch.Set "claris.assets.font.main" ($page.Param "fontFamilySerif") }}
+{{- else }}
+  {{- .Scratch.Set "claris.assets.font.main" ($page.Param "fontFamilySans") }}
+{{- end }}
 
 {{- $outputFormat := partial "claris/_functions/output-format" . }}
 {{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "OutputFormat" $outputFormat "Debug" $debug) $page.Permalink $outputFormat }}
