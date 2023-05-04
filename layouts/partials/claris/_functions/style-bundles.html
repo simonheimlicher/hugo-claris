@@ -128,8 +128,8 @@
     {{- if (and $supportIE11 $params.supportIE11) }}
       {{- $legacyResourceID := printf "%s%s" $resourceID $legacySuffix }}
       {{- $legacyExecutedFile := printf "%s.sass" $legacyResourceID }}
-      {{- $legactToCSSoptions := merge $toCSSoptionsBase (dict "targetPath" (printf "%s/%s.%s" $targetPathPrefix $legacyResourceID $targetExt) ) -}}
-      {{- $legacyBundle := $concatResource | resources.ToCSS $legactToCSSoptions | resources.PostCSS $postCSSoptions | resources.Fingerprint $fingerprintOptions -}}
+      {{- $legacyToCSSoptions := merge $toCSSoptionsBase (dict "targetPath" (printf "%s/%s.%s" $targetPathPrefix $legacyResourceID $targetExt) ) -}}
+      {{- $legacyBundle := $concatResource | resources.ToCSS $legacyToCSSoptions | resources.PostCSS $postCSSoptions | resources.Fingerprint $fingerprintOptions -}}
       {{- $styleBundles = merge $styleBundles (dict $legacyResourceID $legacyBundle) -}}
     {{- end -}}
   {{/* {{- else }}
