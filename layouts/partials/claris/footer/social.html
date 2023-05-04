@@ -6,7 +6,7 @@
 {{- $footerSocialSites := $page.Param "footer.social" }}
 
 {{- with $socialSiteMeta := $meta.Site.Data.Social }}
-  <section class="footer_social inner_horizontal">
+  <div class="footer_social inner_horizontal">
     <ul class="footer_social-list">
     {{- range $idx, $site := $footerSocialSites }}
       {{- with index $socialSiteMeta . }}
@@ -19,7 +19,7 @@
       {{- end }}
     {{- end }}
     </ul>
-  </section>
+  </div>
 {{- else }}
   {{- warnf "%s[%s]: Missing 'Social' in $meta.Site.Data=%v"
   $page $template $meta.Site.Data }}
