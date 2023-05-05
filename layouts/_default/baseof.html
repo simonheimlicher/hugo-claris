@@ -33,12 +33,12 @@
   "ContentTypeList" (partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type)
 ) }}
 
-{{- $htmlClasses := "no-js" }}
+{{- $htmlClassList := (slice "no-js") }}
 {{- if .Params.heroImageStyle }}
   {{- if (eq .Params.heroImageStyle "cover") }}
-    {{- $htmlClasses = printf "%s %s" $htmlClasses "content-above-header" }}
+    {{- $htmlClassList = append (slice "content-above-header") $htmlClassList }}
   {{- else if (eq .Params.heroImageStyle "background") }}
-    {{- $htmlClasses = printf "%s %s" $htmlClasses "image-background" }}
+    {{- $htmlClassList = append (slice "image-background") $htmlClassList }}
   {{- end -}}
 {{- end -}}
 {{- $forceColorScheme := false }}
@@ -54,16 +54,22 @@
   {{- end -}}
 {{- end -}}
 
+{{- $openGraphNSDeclaration := "" }}
+{{- $opengraph := default $meta.Site.Classification.Opengraph $meta.Classification.Opengraph }}
+{{- if $opengraph }}
+  {{- $openGraphNSDeclaration = `prefix="og: http://ogp.me/ns#"` }}
+{{- end }}
+
 <!DOCTYPE html>
 {{ partial "html-comment" (printf "BASEOF %s[%s]: BEGIN" $page $template) }}
 <html lang="{{ .Lang }}"
-  {{- with .Type }}{{ $htmlClasses = (printf "%s type-%s" $htmlClasses .) }}{{ end -}}
-  {{- with .Kind }}{{ $htmlClasses = (printf "%s kind-%s" $htmlClasses .) }}{{ end -}}
-  {{- with (default .Layout .Params.layout) }}{{ $htmlClasses = (printf "%s layout-%s" $htmlClasses .) }}{{ end -}}
-  {{- with $outputFormat.Name }}{{ $htmlClasses = (printf "%s outputformat-%s" $htmlClasses .) }}{{ end -}}
-  {{/* {{- if (in .Type ($page.Param "mainSections")) }}{{ $htmlClasses = (printf "%s %s" $htmlClasses "main") }}{{ end -}} */}}
-  {{- with $htmlClasses }}{{ printf " class=%q" $htmlClasses | safeHTMLAttr }}{{ end -}}
-  {{- with $forceColorScheme }}{{ safeHTMLAttr . }}{{ end -}}
+  {{- with .Type }}{{ $htmlClassList = append (slice (printf "type-%s" . )) $htmlClassList }}{{ end -}}
+  {{- with .Kind }}{{ $htmlClassList = append (slice (printf "kind-%s" . )) $htmlClassList }}{{ end -}}
+  {{- with (default .Layout .Params.layout) }}{{ $htmlClassList = append (slice (printf "layout-%s" . )) $htmlClassList }}{{ end -}}
+  {{- with $outputFormat.Name }}{{ $htmlClassList = append (slice (printf "outputformat-%s" . )) $htmlClassList }}{{ end -}}
+  {{- with $htmlClassList }}{{ printf " class=%q" (delimit $htmlClassList " ") | safeHTMLAttr }}{{ end -}}
+  {{- with $forceColorScheme }} {{ safeHTMLAttr . }}{{ end -}}
+  {{- with $openGraphNSDeclaration }} {{ safeHTMLAttr . }} {{ end -}}
 >
 <head>
   {{ partial "html-comment" (printf "[%s]: .Type=%s .Layout=%s .MediaType=%s $outputFormat=%s meta.Classification=%v]"
