@@ -6,6 +6,9 @@
 {{- $minifyBundles := default false .MinifyBundles }}
 {{- $template := "claris/_functions/style-bundles" }}
 
+{{/* {{- $debug := default ($page.Scratch.Get "clarisdebug") .Debug }}
+{{- $debug = or $debug (not (not (findRE `.` $page.RelPermalink) ) ) }} */}}
+
 {{- $contentTypeListID := delimit $contentTypeList "-" }}
 <!-- https://www.hackification.io/software-development/hugo/html/asset-bundling/ */ -->
 {{- $resourcePathBase := "styles" -}}
@@ -118,12 +121,33 @@
         $page $template $concatResource (substr $concatResource.Content 0 500) (substr $concatResource.Content -500) }} */}}
 
     {{- $toCSSoptions := merge $toCSSoptionsBase (dict "targetPath" $targetFile) -}}
-    {{- $bundle := $concatResource | resources.ToCSS $toCSSoptions | resources.Fingerprint $fingerprintOptions }}
+    {{- $bundle := $concatResource | resources.ToCSS $toCSSoptions }}
+
+    {{- $bundle_full := $bundle | resources.Fingerprint $fingerprintOptions }}
 
     {{/* {{- warnf "%s[%s]: $bundle[%s] %#v: MediaType:%s Content:\n%v\n...\n%v"
         $page $template $bundle $resourceID $bundle.MediaType (substr $bundle.Content 0 100) (substr $bundle.Content -100) }} */}}
 
-    {{- $styleBundles = merge $styleBundles (dict $resourceID (dict "resource" $bundle "media" $mediaType "fetchpriority" $fetchPriority) ) -}}
+    {{- if $minifyBundles }}
+      {{- $bundle_minified := $bundle | resources.PostCSS | resources.Minify | resources.Fingerprint $fingerprintOptions | resources.PostProcess }}
+      {{- $styleBundles = merge $styleBundles (dict $resourceID (dict "resource" $bundle_minified "full" $bundle_full "media" $mediaType "fetchpriority" $fetchPriority) ) -}}
+      {{- if $debug }}
+        {{- $bundle_postcss := $bundle | resources.PostCSS }}
+        {{- $bundle_minify := $bundle | resources.PostCSS | resources.Minify }}
+        {{- $bundle_fingerprint := $bundle | resources.PostCSS | resources.Minify | resources.Fingerprint $fingerprintOptions }}
+        {{- warnf "%s[%s]: Size in kB:\n concat=%v: %vkB\nToCSS=%v: %vkB\nPostCSS=%v: %vkB\nMinify=%v: %vkB\nFingerprint=%v: %vkB\nPostProcess=%v: %vkB"
+            $page $template
+            $concatResource.RelPermalink (div (len $concatResource.Content) 1024)
+            $bundle.RelPermalink (div (len $bundle.Content) 1024)
+            $bundle_postcss.RelPermalink (div (len $bundle_postcss.Content) 1024)
+            $bundle_minify.RelPermalink (div (len $bundle_minify.Content) 1024)
+            $bundle_fingerprint.RelPermalink (div (len $bundle_fingerprint.Content) 1024)
+            $bundle_minified.RelPermalink (div (len $bundle_minified.Content) 1024) -}}
+      {{- end }}
+
+    {{- else }}
+    {{- $styleBundles = merge $styleBundles (dict $resourceID (dict "resource" $bundle_full "full" $bundle_full "media" $mediaType "fetchpriority" $fetchPriority) ) -}}
+    {{- end }}
 
     {{- if (and $supportIE11 $params.supportIE11) }}
       {{- $legacyResourceID := printf "%s%s" $resourceID $legacySuffix }}

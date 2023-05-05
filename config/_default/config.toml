@@ -56,6 +56,9 @@ enableMissingTranslationPlaceholders = true
 #     to     = "/error/404/"
 #     status = 404
 
+[build]
+  writeStats = true
+
 [security]
   # Merge security from theme for asset pipeline
   _merge = "deep"
