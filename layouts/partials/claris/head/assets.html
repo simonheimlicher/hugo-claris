@@ -18,7 +18,7 @@
     {{- range first 2 $preloadFonts }}
     <link rel="preload" href="{{ .URL | safeHTMLAttr }}" as="font" type="font/{{ .Type | safeHTMLAttr }}" crossorigin="anonymous">
     {{- end }}
-    {{- if not (eq $styleBundleID "print") }}
+    {{- if not (strings.HasSuffix $styleBundleID "print") }}
     <link rel="preload" href="{{ .resource.Permalink }}" as="style" integrity="{{ .resource.Data.Integrity }}" crossorigin="anonymous">
     {{- end }}
     <link rel="stylesheet" type="text/css" media="{{ .media }}" href="{{ .resource.Permalink }}" {{- with .fetchpriority }} fetchpriority="{{ . }}"{{ end }} integrity="{{ .resource.Data.Integrity }}" crossorigin="anonymous">
