@@ -6,8 +6,8 @@
 {{- $minifyBundles := default false .MinifyBundles }}
 {{- $template := "claris/_functions/style-bundles" }}
 
-{{/* {{- $debug := default ($page.Scratch.Get "clarisdebug") .Debug }}
-{{- $debug = or $debug (not (not (findRE `.` $page.RelPermalink) ) ) }} */}}
+{{- $debug := default ($page.Scratch.Get "clarisdebug") .Debug }}
+{{/* {{- $debug = or $debug (not (not (findRE `.` $page.RelPermalink) ) ) }} */}}
 
 {{- $contentTypeListID := delimit $contentTypeList "-" }}
 <!-- https://www.hackification.io/software-development/hugo/html/asset-bundling/ */ -->
@@ -134,15 +134,12 @@
       {{- if $debug }}
         {{- $bundle_postcss := $bundle | resources.PostCSS }}
         {{- $bundle_minify := $bundle | resources.PostCSS | resources.Minify }}
-        {{- $bundle_fingerprint := $bundle | resources.PostCSS | resources.Minify | resources.Fingerprint $fingerprintOptions }}
-        {{- warnf "%s[%s]: Size in kB:\n concat=%v: %vkB\nToCSS=%v: %vkB\nPostCSS=%v: %vkB\nMinify=%v: %vkB\nFingerprint=%v: %vkB\nPostProcess=%v: %vkB"
+        {{- warnf "%s[%s]: Size in kB:\n concat=%v: %vkB\nToCSS=%v: %vkB\nPostCSS=%v: %vkB\nMinify=%v: %vkB"
             $page $template
             $concatResource.RelPermalink (div (len $concatResource.Content) 1024)
             $bundle.RelPermalink (div (len $bundle.Content) 1024)
             $bundle_postcss.RelPermalink (div (len $bundle_postcss.Content) 1024)
-            $bundle_minify.RelPermalink (div (len $bundle_minify.Content) 1024)
-            $bundle_fingerprint.RelPermalink (div (len $bundle_fingerprint.Content) 1024)
-            $bundle_minified.RelPermalink (div (len $bundle_minified.Content) 1024) -}}
+            $bundle_minify.RelPermalink (div (len $bundle_minify.Content) 1024) -}}
       {{- end }}
 
     {{- else }}

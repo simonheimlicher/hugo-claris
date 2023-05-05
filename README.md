@@ -10,7 +10,6 @@
 [![GitHub](https://img.shields.io/github/license/simonheimlicher/hugo-claris)](https://github.com/simonheimlicher/hugo-claris/blob/main/LICENSE) &middot;
 ![code-size](https://img.shields.io/github/languages/code-size/simonheimlicher/hugo-claris)
 
-
 *Claris* is a theme for [Hugo](https://gohugo.io/), the world’s fastest static website generator
 
 * **Mobile-first:** *Claris* works great on mobile devices as well as on laptops, iMacs, and desktop PCs
