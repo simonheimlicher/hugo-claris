@@ -46,4 +46,7 @@ $hostedFontPath: '{{ default (absURL "fonts") ($page.Param "hostedFontPath") }}'
 @import 'claris/components_print'
 {{- end }}
 @import 'claris/utils'
+
+/*! purgecss start ignore */
 @import 'claris/syntax'
+/*! purgecss end ignore */

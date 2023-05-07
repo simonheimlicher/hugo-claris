@@ -3,7 +3,8 @@
 {{- $template := "claris/_functions/style-bundles" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- $debug = or $debug (not (not (findRE `.` $page.RelPermalink) ) ) }}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)` $page.RelPermalink) ) ) }} */}}
+{{/* {{- $debug = or $debug (eq site.Language.Lang "en") }} */}}
 
 {{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
 
@@ -13,13 +14,36 @@
 
 {{- $supportIE11 := default true $assetVariant.BundleParams.SupportIE11 }}
 
-<!-- NOTE: It appears that `resources.Minify` does not respect configuration.
-Therefore, we make $minifyCSS dependent on the two main params -->
-{{- $minifyCSS := default false (and
-  ($page.Param "minify.minifyOutput")
-  (not ($page.Param "minify.disableCSS") )
-  $assetVariant.BundleParams.MinifyBundles
-) -}}
+<!-- NOTE: There are two ways to minify styles (CSS) in Hugo:
+1. resources.PostCSS: by passing (dict "config" "./relative/path/to/configDir")
+   resources.PostCSS, PostCSS will process the styles using the config file
+   "postcss.config.js" in the directory provided via "config" key.
+   Perhaps surprisingly, the "config" does not refer to a configuration file
+   but a directory.
+   As we include the PurgeCSS plugin in our PostCSS config, PostCSS will also
+   handle tree shaking and minification
+   This happens independently of the configuration, i.e., adding the
+   following to hugo.yaml will *not* have any effect when the above dict
+   is passed to js.Build:
+   minify:
+     minifyOutput: false
+     disableCSS: false
+
+2. resources.Minify: by piping the bundle produced by resources.ToCSS
+   through resources.Minify, we can invoke the Go library tdewolff.Minify.
+   This respects the configuration mentioned above.
+
+According to benchmarks based on the actual styles, the size reduction with
+resources.Minify is at most 2%.
+
+Therefore, we let resources.PostProcess handle the minification via
+the PurgeCSS plugin
+
+This comes with the caveat that configuration of styles minification
+appears to be broken, as mentioned above.
+-->
+
+{{- $minifyCSS := default false $assetVariant.BundleParams.MinifyBundles -}}
 
 <!-- https://www.hackification.io/software-development/hugo/html/asset-bundling/ */ -->
 {{- $resourcePathBase := "styles" -}}
@@ -146,21 +170,19 @@ that contains the `postcss.config.js` file - not the file itself. -->
         $page $template $bundle $resourceID $bundle.MediaType (substr $bundle.Content 0 100) (substr $bundle.Content -100) }} */}}
 
     {{- if $minifyCSS }}
-      {{/* {{- $bundleMinified := $bundle | resources.Fingerprint $fingerprintOptions }} */}}
-      {{/* {{- $bundleMinified := $bundle | resources.PostCSS $postCSSOptions | resources.Fingerprint $fingerprintOptions }} */}}
-      {{/* {{- $bundleMinified := $bundle | resources.Minify | resources.Fingerprint $fingerprintOptions }} */}}
-      {{/* {{- $bundleMinified := $bundle | resources.PostCSS $postCSSOptions | resources.Minify | resources.Fingerprint $fingerprintOptions }} */}}
-      {{- $bundleMinified = $bundle | resources.PostCSS $postCSSOptions | resources.Minify | resources.Fingerprint $fingerprintOptions | resources.PostProcess }}
-      {{- if $debug }}
-        {{- $afterPostCSS := $bundle | resources.PostCSS }}
-        {{- $afterMinify := $bundle | resources.PostCSS | resources.Minify }}
-        {{- warnf "%s[%s]: Size in kB:\n concat=%v: %vkB\nToCSS=%v: %vkB\nPostCSS=%v: %vkB\nMinify=%v: %vkB"
-            $page $template
-            $concatResource.RelPermalink (div (len $concatResource.Content) 1024)
-            $bundle.RelPermalink (div (len $bundle.Content) 1024)
-            $afterPostCSS.RelPermalink (div (len $afterPostCSS.Content) 1024)
-            $afterMinify.RelPermalink (div (len $afterMinify.Content) 1024) -}}
-      {{- end }}
+      <!-- We use js.Build (ESBuild) instead of resources.Minify (tdewolff/minify) -->
+      {{/* {{- $bundleMinified = $bundle | resources.PostCSS $postCSSOptions | resources.Minify | resources.Fingerprint $fingerprintOptions | resources.PostProcess }} */}}
+      {{- $bundleMinified := $bundle | resources.PostCSS $postCSSOptions | resources.Fingerprint $fingerprintOptions }}
+      {{/* {{- if and $debug (eq $resourceID "main_all") }}
+        {{- $afterPostCSS := $bundle | resources.PostCSS $postCSSOptions }}
+        {{- $afterMinify := $bundle | resources.PostCSS $postCSSOptions | resources.Minify }}
+        {{- warnf "%s[%s]: Size of style bundle '%v' in kB:\n Concat=%7.3fkB [%v]\n  ToCSS=%7.3fkB [%v]\nPostCSS=%7.3fkB [%v]\n Minify=%7.3fkB [%v]"
+            $page $template $resourceID
+            (div (len $concatResource.Content) 1024.0) $concatResource.RelPermalink
+            (div (len $bundle.Content) 1024.0) $bundle.RelPermalink
+            (div (len $afterPostCSS.Content) 1024.0) $afterPostCSS.RelPermalink
+            (div (len $afterMinify.Content) 1024.0) $afterMinify.RelPermalink -}}
+      {{- end }} */}}
     {{- end }}
 
     {{- $styleBundle := (dict

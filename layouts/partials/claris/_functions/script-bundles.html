@@ -4,6 +4,7 @@
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{- /* $debug = or $debug (not (not (findRE `.` $page.RelPermalink) ) ) */ -}}
+{{/* {{- $debug = or $debug (eq site.Language.Lang "en") }} */}}
 {{- $skeletonOnly := false }}
 
 {{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
@@ -14,19 +15,37 @@
 
 {{- $supportIE11 := default true $assetVariant.BundleParams.SupportIE11 }}
 
-<!-- NOTE: It appears that `resources.Minify` does not respect configuration.
-Therefore, we make $minifyJS dependent on the two main params -->
-{{- $minifyJS := default false (and
-  ($page.Param "minify.minifyOutput")
-  (not ($page.Param "minify.disableJS") )
-  $assetVariant.BundleParams.MinifyBundles
-) -}}
+<!-- NOTE: There are two ways to minify JavaScript (JS) in Hugo:
+1. js.Build: by passing (dict "minify" true) to js.Build, the bundler,
+   which is currently ESBuild, will also handle tree shaking and minification
+   This happens independently of the configuration, i.e., adding the
+   following to hugo.yaml will *not* have any effect when the above dict
+   is passed to js.Build:
+   minify:
+     minifyOutput: false
+     disableJS: false
+
+2. resources.Minify: by piping the bundle produced by js.Build
+   through resources.Minify, we can invoke the Go library tdewolff.Minify.
+   This respects the configuration mentioned above.
+
+According to [minifcation-benchmarks](https://github.com/privatenumber/minification-benchmarks),
+there appears to be no reason to use tdewolff/minify over ESBuild.
+
+Therefore, we let js.Build handle the minification in addition to the bundling.
+
+This comes with the caveat that configuration of JavaScript minification
+appears to be broken, as mentioned above.
+-->
+
+{{- $minifyJS := default false $assetVariant.BundleParams.MinifyBundles -}}
 
 {{/* {{- warnf "%s[%s]: $contentTypeList:%s $supportIE11:%v" $page $template $contentTypeList $supportIE11 -}} */}}
 <!-- https://www.hackification.io/software-development/hugo/html/asset-bundling/ */ -->
 {{- $resourcePathBase := "scripts" -}}
 {{- $sourceExt := "js" }}
 {{- $executedSourceSuffix := "_executed" }}
+{{- $concatSuffix := "_concat" }}
 {{- $targetSuffix := "_bundle" }}
 {{- $targetExt := "js" -}}
 {{- $legacySuffix := default "_legacy" .LegacySuffix }}
@@ -50,6 +69,8 @@ Therefore, we make $minifyJS dependent on the two main params -->
     "minify" true
 ) }}
 {{- $jsBuildEmptyResourceTest := "(()=>{})();" }}
+
+{{- $babelLegacyOptions := (dict "config" "./assets/scripts/claris/babel/babel.config.js") -}}
 
   <!-- Note on source maps: option "inline" seems to work, the alternative would be "external" -->
 {{- if not $minifyJS }}
@@ -130,10 +151,10 @@ file that is then published.
 
     {{- range $variant := $bundleVariants }}
 
-      {{- if $debug }}
+      {{/* {{- if $debug }}
         {{- warnf "%s[%s]: .Target=%v .Variant=%v .BaseName=%v: Concatenating content types=%v to ID=%v"
           $page $template $target.Target .Variant .BaseName $contentTypeList $contentTypeListID }}
-      {{- end }}
+      {{- end }} */}}
 
       {{- $variantResources := slice }}
 
@@ -160,18 +181,18 @@ file that is then published.
           {{- else -}}
             {{- if (eq $contentType "claris") }}
               {{- errorf "%s[%s]: tplFile '%s' not found" $page $template $tplFile }}
-            {{- else if (gt $idx 0) }}
+            {{/* {{- else if (gt $idx 0) }}
               {{- if $debug }}
                 {{- warnf "%s[%s]: tplFile '%s' not found" $page $template $tplFile }}
-              {{- end -}}
+              {{- end -}} */}}
             {{- end -}}
           {{- end -}}
         {{- end -}}
 
         {{- $testTargetPathPrefix := printf "%s/%s_TEST" $resourcePathBase $contentType -}}
-        {{- $testTargetFile := printf "%s/%s%s.%s" $testTargetPathPrefix $target.Target $targetSuffix $targetExt }}
+        {{- $testConcatFile := printf "%s/%s%s.%s" $testTargetPathPrefix $target.Target $concatSuffix $targetExt }}
 
-        {{- if and $debug (gt (len $variantContentTypeResources) 0) }}
+        {{/* {{- if and $debug (gt (len $variantContentTypeResources) 0) }}
           {{- $variantContentTypeResourcesContents := "" }}
           {{- range $idx, $resource := $variantContentTypeResources }}
             {{- $variantContentTypeResourcesContents = printf "%s    %d --> %v .Name=%v .MediaType=%v\n"
@@ -183,32 +204,30 @@ file that is then published.
                 $contentTypeList $contentTypeListID
                 (len $variantContentTypeResources) $variantContentTypeResourcesContents }}
             {{- end }}
-        {{- end }}
+        {{- end }} */}}
 
         {{- with $variantContentTypeResources }}
-          {{- $testConcatResources := $variantContentTypeResources | resources.Concat $testTargetFile }}
+          {{- $testConcatResources := $variantContentTypeResources | resources.Concat $testConcatFile }}
           {{- $testVariantResource := js.Build $jsBuildOptionsTest $testConcatResources }}
           {{- if or (not $hugoParamsTestResource) (ne $hugoParamsTestResource.Content $testVariantResource.Content) }}
             {{- $variantResources = append $variantContentTypeResources $variantResources }}
-            {{- if $debug }}
+            {{/* {{- if $debug }}
               {{- warnf "%s[%s]: variant=%v contentType=%v: added variantContentTypeResources=%v to variantResources=%v"
                   $page $template $variant.Variant $contentType
-                  $variantContentTypeResources $variantResources
-              }}
-            {{- end -}}
-          {{- else }}
+                  $variantContentTypeResources $variantResources }}
+            {{- end -}} */}}
+          {{/* {{- else }}
             {{- if $debug }}
               {{- warnf "%s[%s]: variant=%v contentType=%v: bundling mainFile with hugoParams resulted in same bundle as hugoParams alone:\nhugoParams:\n%v\nhugoParams + mainFile:\n%v"
                   $page $template $variant.Variant $contentType
                   $hugoParamsTestResource.Content
-                  $testVariantResource.Content
-              }}
-            {{- end -}}
+                  $testVariantResource.Content }}
+            {{- end -}} */}}
           {{- end -}}
         {{- end -}}
       {{- end -}}
 
-      {{- if and $debug (eq $page.RelPermalink "/") (gt (len $variantResources) 0) }}
+      {{/* {{- if and $debug (eq $page.RelPermalink "/") (gt (len $variantResources) 0) }}
         {{- $variantResourcesContents := "" }}
         {{- range $idx, $resource := $variantResources }}
           {{- $variantResourcesContents = printf "%s    %d --> %v .Name=%v .MediaType=%v\n"
@@ -220,40 +239,37 @@ file that is then published.
               $contentTypeList $contentTypeListID
               (len $variantResources) $variantResourcesContents }}
           {{- end }}
-      {{- end }}
+      {{- end }} */}}
 
       {{- $targetPathPrefix := printf "%s/%s" $resourcePathBase $contentTypeListID -}}
 
       {{- with $variantResources }}
         {{- if (eq $variant.Variant "Default" )}}
-            {{- $targetFile := printf "%s/%s%s.%s" $targetPathPrefix $target.Target $targetSuffix $targetExt }}
-            {{- $concatResource := $variantResources | resources.Concat $targetFile }}
+            {{- $concatFile := printf "%s/%s%s.%s" $targetPathPrefix $target.Target $concatSuffix $targetExt }}
+            {{- $concatResource := $variantResources | resources.Concat $concatFile }}
             {{/* {{- if $debug }}
               {{- warnf "%s[%s]: concatResource.Name=%v published at .RelPermalink=%v:\n%v"
                   $page $template $concatResource.Name
                   $concatResource.RelPermalink (substr $concatResource.Content 0 400) }}
             {{- end }} */}}
 
-            {{- $jsBuildOptions := $jsBuildOptionsBase }}
+            {{- $targetFile := printf "%s/%s%s.%s" $targetPathPrefix $target.Target $targetSuffix $targetExt }}
+            {{- $jsBuildOptions := merge $jsBuildOptionsBase (dict "targetPath" $targetFile ) }}
             {{- $bundle := $concatResource | js.Build $jsBuildOptions -}}
             {{- $bundleUnMinified := $bundle | resources.Fingerprint $fingerprintOptions }}
             {{- $bundleMinified := $bundleUnMinified }}
 
-            {{- if $minifyJS }}
-              {{- $bundleMinified = $bundle | resources.Minify | resources.Fingerprint $fingerprintOptions | resources.PostProcess }}
-              {{- if $debug }}
-                {{- $afterMinify := $bundle | resources.PostCSS | resources.Minify }}
-                {{- warnf "%s[%s]: Size in kB:\n concat=%v: %vkB\nBuild=%v: %vkB\nMinify=%v: %vkB"
-                    $page $template
-                    $concatResource.RelPermalink (div (len $concatResource.Content) 1024)
-                    $bundle.RelPermalink (div (len $bundle.Content) 1024)
-                    $afterMinify.RelPermalink (div (len $afterMinify.Content) 1024) -}}
-              {{- end }}
+            <!-- We use js.Build (ESBuild) instead of resources.Minify (tdewolff/minify) -->
+            {{/* {{- if $minifyJS }}
+              {{- $bundleMinified = $bundle | resources.Minify | resources.Fingerprint $fingerprintOptions }}
             {{- end }}
-            {{/* {{- if $debug }}
-              {{- warnf "%s[%s]: js.Build target=%v bundle.Name=%v published at .RelPermalink=%v:\n%v"
-                  $page $template $jsBuildOptions.target $bundle.Name
-                  $bundle.RelPermalink (substr $bundle.Content 0 400) }}
+            {{- if and $debug (eq $target.Target "body") }}
+              {{- $afterMinify := $bundle | resources.Minify }}
+              {{- warnf "%s[%s]: Size of script bundle '%v' in kB:\nConcat=%7.3fkB [%v]\n Build=%7.3fkB [%v]\nMinify=%7.3fkB [%v]"
+                  $page $template $target.Target
+                  (div (len $concatResource.Content) 1024.0) $concatResource.RelPermalink
+                  (div (len $bundle.Content) 1024.0) $bundle.RelPermalink
+                  (div (len $afterMinify.Content) 1024.0) $afterMinify.RelPermalink -}}
             {{- end }} */}}
 
             {{- $scriptBundle := (dict
@@ -262,6 +278,12 @@ file that is then published.
               "media" $mediaType
             ) }}
             {{- $scriptBundles = merge $scriptBundles (dict $target.Target $scriptBundle) -}}
+
+            {{/* {{- if $debug }}
+              {{- warnf "%s[%s]: js.Build target=%v bundle.Name=%v published at .RelPermalink=%v:\n%v"
+                  $page $template $jsBuildOptions.target $bundle.Name
+                  $bundle.RelPermalink (substr $bundle.Content 0 400) }}
+            {{- end }} */}}
 
         {{- else if (eq $variant.Variant "Legacy" )}}
           {{- $legacyTarget := printf "%s%s" $target.Target $legacySuffix }}
@@ -274,7 +296,7 @@ file that is then published.
               $legacyConcatResources.RelPermalink
               $legacyConcatResources.Content }} */}}
           {{- $legacyBundle := $legacyConcatResources | js.Build (merge $jsBuildOptionsBase (dict "target" $targetVersion "minify" false) ) -}}
-          {{- $legacyBundle = $legacyBundle | babel }}
+          {{- $legacyBundle = $legacyBundle | resources.Babel $babelLegacyOptions }}
           {{- $jsBuildLegacyOptions := merge $jsBuildOptionsBase (dict "target" $legacyTargetVersion) }}
           {{- $legacyBundle = $legacyBundle | js.Build $jsBuildLegacyOptions }}
           {{- $legacyBundleUnMinified := $legacyBundle | resources.Fingerprint $fingerprintOptions }}

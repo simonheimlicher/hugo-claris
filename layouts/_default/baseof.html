@@ -5,7 +5,7 @@
 {{- $template := "_default/baseof" }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `/(?:[^/]+-demo)?$` $page.RelPermalink) ) ) }} */}}
+{{- /* {{- $debug = or $debug (not (not (findRE `/(?:[^/]+-demo)?$` $page.RelPermalink) ) ) }} */ -}}
 {{- .Scratch.Set "clarisdebug" $debug }}
 
 {{- .Scratch.Set "claris.module.qrcode.count" 0 }}
@@ -54,12 +54,14 @@
     "LegacyMediaType" $legacyMediaType
     "LegacySuffix" $legacySuffix
   )
-) }}
+) -}}
 {{- .Scratch.Set "claris.assets.variant" $assetVariant }}
 
 {{- if $debug }}
-  {{- warnf "%s[%s]: claris.assets.variant=\n%v"
-      $page $template (jsonify (dict "indent" "  ") (.Scratch.Get "claris.assets.variant") ) }}
+  {{- warnf "%s[%s]: hugo.Environment=%v envDevel=%v envProd=%v"
+      $page $template hugo.Environment $envDevel $envProd -}}
+  {{/* {{- warnf "%s[%s]: claris.assets.variant=\n%v"
+      $page $template (jsonify (dict "indent" "  ") (.Scratch.Get "claris.assets.variant") ) -}} */}}
 {{- end }}
 
 {{- $htmlClassList := (slice "no-js") }}
@@ -87,7 +89,7 @@
 {{- $opengraph := default $meta.Site.Classification.Opengraph $meta.Classification.Opengraph }}
 {{- if $opengraph }}
   {{- $openGraphNSDeclaration = `prefix="og: http://ogp.me/ns#"` }}
-{{- end }}
+{{- end -}}
 
 <!DOCTYPE html>
 {{ partial "html-comment" (printf "BASEOF %s[%s]: BEGIN" $page $template) }}
