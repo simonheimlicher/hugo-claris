@@ -1,0 +1,74 @@
+goldmark:
+  renderer:
+    hardWraps: false
+    # change to false to disable inclusion of rawHTML and math functions
+    unsafe: true
+    xhtml: false
+  extensions:
+    definitionList: true
+    footnote: true
+    linkify: true
+    linkifyProtocol: https
+    strikethrough: true
+    table: true
+    taskList: true
+    typographer: true
+
+highlight:
+  codeFences: true
+  guessSyntax: true
+  hl_Lines: "--"
+  lineNoStart: 1
+  # always set to true # else line numbers won't show at all! even when you toggle them on in the UI
+  lineNos: true
+  # toggling this on (i.e to true) or deleting this line will break the code blocks functionality. Will
+  lineNumbersInTable: false
+  noClasses: false
+  style: modus-vivendi
+  tabWidth: 2
+
+tableOfContents:
+  ordered: false
+  startLevel: 2
+  endLevel: 2
+
+# Defaults from https://gohugo.io/getting-started/configuration-markup/
+# goldmark:
+#   extensions:
+#     definitionList: true
+#     footnote: true
+#     linkify: true
+#     linkifyProtocol: https
+#     strikethrough: true
+#     table: true
+#     taskList: true
+#     typographer: true
+#   parser:
+#     attribute:
+#       block: false
+#       title: true
+#     autoHeadingID: true
+#     autoHeadingIDType: github
+#     wrapStandAloneImageWithinParagraph: true
+#   renderer:
+#     hardWraps: false
+#     unsafe: false
+#     xhtml: false
+# highlight:
+#   anchorLineNos: false
+#   codeFences: true
+#   guessSyntax: false
+#   hl_Lines: ""
+#   hl_inline: false
+#   lineAnchors: ""
+#   lineNoStart: 1
+#   lineNos: false
+#   lineNumbersInTable: true
+#   noClasses: true
+#   noHl: false
+#   style: monokai
+#   tabWidth: 4
+# tableOfContents:
+#   endLevel: 3
+#   ordered: false
+#   startLevel: 2

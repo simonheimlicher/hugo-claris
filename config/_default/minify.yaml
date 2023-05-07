@@ -1,36 +1,15 @@
-minifyOutput: true
-
-disableCSS: true
-disableHTML: true
-disableJS: true
-disableJSON: true
-disableSVG: true
-disableXML: true
-
-tdewolff:
-  css:
-    keepCSS2: true
-    precision: 0
-  html:
-    keepComments: true
-    keepConditionalComments: true
-    keepDefaultAttrVals: true
-    keepDocumentTags: true
-    keepEndTags: true
-    keepQuotes: true
-    keepWhitespace: true
-  js:
-    keepVarNames: true
-    noNullishOperator: true
-    precision: 0
-  json:
-    keepNumbers: true
-    precision: 0
-  svg:
-    keepComments: true
-    precision: 0
-  xml:
-    keepWhitespace: true
+# IMPORTANT NOTE:
+# This theme does not use `resources.Minify` from Hugo Pipes
+# for styles (CSS) and JavaScript (JS)
+# Therefore, the configuration options
+# minifyOutput
+# disableCSS
+# disableJS
+# and their furthere configuration parameters below
+# tdewolff:
+#   css:
+#   js:
+# have no effect either.
 
 # Default config from https://gohugo.io/getting-started/configuration/#configure-minify
 # disableCSS: false

@@ -45,10 +45,6 @@ enableMissingTranslationPlaceholders = true
   # NOTE: email is set in data file 'assets/data/claris/en.yaml'
   # email = "user@example.net"
 
-# Allow imaging options to be set in theme config file
-[imaging]
-  _merge = 'deep'
-
 # Render custom 404 page
 # FIXME: does not seem to work for 'hugo server'
 # [[redirects]]
@@ -60,8 +56,6 @@ enableMissingTranslationPlaceholders = true
   writeStats = true
 
 [security]
-  # Merge security from theme for asset pipeline
-  _merge = "deep"
   enableInlineShortcodes = false
   [security.exec]
     allow = ['^dart-sass-embedded$', '^go$', '^npx$', '^postcss$', '^babel$']
