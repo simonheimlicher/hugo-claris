@@ -848,83 +848,83 @@ html[data-mode="dim"]
     opacity: 0.67
     font-size: 0.9rem
 
-.terms-of-use
-  display: block
-  position: fixed
-  bottom: 0
-  left: 0
-  right: 0
-  visibility: hidden
-  margin: 0
-  pointer-events: none
-  z-index: ($main-z-index  + 10)
-  font-size: 0.75rem // Minitmal size for mobile users
-  @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
-    left: var(--inner_padding-x)
-    bottom: var(--inner_padding-y)
-    max-width: ($screenViewBreakpointWidthOneColumn / 2)
-  @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
-    max-width: ($screenViewWidthAsideMin)
-  &__surface
-    display: flex
-    flex-direction: column
-    align-items: flex-start
-    padding: var(--inner_padding-y) var(--inner_padding-x)
-    background: rgba(var(--RGB_choice-bg), 0.98)
-    @include background-gradient-translucent("to top", 0.9)
-  &__label
-    padding-bottom: var(--inner_padding-y-1)
+// .terms-of-use
+//   display: block
+//   position: fixed
+//   bottom: 0
+//   left: 0
+//   right: 0
+//   visibility: hidden
+//   margin: 0
+//   pointer-events: none
+//   z-index: ($main-z-index  + 10)
+//   font-size: 0.75rem // Minitmal size for mobile users
+//   @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+//     left: var(--inner_padding-x)
+//     bottom: var(--inner_padding-y)
+//     max-width: ($screenViewBreakpointWidthOneColumn / 2)
+//   @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+//     max-width: ($screenViewWidthAsideMin)
+//   &__surface
+//     display: flex
+//     flex-direction: column
+//     align-items: flex-start
+//     padding: var(--inner_padding-y) var(--inner_padding-x)
+//     background: rgba(var(--RGB_choice-bg), 0.98)
+//     @include background-gradient-translucent("to top", 0.9)
+//   &__label
+//     padding-bottom: var(--inner_padding-y-1)
 
-  &__actions
-    a, button
-      pointer-events: auto
-      padding: 0.125rem 0.5rem
-      margin-left: 1rem
-      margin-top: 0.5rem
-      cursor: pointer
-      &:first-child
-        margin-left: 0
+//   &__actions
+//     a, button
+//       pointer-events: auto
+//       padding: 0.125rem 0.5rem
+//       margin-left: 1rem
+//       margin-top: 0.5rem
+//       cursor: pointer
+//       &:first-child
+//         margin-left: 0
 
-.image
-  &-scale
-    position: fixed
-    z-index: 999999
-    left: 0
-    right: 0
-    height: 100vh
-    top: 0
-    padding: 1.5rem
-    background-color: var(--bg)
-    display: grid
-    align-items: center
-    overflow: auto // initial
-  &-scale &-scalable
-    background-color: var(--text)
-  &-scalable
-    cursor: pointer
-    transition: transform 0.3s var(--ease)
-  &_featured
-    display: block
-    margin-left: auto !important // initial
-    margin-right: auto !important // initial
+// .image
+//   &-scale
+//     position: fixed
+//     z-index: 999999
+//     left: 0
+//     right: 0
+//     height: 100vh
+//     top: 0
+//     padding: 1.5rem
+//     background-color: var(--bg)
+//     display: grid
+//     align-items: center
+//     overflow: auto // initial
+//   &-scale &-scalable
+//     background-color: var(--text)
+//   &-scalable
+//     cursor: pointer
+//     transition: transform 0.3s var(--ease)
+//   &_featured
+//     display: block
+//     margin-left: auto !important // initial
+//     margin-right: auto !important // initial
 
-.video
-  overflow: hidden
-  padding-bottom: 56.25%
-  position: relative
-  height: 0
-  margin: 1.5rem 0
-  border-radius: 0.6rem
-  background-color: var(--bg)
-  box-shadow: 0 1rem 2rem rgba(0,0,0,0.17)
-  iframe
-    left: 0
-    top: 0
-    height: 100%
-    width: 100%
-    border: none
-    position: absolute
-    transform: scale(1.02)
+// .video
+//   overflow: hidden
+//   padding-bottom: 56.25%
+//   position: relative
+//   height: 0
+//   margin: 1.5rem 0
+//   border-radius: 0.6rem
+//   background-color: var(--bg)
+//   box-shadow: 0 1rem 2rem rgba(0,0,0,0.17)
+//   iframe
+//     left: 0
+//     top: 0
+//     height: 100%
+//     width: 100%
+//     border: none
+//     position: absolute
+//     transform: scale(1.02)
 
 kbd
     display: inline-block
