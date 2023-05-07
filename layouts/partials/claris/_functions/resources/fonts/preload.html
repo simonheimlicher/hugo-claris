@@ -28,14 +28,14 @@
 {{ $preloadFontFormats = apply $preloadFontFormats "lower" "." }}
 
 
-{{- $fontMatchRE := `@font-face[^{]*\{[^}]*[^}]+?src:[^;]*url\(['"]http[^'"]+\.[a-z0-9]+['"]` }}
+{{- $fontMatchRE := `@font-face[^{]*\{[^}]*[^}]+?src:[^;]*url\(['"][^'"]+\.[a-z0-9]+['"]` }}
 {{- $fontFamilyRE := `@font-face[^{]*\{[^}]*[^}]+?font-family:\s*['"]([^'"]+)['"]` }}
-{{- $fontStyleRE := `@font-face[^{]*\{[^}]*[^}]+?font-style:\s*([^;:\s]+)[^}]+?src:[^;]*url\(['"]http[^'"]+\.[a-z0-9]+['"]` }}
-{{- $fontWeightRE := `@font-face[^{]*\{[^}]*[^}]+?font-weight:\s*([^;:\s]+)[^}]+?src:[^;]*url\(['"]http[^'"]+\.[a-z0-9]+['"]` }}
+{{- $fontStyleRE := `@font-face[^{]*\{[^}]*[^}]+?font-style:\s*([^;:\s]+)[^}]+?src:[^;]*url\(['"][^'"]+\.[a-z0-9]+['"]` }}
+{{- $fontWeightRE := `@font-face[^{]*\{[^}]*[^}]+?font-weight:\s*([^;:\s]+)[^}]+?src:[^;]*url\(['"][^'"]+\.[a-z0-9]+['"]` }}
 
-{{- $availableFontFilesRE := `(url\(['"](http[^'"]+\.[a-z0-9]+)['"]\)\s*format\([^)]+\))` }}
-{{- $fontFormatRE := `url\(['"]http[^'"]+\.[a-z0-9]+['"]\)\s*format\(\s*['"]([^'"]+)['"]\)` }}
-{{- $fontFileURLRE := `url\(\s*['"](http[^'"]+\.[a-z0-9]+)['"]\s*\)` }}
+{{- $availableFontFilesRE := `(url\(['"]([^'"]+\.[a-z0-9]+)['"]\)\s*format\([^)]+\))` }}
+{{- $fontFormatRE := `url\(['"][^'"]+\.[a-z0-9]+['"]\)\s*format\(\s*['"]([^'"]+)['"]\)` }}
+{{- $fontFileURLRE := `url\(\s*['"]([^'"]+\.[a-z0-9]+)['"]\s*\)` }}
 
 {{- with $styleSheet }}
   {{- $fontURLMatches := findRE $fontMatchRE (lower .unminified.Content) }}
