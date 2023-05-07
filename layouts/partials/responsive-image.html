@@ -30,8 +30,9 @@
 {{- $defaultVersionName := "default" }}
 
 {{- if or (and $resourceSpec (not $imgAlt)) (and $variantSpec (not $variantSpec.default.alt) ) }}
-  {{- warnf "%s[%s]: Missing attribute .alt in args=%v"
-  $page $template (jsonify (dict "indent" "  ") (merge . (dict "Page" false) ) ) }}
+  {{- warnf "%s[%s]: Missing attribute .alt in .resource=%v and .variant.default=\n%v"
+  $page $template $resourceSpec
+  (jsonify (dict "indent" "  ") $variantSpec.default ) }}
 {{- end }}
 {{/* {{- warnf "%s[%s]: .resource has type [%T]" $page $template $resourceSpec -}} */}}
 

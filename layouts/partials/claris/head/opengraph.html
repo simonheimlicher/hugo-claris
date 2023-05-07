@@ -4,6 +4,7 @@
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{- /* {{- $debug = or $debug (not (not (findRE `leadership` $page.RelPermalink) ) ) }} */ -}}
+{{- $debug = or $debug (not (not (findRE `tags/$` $page.RelPermalink) ) ) }}
 
 {{- $dateLocalISO8601 := "2006-01-02T15:04:05-07:00" -}}
 
@@ -21,17 +22,17 @@
 
     {{- if $page.IsPage }}
     <meta property="article:section" content="{{ .ArticleSection }}">
-      {{ with (default .Date.Created .Date.Published) }}
+      {{- with (default .Date.Created .Date.Published) }}
     <meta property="article:published_time" {{ .Format $dateLocalISO8601 | printf "content=%q" | safeHTMLAttr }}>
-    {{ end }}
-      {{ with .Date.Modified }}
+    {{- end }}
+      {{- with .Date.Modified }}
     <meta property="article:modified_time" {{ .Format $dateLocalISO8601 | printf "content=%q" | safeHTMLAttr }}>
-      {{ end }}
+      {{- end }}
     {{- end -}}
 
     {{- with default $meta.Site.Data.Images.share .Images.share }}
-      {{- range $variantName, $variantMeta := .variant }}
-        {{- range $versionID, $versionResource := .version }}
+      {{- with $variantMeta := .variant.default }}
+        {{- with .version.default }}
     <meta property="og:image" content="{{ .canonicalurl }}">
     <meta property="og:image:type" content="{{ .resource.MediaType }}">
     <meta property="og:image:width" content="{{ .resource.Width }}">
@@ -41,13 +42,14 @@
         {{- end }}
       {{- end }}
     {{- else }}
-      {{- if $debug }}
-        {{- warnf "%s[%s]: No images: .Images=%v" $page $template .Images }}
-      {{- end }}
+      {{- warnf "%s[%s]: Missing share image in lang=%v: $meta.Site=%#v $meta.Single=%#v"
+          $page $template site.Language.Lang
+          $meta.Site.Data.Images.share.variant.default.version
+          $meta.Single.Data.Images.share.variant.default.version }}
     {{- end }}
   {{- end }}
 
-  <!-- If it is part of a series, link to related articles -->
+  {{- /* If it is part of a series, link to related articles */ -}}
   {{- $permalink := $page.Permalink }}
   {{- $siteSeries := site.Taxonomies.series }}
   {{- if $siteSeries }}

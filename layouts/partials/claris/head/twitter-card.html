@@ -3,35 +3,42 @@
 {{- $template := "claris/head/twitter-card" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- /* {{- $debug = or $debug (not (not (findRE `never-match` $page.RelPermalink) ) ) }} */ -}}
+{{- $debug = or $debug (not (not (findRE `tags/$` $page.RelPermalink) ) ) }}
 
 {{- $dateLocalISO8601 := "2006-01-02T15:04:05-07:00" -}}
-
-{{- $homePage := (site.GetPage "/") }}
 
 {{- $twitterCard := default $meta.Site.Classification.TwitterCard $meta.Classification.TwitterCard }}
 {{- if $twitterCard }}
   {{- with $meta.Single.Data }}
     {{- $shareImageURL := false }}
     {{- $shareImageAlt := false }}
-    {{- with (default $meta.Site.Data.Images.share.variant.default .Images.share.variant.default) }}
-      {{- with (default .version.default .version.aspect_2x1) }}
-        {{- $shareImageURL = partial "claris/_functions/canonical-url" .resource }}
+    {{- with default $meta.Site.Data.Images.share .Images.share }}
+      {{- with $variantMeta := .variant.default }}
+        {{- with (default .version.default .version.aspect_2x1) }}
+          {{- $shareImageURL = .canonicalurl }}
+        {{- end }}
       {{- end }}
       {{- with .alt }}
         {{- $shareImageAlt = . }}
       {{- end }}
+    {{- else }}
+      {{- warnf "%s[%s]: Missing share image in lang=%v: $meta.Site=%#v $meta.Single=%#v"
+          $page $template site.Language.Lang
+          $meta.Site.Data.Images.share.variant.default.version
+          $meta.Single.Data.Images.share.variant.default.version -}}
     {{- end }}
     {{- with $shareImageURL }}
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="{{ $shareImageURL }}">
-    {{- with $shareImageAlt }}
+      {{- with $shareImageAlt }}
     <meta name="twitter:alt" content="{{ . }}">
-    {{- end }}
+      {{- end }}
     {{- else }}
     <meta name="twitter:card" content="summary">
-    {{- warnf "%s[%s]: Missing share image: $meta.Site.Data.Images.share.variant.default=%v .Images.share.variant.default=%v"
-    $page $template $meta.Site.Data.Images.share.variant.default .Images.share.variant.default }}
+      {{- warnf "%s[%s]: Missing share image: $meta.Site=%#v $meta.Single=%#v"
+          $page $template
+          $meta.Site.Data.Images.share.variant.default.version
+          $meta.Single.Data.Images.share.variant.default.version }}
     {{- end }}
     <meta name="twitter:title" content="{{ .Title }}">
     {{- with (default $meta.Site.Data.Description .Description) }}
