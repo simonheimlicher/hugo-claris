@@ -5,7 +5,7 @@
 {{- $template := "_default/baseof" }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `confidential` $page.RelPermalink) ) ) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `/(?:[^/]+-demo)?$` $page.RelPermalink) ) ) }} */}}
 {{- .Scratch.Set "clarisdebug" $debug }}
 
 {{- .Scratch.Set "claris.module.qrcode.count" 0 }}
@@ -27,11 +27,40 @@
     (jsonify (dict "indent" "  ") $meta.Classification ) }}
 {{- end }} */ -}}
 
+{{- $onlyMediaType := default "all" ($page.Param "onlyMediaType") }}
+{{- $mediaTypeList := (slice "all" "screen" "print") }}
+{{- if not (eq $onlyMediaType "all") }}
+  {{- $mediaTypeList = (slice $onlyMediaType) }}
+{{- end }}
+{{- $legacyMediaType := default "all" $onlyMediaType }}
+{{- $legacySuffix := "_legacy" }}
+
+{{- $contentTypeList := partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type }}
+{{- $contentTypeListID := delimit $contentTypeList "-" }}
+{{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
+{{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
+{{- $supportIE11 := default true (site.Params.supportIE11 | and (not $envDevel) ) }}
+{{- $minifyBundles := $envProd }}
+
 {{- $assetVariant := (dict
   "OutputFormat" $outputFormat
   "OnlyMediaType" ($page.Param "onlyMediaType")
-  "ContentTypeList" (partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type)
+  "MediaTypeList" $mediaTypeList
+  "ContentTypeList" $contentTypeList
+  "ContentTypeListID" $contentTypeListID
+  "BundleParams" (dict
+    "MinifyBundles" $minifyBundles
+    "SupportIE11" $supportIE11
+    "LegacyMediaType" $legacyMediaType
+    "LegacySuffix" $legacySuffix
+  )
 ) }}
+{{- .Scratch.Set "claris.assets.variant" $assetVariant }}
+
+{{- if $debug }}
+  {{- warnf "%s[%s]: claris.assets.variant=\n%v"
+      $page $template (jsonify (dict "indent" "  ") (.Scratch.Get "claris.assets.variant") ) }}
+{{- end }}
 
 {{- $htmlClassList := (slice "no-js") }}
 {{- if .Params.heroImageStyle }}

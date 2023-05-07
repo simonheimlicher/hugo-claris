@@ -1,26 +1,37 @@
 {{- $styleBundles := dict }}
 {{- $page := .Page }}
-{{- $mediaTypeList := .MediaTypeList }}
-{{- $contentTypeList := .ContentTypeList }}
-{{- $supportIE11 := default false .SupportIE11 }}
-{{- $minifyBundles := default false .MinifyBundles }}
 {{- $template := "claris/_functions/style-bundles" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{- $debug = or $debug (not (not (findRE `.` $page.RelPermalink) ) ) }}
 
+{{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
 
-{{- $contentTypeListID := delimit $contentTypeList "-" }}
+{{- $mediaTypeList := $assetVariant.MediaTypeList }}
+{{- $contentTypeList := $assetVariant.ContentTypeList }}
+{{- $contentTypeListID := $assetVariant.ContentTypeListID }}
+
+{{- $supportIE11 := default true $assetVariant.BundleParams.SupportIE11 }}
+
+<!-- NOTE: It appears that `resources.Minify` does not respect configuration.
+Therefore, we make $minifyCSS dependent on the two main params -->
+{{- $minifyCSS := default false (and
+  ($page.Param "minify.minifyOutput")
+  (not ($page.Param "minify.disableCSS") )
+  $assetVariant.BundleParams.MinifyBundles
+) -}}
+
 <!-- https://www.hackification.io/software-development/hugo/html/asset-bundling/ */ -->
 {{- $resourcePathBase := "styles" -}}
 {{- $sourceExt := "sass" }}
 {{- $executedSourceSuffix := "_executed" }}
 {{- $targetExt := "css" -}}
 {{- $legacySuffix := default "_legacy" .LegacySuffix }}
+{{- $legacyMediaType := default "all" .LegacyMediaType }}
 {{- $fingerprintOptions := default "sha256" site.Params.resourceFingerprintOptions }}
 
 {{- $toCSSoptionsBase := dict }}
-{{- if $minifyBundles }}
+{{- if $minifyCSS }}
   {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "compressed" "enableSourceMap" "false") -}}
 {{- else }}
   {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "expanded" "enableSourceMap" "true") -}}
@@ -29,11 +40,15 @@
 {{- range $contentTypeList }}
   {{- $toCSSIncludePaths = append (slice (printf "assets/%s/%s" $resourcePathBase . ) ) $toCSSIncludePaths }}
 {{- end }}
-{{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "includePaths" $toCSSIncludePaths)}}
-{{- $postCSSoptions := (dict "config" "postcss.config.js" "noMap" $minifyBundles) -}}
+{{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "includePaths" $toCSSIncludePaths) }}
+<!-- NOTE: According to [the documentation](https://gohugo.io/hugo-pipes/postcss/#options),
+the resources.PostCSS function accepts a parameter indicating the *directory*
+that contains the `postcss.config.js` file - not the file itself. -->
+{{- $postCSSOptions := (dict "config" "./assets/styles/claris/postcss" "noMap" $minifyCSS) -}}
+{{- $postCSSLegacyOptions := (dict "config" "./assets/styles/claris/postcss_legacy" "noMap" $minifyCSS) -}}
 
-{{/* {{- warnf "%s[%s]: contentTypeList:%s supportIE11=%v minifyBundles=%v site.Params.supportIE11=%v toCSSoptionsBase=%v postCSSoptions=%v "
-    $page $template $contentTypeList $supportIE11 $minifyBundles site.Params.supportIE11 $toCSSoptionsBase $postCSSoptions -}} */}}
+{{/* {{- warnf "%s[%s]: contentTypeList:%s supportIE11=%v minifyCSS=%v site.Params.supportIE11=%v toCSSoptionsBase=%v postCSSOptions=%v  postCSSLegacyOptions=%v "
+    $page $template $contentTypeList $supportIE11 $minifyCSS site.Params.supportIE11 $toCSSoptionsBase $postCSSOptions $postCSSLegacyOptions -}} */}}
 
   {{/* NOTE: Increasing fetchpriority of fonts CSS did not help.
   The file assets/styles/claris-fonts.sass is not in use.
@@ -124,40 +139,65 @@
     {{- $toCSSoptions := merge $toCSSoptionsBase (dict "targetPath" $targetFile) -}}
     {{- $bundle := $concatResource | resources.ToCSS $toCSSoptions }}
 
-    {{- $bundle_full := $bundle | resources.Fingerprint $fingerprintOptions }}
+    {{- $bundleUnMinified := $bundle | resources.Fingerprint $fingerprintOptions }}
+    {{- $bundleMinified := $bundleUnMinified }}
 
     {{/* {{- warnf "%s[%s]: $bundle[%s] %#v: MediaType:%s Content:\n%v\n...\n%v"
         $page $template $bundle $resourceID $bundle.MediaType (substr $bundle.Content 0 100) (substr $bundle.Content -100) }} */}}
 
-    {{- if $minifyBundles }}
-      {{- $bundle_minified := $bundle | resources.PostCSS | resources.Minify | resources.Fingerprint $fingerprintOptions | resources.PostProcess }}
-      {{- $styleBundles = merge $styleBundles (dict $resourceID (dict "resource" $bundle_minified "full" $bundle_full "media" $mediaType "fetchpriority" $fetchPriority) ) -}}
+    {{- if $minifyCSS }}
+      {{/* {{- $bundleMinified := $bundle | resources.Fingerprint $fingerprintOptions }} */}}
+      {{/* {{- $bundleMinified := $bundle | resources.PostCSS $postCSSOptions | resources.Fingerprint $fingerprintOptions }} */}}
+      {{/* {{- $bundleMinified := $bundle | resources.Minify | resources.Fingerprint $fingerprintOptions }} */}}
+      {{/* {{- $bundleMinified := $bundle | resources.PostCSS $postCSSOptions | resources.Minify | resources.Fingerprint $fingerprintOptions }} */}}
+      {{- $bundleMinified = $bundle | resources.PostCSS $postCSSOptions | resources.Minify | resources.Fingerprint $fingerprintOptions | resources.PostProcess }}
       {{- if $debug }}
-        {{- $bundle_postcss := $bundle | resources.PostCSS }}
-        {{- $bundle_minify := $bundle | resources.PostCSS | resources.Minify }}
+        {{- $afterPostCSS := $bundle | resources.PostCSS }}
+        {{- $afterMinify := $bundle | resources.PostCSS | resources.Minify }}
         {{- warnf "%s[%s]: Size in kB:\n concat=%v: %vkB\nToCSS=%v: %vkB\nPostCSS=%v: %vkB\nMinify=%v: %vkB"
             $page $template
             $concatResource.RelPermalink (div (len $concatResource.Content) 1024)
             $bundle.RelPermalink (div (len $bundle.Content) 1024)
-            $bundle_postcss.RelPermalink (div (len $bundle_postcss.Content) 1024)
-            $bundle_minify.RelPermalink (div (len $bundle_minify.Content) 1024) -}}
+            $afterPostCSS.RelPermalink (div (len $afterPostCSS.Content) 1024)
+            $afterMinify.RelPermalink (div (len $afterMinify.Content) 1024) -}}
       {{- end }}
-
-    {{- else }}
-    {{- $styleBundles = merge $styleBundles (dict $resourceID (dict "resource" $bundle_full "full" $bundle_full "media" $mediaType "fetchpriority" $fetchPriority) ) -}}
     {{- end }}
 
-    {{- if (and $supportIE11 $params.supportIE11) }}
+    {{- $styleBundle := (dict
+      "resource" $bundleMinified
+      "unminified" $bundleUnMinified
+      "media" $mediaType
+    ) }}
+
+    {{- with $fetchPriority }}
+      {{- $styleBundle = merge $styleBundle (dict "fetchpriority" $fetchPriority) }}
+    {{- end }}
+
+    {{- $styleBundles = merge $styleBundles (dict $resourceID $styleBundle) -}}
+
+    {{- if (and (eq $mediaType $legacyMediaType) (and $supportIE11 $params.supportIE11) ) }}
       {{- $legacyResourceID := printf "%s%s" $resourceID $legacySuffix }}
       {{- $legacyExecutedFile := printf "%s.sass" $legacyResourceID }}
       {{- $legacyToCSSoptions := merge $toCSSoptionsBase (dict "targetPath" (printf "%s/%s.%s" $targetPathPrefix $legacyResourceID $targetExt) ) -}}
-      {{- $legacyBundle := $concatResource | resources.ToCSS $legacyToCSSoptions | resources.PostCSS $postCSSoptions | resources.Fingerprint $fingerprintOptions -}}
-      {{- $styleBundles = merge $styleBundles (dict $legacyResourceID $legacyBundle) -}}
+      {{- $legacyBundle := $concatResource | resources.ToCSS $legacyToCSSoptions -}}
+      {{- $legacyBundleFull := $legacyBundle | resources.PostCSS $postCSSLegacyOptions | resources.Fingerprint $fingerprintOptions -}}
+      {{- $legacyBundleMinified := $legacyBundleFull }}
+      {{- if $minifyCSS }}
+        {{- $legacyBundleMinified = $legacyBundle | resources.PostCSS $postCSSLegacyOptions | resources.Minify | resources.Fingerprint $fingerprintOptions | resources.PostProcess }}
+      {{- end }}
+      {{- $legacyStyleBundle := (dict
+        "resource" $legacyBundleMinified
+        "full" $legacyBundleFull
+        "media" $mediaType
+        ) }}
+      {{- $styleBundles = merge $styleBundles (dict $legacyResourceID $legacyStyleBundle) -}}
+
     {{- end -}}
   {{/* {{- else }}
     {{- warnf "%s[%s]: Not generating style bundle for MediaType=%s: not in MediaTypeList=%v"
         $page $template $mediaType $mediaTypeList }} */}}
   {{- end }}
 {{- end }}
-{{/* {{- warnf "%s[%s]: returning styleBundles: %s" $page $template $styleBundles }} */}}
+{{/* {{- warnf "%s[%s]: returning styleBundles: %v"
+    $page $template (jsonify (dict "indent" "  ") $styleBundles) }} */}}
 {{- return $styleBundles -}}

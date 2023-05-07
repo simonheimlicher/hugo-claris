@@ -1,43 +1,28 @@
+{{- $assets := dict }}
 {{- $page := .Page }}
 {{- $template := "claris/_functions/asset-bundles" }}
-{{- $assets := dict }}
 
-{{- $contentTypeList := partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type }}
+{{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
 
-{{- $onlyMediaType := default "all" ($page.Param "onlyMediaType") }}
-{{- $mediaTypeList := (slice "all" "screen" "print") }}
-{{- if not (eq $onlyMediaType "all") }}
-  {{- $mediaTypeList = (slice $onlyMediaType) }}
-{{- end }}
-{{- $legacyMediaType := default "all" $onlyMediaType }}
-{{- $legacySuffix := "_legacy" }}
-
-{{- $contentTypeListID := delimit $contentTypeList "-" }}
-{{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
-{{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
-{{- $supportIE11 := default true (site.Params.supportIE11 | and (not $envDevel) ) }}
-{{- $minifyBundles := $envProd }}
 {{/* {{- warnf "%s[%s]: contentTypeList:%s hugo.Environment=%v envDevel=%v envProd=%v Params.supportIE11=%v supportIE11:%v minifyBundles:%v"
     $page $template $contentTypeList hugo.Environment $envDevel $envProd site.Params.supportIE11 $supportIE11 $minifyBundles -}} */}}
 
 {{/* {{- warnf "%s[%s]: RelPermalink=%s .Type=%s .Layout=%s $contentTypeList=%s $mediaTypeList=%s" .Page $template .Page.RelPermalink .Type .Layout $contentTypeList $mediaTypeList -}} */}}
 
-{{- $bundleParams := (dict
-    "MediaTypeList" $mediaTypeList
-    "ContentTypeList" $contentTypeList
-    "MinifyBundles" $minifyBundles
-    "SupportIE11" $supportIE11
-    "LegacyMediaType" $legacyMediaType
-    "LegacySuffix" $legacySuffix
-) }}
-
 <!-- Bundle CSS: styles from all content types merged per mediaType type -->
-{{- $styleBundles := partialCached "claris/_functions/style-bundles"
-  (merge $bundleParams (dict "Page" $page)) $bundleParams }}
+<!-- FIXME: Sometimes a change to a template file such as
+"claris/_functions/style-bundles", which changes the stylesheets, is
+only reflected in `/index.html` but not in other files.
+Trying to add additional parameters to the below calls to partialCached,
+maybe this helps -->
+{{/* {{- $styleBundles := partialCached "claris/_functions/style-bundles"
+  (merge $bundleParams (dict "Page" $page)) $bundleParams $mediaTypeList $contentTypeList $minifyBundles $supportIE11 $legacyMediaType $legacySuffix }} */}}
+{{- $styleBundles := partialCached "claris/_functions/style-bundles" . $assetVariant }}
 
 <!-- Bundle JS: styles from all content types merged per mediaType type -->
-{{- $scriptBundles := partialCached "claris/_functions/script-bundles"
-  (merge $bundleParams (dict "Page" $page)) $bundleParams }}
+{{/* {{- $scriptBundles := partialCached "claris/_functions/script-bundles"
+  (merge $bundleParams (dict "Page" $page)) $bundleParams $mediaTypeList $contentTypeList $minifyBundles $supportIE11 $legacyMediaType $legacySuffix }} */}}
+{{- $scriptBundles := partialCached "claris/_functions/script-bundles" . $assetVariant }}
 
-{{- $assets = (dict "Styles" $styleBundles "Scripts" $scriptBundles "Params" $bundleParams) }}
+{{- $assets = (dict "Styles" $styleBundles "Scripts" $scriptBundles) }}
 {{- return $assets }}

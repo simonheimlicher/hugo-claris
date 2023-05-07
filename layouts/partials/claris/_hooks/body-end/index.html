@@ -1,15 +1,10 @@
 {{- $page := .Page }}
-{{- $template := "claris/_hoos/body-end/scripts" }}
+{{- $template := "claris/_hook/body-end/index" }}
 
-{{- $assetVariant := (dict
-  "Kind" .Kind
-  "OnlyMediaType" ($page.Param "onlyMediaType")
-  "ContentTypeList" (partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type)
-) -}}
-{{/* {{- warnf "%s[%s]: $assetVariant=%v" $page $template $assetVariant }} */}}
-{{- with $assets := partialCached "claris/_functions/asset-bundles" . $assetVariant -}}
-  {{- partialCached "claris/_hooks/body-end/scripts" (dict "Assets" .) $assetVariant }}
-{{- end }}
+{{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
+
+{{- /* warnf "%s[%s]: $assetVariant=%v" $page $template $assetVariant */ -}}
+{{- partialCached "claris/_hooks/body-end/scripts" . $assetVariant }}
 
 {{- partialCached "claris/_hooks/body-end/math" . }}
 {{- partialCached "claris/_hooks/body-end/google-analytics" . }}

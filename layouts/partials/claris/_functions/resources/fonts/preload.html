@@ -38,7 +38,7 @@
 {{- $fontFileURLRE := `url\(\s*['"](http[^'"]+\.[a-z0-9]+)['"]\s*\)` }}
 
 {{- with $styleSheet }}
-  {{- $fontURLMatches := findRE $fontMatchRE (lower .full.Content) }}
+  {{- $fontURLMatches := findRE $fontMatchRE (lower .unminified.Content) }}
   {{- with $fontURLMatches }}
     {{- range $fontURLMatches }}
       {{- $fontFamily := findRESubmatch $fontFamilyRE (lower . ) }}
@@ -114,7 +114,7 @@
     {{- end }}
   {{- else }}
     {{- warnf "%s[%s]: No fonts found to preload. regex=%v stylesheet=%v .Content=\n%v"
-        $page $template $fontMatchRE $styleSheet.full $styleSheet.full.Content -}}
+        $page $template $fontMatchRE $styleSheet.unminified $styleSheet.unminified.Content -}}
   {{- end }}
 {{- return $preloadFonts }}
 {{- end }}

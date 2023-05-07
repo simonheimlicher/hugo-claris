@@ -1,16 +1,27 @@
 {{- $scriptBundles := dict -}}
 {{- $page := .Page }}
-{{- $mediaTypeList := .MediaTypeList }}
-{{- $contentTypeList := .ContentTypeList }}
-{{- $supportIE11 := default true .SupportIE11 }}
-{{- $minifyBundles := default false .MinifyBundles }}
 {{- $template := "claris/_functions/script-bundles" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{- /* $debug = or $debug (not (not (findRE `.` $page.RelPermalink) ) ) */ -}}
 {{- $skeletonOnly := false }}
 
-{{- $contentTypeListID := delimit $contentTypeList "-" }}
+{{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
+
+{{- $mediaTypeList := $assetVariant.MediaTypeList }}
+{{- $contentTypeList := $assetVariant.ContentTypeList }}
+{{- $contentTypeListID := $assetVariant.ContentTypeListID }}
+
+{{- $supportIE11 := default true $assetVariant.BundleParams.SupportIE11 }}
+
+<!-- NOTE: It appears that `resources.Minify` does not respect configuration.
+Therefore, we make $minifyJS dependent on the two main params -->
+{{- $minifyJS := default false (and
+  ($page.Param "minify.minifyOutput")
+  (not ($page.Param "minify.disableJS") )
+  $assetVariant.BundleParams.MinifyBundles
+) -}}
+
 {{/* {{- warnf "%s[%s]: $contentTypeList:%s $supportIE11:%v" $page $template $contentTypeList $supportIE11 -}} */}}
 <!-- https://www.hackification.io/software-development/hugo/html/asset-bundling/ */ -->
 {{- $resourcePathBase := "scripts" -}}
@@ -31,7 +42,7 @@
 
 {{- $jsBuildOptionsBase := (dict
     "target" $targetVersion
-    "minify" $minifyBundles
+    "minify" $minifyJS
 ) }}
 
 {{- $jsBuildOptionsTest := (dict
@@ -41,7 +52,7 @@
 {{- $jsBuildEmptyResourceTest := "(()=>{})();" }}
 
   <!-- Note on source maps: option "inline" seems to work, the alternative would be "external" -->
-{{- if not $minifyBundles }}
+{{- if not $minifyJS }}
   {{- $jsBuildOptionsBase = merge $jsBuildOptionsBase (dict
       "sourceMap" "inline"
     ) }}
@@ -93,8 +104,8 @@ never available to be used as resources such as ESM modules.
 
 Therefore, we pass the parameters in the hugo-params file via the
 JavaScript equivalent of global variables in the dictionary
- 'window.clarisHugoParams' and concatenate the processed file with
- file that is then published.
+'window.clarisHugoParams' and concatenate the processed file with
+file that is then published.
 -->
 {{- range $target := $targetBundles }}
   {{- $mediaType := default "all" $target.Media }}
@@ -216,23 +227,42 @@ JavaScript equivalent of global variables in the dictionary
       {{- with $variantResources }}
         {{- if (eq $variant.Variant "Default" )}}
             {{- $targetFile := printf "%s/%s%s.%s" $targetPathPrefix $target.Target $targetSuffix $targetExt }}
-            {{- $concatResources := $variantResources | resources.Concat $targetFile }}
-            {{- if $debug }}
-              {{- warnf "%s[%s]: concatResources.Name=%v published at .RelPermalink=%v:\n%v"
-                  $page $template $concatResources.Name
-                  $concatResources.RelPermalink (substr $concatResources.Content 0 400) }}
-            {{- end }}
+            {{- $concatResource := $variantResources | resources.Concat $targetFile }}
+            {{/* {{- if $debug }}
+              {{- warnf "%s[%s]: concatResource.Name=%v published at .RelPermalink=%v:\n%v"
+                  $page $template $concatResource.Name
+                  $concatResource.RelPermalink (substr $concatResource.Content 0 400) }}
+            {{- end }} */}}
 
             {{- $jsBuildOptions := $jsBuildOptionsBase }}
-            {{- $bundle := $concatResources | js.Build $jsBuildOptions -}}
-            {{- $bundle = $bundle | resources.Fingerprint $fingerprintOptions }}
-            {{- if $debug }}
+            {{- $bundle := $concatResource | js.Build $jsBuildOptions -}}
+            {{- $bundleUnMinified := $bundle | resources.Fingerprint $fingerprintOptions }}
+            {{- $bundleMinified := $bundleUnMinified }}
+
+            {{- if $minifyJS }}
+              {{- $bundleMinified = $bundle | resources.Minify | resources.Fingerprint $fingerprintOptions | resources.PostProcess }}
+              {{- if $debug }}
+                {{- $afterMinify := $bundle | resources.PostCSS | resources.Minify }}
+                {{- warnf "%s[%s]: Size in kB:\n concat=%v: %vkB\nBuild=%v: %vkB\nMinify=%v: %vkB"
+                    $page $template
+                    $concatResource.RelPermalink (div (len $concatResource.Content) 1024)
+                    $bundle.RelPermalink (div (len $bundle.Content) 1024)
+                    $afterMinify.RelPermalink (div (len $afterMinify.Content) 1024) -}}
+              {{- end }}
+            {{- end }}
+            {{/* {{- if $debug }}
               {{- warnf "%s[%s]: js.Build target=%v bundle.Name=%v published at .RelPermalink=%v:\n%v"
                   $page $template $jsBuildOptions.target $bundle.Name
                   $bundle.RelPermalink (substr $bundle.Content 0 400) }}
-            {{- end }}
+            {{- end }} */}}
 
-            {{- $scriptBundles = merge $scriptBundles (dict $target.Target $bundle) -}}
+            {{- $scriptBundle := (dict
+              "resource" $bundleMinified
+              "unminified" $bundleUnMinified
+              "media" $mediaType
+            ) }}
+            {{- $scriptBundles = merge $scriptBundles (dict $target.Target $scriptBundle) -}}
+
         {{- else if (eq $variant.Variant "Legacy" )}}
           {{- $legacyTarget := printf "%s%s" $target.Target $legacySuffix }}
           {{- $legacyExecutedFile := printf "%s%s.%s" $legacyTarget $executedSourceSuffix $sourceExt }}
@@ -247,14 +277,19 @@ JavaScript equivalent of global variables in the dictionary
           {{- $legacyBundle = $legacyBundle | babel }}
           {{- $jsBuildLegacyOptions := merge $jsBuildOptionsBase (dict "target" $legacyTargetVersion) }}
           {{- $legacyBundle = $legacyBundle | js.Build $jsBuildLegacyOptions }}
-          {{- $legacyBundle = $legacyBundle | resources.Fingerprint $fingerprintOptions }}
+          {{- $legacyBundleUnMinified := $legacyBundle | resources.Fingerprint $fingerprintOptions }}
           {{/* {{- warnf "%s[%s]: js.Build of .Target=%v .Variant=%v legacyTarget=%v: jsBuildLegacyOptions=%v legacyBundle.Name=%v published at .RelPermalink=%v:\n%v"
               $page $template $target.Target $variant.Variant $legacyTarget
               $jsBuildLegacyOptions $legacyBundle.Name
               $legacyBundle.RelPermalink
               $legacyBundle.Content }} */}}
 
-          {{- $scriptBundles = merge $scriptBundles (dict $legacyTarget $legacyBundle) -}}
+            {{- $legacyScriptBundle := (dict
+              "resource" $legacyBundleUnMinified
+              "unminified" $legacyBundleUnMinified
+              "media" $mediaType
+            ) }}
+          {{- $scriptBundles = merge $scriptBundles (dict $legacyTarget $legacyScriptBundle) -}}
         {{- else -}}
           {{- errorf "%s[%s]: Invalid $variant.Variant=%v" $variant.Variant }}
         {{- end -}}
@@ -269,5 +304,6 @@ JavaScript equivalent of global variables in the dictionary
     $page $template $mediaType $mediaTypeList }} */}}
   {{- end }}
 {{- end }}
+
 {{/* {{- warnf "%s[%s]: returning $scriptBundles: %s" $page $template $scriptBundles }} */}}
 {{- return $scriptBundles -}}
