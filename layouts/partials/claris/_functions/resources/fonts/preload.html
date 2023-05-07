@@ -1,7 +1,9 @@
 {{- $preloadFonts := slice }}
 {{- $page := .Page }}
 {{- $template := "claris/_functions/resources/fonts/preload" }}
-{{- $debug := default ($page.Scratch.Get "clarisdebug") .Debug }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
+
 {{/* {{- $debug = or $debug (not (not (findRE `.` $page.RelPermalink) ) ) }} */}}
 
 {{- $styleSheet := .StyleSheet }}

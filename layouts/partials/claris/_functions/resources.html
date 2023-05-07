@@ -5,7 +5,8 @@
 {{- $page := .Page }}
 {{- $originalPage := default .Page .OriginalPage }}
 {{/* {{- $debug := default false (strings.Contains $resource "never-match-this_debugging_disabled") }} */}}
-{{- $debug := page.Scratch.Get "clarisdebug" }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+/)?leadership/$` $page.RelPermalink) ) ) }} */}}
 {{- $imageResourceArgs := merge . (dict "Debug" $debug) }}
 

@@ -5,8 +5,10 @@
 {{- $supportIE11 := default true .SupportIE11 }}
 {{- $minifyBundles := default false .MinifyBundles }}
 {{- $template := "claris/_functions/script-bundles" }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
+{{- /* $debug = or $debug (not (not (findRE `.` $page.RelPermalink) ) ) */ -}}
 {{- $skeletonOnly := false }}
-{{- $debug := or .Debug (page.Scratch.Get "clarisdebug") }}
 
 {{- $contentTypeListID := delimit $contentTypeList "-" }}
 {{/* {{- warnf "%s[%s]: $contentTypeList:%s $supportIE11:%v" $page $template $contentTypeList $supportIE11 -}} */}}

@@ -2,7 +2,8 @@
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $schemaOrgMeta := .SchemaOrgMeta }}
 {{- $template := "claris/_functions/schema-org/collectionpage" }}
-{{- $debug := .Debug }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{/* {{- $debug = or $debug (not (not (findRE `technology` $page.RelPermalink) ) ) }} */}}
 {{- $entityParams := merge . (dict "Debug" $debug) }}
 

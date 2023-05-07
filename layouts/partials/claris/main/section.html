@@ -8,7 +8,8 @@
   {{- $itemType = "section" }}
 {{- end }}
 
-{{- $debug := page.Scratch.Get "clarisdebug" }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{/* {{- $debug = or $debug (not (not (findRE `/index` $page.RelPermalink) ) ) }} */}}
 
 {{- with $page }}

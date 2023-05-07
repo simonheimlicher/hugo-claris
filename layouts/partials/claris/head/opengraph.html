@@ -1,7 +1,8 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/head/opengraph" }}
-{{- $debug := page.Scratch.Get "clarisdebug" }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{- /* {{- $debug = or $debug (not (not (findRE `leadership` $page.RelPermalink) ) ) }} */ -}}
 
 {{- $dateLocalISO8601 := "2006-01-02T15:04:05-07:00" -}}

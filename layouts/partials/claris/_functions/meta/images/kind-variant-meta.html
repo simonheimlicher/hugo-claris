@@ -1,6 +1,7 @@
 {{- $kindVariantMeta := dict }}
 {{- $page := .Page }}
-{{- $debug := page.Scratch.Get "clarisdebug" }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{/* {{- $debug = or $debug (not (not (findRE `transformation/$` $page.RelPermalink) ) ) }} */}}
 {{- $template := "claris/_functions/meta/image/kind-variant-meta" }}
 

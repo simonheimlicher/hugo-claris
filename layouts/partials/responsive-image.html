@@ -1,6 +1,7 @@
 {{- $template := "partials/responsive-image" }}
 {{- $page := .Page }}
-{{- $debug := page.Scratch.Get "clarisdebug" }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?leadership/$` $page.RelPermalink) ) ) -}} */}}
 {{- $imageResourceArgs := merge . (dict
   "Debug" $debug

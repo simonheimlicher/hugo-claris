@@ -2,7 +2,8 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/_functions/schema-org/_entities/author" }}
-{{- $debug := page.Scratch.Get "clarisdebug" }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{/* {{- $debug = true }} */}}
 
 {{- $entityParams := merge . (dict "Debug" $debug) }}

@@ -5,9 +5,10 @@
 {{- $supportIE11 := default false .SupportIE11 }}
 {{- $minifyBundles := default false .MinifyBundles }}
 {{- $template := "claris/_functions/style-bundles" }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
+{{- $debug = or $debug (not (not (findRE `.` $page.RelPermalink) ) ) }}
 
-{{- $debug := default ($page.Scratch.Get "clarisdebug") .Debug }}
-{{/* {{- $debug = or $debug (not (not (findRE `.` $page.RelPermalink) ) ) }} */}}
 
 {{- $contentTypeListID := delimit $contentTypeList "-" }}
 <!-- https://www.hackification.io/software-development/hugo/html/asset-bundling/ */ -->

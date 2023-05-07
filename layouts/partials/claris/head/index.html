@@ -5,7 +5,8 @@
 {{- $themeColorLit := default "hsl(47, 20%, 98%)" (.Page.Param "themeColorLit") }}
 {{- $themeColorDim := default "hsl(47, 20%, 10%)" (.Page.Param "themeColorDim") }}
 
-{{- $debug := page.Scratch.Get "clarisdebug" }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{/* {{- $debug = or $debug (not (not (findRE `about` $page.RelPermalink) ) ) }} */}}
 {{- with $page }}
     <meta charset="utf-8">

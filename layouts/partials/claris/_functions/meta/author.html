@@ -1,6 +1,7 @@
 {{- $page := .Page }}
 {{- $template := "claris/_functions/meta/author" }}
-{{- $debug := page.Scratch.Get "clarisdebug" }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{/* {{- $debug = or $debug (not (not (findRE `^/(?:[^/]*-demo/)?(.*powerful|$)` $page.RelPermalink) ) ) }} */}}
 
 {{- $author := default false .Author }}

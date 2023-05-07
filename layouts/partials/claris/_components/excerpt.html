@@ -13,7 +13,8 @@
 {{- $headerPartial := default "" .HeaderPartial }}
 {{- $itemType := default "page" .ItemType }}
 {{- $headingLevel := default 3 .HeadingLevel }}
-{{- $debug := page.Scratch.Get "clarisdebug" }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?leadership` $page.RelPermalink) ) ) -}} */}}
 {{/* {{- $debug = or $debug (eq $page.Kind "home") -}} */}}
 

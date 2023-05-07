@@ -1,7 +1,8 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/_components/list" }}
-{{- $debug := default (page.Scratch.Get "clarisdebug") .Debug }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/transformation/$` $page.RelPermalink) ) ) }} */}}
 {{/* {{- page.Scratch.Set "clarisdebug" $debug }} */}}
 

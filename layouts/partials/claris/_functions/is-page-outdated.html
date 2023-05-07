@@ -1,7 +1,8 @@
 {{- $pageOutdated := false }}
 {{- $page := .Page }}
 {{- $template := "claris/_functions/is-page-outdated" }}
-{{- $debug := page.Scratch.Get "clarisdebug" }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{/* {{- $debug = or $debug (not (not (findRE `^/$` $page.RelPermalink) ) ) }} */}}
 
 {{- with $page }}

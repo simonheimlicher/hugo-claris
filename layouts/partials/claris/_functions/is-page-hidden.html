@@ -1,7 +1,8 @@
 {{- $pageHidden := true }}
 {{- $page := .Page }}
 {{- $template := "claris/_functions/is-page-hidden" }}
-{{- $debug := or ($page.Scratch.Get "clarisdebug") .Debug }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{/* {{- $debug = or $debug (not (not (findRE `profile` $page.RelPermalink) ) ) }} */}}
 
 {{- with $page }}

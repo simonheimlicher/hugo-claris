@@ -1,6 +1,7 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
-{{- $debug := page.Scratch.Get "clarisdebug" }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{- $contentType := .ContentType }}
 {{- $template := "claris/head/robots" }}
 {{- $robotsGenerate := false -}}
