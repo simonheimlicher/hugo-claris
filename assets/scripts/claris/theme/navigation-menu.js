@@ -6,9 +6,9 @@ import {
   containsClass,
 } from './functions';
 
-// console.log('BEGIN claris/theme/mobile-nav');
+// console.log('BEGIN claris/theme/navigation-menu');
 const navToggle = function() {
-  // console.log('BEGIN claris/theme/mobile-nav: navToggle()');
+  // console.log('BEGIN claris/theme/navigation-menu: navToggle()');
   const doc = document.documentElement;
   const htmlRootElement = clarisHugoParams.htmlRootElement;
 
@@ -81,8 +81,8 @@ const navToggle = function() {
       }
     });
   }
-  // console.log('END   claris/theme/mobile-nav: navToggle()');
+  // console.log('END   claris/theme/navigation-menu: navToggle()');
 };
 document.addEventListener('DOMContentLoaded', navToggle);
 
-// console.log('END   claris/theme/mobile-nav');
+// console.log('END   claris/theme/navigation-menu');

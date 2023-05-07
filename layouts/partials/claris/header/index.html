@@ -10,7 +10,7 @@
 {{- end }}
     <header class="nav_header">
       <nav class="nav inner_horizontal inner_top-0">
-        {{- /* FIXME: partial "claris/header/logo" is required for mobile navigation to work. Otherwise, JS "theme/mobile-nav.js" will terminate early" */ -}}
+        {{- /* FIXME: partial "claris/header/logo" is required for mobile navigation to work. Otherwise, JS "theme/navigation-menu.js" will terminate early" */ -}}
         {{- if $centerLogo }}
           {{- partialCached "claris/header/logo" (dict "logoclass" "nav_hide" "logourl" $logoURL "Page" $page) }}
         {{- else }}
