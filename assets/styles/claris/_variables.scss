@@ -190,13 +190,20 @@ $main-z-index: 1;
 
 @mixin content_singlecolumn() {
   @include content_base_centered();
-  max-width: calc(min(100%, var(--content_max-width)));
+  max-width: var(--content_max-width);
+  // max-width: calc(min(100%, var(--content_max-width)));
 }
 
 // Content that has multiple columns
 @mixin content_multicolumn() {
   @include content_base_centered();
-  max-width: calc(min(100%, var(--content_multicolumn_max-width)));
+  max-width: var(--content_max-width); // For IE 11
+  @supports (display: grid) {
+    max-width: var(--content_multicolumn_max-width);
+    // FIXME: Not sure what (min(100%, ...) is supposed to accomplish.
+    // Probably not needed anymore
+    // max-width: calc(min(100%, var(--content_multicolumn_max-width)));
+  }
 }
 
 // Limit width of chrome, i.e. header and footer
@@ -476,6 +483,7 @@ html {
 }
 
 html {
+  --unused-variable-to-validate-css-postprocessing: black;
   --font-sans: "#{$fontFamilySans}", "#{$fontFamilySansFallback}", "#{$fontFamilySansFallbackAndroid}", "Helvetica Neue", "Helvetica", sans-serif;
   --font-serif: "#{$fontFamilySerif}", "#{$fontFamilySerifFallback}", "#{$fontFamilySerifFallbackAndroid}", "Georgia", "Palatino", serif;
   --font-mono: "#{$fontFamilyMono}", "#{$fontFamilyMonoFallback}", "#{$fontFamilyMonoFallbackAndroid}", "Inconsolata", "Menlo", "Lucida Sans Typewriter", "Monaco", "Courier New", "Courier", monospace;
