@@ -1,12 +1,18 @@
 /**
+ * Element.matches() polyfill
+ * https://developer.mozilla.org/en-US/docs/Web/API/Element/matches
+ * https://github.com/jelmerdemaat/element-matches/blob/master/index.js
+ */
+if (!Element.prototype.matches) {
+  Element.prototype.matches =
+      Element.prototype.matchesSelector ||
+      Element.prototype.msMatchesSelector ||
+      Element.prototype.webkitMatchesSelector;
+}
+/**
  * Element.closest() polyfill
  * https://developer.mozilla.org/en-US/docs/Web/API/Element/closest#Polyfill
  */
-if (!Element.prototype.matches) {
-    Element.prototype.matches =
-        Element.prototype.msMatchesSelector ||
-        Element.prototype.webkitMatchesSelector;
-}
 if (!Element.prototype.closest) {
     Element.prototype.closest = function (s) {
         var el = this;
@@ -18,6 +24,7 @@ if (!Element.prototype.closest) {
         return null;
     };
 }
+
 
 /**
  * String.startswith polyfill
