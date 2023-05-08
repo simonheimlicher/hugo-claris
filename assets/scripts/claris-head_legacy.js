@@ -45,9 +45,10 @@ function initializeObjectFitImages() {
 }
 window.addEventListener("DOMContentLoaded", initializeObjectFitImages);
 
+// LazySizes is now loaded from CDN in file theme/lazy-loading
 // It is recommended to include all lazysizes plugins before the main import
 // https://github.com/aFarkas/lazysizes#available-plugins-in-this-repo
-import 'lazysizes/plugins/parent-fit/ls.parent-fit';
-import 'lazysizes';
+// import 'lazysizes/plugins/parent-fit/ls.parent-fit';
+// import 'lazysizes';
 
 // console.log('END   claris-head_legacy');
