@@ -1,6 +1,10 @@
 {{- $page := .Page }}
 {{- $meta := $page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/footer/index" }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
+{{- /* $debug = or $debug (not (not (findRE `^/$` $page.RelPermalink) ) ) */ -}}
+
 {{- $title := site.Title }}
 {{- $siteAuthor := $meta.Site.Data.Author.Name }}
 {{- $footerSection := site.Params.footer.section }}
@@ -8,8 +12,31 @@
 {{- if true }}
 <footer class="footer">
   <div class="footer_inner inner_bottom-0">
-    {{- $footerPages := where site.Pages.ByWeight "Type" "in" site.Params.footer.section }}
+    {{- $footerPages := slice }}
+    {{- with site.GetPage site.Params.footer.section }}
+      {{- with .Resources.Match "*.md" }}
+        {{- $footerPages = sort . ".Params.weight" }}
+      {{- else }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: No page resources match '*.md'"
+              $page $template site.Params.footer.section }}
+        {{- end }}
+      {{- end }}
+    {{- else }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: site.GetPage %v failed"
+            $page $template site.Params.footer.section }}
+      {{- end }}
+    {{- end }}
+
     {{- with $footerPages }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: site.RegularPages.ByWeight \"Type\" \"in\" %v: %v"
+            $page $template site.Params.footer.section $footerPages }}
+        {{- range $id, $page := $footerPages }}
+          {{- warnf "%s[%s]: %v" $page $template . }}
+        {{- end }}
+      {{- end }}
     <div class="footer_main">
     {{- range $id, $page := $footerPages }}
       {{- $inlineStyle := false }}
