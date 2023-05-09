@@ -22,9 +22,9 @@ partial "claris/_functions/resources" no longer works -->
     {{- else }}
       {{- $img = partial "claris/_functions/resources" $imageResourceArgs -}}
       {{- if not $img }}
-        {{- warnf "%s[%s]: No resource found in page bundle; looking for resource matching %v[%T] in site resources"
-            $page $template $resourceSpec $resourceSpec }}
         {{- $img = resources.GetMatch (printf "%s*" $resourceSpec) -}}
+        {{/* {{- warnf "%s[%s]: No resource found in page bundle; looking for resource matching %v[%T] in site resources"
+            $page $template $resourceSpec $resourceSpec }} */}}
       {{- end }}
       {{- /* FIXME: Don't look for images in directory of page }}
       {{- if and (not $img) .File -}}
