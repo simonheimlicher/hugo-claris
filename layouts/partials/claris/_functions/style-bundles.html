@@ -11,6 +11,8 @@
 {{- $mediaTypeList := $assetVariant.MediaTypeList }}
 {{- $contentTypeList := $assetVariant.ContentTypeList }}
 {{- $contentTypeListID := $assetVariant.ContentTypeListID }}
+{{- $legacySuffix := $assetVariant.BundleParams.LegacySuffix }}
+{{- $legacyMediaType := $assetVariant.BundleParams.LegacyMediaType }}
 
 {{- $supportIE11 := default true $assetVariant.BundleParams.SupportIE11 }}
 
@@ -50,8 +52,6 @@ appears to be broken, as mentioned above.
 {{- $sourceExt := "sass" }}
 {{- $executedSourceSuffix := "_executed" }}
 {{- $targetExt := "css" -}}
-{{- $legacySuffix := default "_legacy" .LegacySuffix }}
-{{- $legacyMediaType := default "all" .LegacyMediaType }}
 {{- $fingerprintOptions := default "sha256" site.Params.resourceFingerprintOptions }}
 
 {{- $toCSSoptionsBase := dict }}

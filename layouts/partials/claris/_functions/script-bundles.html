@@ -48,7 +48,7 @@ appears to be broken, as mentioned above.
 {{- $concatSuffix := "_concat" }}
 {{- $targetSuffix := "_bundle" }}
 {{- $targetExt := "js" -}}
-{{- $legacySuffix := default "_legacy" .LegacySuffix }}
+{{- $legacySuffix := $assetVariant.BundleParams.LegacySuffix }}
 {{- $fingerprintOptions := default "sha256" site.Params.resourceFingerprintOptions }}
 
 {{- /* $targetVersion := "es6" */ -}}

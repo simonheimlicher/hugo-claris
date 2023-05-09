@@ -43,6 +43,7 @@
 {{- $minifyBundles := $envProd }}
 
 {{- $assetVariant := (dict
+  "Kind" .Kind
   "OutputFormat" $outputFormat
   "OnlyMediaType" ($page.Param "onlyMediaType")
   "MediaTypeList" $mediaTypeList
