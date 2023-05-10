@@ -107,17 +107,28 @@ a
     hyphens: auto
 
 h1,h2,h3,h4,h5,h6
-  font-family: inherit
   font-weight: var(--font-weight-heading)
-  // padding: 5px 0
-  // margin: 15px 0
   padding: $heading-padding-top 0 calc(#{$heading-padding-top} * 0.25) 0
-  margin: $heading-margin-top 0 calc(#{$heading-margin-top} * 0.25) 0
+  margin: $heading-margin-top 2em calc(#{$heading-margin-top} * 0.25) 0
   color: var(--header-text)
-  line-height: calc(var(--line-height-heading))
+  line-height: var(--line-height-heading)
   hyphens: manual
+  .icon, .icon svg
+    width: 1.25em
+    height: 1.25em
+  .link
+    position: relative
+    margin: 0 -2em 0 0
+    padding: 0 0 0 0.25em
+    // opacity: 0.25
+    display: inline-flex
+    flex-direction: column
+  .icon svg
+    position: absolute
+    top: 0.25em
   &:hover .link
     opacity: 1
+    fill: var(--link-hover)
 h1
   font-size: 180%
 h2
