@@ -5,8 +5,14 @@ $contentType: '{{ .ContentType }}'
 $mediaType: '{{ .MediaType }}'
 /* File='styles/claris/hugo-params.sass': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' $contentTypeListID='#{$contentTypeListID}' $contentType='#{$contentType}' $mediaType='#{$mediaType}' */
 
-$themeColorLit: {{ default "hsl(47, 20%, 98%)" ($page.Param "themeColorLit") }}
-$themeColorDim: {{ default "hsl(47, 20%, 17%)" ($page.Param "themeColorDim") }}
+$themeColorLit: {{ default "hsl(47, 80%, 50%)" ($page.Param "themeColorLit") }}
+$themeColorDim: {{ default "hsl(47, 80%, 50%)" ($page.Param "themeColorDim") }}
+
+$themeColorBackgroundLit: {{ default "lighten(desaturate($themeColorLit, 0%), 45%)" ($page.Param "themeColorBackgroundLit") }}
+$themeColorBackgroundDim: {{ default "darken(desaturate($themeColorDim, 0%), 35%)" ($page.Param "themeColorBackgroundDim") }}
+
+$themeNeutralBackgroundLit: {{ default "lighten(desaturate($themeColorBackgroundLit, 75%), 0%)" ($page.Param "themeNeutralBackgroundLit") }}
+$themeNeutralBackgroundDim: {{ default "darken(desaturate($themeColorBackgroundDim, 50%), 0%)" ($page.Param "themeNeutralBackgroundDim") }}
 
 $fontFamilySans: '{{ default "Source Sans 3" ($page.Param "fontFamilySans") }}'
 $fontFamilySerif: '{{ default "Merriweather" ($page.Param "fontFamilySerif") }}'

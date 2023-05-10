@@ -1,6 +1,3 @@
-// $theme-color is defined in assets/sass/main.sass based on .Page.Params.themeColor or site.Params.themeColor
-// $theme-color: hsl(47, 20%, 98%);
-
 $theme-hue-lit: hue($themeColorLit);
 $theme-sat-lit: saturation($themeColorLit);
 $theme-lum-lit: lightness($themeColorLit);
@@ -8,6 +5,22 @@ $theme-lum-lit: lightness($themeColorLit);
 $theme-hue-dim: hue($themeColorDim);
 $theme-sat-dim: saturation($themeColorDim);
 $theme-lum-dim: lightness($themeColorDim);
+
+$theme-hue-lit: hue($themeColorBackgroundLit);
+$theme-sat-lit: saturation($themeColorBackgroundLit);
+$theme-lum-lit: lightness($themeColorBackgroundLit);
+
+$theme-hue-dim: hue($themeColorBackgroundDim);
+$theme-sat-dim: saturation($themeColorBackgroundDim);
+$theme-lum-dim: lightness($themeColorBackgroundDim);
+
+$theme-hue-lit: hue($themeNeutralBackgroundLit);
+$theme-sat-lit: saturation($themeNeutralBackgroundLit);
+$theme-lum-lit: lightness($themeNeutralBackgroundLit);
+
+$theme-hue-dim: hue($themeNeutralBackgroundDim);
+$theme-sat-dim: saturation($themeNeutralBackgroundDim);
+$theme-lum-dim: lightness($themeNeutralBackgroundDim);
 
 $theme-sat-neutral-lit: 0%;
 $theme-sat-neutral-dim: 0%;
@@ -37,10 +50,10 @@ $text-dark-dim: hsl($theme-hue-dim, $theme-sat-dim, $text-lum-dim);
 $text-faint-lit: hsl($theme-hue-lit, $theme-sat-neutral-lit, 30%);
 $text-faint-dim: hsl($theme-hue-dim, $theme-sat-neutral-dim, 85%);
 
-$bg-lit: $themeColorLit;
+$bg-lit: $themeNeutralBackgroundLit;
 $bg-hover-lit: lighten(desaturate($bg-lit, 10%), 5%);
 
-$bg-dim: $themeColorDim;  //desaturate(darken( hsl($theme-hue-dim, $theme-sat-dim, $theme-lum-dim), 15%), 5%);
+$bg-dim: $themeNeutralBackgroundDim;
 $bg-hover-dim: lighten(saturate($bg-dim, 10%), 5%);
 
 $bg-light-lit: darken($bg-lit, 5%);
@@ -55,14 +68,14 @@ $bg-dark-hover-lit: lighten($bg-dark-lit, 20%);
 $bg-dark-dim: darken($bg-dim, 15%);
 $bg-dark-hover-dim: lighten($bg-dark-dim, 20%);
 
-$theme-lit: hsl($theme-hue-lit, $theme-sat-lit, $theme-lum-lit);
+$theme-lit: $themeColorLit;
 $theme-hover-lit: darken($theme-lit, 10%);
 $theme-opa-10-lit: hsla($theme-hue-lit, $theme-sat-lit,$theme-lum-lit, 0.1);
 $theme-opa-20-lit: hsla($theme-hue-lit, $theme-sat-lit,$theme-lum-lit, 0.2);
 $theme-opa-80-lit: hsla($theme-hue-lit, $theme-sat-lit,$theme-lum-lit, 0.8);
 $theme-opa-90-lit: hsla($theme-hue-lit, $theme-sat-lit,$theme-lum-lit, 0.9);
 
-$theme-dim: hsl($theme-hue-dim, $theme-sat-dim, $theme-lum-dim);
+$theme-dim: $themeColorDim;
 $theme-hover-dim: lighten($theme-dim, 10%);
 $theme-opa-10-dim: hsla($theme-hue-dim, $theme-sat-dim, $theme-lum-dim, 0.1);
 $theme-opa-20-dim: hsla($theme-hue-dim, $theme-sat-dim, $theme-lum-dim, 0.2);
@@ -95,31 +108,32 @@ $link-dim: hsl($theme-hue-dim, 100%, 75%);
 $link-hover-dim: hsl($theme-hue-dim, 100%, 85%);
 $link-active-dim: hsl($theme-hue-dim, 100%, 90%);
 
-// $theme-bg-lit: darken($theme-lit, 5%);
-$theme-bg-lit: darken(saturate($theme-lit, 50%), 2%);
+// $theme-bg-lit: darken(saturate($theme-lit, 50%), 2%);
+$theme-bg-lit: $themeColorBackgroundLit;
 $theme-bg-active-lit: darken(desaturate($theme-bg-lit, 50%), 50%);
 $theme-bg-hover-lit: darken(saturate($theme-bg-lit, 20%), 40%);
 
-$theme-bg-dim:  lighten(saturate($theme-dim, 5%), 5%);
+// $theme-bg-dim:  lighten(saturate($theme-dim, 5%), 5%);
+$theme-bg-dim: $themeColorBackgroundDim;
 $theme-bg-active-dim: lighten(saturate($theme-bg-dim, 0%), 40%);
 $theme-bg-hover-dim: lighten(saturate($theme-bg-dim, 20%), 50%);
 
-$haze-lit: darken(desaturate($theme-lit, 15%), 2%);
+$haze-lit: darken(desaturate($bg-lit, 15%), 2%);
 $xhaze-lit: darken($haze-lit, 10%);
 $xxhaze-lit: darken($xhaze-lit, 10%);
 $xxxhaze-lit: darken($xxhaze-lit, 10%);
 
-$haze-dim: lighten(desaturate($theme-dim, 10%), 10%);
+$haze-dim: lighten(desaturate($bg-dim, 10%), 10%);
 $xhaze-dim: lighten($haze-dim, 10%);
 $xxhaze-dim: lighten($xhaze-dim, 10%);
 $xxxhaze-dim: lighten($xxhaze-dim, 10%);
 
-$theme-haze-lit: darken(saturate($theme-lit, 20%), 5%);
+$theme-haze-lit: darken(saturate($theme-bg-lit, 20%), 5%);
 $theme-xhaze-lit: darken($theme-haze-lit, 5%);
 $theme-xxhaze-lit: darken($theme-xhaze-lit, 5%);
 $theme-xxxhaze-lit: darken($theme-xxhaze-lit, 5%);
 
-$theme-haze-dim: lighten(saturate($theme-dim, 10%), 10%);
+$theme-haze-dim: lighten(saturate($theme-bg-dim, 10%), 10%);
 $theme-xhaze-dim: lighten($theme-haze-dim, 10%);
 $theme-xxhaze-dim: lighten($theme-xhaze-dim, 10%);
 $theme-xxxhaze-dim: lighten($theme-xxhaze-dim, 10%);

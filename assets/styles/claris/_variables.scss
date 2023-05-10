@@ -471,19 +471,18 @@ html {
   --choice-bg-menu: var(--xxhaze);
   --choice-bg-menu-active: var(--xhaze);
   &:not(.kind-page) {
-    --choice-bg: var(--haze);
-    --RGB_choice-bg: var(--RGB_haze);
+    --choice-bg: var(--theme-bg);
+    --RGB_choice-bg: var(--RGB_theme-bg);
     --choice-bg-menu: var(--xhaze);
     --choice-bg-menu-active: rgba(var(--RGB_light), 0.05);
-    }
-
+  }
   img:not([src*=".svg"]) {
     filter: var(--dim-image-filter);
   }
 }
 
 html {
-  --unused-variable-to-validate-css-postprocessing: black;
+  --to-be-eliminated-by-csspurge: black;
   --font-sans: "#{$fontFamilySans}", "#{$fontFamilySansFallback}", "#{$fontFamilySansFallbackAndroid}", "Helvetica Neue", "Helvetica", sans-serif;
   --font-serif: "#{$fontFamilySerif}", "#{$fontFamilySerifFallback}", "#{$fontFamilySerifFallbackAndroid}", "Georgia", "Palatino", serif;
   --font-mono: "#{$fontFamilyMono}", "#{$fontFamilyMonoFallback}", "#{$fontFamilyMonoFallbackAndroid}", "Inconsolata", "Menlo", "Lucida Sans Typewriter", "Monaco", "Courier New", "Courier", monospace;
@@ -629,8 +628,8 @@ html {
   --choice-bg-menu-active: rgba(var(--RGB_bg-dark), 0.5);
 
   &:not(.kind-page) {
-    --choice-bg: var(--theme-xxhaze);
-    --RGB_choice-bg: var(--RGB_theme-xxhaze);
+    --choice-bg: var(--theme-bg);
+    --RGB_choice-bg: var(--RGB_theme-bg);
     --choice-bg-menu: var(--theme-xxxhaze);
     --choice-bg-menu-active: rgba(var(--RGB_theme-xxxhaze), 0.05);
   }
