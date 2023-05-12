@@ -7,7 +7,7 @@
 {{/* {{- $debug := default false (strings.Contains $resource "never-match-this_debugging_disabled") }} */}}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+/)?leadership/$` $page.RelPermalink) ) ) }} */}}
+{{/* {{- $debug = or $debug .Debug (not (not (findRE `^/([^/]+/)?$` $page.RelPermalink) ) ) }} */}}
 {{- $imageResourceArgs := merge . (dict "Debug" $debug) }}
 
 {{- $resource := .resource }}
@@ -30,149 +30,199 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
   {{- $pageBundleResourceGlob = printf "%s*" $resource }}
   {{- $siteResourceGlob = printf "%s*" $resource }}
 {{- end }}
+
 {{- $resourcePage := $page }}
-{{ if $debug }}{{ warnf "%s[%s]: Looking for resource matching '%s' [originalPage=%s]"
-    $page $template $pageBundleResourceGlob $originalPage }}{{ end -}}
-{{- with $page }}
-  {{- $splitRes := path.Split $pageBundleResourceGlob }}
-  {{- if $splitRes.Dir }}
-    {{- if (and .BundleType (eq .BundleType "leaf") )}}
-      {{- if $debug }}{{ warnf "%s[%s]: LEAF: Looking for resource in page bundle matching %s"
-          $page $template $pageBundleResourceGlob }}{{ end -}}
-    {{- else }}
-      <!-- NOTE: We are in a branch bundle. Hence, only files at the top-level are available.
-      Given that we are here, this implies that the above call to
-        $splitRes := path.Split $pageBundleResourceGlob
-      returned a non-empty folder name as the first part of $pageBundleResourceGlob
-      Calling .CurrentSection.Resources.Match will return nothing as we are in a branch bundle
 
-      To find those resources, we check if there is a headless bundle as a descendant of this branch bundle.
-      If we are on a translated page, we will consider as a second attempt the headless page bundle
-      of the default language.
+{{- if strings.HasPrefix $pageBundleResourceGlob "/" }}
 
-      We proceed as follows:
-        1. We split $pageBundleResourceGlob into the root folder and the remainder
-        2. We look for the page that matches the root folder and then look for resources matching the remainder
-        3. If this fails, we iterate through all translations and if there is one without a language prefix,
-           we check if it has a matching child page
-      -->
+  {{- $pathParts := split $pageBundleResourceGlob "/" }}
+  {{ if $debug }}{{ warnf "%s[%s]: resource=%v begins with '/'. pathParts=%v"
+      $page $template $pageBundleResourceGlob $pathParts }}{{ end -}}
+  {{- $pageBundleResourceGlobPrefix := $pageBundleResourceGlob }}
+  {{- $pageBundleResourceGlobSuffix := "" }}
+  {{- $otherPage := false }}
+  <!-- NOTE: We just want to call path.Split as many times as $pageBundleResourceGlob has slashes
+  We do not care about the range variables ($partIdx, $pathPart) at all -->
+  {{- range $partIdx, $pathPart := $pathParts }}
+    {{- if not $otherPage }}
+      {{- $splitRes := path.Split $pageBundleResourceGlobPrefix }}
+      {{- with $splitRes }}
+        {{- $pageBundleResourceGlobPrefix = path.Dir $pageBundleResourceGlobPrefix }}
+        {{- $pageBundleResourceGlobSuffix = path.Join .File $pageBundleResourceGlobSuffix }}
 
-      {{- $resPathParts := split $pageBundleResourceGlob "/" }}
-      {{- $resPathRoot := (index (first 1 $resPathParts) 0) }}
-      {{- $resPathRemains := delimit (last (sub (len $resPathParts) 1) $resPathParts) "/" }}
+        {{ if $debug }}{{ warnf "%s[%s]: pageBundleResourceGlob=%v pageBundleResourceGlobPrefix=%v pageBundleResourceGlobSuffix=%v [splitRes=%v]"
+            $page $template $pageBundleResourceGlob
+            $pageBundleResourceGlobPrefix $pageBundleResourceGlobSuffix $splitRes }}{{ end -}}
 
-      {{- $resPathRoot2 := (index (first 1 (split $pageBundleResourceGlob "/") ) 0) }}
-      {{- $resPathRemains2 := strings.TrimPrefix $resPathRoot2 $pageBundleResourceGlob }}
+        {{- $otherPage = site.GetPage $pageBundleResourceGlobPrefix }}
+        {{- with $otherPage }}
+          {{- $otherPageArgs := merge $imageResourceArgs (dict
+            "Page" $otherPage
+            "OriginalPage" $originalPage
+            "resource" $pageBundleResourceGlobSuffix
+          ) }}
+          {{ if $debug }}{{ warnf "%s[%s]: resource=%v begins with '/'. Calling %s with otherPage=%v  RelPermalink=%s with otherPageArgs=%v"
+              $page $template $pageBundleResourceGlob $template
+              $otherPage $otherPage.RelPermalink $otherPageArgs }}{{ end -}}
 
-      {{- if (ne $resPathRoot $resPathRoot2) }}
-        {{- errorf "%s[%s]: BRANCH: split resource path %v into root=%v != root2=%v"
-          $page $template $pageBundleResourceGlob $resPathRoot $resPathRoot2 -}}
-      {{- end }}
-      {{- if (ne $resPathRoot $resPathRoot2) }}
-        {{- errorf "%s[%s]: BRANCH: split resource path %v into remain=%v != remain2=%v"
-          $page $template $pageBundleResourceGlob $resPathRemains $resPathRemains2 -}}
-      {{- end }}
+          {{- $res = partial $template $otherPageArgs }}
 
-      {{- if $debug }}
-        {{- warnf "%s[%s]: BRANCH: split resource path %v into root=%v and remains=%v"
-          $page $template $pageBundleResourceGlob $resPathRoot $resPathRemains -}}
-      {{- end }}
-
-      {{- with .GetPage $resPathRoot }}
-        {{- $resourcePage = . }}
-        {{- if $debug }}
-          {{- warnf "%s[%s]: Use resourcePage %v from current language '%v' with prefix='%v']"
-              $page $template $resourcePage .Language site.LanguagePrefix -}}
+        {{- else }}
+          {{ if $debug }}{{ warnf "%s[%s]: resource=%v begins with '/'. site.GetPage %v returned %v"
+              $page $template $pageBundleResourceGlob $pageBundleResourceGlobPrefix $otherPage }}{{ end -}}
         {{- end }}
-
       {{- else }}
+        {{ if $debug }}{{ warnf "%s[%s]: resource=%v begins with '/'. splitRes=%v"
+            $page $template $pageBundleResourceGlob $splitRes }}{{ end -}}
+      {{- end }}
+    {{- end }}
+  {{- end }}
 
-        {{- if $debug }}
-          {{- warnf "%s[%s]: .GetPage '%v' returned nothing. " $page $template $resPathRoot -}}
+{{- else }}
+
+  {{ if $debug }}{{ warnf "%s[%s]: Looking for resource matching '%s' [originalPage=%s]"
+      $page $template $pageBundleResourceGlob $originalPage }}{{ end -}}
+  {{- with $page }}
+    {{- $splitRes := path.Split $pageBundleResourceGlob }}
+    {{- if $splitRes.Dir }}
+      {{- if (and .BundleType (eq .BundleType "leaf") )}}
+        {{- if $debug }}{{ warnf "%s[%s]: LEAF: Looking for resource in page bundle matching %s"
+            $page $template $pageBundleResourceGlob }}{{ end -}}
+      {{- else }}
+        <!-- NOTE: We are in a branch bundle. Hence, only files at the top-level are available.
+        Given that we are here, this implies that the above call to
+          $splitRes := path.Split $pageBundleResourceGlob
+        returned a non-empty folder name as the first part of $pageBundleResourceGlob
+        Calling .CurrentSection.Resources.Match will return nothing as we are in a branch bundle
+
+        To find those resources, we check if there is a headless bundle as a descendant of this branch bundle.
+        If we are on a translated page, we will consider as a second attempt the headless page bundle
+        of the default language.
+
+        We proceed as follows:
+          1. We split $pageBundleResourceGlob into the root folder and the remainder
+          2. We look for the page that matches the root folder and then look for resources matching the remainder
+          3. If this fails, we iterate through all translations and if there is one without a language prefix,
+            we check if it has a matching child page
+        -->
+
+        {{- $resPathParts := split $pageBundleResourceGlob "/" }}
+        {{- $resPathRoot := (index (first 1 $resPathParts) 0) }}
+        {{- $resPathRemains := delimit (last (sub (len $resPathParts) 1) $resPathParts) "/" }}
+
+        {{- $resPathRoot2 := (index (first 1 (split $pageBundleResourceGlob "/") ) 0) }}
+        {{- $resPathRemains2 := strings.TrimPrefix $resPathRoot2 $pageBundleResourceGlob }}
+
+        {{- if (ne $resPathRoot $resPathRoot2) }}
+          {{- errorf "%s[%s]: BRANCH: split resource path %v into root=%v != root2=%v"
+            $page $template $pageBundleResourceGlob $resPathRoot $resPathRoot2 -}}
+        {{- end }}
+        {{- if (ne $resPathRoot $resPathRoot2) }}
+          {{- errorf "%s[%s]: BRANCH: split resource path %v into remain=%v != remain2=%v"
+            $page $template $pageBundleResourceGlob $resPathRemains $resPathRemains2 -}}
         {{- end }}
 
-        {{- range .Translations }}
-          {{- $translatedPage := . }}
-          {{- with .GetPage $resPathRoot }}
-            {{- if (eq $translatedPage.Site.LanguagePrefix "") }}
-              {{- $resourcePage = . }}
-              {{- if $debug }}
-                {{- warnf "%s[%s]: Use resourcePage %v from default language '%v' with prefix='%v']"
-                    $page $template $resourcePage $translatedPage.Language $translatedPage.Site.LanguagePrefix -}}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: BRANCH: split resource path %v into root=%v and remains=%v"
+            $page $template $pageBundleResourceGlob $resPathRoot $resPathRemains -}}
+        {{- end }}
+
+        {{- with .GetPage $resPathRoot }}
+          {{- $resourcePage = . }}
+          {{- if $debug }}
+            {{- warnf "%s[%s]: Use resourcePage %v from current language '%v' with prefix='%v']"
+                $page $template $resourcePage .Language site.LanguagePrefix -}}
+          {{- end }}
+
+        {{- else }}
+
+          {{- if $debug }}
+            {{- warnf "%s[%s]: .GetPage '%v' returned nothing. " $page $template $resPathRoot -}}
+          {{- end }}
+
+          {{- range .Translations }}
+            {{- $translatedPage := . }}
+            {{- with .GetPage $resPathRoot }}
+              {{- if (eq $translatedPage.Site.LanguagePrefix "") }}
+                {{- $resourcePage = . }}
+                {{- if $debug }}
+                  {{- warnf "%s[%s]: Use resourcePage %v from default language '%v' with prefix='%v']"
+                      $page $template $resourcePage $translatedPage.Language $translatedPage.Site.LanguagePrefix -}}
+                {{- end }}
+              {{- else }}
+                {{- if $debug }}
+                  {{- warnf "%s[%s]: Skip resourcePage %v from default language '%v' with prefix='%v']"
+                      $page $template $resourcePage $translatedPage.Language $translatedPage.Site.LanguagePrefix -}}
+                {{- end }}
               {{- end }}
             {{- else }}
               {{- if $debug }}
-                {{- warnf "%s[%s]: Skip resourcePage %v from default language '%v' with prefix='%v']"
-                    $page $template $resourcePage $translatedPage.Language $translatedPage.Site.LanguagePrefix -}}
+                {{- warnf "%s[%s]: .GetPage '%v' in translation '%v' with .LanguagePrefix='%v' returned nothing"
+                    $page $template $resPathRoot  $translatedPage.Language $translatedPage.Site.LanguagePrefix -}}
               {{- end }}
-            {{- end }}
-          {{- else }}
-            {{- if $debug }}
-              {{- warnf "%s[%s]: .GetPage '%v' in translation '%v' with .LanguagePrefix='%v' returned nothing"
-                  $page $template $resPathRoot  $translatedPage.Language $translatedPage.Site.LanguagePrefix -}}
             {{- end }}
           {{- end }}
         {{- end }}
-      {{- end }}
 
-      {{- with $resourcePage }}
-        {{- $pageBundleResourceGlob = $resPathRemains }}
-        {{/* {{- if $debug }}{{ warnf "%s[%s]: BRANCH: Looking for resource in descendant page bundle %s: %s matching %s"
-          $page $template $resourcePagePath $resourcePage $pageBundleResourceGlob }}{{ end -}} */}}
-      {{/* {{- else }}
-        {{- if $debug }}{{ warnf "%s[%s]: BRANCH: No page bundle found: site.GetPage '%s' returned '%s'"
-        $page $template $resourcePagePath $resourcePage }}{{ end -}}
-        {{- if $debug }}
-          {{- range $subPage := (sort $page.Site.Pages "Permalink") }}
-            {{- if (strings.Contains $subPage.Permalink $currentSection) }}
-              {{ warnf "%s[%s]: descendant page: %#v" $page $template $subPage.File.Path }}
+        {{- with $resourcePage }}
+          {{- $pageBundleResourceGlob = $resPathRemains }}
+          {{/* {{- if $debug }}{{ warnf "%s[%s]: BRANCH: Looking for resource in descendant page bundle %s: %s matching %s"
+            $page $template $resourcePagePath $resourcePage $pageBundleResourceGlob }}{{ end -}} */}}
+        {{/* {{- else }}
+          {{- if $debug }}{{ warnf "%s[%s]: BRANCH: No page bundle found: site.GetPage '%s' returned '%s'"
+          $page $template $resourcePagePath $resourcePage }}{{ end -}}
+          {{- if $debug }}
+            {{- range $subPage := (sort $page.Site.Pages "Permalink") }}
+              {{- if (strings.Contains $subPage.Permalink $currentSection) }}
+                {{ warnf "%s[%s]: descendant page: %#v" $page $template $subPage.File.Path }}
+              {{- end }}
             {{- end }}
-          {{- end }}
-        {{- end }} */}}
+          {{- end }} */}}
+        {{- end }}
       {{- end }}
-    {{- end }}
-  {{- else }}
-    {{- if $debug }}{{ warnf "%s[%s]: resourcePage=page (path.Split %s returned %s with .Dir=%v)"
-        $page $template $pageBundleResourceGlob $splitRes $splitRes.Dir }}{{ end -}}
-  {{- end }}
-  {{- with $resourcePage }}
-    {{- if (and false $debug) }}
-      {{- warnf "%s[%s]: resource page bundle %s contains: \nresources.Match *\n%s\nresources.Match ** / *:\n%s"
-        $page $template $resourcePage
-        (sort ($resourcePage.Resources.Match "*") "Name")
-        (sort ($resourcePage.Resources.Match (printf "%s/%s" "**" "*")) "Name") -}}
-    {{- end }}
-    {{- with .Resources.GetMatch $pageBundleResourceGlob }}
-      {{- if $debug }}{{ warnf "%s[%s]: Found resource %s in page bundle %s matching %s" $page $template . $resourcePage $pageBundleResourceGlob }}{{ end -}}
-      {{- $res = . }}
     {{- else }}
-      {{- if $debug }}{{ warnf "%s[%s]: No resource found in page bundle %s matching %s" $page $template $resourcePage $pageBundleResourceGlob }}{{ end -}}
+      {{- if $debug }}{{ warnf "%s[%s]: resourcePage=page (path.Split %s returned %s with .Dir=%v)"
+          $page $template $pageBundleResourceGlob $splitRes $splitRes.Dir }}{{ end -}}
     {{- end }}
-  {{- else }}
-    {{- if $debug }}{{ warnf "%s[%s]: invalid resourcePage=%v)"
-        $page $template $resourcePage }}{{ end -}}
-  {{- end }}
-  {{- if not $res }}
-    {{/* {{- if (and $page.Parent (ne $page.Parent.RelPermalink "/" ) ) }} */}}
-    {{- if $page.Parent }}
-      {{- $parentArgs := (merge $imageResourceArgs (dict "OriginalPage" $originalPage "Page" $page.Parent)) }}
-      {{- if $debug }}{{ warnf "%s[%s]: Calling %s with parent=%s RelPermalink=%s with parentArgs=%s"
-          $page $template $template $page.Parent $page.Parent $parentArgs }}{{ end -}}
-      {{- $res = partial $template $parentArgs }}
-      {{- with $res }}
-        {{/* NOTICE: Returning the $res as a reference to the ResourceAdapter appears to work,
-            so there is no need to construct the absolute path below:
-        {{- $absolutePath := path.Join (path.Dir $page.Parent.File.Path) (path.Dir $pageBundleResourceGlob) (path.Base $res.Name) }} */}}
-        {{/* {{- $res = path.Join (strings.TrimRight "/" $page.Parent.RelPermalink) $res }} */}}
-        {{- if $debug }}{{ warnf "%s[%s]: Found resource in parent=%s: res='%s'"
-            $page $template $page.Parent $res }}{{ end -}}
+    {{- with $resourcePage }}
+      {{- if (and false $debug) }}
+        {{- warnf "%s[%s]: resource page bundle %s contains: \nresources.Match *\n%s\nresources.Match ** / *:\n%s"
+          $page $template $resourcePage
+          (sort ($resourcePage.Resources.Match "*") "Name")
+          (sort ($resourcePage.Resources.Match (printf "%s/%s" "**" "*")) "Name") -}}
+      {{- end }}
+      {{- with .Resources.GetMatch $pageBundleResourceGlob }}
+        {{- if $debug }}{{ warnf "%s[%s]: Found resource %s in page bundle %s matching %s" $page $template . $resourcePage $pageBundleResourceGlob }}{{ end -}}
+        {{- $res = . }}
       {{- else }}
-        {{- if $debug }}{{ warnf "%s[%s]: Nothing found in parent=%s: resource=%s"
-            $page $template $page.Parent $res }}{{ end -}}
+        {{- if $debug }}{{ warnf "%s[%s]: No resource found in page bundle %s matching %s" $page $template $resourcePage $pageBundleResourceGlob }}{{ end -}}
       {{- end }}
     {{- else }}
-      {{- if $debug }}{{ warnf "%s[%s]: Page has invalid parent=%s"
-          $page $template $page.Parent }}{{ end -}}
+      {{- if $debug }}{{ warnf "%s[%s]: invalid resourcePage=%v)"
+          $page $template $resourcePage }}{{ end -}}
+    {{- end }}
+    {{- if not $res }}
+      {{/* {{- if (and $page.Parent (ne $page.Parent.RelPermalink "/" ) ) }} */}}
+      {{- if $page.Parent }}
+        {{- $parentArgs := (merge $imageResourceArgs (dict "OriginalPage" $originalPage "Page" $page.Parent)) }}
+        {{- if $debug }}{{ warnf "%s[%s]: Calling %s with parent=%s RelPermalink=%s with parentArgs=%s"
+            $page $template $template $page.Parent $page.Parent $parentArgs }}{{ end -}}
+        {{- $res = partial $template $parentArgs }}
+        {{- with $res }}
+          {{/* NOTICE: Returning the $res as a reference to the ResourceAdapter appears to work,
+              so there is no need to construct the absolute path below:
+          {{- $absolutePath := path.Join (path.Dir $page.Parent.File.Path) (path.Dir $pageBundleResourceGlob) (path.Base $res.Name) }} */}}
+          {{/* {{- $res = path.Join (strings.TrimRight "/" $page.Parent.RelPermalink) $res }} */}}
+          {{- if $debug }}{{ warnf "%s[%s]: Found resource in parent=%s: res='%s'"
+              $page $template $page.Parent $res }}{{ end -}}
+        {{- else }}
+          {{- if $debug }}{{ warnf "%s[%s]: Nothing found in parent=%s: resource=%s"
+              $page $template $page.Parent $res }}{{ end -}}
+        {{- end }}
+      {{- else }}
+        {{- if $debug }}{{ warnf "%s[%s]: Page has invalid parent=%s"
+            $page $template $page.Parent }}{{ end -}}
+      {{- end }}
     {{- end }}
   {{- end }}
 {{- end }}

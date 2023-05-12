@@ -41,7 +41,7 @@
 {{- end -}}
 
 {{- with .relativewidth -}}
-  {{- $containerClass = printf "%s relative-width-%s" $containerClass . -}}
+  {{- $containerClass = printf "%s relative-width-%d" $containerClass (int .) -}}
 {{- end -}}
 
 {{- $background := default false .background -}}
@@ -87,11 +87,11 @@
 {{- range $attr, $value := (dict
   "width" $imageResourceArgs.width
   "height" $imageResourceArgs.height
-  "aspect-ratio" $imageResourceArgs.AspectRatio
-  "border-radius" $imageResourceArgs.BorderRadius
-  "min-width" $imageResourceArgs.MinWidth
+  "aspect-ratio" $imageResourceArgs.aspectratio
+  "border-radius" $imageResourceArgs.borderradius
+  "min-width" $imageResourceArgs.minwidth
   "max-width" $imageResourceArgs.maxwidth
-  "min-height" $imageResourceArgs.MinHeight
+  "min-height" $imageResourceArgs.minheight
   "max-height" $imageResourceArgs.maxheight) -}}
   {{- if $value -}}
     {{- $imgInlineStyleSlice = append $imgInlineStyleSlice (slice (printf "%s: %s" $attr $value) ) -}}
