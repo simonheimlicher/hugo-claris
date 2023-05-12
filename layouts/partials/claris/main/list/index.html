@@ -1,0 +1,5 @@
+{{- $template := "partials/claris/main/list/index" }}
+{{- $layout := default "grid" page.Layout }}
+{{ partial "html-comment" (printf "[%s]: BEGIN: layout=%v" $template $layout) }}
+{{- partial (printf "claris/main/list/%s" $layout) . }}
+{{ partial "html-comment" (printf "[%s]:   END" $template) }}

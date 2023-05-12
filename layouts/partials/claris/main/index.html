@@ -16,21 +16,21 @@
   {{- $s := site.Params }}
   {{- $p := .Params }}
 
-  {{- $mainInnerClassList := (slice "main_inner" "inner_horizontal") }}
+  {{- $mainInnerClassList := (slice "main_inner") }}
   {{ if (and (eq $kind "page") (not (or (eq $p.singleColumn true) (eq $p.sidebar false) ) ) ) }}
-    {{- $mainInnerClassList = append (slice "grid-main-single") $mainInnerClassList }}
+    {{- $mainInnerClassList = append (slice "grid-main-single inner_horizontal") $mainInnerClassList }}
   {{- end }}
 
   {{- $componentParams := (dict
     "Page" $page
     "Meta" $meta
     "ItemType" $itemType
-    "HeadingLevel" 2
+    "HeadingLevel" 1
   ) }}
 
-  {{- $sidebar := default true ($page.Param "sidebar") }}
-  {{- if (in (slice "section" "taxonomy" "home") $kind) }}
-    {{- $sidebar = default false ($page.Param "sidebar") }}
+  {{- $sidebar := default false ($page.Param "sidebar") }}
+  {{- if (in (slice "page") $kind) }}
+    {{- $sidebar = default true ($page.Param "sidebar") }}
   {{- end }}
 
   {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}

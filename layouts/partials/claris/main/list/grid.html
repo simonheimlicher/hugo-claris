@@ -1,0 +1,23 @@
+{{- $template := "partials/claris/main/grid" }}
+{{- $headingLevel := .HeadingLevel }}
+{{- $itemType := .ItemType }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
+{{- /* {{- $debug = or $debug (not (not (findRE `leadership` $page.RelPermalink) ) ) }} */ -}}
+
+{{- $listPartialParams := (dict
+  "ItemType" $itemType
+  "HeadingLevel" $headingLevel) }}
+
+{{- with page.Param "sectionsToShow" }}
+  {{- $listPartialParams = merge $listPartialParams (dict
+    "ListParams" (dict
+      "SectionsToShow" .
+    )
+  ) }}
+{{- end }}
+
+{{- if $debug }}
+  {{- warnf "%s[%s]: Calling 'claris/_components/list' with listPartialParams=%v" page $template $listPartialParams }}
+{{- end }}
+{{ partial "claris/_components/list" (merge $listPartialParams (dict "Page" page)) $listPartialParams }}

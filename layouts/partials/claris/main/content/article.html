@@ -1,6 +1,6 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
-{{- $template := "partials/claris/_components/content" }}
+{{- $template := "partials/claris/main/content/article" }}
 
 {{- $itemType := $meta.Single.Data.ItemType }}
 {{- $outdated := $meta.Classification.Outdated }}
@@ -11,8 +11,11 @@
 {{- $displayTableOfContents := and (default true ($page.Param "toc") ) (ge (strings.Count "<li>" .TableOfContents) 2) -}}
 {{- $showComments := default true ($page.Param "comments") }}
 
+{{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
 {{- if $displayTableOfContents }}
-  {{ partial "claris/_components/aside-article" . }}
+    <aside class="article_aside">
+      {{ partial "claris/_components/table-of-contents" . }}
+    </aside>
 {{- end }}
 <article class="article_content content_singlecolumn content{{ if $mainSection }} main-section{{ end }}">
   {{- partial "claris/_components/title" . }}
@@ -37,4 +40,5 @@
   {{- end }}
   {{- partial "claris/_components/i18nlist" . }}
 </article>
+{{ partial "html-comment" (printf "[%s]: END" $template) }}
 {{- end }}

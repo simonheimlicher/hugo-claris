@@ -15,29 +15,17 @@
 {{- with $page }}
   {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
 
-  {{- with .Content }}
-    {{ partial "claris/_components/content" (dict "Page" $page "Meta" $meta "HeadingLevel" $headingLevel) }}
+  {{- if .Content }}
+    {{ partial "html-comment" (printf "[%s]: .Content: calling claris/main/content/index with HeadingLevel=%d" $template $headingLevel) }}
+    {{ partial "claris/main/content/index" (dict "HeadingLevel" $headingLevel) }}
     {{- $headingLevel = add $headingLevel 1 }}
   {{- else }}
-    {{ partial "claris/_components/title" (dict "Page" $page "Meta" $meta "HeadingLevel" $headingLevel) }}
+    {{ partial "html-comment" (printf "[%s]: no .Content: calling claris/_components/title with HeadingLevel=%d" $template  $headingLevel) }}
+    {{ partial "claris/_components/title" (dict "HeadingLevel" $headingLevel) }}
+    {{- $headingLevel = add $headingLevel 1 }}
   {{- end }}
 
-  {{- $listPartialParams := (dict
-    "Page" $page
-    "ItemType" $itemType
-    "HeadingLevel" $headingLevel) }}
+  {{- partial "claris/main/list/index" (dict "HeadingLevel" $headingLevel) }}
 
-  {{- with $page.Param "sectionsToShow" }}
-    {{- $listPartialParams = merge $listPartialParams (dict
-      "ListParams" (dict
-        "SectionsToShow" .
-      )
-    ) }}
-  {{- end }}
-
-  {{- if $debug }}
-    {{- warnf "%s[%s]: Calling 'claris/_components/list' with listPartialParams=%v" $page $template $listPartialParams }}
-  {{- end }}
-  {{ partial "claris/_components/list" $listPartialParams }}
 {{- end }}
 {{ partial "html-comment" (printf "[%s]:   END" $template) }}

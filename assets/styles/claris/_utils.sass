@@ -63,6 +63,10 @@
       .sidebar
         grid-row: 2
         grid-column: 2
+        margin-left: var(--column-gap)
+        margin-right: var(--column-gap)
+        padding-left: var(--inner_padding-x)
+        padding-right: var(--inner_padding-x)
 
   @media screen and (min-width: $screenViewBreakpointWidthWide)
     .grid-main-single
@@ -77,6 +81,8 @@
       .sidebar
         grid-row: 1
         grid-column: 4
+        margin: 0
+        padding: 0
 
   // @media screen and (min-width: $screenViewBreakpointWidthUltrawide)
   //   .grid-main-single

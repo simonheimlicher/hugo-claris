@@ -107,6 +107,10 @@ $main-z-index: 1;
   }
 }
 
+@mixin inner_horizontal-padding() {
+  @include element-padding('inner', unset, 1);
+}
+
 @mixin background_dark() {
   background: var(--bg-dark);
   color: var(--text-dark);
@@ -174,6 +178,15 @@ $main-z-index: 1;
   @include link-lvhfa($link: var(--link-dark), $visited: var(--link-dark), $hover: var(--link-dark-hover), $focus: var(--link-dark-hover), $active: var(--link-dark-active));
 }
 
+@mixin link-lvhfa-inherit() {
+  a:not(.button):not(nav a):not(sup a) {
+    &, &:link, &:visited, &:hover, &:focus, &:active {
+      color: inherit;
+      text-decoration: none;
+    }
+  }
+}
+
 @mixin content_base() {
   clear: both;
 }
@@ -189,6 +202,7 @@ $main-z-index: 1;
 }
 
 @mixin content_singlecolumn() {
+  @include inner_horizontal-padding();
   @include content_base_centered();
   max-width: var(--content_max-width);
   // max-width: calc(min(100%, var(--content_max-width)));
@@ -196,6 +210,7 @@ $main-z-index: 1;
 
 // Content that has multiple columns
 @mixin content_multicolumn() {
+  @include inner_horizontal-padding();
   @include content_base_centered();
   max-width: var(--content_max-width); // For IE 11
   @supports (display: grid) {
@@ -204,6 +219,12 @@ $main-z-index: 1;
     // Probably not needed anymore
     // max-width: calc(min(100%, var(--content_multicolumn_max-width)));
   }
+}
+
+// Content that has multiple panels that span the entire width
+@mixin content_panel() {
+  padding: 0;
+  margin: 0;
 }
 
 // Limit width of chrome, i.e. header and footer
@@ -429,10 +450,11 @@ $main-z-index: 1;
       }
     }
   }
-  .content {
-    // Required as height of header pushes content down when position: sticky vs. position: fixed
-    padding-top: inherit;
-  }
+  // .content {
+  // FIXME: Not applicable with layout=panel
+  //   // Required as height of header pushes content down when position: sticky vs. position: fixed
+  //   padding-top: inherit;
+  // }
 }
 
 @mixin nav-bar-anchor-offset {

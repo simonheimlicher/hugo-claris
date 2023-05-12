@@ -1,9 +1,8 @@
-{{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/_components/list" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/transformation/$` $page.RelPermalink) ) ) }} */}}
+{{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/$` page.RelPermalink) ) ) }}
 {{/* {{- page.Scratch.Set "clarisdebug" $debug }} */}}
 
 {{- $listParams := default dict .ListParams }}
@@ -13,9 +12,9 @@
 {{- $headingLevel := default 2 .HeadingLevel }}
 {{- $containerClass := default "content_multicolumn content" .ContainerClass }}
 
-{{- $mainSection := (in ($page.Param "mainSections") $page.Section) -}}
+{{- $mainSection := (in (page.Param "mainSections") page.Section) -}}
 
-{{- $listMeta := partial "claris/_functions/meta/list" . $page.Permalink }}
+{{- $listMeta := partial "claris/_functions/meta/list" . page.Permalink }}
 
 {{- $itemsMeta := $listMeta.List.Data.Items }}
 
@@ -23,7 +22,7 @@
 
 {{- if $debug }}
   {{- warnf "%s[%s]: excerptPartial=%v listLayout=%v headingLevel=%v containerClass=%v .ListParams=%v yielded itemsMeta for %d items of itemType=%v "
-      $page $template $excerptPartial $listLayout $headingLevel $containerClass
+      page $template $excerptPartial $listLayout $headingLevel $containerClass
       .ListParams (len $itemsMeta) $itemType }}
 {{- end }}
 
@@ -36,23 +35,23 @@
   {{- else if (eq $listLayout "list") }}
     <ul class="content_list">
   {{- else }}
-    {{- errorf "%s[%s]: Invalid .ListLayout=%v" $page $template $listLayout }}
+    {{- errorf "%s[%s]: Invalid .ListLayout=%v" page $template $listLayout }}
   {{- end }}
 
   {{- $paginated := $itemsMeta }}
   <!-- Paginator is only supported if kind is section or taxonomy
       https://gohugo.io/templates/pagination/#list-paginator-pages -->
-  {{/* {{- if (in (slice "section" "taxonomy") $page.Kind) }}
-    {{- $paginated = ($page.Paginate $itemsMeta).Pages }}
+  {{/* {{- if (in (slice "section" "taxonomy") page.Kind) }}
+    {{- $paginated = (page.Paginate $itemsMeta).Pages }}
   {{- end }} */}}
   {{- with $paginated }}
     {{- range $idx, $item := . }}
-      {{- if $debug }}
-        {{- warnf "%s[%s]: Listing Item=%v of ItemType=%v" $page $template .Single.Page $itemType }}
-      {{- end }}
+      {{/* {{- if $debug }}
+        {{- warnf "%s[%s]: Listing Item=%v of ItemType=%v .Classification=%v" page $template .Single.Page $itemType .Single }}
+      {{- end }} */}}
       {{- if $excerptPartial }}
         {{ partial $excerptPartial (dict
-          "Page" $page
+          "Page" page
           "Meta" .
           "SubjectPage" .Single.Page
           "ItemType" $itemType
@@ -69,13 +68,13 @@
     {{- if (eq $listLayout "grid") }}
     </div>
     {{- end }}
-    {{/* {{- if and (in (slice "section" "taxonomy") $page.Kind) (gt (len $itemsMeta) ($page.Param "paginate") ) }}
+    {{/* {{- if and (in (slice "section" "taxonomy") page.Kind) (gt (len $itemsMeta) (page.Param "paginate") ) }}
     <div class="pagination_grid">
-      {{- template "_internal/pagination.html" $page }}
+      {{- template "_internal/pagination.html" page }}
     </div>
     {{- end }} */}}
   {{- else }}
-    {{- errorf "%s[%s]: page.Paginate returned %v. $itemsMeta=%v" $page $template $paginated $itemsMeta }}
+    {{- errorf "%s[%s]: page.Paginate returned %v. $itemsMeta=%v" page $template $paginated $itemsMeta }}
   {{- end }}
 
   {{- if (eq $listLayout "grid") }}
@@ -84,5 +83,5 @@
     </ul>
   {{- end }}
 {{/* {{- else }}
-  {{- warnf "%s[%s]: Nothing to list: .Items=%v" $page $template $itemsMeta }} */}}
+  {{- warnf "%s[%s]: Nothing to list: .Items=%v" page $template $itemsMeta }} */}}
 {{- end }}

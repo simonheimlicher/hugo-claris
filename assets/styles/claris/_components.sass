@@ -1,6 +1,8 @@
 .main
   background: var(--choice-bg)
   z-index: $main-z-index
+  @include link-lvhfa
+
   &_inner
     // margin-top: var(--inner_margin-y)
     @include element-padding('inner', 2, unset, unset, unset)
@@ -28,14 +30,83 @@
   &_singlecolumn
     // padding-top: inherit
     @include content_singlecolumn
+    padding-bottom: var(--inner_padding-y)
   &_multicolumn
     // padding-top: inherit
     @include content_multicolumn
+    padding-bottom: var(--inner_padding-y)
   &-title
     @include content_multicolumn
     // width: 100%
     width: fit-content
 
+.panel
+  &_content
+    color: var(--text-dark)
+    min-height: 1px // For IE 11
+    h2, h3
+      color: var(--text-dark)
+      margin: 0
+      padding: 0
+    h2
+      font-size: 150%
+      font-variant: all-small-caps
+      // padding: 0 0 var(--inner_padding-y-1) 0
+    h3
+      font-size: 125%
+
+  &_container
+    display: flex
+    flex-direction: column
+
+  &_item
+    @include inner_horizontal-padding()
+    border-top: 1px solid var(--xhaze)
+    padding: var(--inner_padding-y) 0
+    width: 100%
+    &-0
+      background: var(--dark-bg-hue-0)
+    &-1
+      background: var(--dark-bg-hue-1)
+    &-2
+      background: var(--dark-bg-hue-2)
+    &-3
+      background: var(--dark-bg-hue-3)
+    &-4
+      background: var(--dark-bg-hue-4)
+    &-5
+      background: var(--dark-bg-hue-5)
+
+.card
+  &_container
+    color: var(--text)
+    display: flex
+    flex-direction: row
+    flex-wrap: wrap
+    gap: var(--inner_margin-x)
+    // FIXME: IE 11 bug
+    // https://github.com/philipwalton/flexbugs/issues/75
+    // Setting a min-height on the container (body does not work)
+    // avoids scaled images taking up as much space as they would if not scaled
+    // FIXME: Does not work. responsive-figure images still blow up
+    @media only screen and (min-width: $screenViewBreakpointWidthNarrow)
+      &
+        justify-content: space-evenly
+    h2, h3
+      color: var(--text-heading)
+  &_item
+    min-height: 1px // For IE 11
+    flex: 1 1 10%
+    background: var(--bg-hover)
+    border-radius: 0.125em
+    padding: var(--inner_padding-y) var(--inner_padding-x)
+    padding-bottom: var(--inner_padding-y-3)
+    @supports (display: flex)
+      flex: 1 1 auto
+      @media only screen and (min-width: $screenViewBreakpointWidthNarrow)
+        flex: 1 1 40%
+      @media only screen and (min-width: $screenViewBreakpointWidthOneColumn)
+        flex: 1 1 30%
 
 .footer
   @include background_dark
@@ -292,7 +363,8 @@
 .article_aside
   display: none
   position: sticky
-  margin: 0.8rem 0 1rem auto
+  // margin: 0.8rem 0 1rem auto
+  margin: 0 0 var(--inner_margin-y) auto
   // top: calc(#{$screenViewNavHeight} + 5vh)
   top: calc(#{$screenViewNavHeight} + #{$screenViewInnerPaddingOneColumn})
   align-self: start
@@ -565,6 +637,7 @@ html[data-mode="dim"]
     &:last-child
       margin-bottom: 0
     @include drop-shadow(3rem, 0.1, 0.3)
+    @include link-lvhfa-inherit()
     @media (any-hover: hover)
       &:hover, &:focus
         color: var(--text-hover)
