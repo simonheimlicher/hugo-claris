@@ -687,7 +687,7 @@ html {
       &_choice {
         &:after {
           background-image: url("#{$images}moon-mono.svg");
-          transform: translateX(1.4rem);
+          // transform: translateX(1.4rem);
         }
       }
     }
