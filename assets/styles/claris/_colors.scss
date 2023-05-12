@@ -100,7 +100,7 @@ $theme-text-opa-90-dim: hsla($theme-hue-dim, $theme-sat-dim, $theme-text-lum-dim
 $theme-text-active-dim: darken($theme-text-dim, 100%);
 $theme-text-hover-dim: darken($theme-text-dim, 100%);
 
-$link-lit: hsl($theme-hue-lit, 100%, 20%);
+$link-lit: hsl($theme-hue-lit, 100%, 25%);
 $link-hover-lit: hsl($theme-hue-lit, 100%, 30%);
 $link-active-lit: hsl($theme-hue-lit, 100%, 40%);
 
@@ -117,6 +117,34 @@ $theme-bg-hover-lit: darken(saturate($theme-bg-lit, 20%), 40%);
 $theme-bg-dim: $themeColorBackgroundDim;
 $theme-bg-active-dim: lighten(saturate($theme-bg-dim, 0%), 40%);
 $theme-bg-hover-dim: lighten(saturate($theme-bg-dim, 20%), 50%);
+
+$theme-bg-hue-0-lit: scale-color($theme-bg-lit, $hue: (100/7 * 1));
+$theme-bg-hue-1-lit: scale-color($theme-bg-lit, $hue: (100/7 * 2));
+$theme-bg-hue-2-lit: scale-color($theme-bg-lit, $hue: (100/7 * 3));
+$theme-bg-hue-3-lit: scale-color($theme-bg-lit, $hue: (100/7 * 4));
+$theme-bg-hue-4-lit: scale-color($theme-bg-lit, $hue: (100/7 * 5));
+$theme-bg-hue-5-lit: scale-color($theme-bg-lit, $hue: (100/7 * 6));
+
+$theme-bg-hue-0-dim: scale-color($theme-bg-dim, $hue: (100/7 * 1));
+$theme-bg-hue-1-dim: scale-color($theme-bg-dim, $hue: (100/7 * 2));
+$theme-bg-hue-2-dim: scale-color($theme-bg-dim, $hue: (100/7 * 3));
+$theme-bg-hue-3-dim: scale-color($theme-bg-dim, $hue: (100/7 * 4));
+$theme-bg-hue-4-dim: scale-color($theme-bg-dim, $hue: (100/7 * 5));
+$theme-bg-hue-5-dim: scale-color($theme-bg-dim, $hue: (100/7 * 6));
+
+$dark-bg-hue-0-lit: scale-color($theme-bg-lit, $hue: (100/7 * 4), $saturation: -60%, $lightness: -80%);
+$dark-bg-hue-1-lit: scale-color($theme-bg-lit, $hue: (100/7 * 5), $saturation: -90%, $lightness: -70%);
+$dark-bg-hue-2-lit: scale-color($theme-bg-lit, $hue: (100/7 * 6), $saturation: -60%, $lightness: -80%);
+$dark-bg-hue-3-lit: scale-color($theme-bg-lit, $hue: (100/7 * 1), $saturation: -90%, $lightness: -70%);
+$dark-bg-hue-4-lit: scale-color($theme-bg-lit, $hue: (100/7 * 2), $saturation: -60%, $lightness: -80%);
+$dark-bg-hue-5-lit: scale-color($theme-bg-lit, $hue: (100/7 * 3), $saturation: -90%, $lightness: -70%);
+
+$dark-bg-hue-0-dim: scale-color($theme-bg-dim, $hue: (100/7 * 4), $saturation: -60%, $lightness: -10%);
+$dark-bg-hue-1-dim: scale-color($theme-bg-dim, $hue: (100/7 * 5), $saturation: -90%, $lightness: -0%);
+$dark-bg-hue-2-dim: scale-color($theme-bg-dim, $hue: (100/7 * 6), $saturation: -60%, $lightness: -10%);
+$dark-bg-hue-3-dim: scale-color($theme-bg-dim, $hue: (100/7 * 1), $saturation: -90%, $lightness: -0%);
+$dark-bg-hue-4-dim: scale-color($theme-bg-dim, $hue: (100/7 * 2), $saturation: -60%, $lightness: -10%);
+$dark-bg-hue-5-dim: scale-color($theme-bg-dim, $hue: (100/7 * 3), $saturation: -90%, $lightness: -0%);
 
 $haze-lit: darken(desaturate($bg-lit, 15%), 2%);
 $xhaze-lit: darken($haze-lit, 10%);
@@ -173,9 +201,18 @@ $colors-lit: (
   theme-opa-20: $theme-opa-20-lit,
   theme-opa-80: $theme-opa-80-lit,
   theme-opa-90: $theme-opa-90-lit,
+
   theme-bg: $theme-bg-lit,
   theme-bg-active: $theme-bg-active-lit,
   theme-bg-hover: $theme-bg-hover-lit,
+
+  theme-bg-hue-0: $theme-bg-hue-0-lit,
+  theme-bg-hue-1: $theme-bg-hue-1-lit,
+  theme-bg-hue-2: $theme-bg-hue-2-lit,
+  theme-bg-hue-3: $theme-bg-hue-3-lit,
+  theme-bg-hue-4: $theme-bg-hue-4-lit,
+  theme-bg-hue-5: $theme-bg-hue-5-lit,
+
   theme-text: $theme-text-lit,
   theme-text-opa-10: $theme-text-opa-10-lit,
   theme-text-opa-20: $theme-text-opa-20-lit,
@@ -184,6 +221,13 @@ $colors-lit: (
   theme-text-active: $theme-text-active-lit,
   theme-text-hover: $theme-text-hover-lit,
   neutral-theme: hsl(0, 0%, 13%),
+
+  dark-bg-hue-0: $dark-bg-hue-0-lit,
+  dark-bg-hue-1: $dark-bg-hue-1-lit,
+  dark-bg-hue-2: $dark-bg-hue-2-lit,
+  dark-bg-hue-3: $dark-bg-hue-3-lit,
+  dark-bg-hue-4: $dark-bg-hue-4-lit,
+  dark-bg-hue-5: $dark-bg-hue-5-lit,
 
   accent: hsl(20, 100%, 40%),
   xaccent: hsl(20, 100%, 25%),
@@ -237,7 +281,6 @@ $colors-dim: (
   link-dark-active: $link-active-dim,
   link-dark-hover: $link-hover-dim,
 
-
   bg: $bg-dim,
   bg-hover: $bg-hover-dim,
   bg-box: $bg-dark-dim,
@@ -252,9 +295,18 @@ $colors-dim: (
   theme-opa-20: $theme-opa-20-dim,
   theme-opa-80: $theme-opa-80-dim,
   theme-opa-90: $theme-opa-90-dim,
+
   theme-bg: $theme-bg-dim,
   theme-bg-active: $theme-bg-active-dim,
   theme-bg-hover: $theme-bg-hover-dim,
+
+  theme-bg-hue-0: $theme-bg-hue-0-dim,
+  theme-bg-hue-1: $theme-bg-hue-1-dim,
+  theme-bg-hue-2: $theme-bg-hue-2-dim,
+  theme-bg-hue-3: $theme-bg-hue-3-dim,
+  theme-bg-hue-4: $theme-bg-hue-4-dim,
+  theme-bg-hue-5: $theme-bg-hue-5-dim,
+
   theme-text: $theme-text-dim,
   theme-text-opa-10: $theme-text-opa-10-dim,
   theme-text-opa-20: $theme-text-opa-20-dim,
@@ -263,6 +315,13 @@ $colors-dim: (
   theme-text-active: $theme-text-active-dim,
   theme-text-hover: $theme-text-hover-dim,
   neutral-theme: hsl(0, 0%, 80%),
+
+  dark-bg-hue-0: $dark-bg-hue-0-dim,
+  dark-bg-hue-1: $dark-bg-hue-1-dim,
+  dark-bg-hue-2: $dark-bg-hue-2-dim,
+  dark-bg-hue-3: $dark-bg-hue-3-dim,
+  dark-bg-hue-4: $dark-bg-hue-4-dim,
+  dark-bg-hue-5: $dark-bg-hue-5-dim,
 
   accent: hsl(20, 100%, 40%),
   xaccent: hsl(20, 100%, 65%),
