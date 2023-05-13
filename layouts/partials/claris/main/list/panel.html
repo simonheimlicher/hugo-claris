@@ -3,7 +3,6 @@
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{- /* {{- $debug = or $debug (not (not (findRE `leadership` page.RelPermalink) ) ) }} */ -}}
-{{- $debug = or true $debug (not (not (findRE `profile/$` page.RelPermalink) ) ) }}
 
 {{- $panelRoot := "_index" }}
 {{- $panelPageResourceGlob := "*.md" }}

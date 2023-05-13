@@ -118,31 +118,31 @@ $theme-bg-dim: $themeColorBackgroundDim;
 $theme-bg-active-dim: lighten(saturate($theme-bg-dim, 0%), 40%);
 $theme-bg-hover-dim: lighten(saturate($theme-bg-dim, 20%), 50%);
 
-$theme-bg-hue-0-lit: scale-color($theme-bg-lit, $hue: (100/7 * 1));
-$theme-bg-hue-1-lit: scale-color($theme-bg-lit, $hue: (100/7 * 2));
-$theme-bg-hue-2-lit: scale-color($theme-bg-lit, $hue: (100/7 * 3));
-$theme-bg-hue-3-lit: scale-color($theme-bg-lit, $hue: (100/7 * 4));
-$theme-bg-hue-4-lit: scale-color($theme-bg-lit, $hue: (100/7 * 5));
-$theme-bg-hue-5-lit: scale-color($theme-bg-lit, $hue: (100/7 * 6));
+// $theme-bg-hue-0-lit: scale-color($theme-bg-lit, $hue: (100/7 * 1));
+// $theme-bg-hue-1-lit: scale-color($theme-bg-lit, $hue: (100/7 * 2));
+// $theme-bg-hue-2-lit: scale-color($theme-bg-lit, $hue: (100/7 * 3));
+// $theme-bg-hue-3-lit: scale-color($theme-bg-lit, $hue: (100/7 * 4));
+// $theme-bg-hue-4-lit: scale-color($theme-bg-lit, $hue: (100/7 * 5));
+// $theme-bg-hue-5-lit: scale-color($theme-bg-lit, $hue: (100/7 * 6));
 
-$theme-bg-hue-0-lit: change-color(scale-color(#1b3348, $lightness: 80%), $alpha: 0.85);
-$theme-bg-hue-1-lit: change-color(scale-color(#2c3352, $lightness: 80%), $alpha: 0.85);
-$theme-bg-hue-2-lit: change-color(scale-color(#332b4f, $lightness: 80%), $alpha: 0.85);
-$theme-bg-hue-3-lit: change-color(scale-color(#382440, $lightness: 80%), $alpha: 0.85);
-$theme-bg-hue-4-lit: change-color(scale-color(#482a3a, $lightness: 80%), $alpha: 0.85);
+$theme-bg-hue-0-lit: change-color(scale-color(#1b3348, $lightness: 60%), $alpha: 0.9);
+$theme-bg-hue-1-lit: change-color(scale-color(#2c3352, $lightness: 60%), $alpha: 0.9);
+$theme-bg-hue-2-lit: change-color(scale-color(#332b4f, $lightness: 60%), $alpha: 0.9);
+$theme-bg-hue-3-lit: change-color(scale-color(#382440, $lightness: 60%), $alpha: 0.9);
+$theme-bg-hue-4-lit: change-color(scale-color(#482a3a, $lightness: 60%), $alpha: 0.9);
 
-$theme-bg-hue-0-dim: scale-color($theme-bg-dim, $hue: (100/7 * 1));
-$theme-bg-hue-1-dim: scale-color($theme-bg-dim, $hue: (100/7 * 2));
-$theme-bg-hue-2-dim: scale-color($theme-bg-dim, $hue: (100/7 * 3));
-$theme-bg-hue-3-dim: scale-color($theme-bg-dim, $hue: (100/7 * 4));
-$theme-bg-hue-4-dim: scale-color($theme-bg-dim, $hue: (100/7 * 5));
-$theme-bg-hue-5-dim: scale-color($theme-bg-dim, $hue: (100/7 * 6));
+// $theme-bg-hue-0-dim: scale-color($theme-bg-dim, $hue: (100/7 * 1));
+// $theme-bg-hue-1-dim: scale-color($theme-bg-dim, $hue: (100/7 * 2));
+// $theme-bg-hue-2-dim: scale-color($theme-bg-dim, $hue: (100/7 * 3));
+// $theme-bg-hue-3-dim: scale-color($theme-bg-dim, $hue: (100/7 * 4));
+// $theme-bg-hue-4-dim: scale-color($theme-bg-dim, $hue: (100/7 * 5));
+// $theme-bg-hue-5-dim: scale-color($theme-bg-dim, $hue: (100/7 * 6));
 
-$theme-bg-hue-0-dim: change-color(#1b3348, $alpha: 0.85);
-$theme-bg-hue-1-dim: change-color(#2c3352, $alpha: 0.85);
-$theme-bg-hue-2-dim: change-color(#332b4f, $alpha: 0.85);
-$theme-bg-hue-3-dim: change-color(#382440, $alpha: 0.85);
-$theme-bg-hue-4-dim: change-color(#482a3a, $alpha: 0.85);
+$theme-bg-hue-0-dim: change-color(#1b3348, $alpha: 0.9);
+$theme-bg-hue-1-dim: change-color(#2c3352, $alpha: 0.9);
+$theme-bg-hue-2-dim: change-color(#332b4f, $alpha: 0.9);
+$theme-bg-hue-3-dim: change-color(#382440, $alpha: 0.9);
+$theme-bg-hue-4-dim: change-color(#482a3a, $alpha: 0.9);
 
 $dark-bg-hue-0-lit: scale-color($theme-bg-lit, $hue: (100/7 * 4), $saturation: -60%, $lightness: -80%);
 $dark-bg-hue-1-lit: scale-color($theme-bg-lit, $hue: (100/7 * 5), $saturation: -90%, $lightness: -70%);
@@ -223,7 +223,7 @@ $colors-lit: (
   theme-bg-hue-2: $theme-bg-hue-2-lit,
   theme-bg-hue-3: $theme-bg-hue-3-lit,
   theme-bg-hue-4: $theme-bg-hue-4-lit,
-  theme-bg-hue-5: $theme-bg-hue-5-lit,
+  // theme-bg-hue-5: $theme-bg-hue-5-lit,
 
   theme-text: $theme-text-lit,
   theme-text-opa-10: $theme-text-opa-10-lit,
@@ -317,7 +317,7 @@ $colors-dim: (
   theme-bg-hue-2: $theme-bg-hue-2-dim,
   theme-bg-hue-3: $theme-bg-hue-3-dim,
   theme-bg-hue-4: $theme-bg-hue-4-dim,
-  theme-bg-hue-5: $theme-bg-hue-5-dim,
+  // theme-bg-hue-5: $theme-bg-hue-5-dim,
 
   theme-text: $theme-text-dim,
   theme-text-opa-10: $theme-text-opa-10-dim,
