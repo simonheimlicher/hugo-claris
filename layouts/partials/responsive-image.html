@@ -19,7 +19,6 @@
 {{- $imgPosition := default $defaultPosition .position -}}
 
 {{- $defaultSizes := "100vw" }}
-{{- $imgSizes := default $defaultSizes .sizes -}}
 
 {{- $figureClass := cond (ne "" $caption) "caption" "" -}}
 {{- with .figureclass -}}
@@ -42,7 +41,10 @@
 
 {{- with .relativewidth -}}
   {{- $containerClass = printf "%s relative-width-%d" $containerClass (int .) -}}
+  {{- $defaultSizes = printf "%dvw" (int .) }}
 {{- end -}}
+
+{{- $imgSizes := default $defaultSizes .sizes -}}
 
 {{- $background := default false .background -}}
 {{- with $background }}
@@ -69,6 +71,8 @@
 {{- $fetchPriority := default "auto" .fetchpriority -}}
 
 {{- $lazy := default (eq $fetchPriority "low") .lazy -}}
+
+{{- $scriptBasedLoading := or $lazy $variantSpec -}}
 
 {{- $defaultMedia := "default" }}
 {{- $defaultVariantName := "default" }}
@@ -120,7 +124,7 @@
       "processingparams" .processingparams
     ) }}
   {{- end }}
-  {{- if reflect.IsMap $variantSpec }}
+  {{- if $variantSpec }}
     {{- if $debug }}
       {{- warnf "%s[%s]: .variant is map: %v" $page $template $variantSpec -}}
     {{- end }}
@@ -183,8 +187,7 @@
           "title" $imgTitle
           "alt" $imgAlt
           "credit" $imgCredit
-        )
-      ) }}
+        ) ) }}
     {{- else }}
       {{- warnf "%s[%s]: .resource: %v failed to get srcSet with %s" $page $template $resourceSpec $imageResourceArgs -}}
     {{- end }}
@@ -208,7 +211,7 @@
       {{- warnf "%s[%s]: Failed to determine defaultSrcURL from %v"
           $page $template (jsonify (dict "indent" "  ") .) -}}
     {{- end }}
-    {{- if $lazy }}
+    {{- if and false $scriptBasedLoading }}
       <noscript>
       {{- if $figureClass }}
         <figure  class="{{ $figureClass }}"
@@ -294,21 +297,23 @@
       </noscript>
     {{- end }}
     {{- if $figureClass }}
-      <figure class="{{ $figureClass }}{{ if $lazy }} lazyload{{ end }}">
+        <figure class="{{ $figureClass }}{{ if $lazy }} lazyload{{ end }}">
       <!-- Would prefer to use NPM module medium-zoom to zoom in on the figure including the caption
       but doing this by adding the following attribute appears not to work: -->
       {{- /* with $lightbox }} data-zoomable="{{ . | safeHTMLAttr }}"{{- end -}} */ -}}
     {{- end }}
         <!-- HTML element is a grouping element and must not contain any styles -->
-        <picture>
+          <picture>
+        {{- $multiVariant := false }}
         {{- range $variant := where $pictureResources "variant" "ne" $defaultVariantName }}
+          {{- $multiVariant = true }}
           {{- $media := .media }}
           {{- if $debug }}
             {{- warnf "%s[%s]: media=%v: pictureResource=%v"
                 $page $template .media (jsonify (dict "indent" "  ") . ) }}
           {{- end }}
           {{- range .formatsrcsets.formats }}
-          <source type="{{ .resource.MediaType }}" media="{{ $media }}" sizes="{{ $imgSizes | safeHTMLAttr }}" srcset="{{ .srcset }}">
+            <source type="{{ .resource.MediaType }}" media="none" data-media="{{ $media }}" sizes="{{ $imgSizes | safeHTMLAttr }}" srcset="{{ .srcset }}">
           {{- end }}
         {{- end }}
         {{- range $variant := where $pictureResources "variant" "eq" $defaultVariantName }}
@@ -328,7 +333,7 @@
                   $page $template $media (jsonify (dict "indent" "  ") $nonDefaultFormats ) }}
             {{- end }}
             {{- range $nonDefaultFormats }}
-          <source type="{{ .resource.MediaType }}" sizes="{{ $imgSizes | safeHTMLAttr }}" srcset="{{ .srcset }}">
+            <source type="{{ .resource.MediaType }}"{{ with $multiVariant }} media="none" data-media="all"{{ end }} sizes="{{ $imgSizes | safeHTMLAttr }}" srcset="{{ .srcset }}">
             {{- end }}
           {{- end }}
           {{- $placeholderInlineImg := .formatsrcsets.placeholder }}
@@ -336,45 +341,68 @@
             {{- $srcURL := .resource.RelPermalink }}
             {{- $imgWidth := default .resource.Width $imageResourceArgs.Width }}
             {{- $imgHeight := default .resource.Height $imageResourceArgs.Height }}
-          <img  class="{{ with $imgClass }}{{ . }}{{ end }}{{ if $lazy }} lazyload{{ end }}"
-                width="{{ $imgWidth }}" height="{{ $imgHeight }}"
-            {{- if $lazy }}
-                  {{ printf "src=%q" $placeholderInlineImg | safeHTMLAttr }}
-               {{ printf "srcset=%q" (printf  "%s %dw" $placeholderInlineImg $imgWidth) | safeHTMLAttr }}
-             data-src="{{ $srcURL }}"
-          data-srcset="{{ .srcset }}"
-              loading="lazy"
-            {{- else }}
-                  src="{{ $srcURL }}"
-               srcset="{{ .srcset }}"
+            {{- if $scriptBasedLoading }}
+            <noscript>
+              <img  class="{{ with $imgClass }}{{ . }}{{ end }}"
+                    width="{{ $imgWidth }}" height="{{ $imgHeight }}"
+                      src="{{ $srcURL }}"
+                  srcset="{{ .srcset }}"
+                {{- with $fetchPriority }}
+            fetchpriority="{{ . | safeHTMLAttr }}"
+                {{- end }}
+                    sizes="{{ $imgSizes | safeHTMLAttr }}"
+                {{- with $variant.title }}
+                    title="{{ . | safeHTMLAttr }}"
+                {{- end }}
+                {{- with $variant.alt }}
+                      alt="{{ . | safeHTMLAttr }}"
+                {{- end }}
+                {{- with $imgInlineStyle_attr }}
+                  {{ $imgInlineStyle_attr | safeHTMLAttr }}
+                {{- end -}}
+              >
+            </noscript>
             {{- end }}
-            {{- with $fetchPriority }}
-        fetchpriority="{{ . | safeHTMLAttr }}"
-            {{- end }}
-            {{- with $lightbox }}
-        data-zoomable="{{ . | safeHTMLAttr }}"
-            {{- end }}
-                sizes="{{ $imgSizes | safeHTMLAttr }}"
-            {{- with $variant.title }}
-                title="{{ . | safeHTMLAttr }}"
-            {{- end }}
-            {{- with $variant.alt }}
-                  alt="{{ . | safeHTMLAttr }}"
-            {{- end }}
-            {{- with $imgInlineStyle_attr }}
-              {{ $imgInlineStyle_attr | safeHTMLAttr }}
-            {{- end -}}
-          >
+
+            <img  class="{{ with $imgClass }}{{ . }}{{ end }}{{ if $scriptBasedLoading }} lazyload{{ end }}"
+                  width="{{ $imgWidth }}" height="{{ $imgHeight }}"
+              {{- if $scriptBasedLoading }}
+                    {{ printf "src=%q" $placeholderInlineImg | safeHTMLAttr }}
+                {{ printf "srcset=%q" (printf  "%s %dw" $placeholderInlineImg $imgWidth) | safeHTMLAttr }}
+              data-src="{{ $srcURL }}"
+            data-srcset="{{ .srcset }}"
+                loading="lazy"
+              {{- else }}
+                    src="{{ $srcURL }}"
+                srcset="{{ .srcset }}"
+              {{- end }}
+              {{- with $fetchPriority }}
+          fetchpriority="{{ . | safeHTMLAttr }}"
+              {{- end }}
+              {{- with $lightbox }}
+          data-zoomable="{{ . | safeHTMLAttr }}"
+              {{- end }}
+                  sizes="{{ $imgSizes | safeHTMLAttr }}"
+              {{- with $variant.title }}
+                  title="{{ . | safeHTMLAttr }}"
+              {{- end }}
+              {{- with $variant.alt }}
+                    alt="{{ . | safeHTMLAttr }}"
+              {{- end }}
+              {{- with $imgInlineStyle_attr }}
+                {{ $imgInlineStyle_attr | safeHTMLAttr }}
+              {{- end -}}
+            >
           {{- end }}
         {{- end }}
-        </picture>
+          </picture>
     {{- if $figureClass -}}
         {{- with $caption -}}
-        <figcaption>
-          {{- . | $page.RenderString -}}
-        </figcaption>
+          <figcaption>
+            {{- . | $page.RenderString -}}
+          </figcaption>
         {{- end }}
-      </figure>
+        </figure>
     {{- end }}
   {{- else }}
     {{- warnf "%s[%s]: failed to get srcSet with param .resource=%s" $page $template $resourceSpec -}}

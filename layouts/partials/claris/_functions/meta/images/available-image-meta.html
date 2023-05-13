@@ -5,7 +5,7 @@
 {{- $defaultKind := .DefaultKind }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^([^/]+/-demo)?/$` $page.RelPermalink) ) ) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?$` $page.RelPermalink) ) ) }} */}}
 {{- $template := "claris/_functions/meta/images/available-image-meta" }}
 
 {{ $defaultVariantName := "default" }}

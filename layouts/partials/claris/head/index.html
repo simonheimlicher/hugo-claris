@@ -61,7 +61,7 @@
 
 {{- partialCached "claris/head/assets" (dict "Page" $page "Debug" $debug "AssetVariant" $assetVariant) $assetVariant .Kind }}
     <noscript>
-      <style>.lazyload { display: none; }</style>
+      <style>img.lazyload { display: none !important; }</style>
     </noscript>
 
 {{- end -}}
