@@ -11,8 +11,8 @@ $themeColorDim: {{ default "hsl(47, 80%, 50%)" ($page.Param "themeColorDim") }}
 $themeColorBackgroundLit: {{ default "lighten(desaturate($themeColorLit, 50%), 45%)" ($page.Param "themeColorBackgroundLit") }}
 $themeColorBackgroundDim: {{ default "darken(desaturate($themeColorDim, 60%), 35%)" ($page.Param "themeColorBackgroundDim") }}
 
-$themeNeutralBackgroundLit: {{ default "lighten(desaturate($themeColorBackgroundLit, 75%), 0%)" ($page.Param "themeNeutralBackgroundLit") }}
-$themeNeutralBackgroundDim: {{ default "darken(desaturate($themeColorBackgroundDim, 50%), 0%)" ($page.Param "themeNeutralBackgroundDim") }}
+$themeNeutralBackgroundLit: {{ default "lighten(desaturate($themeColorBackgroundLit, 95%), 0%)" ($page.Param "themeNeutralBackgroundLit") }}
+$themeNeutralBackgroundDim: {{ default "darken(desaturate($themeColorBackgroundDim, 95%), 0%)" ($page.Param "themeNeutralBackgroundDim") }}
 
 $fontFamilySans: '{{ default "Source Sans 3" ($page.Param "fontFamilySans") }}'
 $fontFamilySerif: '{{ default "Merriweather" ($page.Param "fontFamilySerif") }}'
