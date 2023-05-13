@@ -102,6 +102,9 @@ const initColorScheme = function () {
     transition = transition || false;
     if (transition) {
       clarisHugoParams.htmlRootElement.dataset.colorSchemeTransition = true;
+      window.setTimeout(() => {
+        delete clarisHugoParams.htmlRootElement.dataset.colorSchemeTransition;
+      }, 700);
     }
     const isDarkColorScheme = currentColorScheme() == 'dark';
     const storedColorScheme = getStoredColorScheme();
