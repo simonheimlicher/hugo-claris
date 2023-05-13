@@ -114,7 +114,7 @@
     {{- end }}
   {{- else }}
     {{- warnf "%s[%s]: No fonts found to preload. regex=%v stylesheet=%v .Content=\n%v"
-        $page $template $fontMatchRE $styleSheet.unminified $styleSheet.unminified.Content -}}
+        $page $template $fontMatchRE $styleSheet.unminified (substr $styleSheet.unminified.Content 0 400) -}}
   {{- end }}
 {{- return $preloadFonts }}
 {{- end }}
