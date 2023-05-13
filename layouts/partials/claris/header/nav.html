@@ -5,6 +5,7 @@
 {{- $hideSubMenus := eq site.Params.hideSubMenus true }}
 {{- $menuData := $page.Site.Data.menu }}
 {{- $link := $page.Permalink }}
+{{- $logoURL := absURL site.Params.logoURL }}
 {{- $url := "" }}
 {{- $name := "" }}
 {{- $children := false }}
@@ -37,7 +38,8 @@
     {{- $parentID := default "" (printf "%s-%s" $elementIdPrefix (default $name .Identifier) | plainify | urlize) }}
             <div class="nav_parent">
               <a href="{{ $url }}" id="{{ $parentID }}" class="nav_menu nav_item
-      {{- if (and (not .HasChildren) (eq $url $link)) }} nav_active{{ end -}}
+      {{- if (and (not .HasChildren) (eq $url $logoURL) ) }} nav_logourl{{ end -}}
+      {{- if (and (not .HasChildren) (eq $url $link) ) }} nav_active{{ end -}}
       {{- if eq $page.Permalink .URL }} nav_active_page{{ end -}}
       {{- if ( $page.IsMenuCurrent .Menu . ) }} nav_active_is_menu{{ end -}}
       {{- if ( $page.HasMenuCurrent .Menu . ) }} nav_active_has_menu{{ end -}}

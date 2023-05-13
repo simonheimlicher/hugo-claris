@@ -253,7 +253,16 @@
       @include nav-hover-background
 
   &_group
-    &_follow_color-scheme
+    &_color-scheme_mobile.nav_group
+      position: absolute
+      right: 0
+      top: 0
+      bottom: 0
+      height: 100%
+      display: flex
+      justify-content: center
+      align-items: center
+    &_follow
       display: flex
       align-content: center
       justify-content: space-between
@@ -383,13 +392,9 @@
       max-width: unset
       background: transparent !important
   &_mobile_toggle
-    position: absolute
-    right: 0
-    top: 0
-    bottom: 0
+    position: relative
     height: 100%
-    padding-left: $screenViewInnerPaddingMobile
-    padding-right: $screenViewInnerPaddingMobile
+    padding: 0 var(--inner_padding-x)
     cursor: pointer
     z-index: 1000
     display: flex
@@ -431,6 +436,7 @@
   width: min-content
   margin: auto 0
   justify-content: flex-end
+  padding: 0 var(--inner_padding-x)
   &_choice
     // width: 3rem
     width: 1.5rem
@@ -677,6 +683,8 @@
         width: auto // initial
         .color-scheme
           margin-right: 0
+    &_logourl
+      display: none
     &_follow
       &:first-child
         a

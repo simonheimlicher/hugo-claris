@@ -1,0 +1,9 @@
+        <div class="nav_group nav_group_color-scheme_mobile">
+          <div class="nav_parent_color-scheme">
+          {{- partialCached "claris/header/color-scheme" . }}
+          </div>
+          <div class="nav_mobile_toggle nav_item{{ with .logoclass }} {{ . }}{{ end }}">
+            <div class="nav_mobile_toggle_open">{{- partialCached "sprite" (dict "icon" "open-menu") "open-menu" -}}</div>
+            <div class="nav_mobile_toggle_close">{{- partialCached "sprite" (dict "icon" "closeme") "close-menu" -}}</div>
+          </div>
+        </div>

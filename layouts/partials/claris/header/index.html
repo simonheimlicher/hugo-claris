@@ -16,6 +16,7 @@
         {{- else }}
           {{- partialCached "claris/header/logo" (dict "logourl" $logoURL "Page" $page) }}
         {{- end }}
+        {{- partialCached "claris/header/nav-menu" (dict "logoclass" "" "Page" $page) }}
         <div class='nav_body nav_body_{{ default "right" $s.mobileNavigation }}'>
           {{- $menuData := site.Data.menu }}
           {{- with $menuData }}
@@ -26,12 +27,9 @@
           {{- if $centerLogo }}
             {{ partial "claris/header/logo" (dict "logoclass" "nav_center" "Page" $page) }}
           {{- end }}
-          <div class="nav_group nav_group_follow_color-scheme">
+          <div class="nav_group nav_group_follow">
             <div class="nav_parent_follow">
             {{- partialCached "claris/header/follow" . $contentType }}
-            </div>
-            <div class="nav_parent_color-scheme">
-            {{- partialCached "claris/header/color-scheme" . $contentType }}
             </div>
           </div>
         </div>
