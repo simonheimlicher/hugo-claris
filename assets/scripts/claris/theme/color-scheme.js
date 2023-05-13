@@ -28,6 +28,10 @@ const initColorScheme = function () {
    * Make <picture> <source> elements with media="(prefers-color-scheme:)"
    * respect custom theme preference overrides.
    * Otherwise the `media` preference will only respond to the OS-level setting
+   * Unfortunately, if the user overrides the preferred color scheme,
+   * the image resource for the preferred color scheme will already have been requested
+   * by the time JavaScript is executed
+   * Inlining the below function does not change anything
    * Source: https://larsmagnus.co/blog/how-to-make-images-react-to-light-and-dark-mode
    */
   function updateSourceMedia(scheme) {
@@ -93,25 +97,12 @@ const initColorScheme = function () {
     }
   }
 
-  function setUserColorScheme(mode) {
+  function setUserColorScheme(mode, transition) {
     mode = mode || false;
-    const isDarkColorScheme = currentColorScheme() == 'dark';
-    const storedColorScheme = getStoredColorScheme();
-    if (storedColorScheme) {
-      if (mode) {
-        changeColorScheme(isDarkColorScheme);
-      } else {
-        updateColorScheme(storedColorScheme);
-      }
-    } else {
-      if (mode === true) {
-        changeColorScheme(isDarkColorScheme)
-      }
+    transition = transition || false;
+    if (transition) {
+      clarisHugoParams.htmlRootElement.dataset.colorSchemeTransition = true;
     }
-  }
-
-  function setUserColorScheme(mode) {
-    mode = mode || false;
     const isDarkColorScheme = currentColorScheme() == 'dark';
     const storedColorScheme = getStoredColorScheme();
     if (storedColorScheme) {
@@ -147,7 +138,7 @@ const initColorScheme = function () {
 
     document.querySelector('.color-scheme_choice').addEventListener('click', function (event) {
       pushClass(event.target, 'color_animate');
-      setUserColorScheme(true);
+      setUserColorScheme(true, true);
     });
   };
   window.addEventListener('DOMContentLoaded', initColorSchemeToggle);

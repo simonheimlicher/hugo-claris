@@ -5,7 +5,7 @@
 
 {{- with partialCached "claris/_functions/asset-bundles" . $assetVariant -}}
   {{- with .Scripts.body.resource }}
-    <script type="module" src="{{ .Permalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
+    <script type="module" src="{{ .Permalink }}" fetchpriority="low" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
   {{- end -}}
   {{- with .Scripts.body_legacy.resource }}
     <script nomodule src="{{ .Permalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>

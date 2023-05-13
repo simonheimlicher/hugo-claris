@@ -188,7 +188,9 @@ $main-z-index: 1;
 }
 
 @mixin color-scheme_transition {
-  transition: background var(--color-scheme-duration) var(--color-scheme-timing);
+  html[data-color-scheme-transition] & {
+    transition: background var(--color-scheme-duration) var(--color-scheme-timing);
+  }
 }
 
 @mixin content_base() {
@@ -421,7 +423,6 @@ $main-z-index: 1;
       -webkit-backdrop-filter: blur(50px);
     }
   }
-  @include color-scheme_transition;
 }
 
 /*

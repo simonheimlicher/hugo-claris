@@ -6,6 +6,7 @@
       "Page" page
       "figureclass" (printf "hero-image_%s_figure" $imagesMeta.hero.style)
       "imgclass" (printf "hero-image_%s_img" $imagesMeta.hero.style)
+      "fetchpriority" "low"
       "lazy" false
     ) }}
   {{/* {{- warnf "%s[%s]: Calling responsive-image with .style=%v and .resource=%v'"
