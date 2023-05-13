@@ -187,6 +187,10 @@ $main-z-index: 1;
   }
 }
 
+@mixin color-scheme_transition {
+  transition: background var(--color-scheme-duration) var(--color-scheme-timing);
+}
+
 @mixin content_base() {
   clear: both;
 }
@@ -373,9 +377,23 @@ $main-z-index: 1;
 }
 
 @mixin drop-shadow($dist: 3rem, $opacity: 0.2, $hover-opacity: 0.4) {
-  box-shadow: 0 0 $dist rgba(0, 0, 0, $opacity);
+  box-shadow: 0 0 $dist hsla(0, 0, 0%, $opacity);
   &:hover {
-    box-shadow: 0 0 $dist rgba(0, 0, 0, $hover-opacity);
+    box-shadow: 0 0 $dist hsla(0, 0, 0%, $hover-opacity);
+  }
+  html[data-color-scheme="dark"] & {
+    box-shadow: 0 0 $dist hsla(0, 0, 100%, $opacity);
+    &:hover {
+      box-shadow: 0 0 $dist hsla(0, 0, 100%, $hover-opacity);
+    }
+  }
+  @media screen and (prefers-color-scheme: dark) {
+    html:not([data-color-scheme="light"]) & {
+      box-shadow: 0 0 $dist hsla(0, 0, 100%, $opacity);
+      &:hover {
+        box-shadow: 0 0 $dist hsla(0, 0, 100%, $hover-opacity);
+      }
+    }
   }
 }
 
@@ -403,6 +421,7 @@ $main-z-index: 1;
       -webkit-backdrop-filter: blur(50px);
     }
   }
+  @include color-scheme_transition;
 }
 
 /*
@@ -488,21 +507,6 @@ html {
   --dim-image-filter: grayscale(30%);
 }
 
-@mixin dim_colors() {
-  @include generate_colors( map-merge($colors-lit, $colors-dim) );
-  --choice-bg-menu: var(--xxhaze);
-  --choice-bg-menu-active: var(--xhaze);
-  &:not(.kind-page) {
-    --choice-bg: var(--theme-bg);
-    --RGB_choice-bg: var(--RGB_theme-bg);
-    --choice-bg-menu: var(--xhaze);
-    --choice-bg-menu-active: rgba(var(--RGB_light), 0.05);
-  }
-  img:not([src*=".svg"]) {
-    filter: var(--dim-image-filter);
-  }
-}
-
 html {
   --to-be-eliminated-by-csspurge: black;
   --font-sans: "#{$fontFamilySans}", "#{$fontFamilySansFallback}", "#{$fontFamilySansFallbackAndroid}", "Helvetica Neue", "Helvetica", sans-serif;
@@ -551,11 +555,11 @@ html {
   --ease: cubic-bezier(0.39, 0.575, 0.565, 1);
   --easing: cubic-bezier(0.19, 1, 0.22, 1);
 
-  --color-mode: 'lit';
+  --color-scheme: 'light';
 
   // https://web.dev/prefers-color-scheme/#activating-dark-mode-in-the-operating-system
-  --darkmode-duration: 0.7s;
-  --darkmode-timing: ease;
+  --color-scheme-duration: 0.7s;
+  --color-scheme-timing: ease;
 
   --screenViewWidthChrome: #{$screenViewWidthChrome};
   --screenViewWidthUltrawide: #{$screenViewWidthUltrawide};
@@ -656,9 +660,9 @@ html {
     --choice-bg-menu-active: rgba(var(--RGB_theme-xxxhaze), 0.05);
   }
 
-  @mixin darkmode {
+  @mixin color-scheme-dark {
     --theme-text-dim: hsla(0,0%,100%,0.87);
-    --color-mode: 'dim';
+    --color-scheme: 'dark';
     --text: var(--theme-text-dim);
     --accent: var(--bubble);
     --choice-bg: var(--bg);
@@ -668,10 +672,6 @@ html {
     --table-haze: hsla(0, 0%, 100%, 0.1);
     --table-border: var(--code-bg);
     --footer-bg: var(--bg);
-  }
-
-  &[data-mode="dim"] {
-    @include darkmode;
     svg.icon {
       fill: var(--theme-text);
     }
@@ -683,7 +683,7 @@ html {
         fill: #fafafa;
       }
     }
-    .color {
+    .color-scheme {
       &_choice {
         &:after {
           background-image: url("#{$images}moon-mono.svg");
@@ -691,41 +691,31 @@ html {
         }
       }
     }
-    @include dim_colors();
+    @include generate_colors( map-merge($colors-lit, $colors-dim) );
+    /*
+    --choice-bg-menu: var(--xxhaze);
+    --choice-bg-menu-active: var(--xhaze);
+    &:not(.kind-page) {
+      --choice-bg: var(--theme-bg);
+      --RGB_choice-bg: var(--RGB_theme-bg);
+      --choice-bg-menu: var(--xhaze);
+      --choice-bg-menu-active: rgba(var(--RGB_light), 0.05);
+    }
+    */
+    img:not([src*=".svg"]) {
+      filter: var(--dim-image-filter);
+    }
+  }
+
+  &[data-color-scheme="dark"] {
+    @include color-scheme-dark;
   }
 
   @media screen and (prefers-color-scheme: dark) {
-    &:not([data-mode="lit"]) {
-      @include darkmode;
-       svg.icon {
-        fill: var(--text);
-      }
-      .icon {
-        img {
-          background: none;
-        }
-        svg {
-          fill: #fafafa;
-        }
-      }
-      .sidebar {
-        &_inner {
-          &:before {
-            display: none;
-          }
-        }
-      }
-      .color {
-        &_choice {
-          &:after {
-            background-image: url("#{$images}moon-mono.svg");
-            transform: translateX(1.4rem);
-          }
-        }
-      }
-      @include dim_colors();
+    &:not([data-color-scheme="light"]) {
+      @include color-scheme-dark;
       body {
-        transition: none;
+        transition: ease;
       }
     }
   }

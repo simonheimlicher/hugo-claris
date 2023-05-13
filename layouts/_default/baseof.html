@@ -75,13 +75,13 @@
 {{- end -}}
 {{- $forceColorScheme := false }}
 {{- with default false (default $p.enforceLightMode $s.enforceLightMode) }}
-  {{- $forceColorScheme = " data-mode=\"lit\"" }}
+  {{- $forceColorScheme = " data-color-scheme=\"lit\"" }}
 {{- else }}
   {{- with default false (default $p.enforceDarkMode $s.enforceDarkMode) }}
-    {{- $forceColorScheme = " data-mode=\"dim\"" }}
+    {{- $forceColorScheme = " data-color-scheme=\"dim\"" }}
   {{- else }}
     {{- if (and $outputFormat (strings.Contains (lower $outputFormat.Name) "print") ) }}
-      {{- $forceColorScheme = " data-mode=\"lit\"" }}
+      {{- $forceColorScheme = " data-color-scheme=\"lit\"" }}
     {{- end -}}
   {{- end -}}
 {{- end -}}

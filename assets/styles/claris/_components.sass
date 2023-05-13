@@ -1,5 +1,6 @@
 .main
   background: var(--choice-bg)
+  @include color-scheme_transition
   z-index: $main-z-index
   @include link-lvhfa
 
@@ -42,18 +43,24 @@
 
 .panel
   &_content
-    color: var(--text-dark)
+    // color: var(--text-dark)
     min-height: 1px // For IE 11
     h2, h3
-      color: var(--text-dark)
+      // color: var(--text-dark)
       margin: 0
       padding: 0
     h2
       font-size: 150%
       font-variant: all-small-caps
-      // padding: 0 0 var(--inner_padding-y-1) 0
+      line-height: 0.7
+      padding: 0 0 var(--inner_padding-y) 0
     h3
       font-size: 125%
+
+    &.background-dark
+      color: var(--text-dark)
+      h2, h3
+        color: var(--text-dark)
 
   &_container
     display: flex
@@ -64,18 +71,32 @@
     border-top: 1px solid var(--xhaze)
     padding: var(--inner_padding-y) 0
     width: 100%
+    @include color-scheme_transition
     &-0
-      background: var(--dark-bg-hue-0)
+      background: var(--theme-bg-hue-0)
     &-1
-      background: var(--dark-bg-hue-1)
+      background: var(--theme-bg-hue-1)
     &-2
-      background: var(--dark-bg-hue-2)
+      background: var(--theme-bg-hue-2)
     &-3
-      background: var(--dark-bg-hue-3)
+      background: var(--theme-bg-hue-3)
     &-4
-      background: var(--dark-bg-hue-4)
+      background: var(--theme-bg-hue-4)
     &-5
-      background: var(--dark-bg-hue-5)
+      background: var(--theme-bg-hue-5)
+    &.background-dark
+      &-0
+        background: var(--dark-bg-hue-0)
+      &-1
+        background: var(--dark-bg-hue-1)
+      &-2
+        background: var(--dark-bg-hue-2)
+      &-3
+        background: var(--dark-bg-hue-3)
+      &-4
+        background: var(--dark-bg-hue-4)
+      &-5
+        background: var(--dark-bg-hue-5)
 
 .card
   &_container
@@ -98,7 +119,8 @@
     min-height: 1px // For IE 11
     flex: 1 1 10%
     background: var(--bg-hover)
-    border-radius: 0.125em
+    @include color-scheme_transition
+    border-radius: 0.25em
     padding: var(--inner_padding-y) var(--inner_padding-x)
     padding-bottom: var(--inner_padding-y-3)
     @supports (display: flex)
@@ -357,6 +379,7 @@
   &_content
     @include list-style
     background: var(--choice-bg)
+    @include color-scheme_transition
     font-family: var(--font-article)
     margin-top: calc( (1 - var(--line-height-heading) ) * 1em)
   &_body
@@ -389,6 +412,7 @@
     bottom: 0
     background: var(--xhaze)
     background: linear-gradient(to bottom, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze))
+    @include color-scheme_transition
     position: absolute
     // right: 1px
     right: calc(-0.5 * var(--column-gap))
@@ -428,6 +452,7 @@
     margin: 0 auto 1.5rem auto
     position: relative
     background-color: var(--haze)
+    @include color-scheme_transition
 
 .supertitle
   display: block
@@ -565,7 +590,7 @@ svg.qrcode-svg
   svg
     fill: transparent
 
-html[data-mode="dim"]
+html[data-color-scheme="dark"]
   svg.qrcode-svg
     fill: var(--text)
     stroke: var(--text)
@@ -581,7 +606,7 @@ html[data-mode="dim"]
         fill: var(--text) !important
 
 @media only screen and (prefers-color-scheme: dark)
-  html:not([data-mode="lit"])
+  html:not([data-color-scheme="light"])
     svg.qrcode-svg
       fill: var(--text)
       stroke: var(--text)
@@ -635,6 +660,7 @@ html[data-mode="dim"]
     grid-gap: 0
     border-radius: 0.25rem
     background: var(--bg)
+    @include color-scheme_transition
     margin-bottom: var(--inner_margin-y)
     &:last-child
       margin-bottom: 0
@@ -835,6 +861,7 @@ html[data-mode="dim"]
       right: 0
       background: var(--xhaze)
       background: linear-gradient(to right, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze))
+      @include color-scheme_transition
 
     @media screen and (min-width: $screenViewBreakpointWidthWide)
       padding-top: 0
@@ -854,6 +881,7 @@ html[data-mode="dim"]
         right: auto
         background: var(--xhaze)
         background: linear-gradient(to bottom, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze))
+        @include color-scheme_transition
 
 .author
   &_header
@@ -1050,6 +1078,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%)
   position: relative
   // z-index: ($main-z-index  + 1)
   background: var(--neutral-haze)
+  @include color-scheme_transition
   color: var(--text)
   font-family: var(--font)
   position: relative
@@ -1193,11 +1222,11 @@ $note-bg-blue-dim: hsl(210, 100%, 10%)
   --note-bg-blue-top: #{scale-color($note-bg-blue-dim, $saturation: -3, $lightness: -2)}
   --note-border-blue: #{scale-color($note-bg-blue-dim, $saturation: -100, $lightness: 20)}
 
-html[data-mode="dim"]
+html[data-color-scheme="dark"]
   .note
     @include note-dim-colors
 @media (prefers-color-scheme: dark)
-  html:not([data-mode="lit"])
+  html:not([data-color-scheme="light"])
     .note
       @include note-dim-colors
 
@@ -1243,6 +1272,7 @@ html[data-mode="dim"]
     max-height: 100%
   &.caption
     background: var(--figure-bg)
+    @include color-scheme_transition
     padding: var(--inner_padding-y)  var(--inner_padding-x)
     color: var(--text)
     font-family: var(--font)
@@ -1252,10 +1282,12 @@ html[data-mode="dim"]
 
   &.background-light
     background: var(--bg-light)
+    @include color-scheme_transition
     color: var(--text-light)
 
   &.background-dark
     background: var(--bg-dark)
+    @include color-scheme_transition
     color: var(--text-dark)
 
   &_img

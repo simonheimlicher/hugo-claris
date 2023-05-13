@@ -82,6 +82,7 @@
 @media screen
   .to_top
     background-color: var(--theme)
+    @include color-scheme_transition
     width: 2.75rem
     height: 2.75rem
     display: flex
@@ -127,7 +128,6 @@
       // outline-top: 2px solid var(--theme-bg-active)
       height: 0.25rem
       background: var(--theme-bg-active)
-
 .nav
   justify-content: space-between
   color: var(--text)
@@ -200,15 +200,11 @@
       transform: translateX(calc(100% + 100vw))
       transition: transform 0.5s var(--easing)
       right: 0
-      .color_mode .color_mode_label
-        padding-right: 0.5rem
     &_left
       transform: translateX(-100%) // IE11
       transform: translateX(calc(-100% - 100vw))
       transition: transform 0.5s var(--easing)
       left: 0
-      .color_mode .color_mode_label
-        padding-left: 0.5rem
 
     &:after
       content: ''
@@ -220,6 +216,7 @@
       z-index: -1
       background: rgba(var(--RGB_choice-bg), 0.98)
       @include background-gradient-translucent("to bottom", 0.9)
+      @include color-scheme_transition
 
   &_header
     position: relative
@@ -244,6 +241,8 @@
       background: rgba(var(--RGB_choice-bg), 0.98)
       @include background-gradient-translucent("to top", 0.9)
       // @include shadow-centered-narrow
+      @include color-scheme_transition
+
   &_item
     padding: 0.25rem 0.25rem
     display: inline-flex
@@ -254,7 +253,7 @@
       @include nav-hover-background
 
   &_group
-    &_follow_mode
+    &_follow_color-scheme
       display: flex
       align-content: center
       justify-content: space-between
@@ -283,11 +282,11 @@
   &_parent
     // Display as grid to position sub menus properly
     display: grid
-    &_follow, &_mode
+    &_follow, &_color-scheme
       flex-wrap: wrap
       width: auto
-    &_mode
-      // .color_mode
+    &_color-scheme
+      // .color-scheme
       margin-right: 0
       margin-left: auto
 
@@ -427,23 +426,11 @@
     padding-top: 0
     top: 0.25rem
 
-.color
-  &_mode
-    display: none
-    width: min-content
-    margin: auto 0
-    justify-content: flex-end
-    &_label
-      font-size: 0.75rem // Minimal size for mobile users according to Lighthouse
-      text-transform: uppercase
-      width: min-content
-      text-align: right
-      margin-right: 0.25rem
-      line-height: var(--line-height-label)
-      white-space: pre-wrap
-      word-wrap: normal
-      overflow-wrap: normal
-      hyphens: none
+.color-scheme
+  display: none
+  width: min-content
+  margin: auto 0
+  justify-content: flex-end
   &_choice
     // width: 3rem
     width: 1.5rem
@@ -565,6 +552,7 @@
       z-index: ($main-z-index + 1)
       // padding-top: ($screenViewInnerPaddingOneColumn)
       background: var(--bg-dark)
+      @include color-scheme_transition
       color: var(--text-dark)
       h1, h2, h3, a
         color: var(--text-dark)
@@ -651,7 +639,7 @@
               padding-right: ($screenViewInnerPaddingOneColumn - 0.5rem)
           &:first-child
             margin-top: ($screenViewNavHeightNarrow + $screenViewInnerPaddingOneColumn)
-      &_group_follow_mode
+      &_group_follow_color-scheme
         flex-wrap: wrap
         justify-content: space-between
         margin-top: $screenViewInnerPaddingOneColumn
@@ -681,13 +669,13 @@
       position: relative
       display: flex
       align-items: center
-      &_follow_mode
+      &_follow_color-scheme
         margin-left: auto
         display: flex
         align-content: center
         justify-content: space-between
         width: auto // initial
-        .color_mode
+        .color-scheme
           margin-right: 0
     &_follow
       &:first-child
@@ -722,7 +710,7 @@
     &_hide, &_mobile_toggle
       display: none
 
-  .color_mode
+  .color-scheme
     position: relative
     right: auto // initial
     top: auto // initial
@@ -747,7 +735,7 @@
       // padding-left: $screenViewInnerPaddingOneColumn
       padding-right: $screenViewInnerPaddingOneColumn
 
-    .color_mode_label
+    .color-scheme_label
       display: flex
       line-height: 1.25rem
     // .icon

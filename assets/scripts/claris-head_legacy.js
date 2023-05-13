@@ -34,9 +34,9 @@
 import "scripts/claris/legacy/polyfills";
 
 import 'scripts/claris/theme/init';
-// NOTE: color-mode needs to be loaded as early as possible to avoid the infamous
+// NOTE: color-scheme needs to be loaded as early as possible to avoid the infamous
 // Flash of Incorrect Color Scheme (FOICS) at page load when dark mode is active
-import 'scripts/claris/theme/color-mode';
+import 'scripts/claris/theme/color-scheme';
 
 // NOTE: We need to explicitly call objectFitImages()
 import objectFitImages from 'object-fit-images';

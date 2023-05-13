@@ -54,17 +54,12 @@ body
   -moz-osx-font-smoothing: grayscale
   &.macos, &.windows, &.ios
     text-rendering: optimizeLegibility
-    // FIXME
-    // Disabled because it causes color_mode_label to become too high in Safari
     // font-variant: common-ligatures
 
   // https://web.dev/prefers-color-scheme/#activating-dark-mode-in-the-operating-system
-  // transition: color var(--darkmode-duration) var(--darkmode-timing), background-color var(--darkmode-duration) var(--darkmode-timing)
-  .color_mode_transition
-    transition: all var(--darkmode-duration) var(--darkmode-timing)
+  // transition: color var(--color-scheme-duration) var(--color-scheme-timing), background-color var(--color-scheme-duration) var(--color-scheme-timing)
 
-
-  // Allow breaking long wordds including URLs
+  // Allow breaking long words including URLs
   // https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
   // These are technically the same, but use both
   // https://stackoverflow.com/a/67249632/617559

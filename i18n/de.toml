@@ -83,13 +83,13 @@ other = "{{ .ReadingTime }} Min. zum Lesen"
 [table_of_contents]
 other = "Auf dieser Seite"
 
-[color_mode]
+[color-scheme]
 other = "Nacht-Modus"
 
-[color_mode_lit]
+[color-scheme_lit]
 other = "Licht an"
 
-[color_mode_dim]
+[color-scheme_dim]
 other = "Licht aus"
 
 [read_more_about]

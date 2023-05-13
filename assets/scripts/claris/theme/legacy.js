@@ -1,5 +1,5 @@
 import "./init";
 import "./obfuscated-link";
 import "./link-anchor";
-import './color-mode';
+import './color-scheme';
 import './navigation-menu';

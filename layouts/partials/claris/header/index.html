@@ -26,12 +26,12 @@
           {{- if $centerLogo }}
             {{ partial "claris/header/logo" (dict "logoclass" "nav_center" "Page" $page) }}
           {{- end }}
-          <div class="nav_group nav_group_follow_mode">
+          <div class="nav_group nav_group_follow_color-scheme">
             <div class="nav_parent_follow">
             {{- partialCached "claris/header/follow" . $contentType }}
             </div>
-            <div class="nav_parent_mode">
-            {{- partialCached "claris/header/mode" . $contentType }}
+            <div class="nav_parent_color-scheme">
+            {{- partialCached "claris/header/color-scheme" . $contentType }}
             </div>
           </div>
         </div>
