@@ -14,7 +14,7 @@
 {{- end }}
 
 {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
-<article class="panel_content content_panel content">
+<div class="panel_content content_panel content">
 {{- with .Content }}
   <div class="article_body inner_horizontal">
   {{- . }}
@@ -55,48 +55,50 @@
     {{- with $panelStyle }}
       {{- $panelStyle = printf ` style="%v"` . | safeHTMLAttr }}
     {{- end }}
-    <section class="panel_item panel_item-{{ $panelID }}"{{ with $panelStyle }}{{ . }}{{ end }}>
+    <div class="panel_item panel_item-{{ $panelID }}"{{ with $panelStyle }}{{ . }}{{ end }}>
+      <section class="panel_item_inner">
     {{- with .Title }}
-      <h2 class="panel_title">{{ page.RenderString . }}</h2>
+        <h2 class="panel_title">{{ page.RenderString . }}</h2>
     {{- end }}
     {{ .Content }}
     {{- $panelPageName := .Name }}
     {{- $cardResourceGlob := printf "%v/*.md" (path.Dir $panelPageName) }}
     {{- $cardPages := $panelRootPage.Resources.Match $cardResourceGlob }}
     {{- with $cardPages }}
-      <div class="card_container">
+        <div class="card_container">
       {{- $cardPages = sort (where $cardPages "Name" "ne" $panelPageName) ".Params.weight" }}
       {{- range $cardID, $cardPage := $cardPages }}
         {{- $cardStyle := default false .Params.inlinestyle }}
         {{- with $cardStyle }}
           {{- $cardStyle = printf ` style="%v"` . | safeHTMLAttr }}
         {{- end }}
-        <div class="card_item"{{ with $cardStyle }}{{ . }}{{ end }}>
+          <div class="card_item"{{ with $cardStyle }}{{ . }}{{ end }}>
         {{- with .Title }}
-          <h3 class="card_title">{{ page.RenderString . }}</h2>
+            <h3 class="card_title">{{ page.RenderString . }}</h3>
         {{- end }}
         {{- with .Params.image.excerpt.resource }}
-          {{- partial "responsive-image" (dict
-            "Page" page
-            "resource" .
-            "float" "left"
-            "fetchpriority" (cond (eq $cardID 0) "high" "auto")
-            "relativewidth" 20) }}
+            {{- partial "responsive-image" (dict
+              "Page" page
+              "resource" .
+              "float" "left"
+              "fetchpriority" (cond (eq $cardID 0) "high" "auto")
+              "relativewidth" 20) -}}
         {{- end }}
         {{ .Content }}
-        </div>
+          </div>
       {{- end }}
-      </div>
+        </div>
+      </section>
     {{- else }}
       {{- if $debug }}
         {{- warnf "%s[%s]: panelPage=%v: no page resources matching %v"
             page $template $panelPage $cardResourceGlob }}
       {{- end }}
     {{- end }}
-    </section>
+    </div>
   {{- end }}
   </div>
 {{- end }}
 {{- partial "claris/_components/i18nlist" . }}
-</article>
+</div>
 {{ partial "html-comment" (printf "[%s]: END" $template) }}
