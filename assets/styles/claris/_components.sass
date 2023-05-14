@@ -225,17 +225,24 @@
       margin-top: 0.3125rem
 
   // Footer social
-  & &_social
-    &-list
+  & &_links
+    display: flex
+    justify-content: center
+    align-items: baseline;
+    flex-wrap: wrap
+    border-top: 1px var(--xxhaze) solid
+    column-gap: 1em
+    &_social, &_generator
       display: flex
       justify-content: center
-      border-top: 1px var(--xxhaze) solid
-      // padding-top: var(--inner_padding-y-1)
-
       li
         padding: var(--inner_padding-y-3) var(--inner_padding-x-2)
         // margin: 0.5rem
         // font-size: 1.25rem
+    &_generator
+      flex-wrap: nowrap
+      li
+        flex: 1 0 auto
 
   // Footer legal
   &_legal
@@ -243,7 +250,7 @@
       width: 100%
       display: flex
       flex-wrap: wrap
-
+      justify-content: center
       li
         // margin: 0.125rem 0.625rem
         // one before the last child

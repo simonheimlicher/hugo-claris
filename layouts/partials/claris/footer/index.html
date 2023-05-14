@@ -53,7 +53,10 @@
     </div>
     {{- end }}
 
-    {{- partialCached "claris/footer/social" $page }}
+    <div class="footer_links inner_horizontal">
+      {{- partialCached "claris/footer/social" $page }}
+      {{- partialCached "claris/footer/generator" $page }}
+    </div>
     <div class="footer_legal inner_horizontal ">
       <ul class="footer_legal-list">
         <li>{{ T "copyright" }}&nbsp;{{ with ($page.Param "website.established") }}{{ if (lt (int .) (int (now.Format "2006") ) ) }}{{ . }}–{{- end }}{{- end }}<span class="year">{{ string (now.Format "2006") }}</span>{{ with $siteAuthor }}&nbsp;{{ . }}{{ end }}. {{ T "all_rights" }}</li>
