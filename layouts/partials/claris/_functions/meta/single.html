@@ -19,7 +19,7 @@
         {{- warnf "%s[%s]: contentType=%v: Calling title partial %v"
             $page $template . $titlePartial }}
       {{- end }}
-      {{- $titleVariant = partial $titlePartial }}
+      {{- $titleVariant = partial $titlePartial (dict "Page" $page) }}
     {{- end }}
   {{- else }}
     {{- if $debug }}

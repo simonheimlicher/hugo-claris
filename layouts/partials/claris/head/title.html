@@ -1,9 +1,9 @@
 {{- $titleVariant := dict }}
-{{- $page := page }}
+{{- $page := .Page }}
 {{- $template := "claris/head/title" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `tags` $page.RelPermalink) ) ) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `leadership` $page.RelPermalink) ) ) }} */}}
 
 {{- with $page }}
   {{- $title := .Title | $page.RenderString | plainify }}
@@ -25,7 +25,7 @@
     {{- $title = default .Data.Plural (T (printf "all_%s" .Data.Plural) ) | strings.FirstUpper }}
 
     {{- if $debug }}
-      {{- warnf "%s[%s]: .Kind=%s: title=%s fulltitle=%s from .Singular=%s .Plural=%s .Section=%s .Title=%s"
+      {{- warnf "%s[%s]: .Kind=%s: title=%s fulltitle=%s [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
           $page $template .Kind $title $fulltitle
           .Data.Singular .Data.Plural .Section .Title }}
     {{- end }}
@@ -43,7 +43,7 @@
     {{- $fulltitle = printf "%s %s" (humanize $supertitle) $title | strings.FirstUpper }}
 
     {{- if $debug }}
-      {{- warnf "%s[%s]: .Kind=%s: title=%s supertitle=%v fulltitle=%s from .Singular=%s .Plural=%s .Section=%s .Title=%s"
+      {{- warnf "%s[%s]: .Kind=%s: title=%s supertitle=%v fulltitle=%s [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
           $page $template .Kind $title $supertitle $fulltitle
           .Data.Singular .Data.Plural .Section .Title }}
     {{- end }}
@@ -67,7 +67,7 @@
     "fulltitle" $fulltitle
     ) }}
   {{- if $debug }}
-    {{- warnf "%s[%s]: .Kind=%s title=%s supertitle=%v fulltitle=%s from .Singular=%s .Plural=%s .Section=%s .Title=%s"
+    {{- warnf "%s[%s]: .Kind=%s title=%s supertitle=%v fulltitle=%s [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
         $page $template .Kind $titleVariant.title $titleVariant.supertitle $titleVariant.fulltitle
         .Data.Singular .Data.Plural .Section .Title }}
   {{- end }}
