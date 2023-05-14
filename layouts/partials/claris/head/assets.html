@@ -6,9 +6,8 @@
 
 {{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
 {{- $bundleParams := $assetVariant.BundleParams  }}
-
     <script>
-      try { document.documentElement.dataset.colorScheme = window.localStorage.getItem('userSelectedColorScheme'); } catch (exception) { }
+      try { document.documentElement.dataset.colorScheme = window.localStorage.getItem('userSelectedColorScheme'); } catch (e) { }
     </script>
 
 {{- $assets := partialCached "claris/_functions/asset-bundles" . $assetVariant -}}

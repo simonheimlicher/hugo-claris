@@ -42,8 +42,8 @@
     <meta name="google-site-verification" content="{{ . }}">
 {{- end -}}
 {{- range .AlternativeOutputFormats -}}
-  {{- if (ne .Rel "canonical" ) -}}
-    {{ printf `    <link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .Permalink site.Title | safeHTML -}}
+  {{- if (ne .Rel "canonical" ) }}
+    {{ printf `<link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .Permalink site.Title | safeHTML -}}
   {{- end }}
 {{- end }}
     <link rel="canonical" type="text/html" href="{{ partial "claris/_functions/canonical-url" . }}" title="{{ $title }}">

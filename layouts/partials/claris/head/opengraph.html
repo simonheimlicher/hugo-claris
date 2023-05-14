@@ -18,7 +18,9 @@
     <meta property="og:description" content="{{ default $meta.Site.Data.Description .Description }}">
     <meta property="og:type" content="{{ if $page.IsPage }}article{{ else }}website{{ end }}">
     <meta property="og:url" content="{{ .CanonicalURL }}">
-    {{- with .Locale }}<meta property="og:locale" content="{{ . }}">{{ end }}
+    {{- with .Locale }}
+    <meta property="og:locale" content="{{ . }}">
+    {{- end }}
 
     {{- if $page.IsPage }}
     <meta property="article:section" content="{{ .ArticleSection }}">

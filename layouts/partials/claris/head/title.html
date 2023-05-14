@@ -1,14 +1,75 @@
-{{- $title := .Title | markdownify | plainify }}
-{{- if and $title (ne (trim (lower site.Title) "") (trim (lower $title) "")) }}
-  {{- if eq .Kind "taxonomy" }}
-    {{- $title = default $title ( T (lower $title) ) }}
+{{- $titleVariant := dict }}
+{{- $page := page }}
+{{- $template := "claris/head/title" }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
+{{/* {{- $debug = or $debug (not (not (findRE `tags` $page.RelPermalink) ) ) }} */}}
+
+{{- with $page }}
+  {{- $title := .Title | $page.RenderString | plainify }}
+
+  {{- $subtitle := .Params.subtitle | $page.RenderString | plainify }}
+  {{- $supertitle := .Params.supertitle | $page.RenderString | plainify }}
+
+  {{- $fulltitle := $title }}
+  {{- if $subtitle }}
+    {{- if findRE `^\s*[[:alnum:]]+` $subtitle }}
+      {{- $fulltitle = ( printf "%s: %s" $title $subtitle ) }}
+    {{- else }}
+      {{- $fulltitle = ( printf "%s%s" $title $subtitle ) }}
+      {{/* {{- warnf "%s[%s]: subtitle does not begin with alpha-numeric character: A%vZ"
+          $page $template (index (findRE `^\s*[[:alnum:]]+` $subtitle) 0) }} */}}
+    {{- end }}
+
+  {{- else if in (slice "taxonomy") .Kind }}
+    {{- $title = default .Data.Plural (T (printf "all_%s" .Data.Plural) ) | strings.FirstUpper }}
+
+    {{- if $debug }}
+      {{- warnf "%s[%s]: .Kind=%s: title=%s fulltitle=%s from .Singular=%s .Plural=%s .Section=%s .Title=%s"
+          $page $template .Kind $title $fulltitle
+          .Data.Singular .Data.Plural .Section .Title }}
+    {{- end }}
+
+  {{- else if in (slice "term") .Kind }}
+
+    {{- $title = (default $title (T (lower $title) ) ) | strings.FirstUpper }}
+    {{- $fulltitle = default .Data.Singular $title }}
+    {{ if in (slice "tag") .Data.Singular }}
+      {{ $supertitle = printf "%s %s" (T "articles_with_taxonomy") (T .Data.Singular 1) }}
+    {{- else }}
+      {{- $supertitle = printf "%s %s" (T "articles_in_taxonomy") (T .Data.Singular 1) }}
+    {{- end }}
+    {{/* {{- $fulltitle = printf "%s %s %s" (humanize $supertitle) (T .Data.Plural 1) ($page.RenderString (printf "*%s*" (default $title (T (lower $title) ) ) ) ) | safeHTML }} */}}
+    {{- $fulltitle = printf "%s %s" (humanize $supertitle) $title | strings.FirstUpper }}
+
+    {{- if $debug }}
+      {{- warnf "%s[%s]: .Kind=%s: title=%s supertitle=%v fulltitle=%s from .Singular=%s .Plural=%s .Section=%s .Title=%s"
+          $page $template .Kind $title $supertitle $fulltitle
+          .Data.Singular .Data.Plural .Section .Title }}
+    {{- end }}
+  {{- end }}
+
+  {{- with .Params.fulltitle }}
+    {{- $fulltitle = . }}
+  {{- end }}
+  {{ $fulltitle = (default $title $fulltitle) }}
+  {{- if $title }}
+    {{- with .Page.Param "titleSeparator" }}
+      {{ $title = printf "%s %s %s" $title (safeHTML .) site.Title }}
+    {{- end }}
+  {{- else }}
+    {{- $title = site.Title }}
+  {{- end }}
+  {{- $titleVariant = (dict
+    "title" $title
+    "subtitle" $subtitle
+    "supertitle" $supertitle
+    "fulltitle" $fulltitle
+    ) }}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: .Kind=%s title=%s supertitle=%v fulltitle=%s from .Singular=%s .Plural=%s .Section=%s .Title=%s"
+        $page $template .Kind $titleVariant.title $titleVariant.supertitle $titleVariant.fulltitle
+        .Data.Singular .Data.Plural .Section .Title }}
   {{- end }}
 {{- end }}
-{{- if $title }}
-  {{- with .Page.Param "titleSeparator" }}
-    {{ $title = printf "%s %s %s" $title (safeHTML .) site.Title }}
-  {{- end }}
-{{- else }}
-  {{- $title = site.Title }}
-{{- end }}
-{{- return $title }}
+{{- return $titleVariant }}

@@ -8,25 +8,7 @@
 {{- /* {{- $debug = or $debug (not (not (findRE `/(?:[^/]+-demo)?$` $page.RelPermalink) ) ) }} */ -}}
 {{- .Scratch.Set "clarisdebug" $debug }}
 
-{{- .Scratch.Set "claris.module.qrcode.count" 0 }}
-{{- .Scratch.Set "claris.image.prioritized" 0 }}
-{{- if in (slice "page") .Kind }}
-  {{- .Scratch.Set "claris.assets.font.main" ($page.Param "fontFamilySerif") }}
-{{- else }}
-  {{- .Scratch.Set "claris.assets.font.main" ($page.Param "fontFamilySans") }}
-{{- end }}
-
 {{- $outputFormat := partial "claris/_functions/output-format" . }}
-{{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "OutputFormat" $outputFormat "Debug" $debug) $page.Permalink $outputFormat }}
-{{- .Scratch.Set "clarismeta" $meta }}
-
-{{- /* {{- if (and $outputFormat (strings.Contains (lower $outputFormat.Name) "print") ) }}
-  {{- warnf "%s[%s]: outputFormat=%v: meta.Output=\n%v\n.Classification=\n%v"
-    $page $template $outputFormat.Name
-    (jsonify (dict "indent" "  ") $meta.Output)
-    (jsonify (dict "indent" "  ") $meta.Classification ) }}
-{{- end }} */ -}}
-
 {{- $onlyMediaType := default "all" ($page.Param "onlyMediaType") }}
 {{- $mediaTypeList := (slice "all" "screen" "print") }}
 {{- if not (eq $onlyMediaType "all") }}
@@ -47,6 +29,7 @@
   "OutputFormat" $outputFormat
   "OnlyMediaType" ($page.Param "onlyMediaType")
   "MediaTypeList" $mediaTypeList
+  "ContentType" (index $contentTypeList 0)
   "ContentTypeList" $contentTypeList
   "ContentTypeListID" $contentTypeListID
   "BundleParams" (dict
@@ -64,6 +47,24 @@
   {{/* {{- warnf "%s[%s]: claris.assets.variant=\n%v"
       $page $template (jsonify (dict "indent" "  ") (.Scratch.Get "claris.assets.variant") ) -}} */}}
 {{- end }}
+
+{{- .Scratch.Set "claris.module.qrcode.count" 0 }}
+{{- .Scratch.Set "claris.image.prioritized" 0 }}
+{{- if in (slice "page") .Kind }}
+  {{- .Scratch.Set "claris.assets.font.main" ($page.Param "fontFamilySerif") }}
+{{- else }}
+  {{- .Scratch.Set "claris.assets.font.main" ($page.Param "fontFamilySans") }}
+{{- end }}
+
+{{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "OutputFormat" $outputFormat "Debug" $debug) $page.Permalink $outputFormat }}
+{{- .Scratch.Set "clarismeta" $meta }}
+
+{{- /* {{- if (and $outputFormat (strings.Contains (lower $outputFormat.Name) "print") ) }}
+  {{- warnf "%s[%s]: outputFormat=%v: meta.Output=\n%v\n.Classification=\n%v"
+    $page $template $outputFormat.Name
+    (jsonify (dict "indent" "  ") $meta.Output)
+    (jsonify (dict "indent" "  ") $meta.Classification ) }}
+{{- end }} */ -}}
 
 {{- $htmlClassList := (slice "no-js") }}
 {{- if .Params.heroImageStyle }}
