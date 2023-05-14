@@ -8,8 +8,10 @@
 {{- $panelPageResourceGlob := "*.md" }}
 {{- $panelCardResourceGlob := "*/index.md" }}
 
-{{- warnf "%s[%s]: Rendering page resources matching '%v/%v' as panels"
-    page $template $panelRoot $panelPageResourceGlob }}
+{{- if $debug }}
+  {{- warnf "%s[%s]: Rendering page resources matching '%v/%v' as panels"
+      page $template $panelRoot $panelPageResourceGlob }}
+{{- end }}
 
 {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
 <article class="panel_content content_panel content">
@@ -27,8 +29,10 @@
   {{- with .Resources.Match $panelCardResourceGlob }}
     {{- $panelResources = append . $panelResources }}
   {{- end }}
-  {{- warnf "%s[%s]: panelRootPage=%v panelPageResourceGlob=%v panelCardResourceGlob=%v panelResources=%v"
-  page $template $panelRootPage $panelPageResourceGlob $panelCardResourceGlob $panelResources }}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: panelRootPage=%v panelPageResourceGlob=%v panelCardResourceGlob=%v panelResources=%v"
+        page $template $panelRootPage $panelPageResourceGlob $panelCardResourceGlob $panelResources }}
+  {{- end }}
   {{- with $panelResources }}
     {{- $panelResources = sort . ".Params.weight" }}
   {{- else }}
