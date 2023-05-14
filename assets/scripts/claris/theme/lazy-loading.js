@@ -100,9 +100,7 @@ const initLazyLoading = () => {
     // get all <img> and <source> elements
     const images = document.querySelectorAll('img[data-src]');
     const sources = document.querySelectorAll('source[data-srcset]');
-    if (images||sources) {
 
-    }
     if (!initLazyLoadingDone) {
       deb('claris/theme/lazy-loading: Browser supports native lazy loading. Swap in value of attribute `data-src` for `src` and `data-srcset` for `srcset`');
     }
@@ -111,41 +109,57 @@ const initLazyLoading = () => {
     }
 
     // loop through <img>s setting the src attribute and srcset and sizes if present
+    // but only if there is no data-media attribute
     for (let img of images) {
-      // deb('Swapping in src for ', img);
-      img.src = img.dataset.src;
-      if (!isSafariBrowser || initLazyLoadingDone) {
-        delete img.dataset.src;
-      }
-      const srcset = img.dataset.srcset;
-      if (srcset) {
-        deb('Swapping in srcset for ', img);
-        img.srcset = srcset;
-        if (!isSafariBrowser || initLazyLoadingDone) {
-          delete img.dataset.srcset;
+      if (!img.dataset.media || !img.dataset.media.includes('prefers-color-scheme')) {
+        // deb('Swapping in src for ', img);
+        try {
+          img.src = img.dataset.src;
+          if (!isSafariBrowser || initLazyLoadingDone) {
+            delete img.dataset.src;
+          }
+          const srcset = img.dataset.srcset;
+          if (srcset) {
+            deb('Swapping in srcset for ', img);
+            img.srcset = srcset;
+            if (!isSafariBrowser || initLazyLoadingDone) {
+              delete img.dataset.srcset;
+            }
+          }
+          const sizes = img.dataset.sizes;
+          if (sizes) {
+            img.sizes = sizes;
+            if (!isSafariBrowser || initLazyLoadingDone) {
+              delete img.dataset.sizes;
+            }
+          }
         }
-      }
-      const sizes = img.dataset.sizes;
-      if (sizes) {
-        img.sizes = sizes;
-        if (!isSafariBrowser || initLazyLoadingDone) {
-          delete img.dataset.sizes;
+        catch (e) {
+          deb('Failed to swap in src or srcset for img=', img, '\nException: ', e);
         }
       }
     }
 
     // loop through <source>s setting the srcset attribute and sizes if present
+    // but only if there is no data-media attribute
     for (let source of sources) {
-      source.srcset = source.datset.srcset;
-      if (!isSafariBrowser || initLazyLoadingDone) {
-        delete img.dataset.srcset;
-      }
-    const sizes = source.dataset.sizes;
-      if (sizes) {
-        if (!isSafariBrowser || initLazyLoadingDone) {
-          delete img.dataset.sizes;
+      if (!source.dataset.media || !source.dataset.media.includes('prefers-color-scheme')) {
+        try {
+          source.srcset = source.dataset.srcset;
+          if (!isSafariBrowser || initLazyLoadingDone) {
+            delete source.dataset.srcset;
+          }
+          const sizes = source.dataset.sizes;
+          if (sizes) {
+            source.sizes = sizes;
+            if (!isSafariBrowser || initLazyLoadingDone) {
+              delete source.dataset.sizes;
+            }
+          }
         }
-        source.sizes = sizes;
+        catch (e) {
+          deb('Failed to swap in srcset for source=', source, '\nException: ', e);
+        }
       }
     }
 

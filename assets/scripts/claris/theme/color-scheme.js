@@ -30,37 +30,62 @@ const initColorScheme = function () {
    * Otherwise the `media` preference will only respond to the OS-level setting
    * Unfortunately, if the user overrides the preferred color scheme,
    * the image resource for the preferred color scheme will already have been requested
-   * by the time JavaScript is executed
-   * Inlining the below function does not change anything
-   * Source: https://larsmagnus.co/blog/how-to-make-images-react-to-light-and-dark-mode
+   * by the time JavaScript is executed. Therefore, we need to initially put a
+   * placeholder in the srcset attribute and then switch over to the correct image
+   * in the function below.
+   * Source: https://larsmagnus.co/blog/how-to-make-images-react-to-light-and-dark-scheme
    */
   function updateSourceMedia(scheme) {
-    const pictures = document.querySelectorAll('picture')
-
+    const pictures = document.querySelectorAll('picture');
     pictures.forEach((picture) => {
+      let variantStyleAttr = null;
+
       const sources = picture.querySelectorAll(`
           source[media*="prefers-color-scheme"],
           source[data-media*="prefers-color-scheme"]
-        `)
+        `);
 
       sources.forEach((source) => {
         // Preserve the source `media` as a data-attribute
         // to be able to switch between preferences
         if (source?.media.includes('prefers-color-scheme')) {
-          source.dataset.media = source.media
+          source.dataset.media = source.media;
         }
 
-        // If the source element `media` target is the `preference`,
-        // override it to 'all' to show
-        // or set it to 'none' to hide
-        if (source?.dataset.media.includes(scheme)) {
-          source.media = source.dataset.media.replace(/(\s*and\s*)?\(\s*prefers-color-scheme[^)]+\)(\s*and\s*)?/, '')
-        } else if (source) {
-          source.media = 'none'
+        // If argument 'scheme' is defined, we override the behavior of the browser
+        if (scheme) {
+          // If the source element `media` target is the `preference`,
+          // override the 'media' attribute to 'all' to show the image
+          // or remove the 'srcset' attribute to hide the image
+          if (source?.dataset.media.includes(scheme)) {
+            source.media = source.dataset.media.replace(/(\s*and\s*)?\(\s*prefers-color-scheme[^)]+\)(\s*and\s*)?/, '');
+            source.srcset = source.dataset.srcset;
+            variantStyleAttr = source.dataset.style;
+          } else if (source.srcset) {
+            source.media = source.dataset.media;
+            source.srcset = [];
+          }
         }
-      })
-    })
-  }
+        // Otherwise, we let the browser decide which image to load
+        else {
+          source.media = source.dataset.media;
+          source.srcset = source.dataset.srcset;
+          variantStyleAttr = source.dataset.style;
+        }
+      });
+
+      if (variantStyleAttr) {
+        const imgs = picture.querySelectorAll(`img[style]`);
+        imgs.forEach((img) => {
+          if (img?.style) {
+            img.dataset.style = img.style;
+          }
+          img.style = variantStyleAttr;
+        });
+      }
+    });
+
+}
 
   function updateDocumentColorScheme(scheme) {
     elemAttribute(document.documentElement, 'data-color-scheme', scheme);
@@ -75,9 +100,9 @@ const initColorScheme = function () {
     return getComputedStyle(document.documentElement).getPropertyValue('--color-scheme').replace(/[^\w]+/g, '').trim();
   }
 
-  function setStoredColorScheme(mode) {
+  function setStoredColorScheme(scheme) {
     if (bank) {
-      bank.setItem('userSelectedColorScheme', mode);
+      bank.setItem('userSelectedColorScheme', scheme);
     }
   }
 
@@ -97,8 +122,8 @@ const initColorScheme = function () {
     }
   }
 
-  function setUserColorScheme(mode, transition) {
-    mode = mode || false;
+  function setUserColorScheme(scheme, transition) {
+    scheme = scheme || false;
     transition = transition || false;
     if (transition) {
       clarisHugoParams.htmlRootElement.dataset.colorSchemeTransition = true;
@@ -109,14 +134,17 @@ const initColorScheme = function () {
     const isDarkColorScheme = currentColorScheme() == 'dark';
     const storedColorScheme = getStoredColorScheme();
     if (storedColorScheme) {
-      if (mode) {
+      if (scheme) {
         changeColorScheme(isDarkColorScheme);
       } else {
         updateColorScheme(storedColorScheme);
       }
     } else {
-      if (mode === true) {
+      if (scheme === true) {
         changeColorScheme(isDarkColorScheme)
+      }
+      else {
+        updateSourceMedia();
       }
     }
   }
