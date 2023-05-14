@@ -547,10 +547,13 @@
     .content-title
       color: white
       text-shadow: 1.5px 1.5px 1.5px black
-      font-size: 4rem
+      font-size: 3rem
       text-align: center
       position: relative
-      margin-bottom: 3rem
+      margin-bottom: 2rem
+      @media screen and (min-width: $screenViewBreakpointWidthNarrow) and (min-height: $screenViewBreakpointHeightStickyFooter)
+        font-size: 4rem
+        margin-bottom: 3rem
     &_figure
       display: none
     & ~ .footer
