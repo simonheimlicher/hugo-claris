@@ -86,10 +86,10 @@ other = "Auf dieser Seite"
 [color-scheme]
 other = "Nacht-Modus"
 
-[color-scheme_lit]
+[color-scheme_light]
 other = "Licht an"
 
-[color-scheme_dim]
+[color-scheme_dark]
 other = "Licht aus"
 
 [read_more_about]

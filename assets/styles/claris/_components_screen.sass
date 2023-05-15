@@ -444,9 +444,11 @@
                 fill: var(--bg)
             &_dark
               opacity: 1.0
+              z-index: 1
             &_light
               opacity: 0.0
               transition: none
+              z-index: auto
 
   &_mobile_toggle
     display: flex
@@ -749,9 +751,8 @@
       padding-right: $screenViewInnerPaddingOneColumn
     &_color-scheme_choice
       &_mask, &_icon
-        height: $screenViewNavHeight
-      &_icon
         width: $screenViewNavHeight
+        height: $screenViewNavHeight
     &_body
       &::after
         top: $screenViewNavHeight

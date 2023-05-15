@@ -715,10 +715,12 @@ html {
         .nav_color-scheme_choice {
           &_light {
             opacity: 1.0;
+            z-index: 1;
           }
           &_dark {
             opacity: 0.0;
             transition: none;
+            z-index: auto;
           }
         }
       }
