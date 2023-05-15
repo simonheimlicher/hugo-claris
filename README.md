@@ -1,6 +1,6 @@
 # Hugo Claris — responsive, modular, modern
 
-<img alt="iPhone 12 Pro landscape" src="./static/images/hugo-claris-demo_home_iPhone_12_Pro-landscape.png" width=844 height=390> 
+<img alt="iPhone 12 Pro landscape" src="./static/images/hugo-claris-demo_home_iPhone_12_Pro-landscape.png" width=844> 
 
 ### View [*Demo of Hugo Claris*](https://simonheimlicher.github.io/hugo-claris-demo/)
 
