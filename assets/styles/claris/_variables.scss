@@ -684,14 +684,46 @@ html {
         fill: #fafafa;
       }
     }
-    .color-scheme {
+    // .nav_color-scheme {
+    //   &_choice {
+    //     &_sprite {
+    //       transform: translateX(-2.5rem);
+    //     }
+    //   }
+    // }
+    // @media (any-hover: hover) {
+    //   &:not([data-color-scheme-transition]) .nav_color-scheme_choice:hover {
+    //     .nav_color-scheme_choice {
+    //       &_sprite {
+    //         transform: translateX(0rem);
+    //       }
+    //     }
+    //   }
+    // }
+    .nav_color-scheme {
       &_choice {
-        &:after {
-          background-image: url("#{$images}moon-mono.svg");
-          // transform: translateX(1.4rem);
+        &_light {
+          opacity: 0.0;
+        }
+        &_dark {
+          opacity: 1.0;
         }
       }
     }
+    @media (any-hover: hover) {
+      &:not([data-color-scheme-transition]) .nav_color-scheme_choice:hover {
+        .nav_color-scheme_choice {
+          &_light {
+            opacity: 1.0;
+          }
+          &_dark {
+            opacity: 0.0;
+            transition: none;
+          }
+        }
+      }
+    }
+
     @include generate_colors( map-merge($colors-lit, $colors-dim) );
     /*
     --choice-bg-menu: var(--xxhaze);
@@ -715,9 +747,6 @@ html {
   @media screen and (prefers-color-scheme: dark) {
     &:not([data-color-scheme="light"]) {
       @include color-scheme-dark;
-      body {
-        transition: ease;
-      }
     }
   }
 }

@@ -160,18 +160,16 @@ const initColorScheme = function () {
       return;
     }
 
-    const colorSchemeNav = elem('.color-scheme');
+    const colorSchemeNav = elem('.nav_color-scheme_choice');
     if (!colorSchemeNav) {
-      deb('claris/theme/color-scheme: .color-scheme not found');
+      deb('claris/theme/color-scheme: .nav_color-scheme_choice not found');
       return;
     }
-    colorSchemeNav.style = "display: flex";
+    colorSchemeNav.style = "display: block";
 
-    document.querySelector('.color-scheme_choice').addEventListener('click', function (event) {
-      pushClass(event.target, 'color_animate');
+    document.querySelector('.nav_color-scheme_choice').addEventListener('click', function (event) {
       setUserColorScheme(true, true);
     });
   };
   window.addEventListener('DOMContentLoaded', initColorSchemeToggle);
 }();
-

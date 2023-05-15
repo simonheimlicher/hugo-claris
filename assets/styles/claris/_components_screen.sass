@@ -394,18 +394,64 @@
     &_parent
       margin-right: auto
 
-  &_mobile_toggle
+  &_mobile_toggle, &_color-scheme_choice
     position: relative
     height: 100%
     padding: 0 var(--inner_padding-x)
     cursor: pointer
     z-index: 1000
+    .icon
+      fill: var(--text-)
+      pointer-events: none
+
+  &_color-scheme
+    &_choice
+      &_mask
+        position: relative
+        width: 2.5rem
+        height: 2.5rem
+      &_icon
+        position: absolute
+        top: 0
+        left: 0
+        width: 100%
+        height: 100%
+        display: flex
+        align-items: center
+        justify-content: center
+        border-radius: 50%
+        background: transparent
+        .icon
+          display: block
+          fill: var(--text)
+          width: 1.5rem
+          height: 1.5rem
+          margin: 0
+          padding: 0
+      &_dark
+        opacity: 0.0
+      html[data-color-scheme-transition] &_icon
+        transition: opacity var(--color-scheme-duration) var(--color-scheme-timing), background var(--color-scheme-duration) var(--color-scheme-timing)
+        .icon
+          transition: fill var(--color-scheme-duration) var(--color-scheme-timing)
+      @media (any-hover: hover)
+        html:not([data-color-scheme-transition]) &:hover
+          .nav_color-scheme_choice
+            &_icon
+              background: var(--theme-bg-hover)
+              transition: all 0.2s var(--color-scheme-timing);
+              .icon
+                fill: var(--bg)
+            &_dark
+              opacity: 1.0
+            &_light
+              opacity: 0.0
+              transition: none
+
+  &_mobile_toggle
     display: flex
     justify-content: center
     align-items: center
-    .icon
-      fill: var(--text)
-      pointer-events: none
     &_open
       display: block
     &_close
@@ -415,9 +461,6 @@
         display: none
       .nav_mobile_toggle_close
         display: block
-
-    img
-      height: ($screenViewNavHeightNarrow - 0.5rem)
   &_center
     display: none
     @media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
@@ -433,50 +476,6 @@
     top: auto // initial
     padding-top: 0
     top: 0.25rem
-
-.color-scheme
-  display: none
-  width: min-content
-  margin: auto 0
-  justify-content: flex-end
-  padding: 0 var(--inner_padding-x)
-  &_choice
-    // width: 3rem
-    width: 1.5rem
-    background-color: var(--translucent)
-    border-radius: 1rem
-    height: 1.5rem
-    margin: auto 0
-    outline: none
-    border: none
-    -webkit-appearance: none
-    cursor: pointer
-    position: relative
-    position: relative
-    overflow: hidden
-    // @include drop-shadow-offset(0, 0.25rem, 1rem, 0.25, 0.35)
-    @media (any-hover: hover)
-      &:hover
-        background-color: var(--translucent-hover)
-    &:after
-      content: ""
-      position: absolute
-      top: 0.1rem
-      left: 0.1rem
-      width: 1.3rem
-      height: 1.3rem
-      // background-image: url("#{$images}sun.svg")
-      background-image: url("#{$images}sun-mono.svg");
-      background-position: center
-      background-size: cover
-      border-radius: 50%
-      z-index: 2
-
-  &_animate
-    transition: transform 0.5s cubic-bezier(0.075, 0.82, 0.165, 1)
-    &:after
-      transition: transform 0.5s cubic-bezier(.19,1,.22,1)
-      will-change: transform
 
 .main
   @media only screen
@@ -748,13 +747,11 @@
     &_mobile_toggle
       // padding-left: $screenViewInnerPaddingOneColumn
       padding-right: $screenViewInnerPaddingOneColumn
-
-    .color-scheme_label
-      display: flex
-      line-height: 1.25rem
-    // .icon
-    //   width: 1.5rem
-    //   height: 1.5rem
+    &_color-scheme_choice
+      &_mask, &_icon
+        height: $screenViewNavHeight
+      &_icon
+        width: $screenViewNavHeight
     &_body
       &::after
         top: $screenViewNavHeight
