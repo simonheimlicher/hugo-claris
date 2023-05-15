@@ -36,6 +36,8 @@ const initColorScheme = function () {
    * Source: https://larsmagnus.co/blog/how-to-make-images-react-to-light-and-dark-scheme
    */
   function updateSourceMedia(scheme) {
+    const colorSchemeMatchRegex = new RegExp(`\\(\\s*prefers-color-scheme:\\s*${scheme}\\)`);
+    const colorSchemeEliminateRegex = new RegExp(`(\\s*and\\s*)?${colorSchemeMatchRegex.source}(\\s*and\\s*)?`);
     const pictures = document.querySelectorAll('picture');
     pictures.forEach((picture) => {
       let variantStyleAttr = null;
@@ -55,13 +57,15 @@ const initColorScheme = function () {
         // If argument 'scheme' is defined, we override the behavior of the browser
         if (scheme) {
           // If the source element `media` target is the `preference`,
-          // override the 'media' attribute to 'all' to show the image
-          // or remove the 'srcset' attribute to hide the image
-          if (source?.dataset.media.includes(scheme)) {
-            source.media = source.dataset.media.replace(/(\s*and\s*)?\(\s*prefers-color-scheme[^)]+\)(\s*and\s*)?/, '');
+          // eliminate the 'prefers-scholor-scheme' condition to show the image
+          // independently of the preferred color scheme...
+          if (source?.dataset.media.match(colorSchemeMatchRegex)) {
+            source.media = source.dataset.media.replace(colorSchemeEliminateRegex, '') || 'all';
+            // console.log('source.dataset.media=' + source.dataset.media + ' --> ' + source.media);
             source.srcset = source.dataset.srcset;
             variantStyleAttr = source.dataset.style;
-          } else if (source.srcset) {
+          // ... otherwise, remove the 'srcset' attribute to hide the image
+        } else if (source.srcset) {
             source.media = source.dataset.media;
             source.srcset = [];
           }

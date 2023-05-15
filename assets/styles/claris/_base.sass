@@ -31,24 +31,17 @@ html
   font-size: 100%
 
 body
-  font-size: var(--font-size)
-  font-family: var(--font)
-  font-weight: var(--font-weight)
-  background: var(--choice-bg)
-  // FIXME: Allow transition of background
-  // background: transparent
-  color: var(--text)
-  // font-size: 1.1rem
-  line-height: var(--line-height)
-  // FIXME: min-height needs to be applied to main element
-  // to hide footer until the user scrools up and reveals it
-  // Applying min-height to body has negative side effects
-  // min-height: 100vh
-  margin: 0 auto
   position: relative
   display: flex
   flex-direction: column
   justify-content: space-between
+  margin: 0 auto
+  background: var(--choice-bg)
+  color: var(--text)
+  font-size: var(--font-size)
+  font-family: var(--font)
+  font-weight: var(--font-weight)
+  line-height: var(--line-height)
   font-kerning: normal
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
@@ -58,6 +51,8 @@ body
 
   // https://web.dev/prefers-color-scheme/#activating-dark-mode-in-the-operating-system
   // transition: color var(--color-scheme-duration) var(--color-scheme-timing), background-color var(--color-scheme-duration) var(--color-scheme-timing)
+  // transition: all var(--color-scheme-duration) var(--color-scheme-timing)
+  @include color-scheme_transition
 
   // Allow breaking long words including URLs
   // https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/

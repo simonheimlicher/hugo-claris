@@ -135,14 +135,10 @@
       {{- $imgTitle = .title }}
       {{- $imgSizes = default $defaultSizes .sizes }}
       {{- $imgPosition = default $defaultPosition .position }}
-      {{- $variantInlineStyleAttr := "" }}
-      {{- if $supportIE11 }}
-        {{ $variantInlineStyleAttr = printf "object-fit: cover; object-position: %s; font-family: 'object-fit: cover; object-position: %s'%s"
-            $imgPosition $imgPosition (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") }}
-      {{- else }}
-        {{ $variantInlineStyleAttr = printf "%q" (printf "object-fit: cover; object-position: %s; %s"
-            $imgPosition $imgInlineStyle | safeCSS) }}
-      {{- end }}
+      {{ $variantInlineStyleAttr := printf "object-fit: cover; object-position: %s%s%s"
+          $imgPosition
+          (cond $supportIE11 (printf "; font-family: 'object-fit: cover; object-position: %s'" $imgPosition) "")
+          (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") }}
       {{- $imgAlt = default $imgTitle .alt }}
       {{- $imgCredit = default $imgTitle .credit }}
       {{- $version := default $defaultVersionName .aspect }}
@@ -172,14 +168,10 @@
         {{- $imgCredit = default $imgTitle .credit }}
         {{- $res := .version.default.resource }}
         {{- $imgPosition = default $defaultPosition .position }}
-        {{- $variantInlineStyleAttr := "" }}
-        {{- if $supportIE11 }}
-          {{ $variantInlineStyleAttr = printf "object-fit: cover; object-position: %s; font-family: 'object-fit: cover; object-position: %s'%s"
-              $imgPosition $imgPosition (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") }}
-        {{- else }}
-          {{ $variantInlineStyleAttr = printf "%q" (printf "object-fit: cover; object-position: %s; %s"
-              $imgPosition $imgInlineStyle | safeCSS) }}
-        {{- end }}
+        {{ $variantInlineStyleAttr := printf "object-fit: cover; object-position: %s%s%s"
+            $imgPosition
+            (cond $supportIE11 (printf "; font-family: 'object-fit: cover; object-position: %s'" $imgPosition) "")
+            (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") }}
         {{- if $debug }}
           {{- warnf "%s[%s]: imgPosition=%v in defaultVariant=%v" $page $template $imgPosition . }}
         {{- end }}
@@ -202,15 +194,10 @@
     {{- end }}
   {{- else }}
     {{- with (partialCached "claris/_functions/resources/images/image-srcset" $imageResourceArgs $resourceSpec $imageResourceVariant) }}
-      {{- $variantInlineStyleAttr := "" }}
-      {{- if $supportIE11 }}
-        {{ $variantInlineStyleAttr = printf "object-fit: cover; object-position: %s; font-family: 'object-fit: cover; object-position: %s'%s"
-            $imgPosition $imgPosition (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") }}
-      {{- else }}
-        {{ $variantInlineStyleAttr = printf "%q" (printf "object-fit: cover; object-position: %s; %s"
-            $imgPosition $imgInlineStyle | safeCSS) }}
-      {{- end }}
-
+      {{ $variantInlineStyleAttr := printf "object-fit: cover; object-position: %s%s%s"
+          $imgPosition
+          (cond $supportIE11 (printf "; font-family: 'object-fit: cover; object-position: %s'" $imgPosition) "")
+          (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") }}
       {{- $pictureResources = append $pictureResources (slice (dict
           "variant" $defaultVariantName
           "media" $defaultMedia
