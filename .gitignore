@@ -8,3 +8,4 @@
 /layouts/index.redir
 /layouts/index.siteredir
 node_modules
+package-lock.json
