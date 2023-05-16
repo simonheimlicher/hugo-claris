@@ -44,7 +44,7 @@
 
 {{- with .relativewidth -}}
   {{- $containerClass = printf "%s relative-width-%d" $containerClass (int .) -}}
-  {{- $defaultSizes = printf "%dvw" (int .) }}
+  {{- $defaultSizes = printf "%vvw" (math.Max 30 (int .) ) }}
 {{- end -}}
 
 {{- $imgSizes := default $defaultSizes .sizes -}}
@@ -83,6 +83,27 @@
 {{- $targetFormats := default false .targetformats }}
 {{- $processingParams := default false .processingparams }}
 
+{{- if not $processingParams }}
+  {{- $targetSizeSpec := "" }}
+  {{- with $width := $.width }}
+    {{- with $height := $.height }}
+      {{- $targetSizeSpec = printf "%dx%d" $width $height }}
+    {{- else }}
+      {{- $targetSizeSpec = printf "%dx" $width }}
+    {{- end }}
+  {{- else }}
+    {{- with $height := .height }}
+      {{- $targetSizeSpec = printf "x%d" $height }}
+    {{- end }}
+  {{- end }}
+  {{- with $targetSizeSpec }}
+    {{- $processingParams = (dict
+      "method" "fill"
+      "args" $targetSizeSpec
+    ) }}
+  {{- end }}
+{{- end }}
+
 {{- $imageResourceArgs = merge $imageResourceArgs (dict
   "targetformats" $targetFormats
   "processingparams" $processingParams
@@ -92,8 +113,6 @@
 
 {{- $imgInlineStyleSlice := slice -}}
 {{- range $attr, $value := (dict
-  "width" $imageResourceArgs.width
-  "height" $imageResourceArgs.height
   "aspect-ratio" $imageResourceArgs.aspectratio
   "border-radius" $imageResourceArgs.borderradius
   "min-width" $imageResourceArgs.minwidth
@@ -101,7 +120,7 @@
   "min-height" $imageResourceArgs.minheight
   "max-height" $imageResourceArgs.maxheight) -}}
   {{- if $value -}}
-    {{- $imgInlineStyleSlice = append $imgInlineStyleSlice (slice (printf "%s: %s" $attr $value) ) -}}
+    {{- $imgInlineStyleSlice = append $imgInlineStyleSlice (slice (printf "%s: %v" $attr $value) ) -}}
   {{- end -}}
 {{- end }}
 {{- $imgInlineStyle := "" }}

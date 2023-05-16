@@ -9,6 +9,8 @@
 {{- $imageResourceArgs := merge . (dict "Debug" $debug) }}
 
 {{- $resourceSpec := .resource }}
+{{- $maxWidth := int (default 1.0e9 .width) }}
+
 {{- $formatSrcsets := slice }}
 
 {{- $targetQuality := default "default" .quality }}
@@ -41,7 +43,7 @@
 {{- with $img }}
   {{- $originalFormat := $img.MediaType -}}
 
-  {{ $maxWidth := $img.Width }}
+  {{ $maxWidth = int (math.Min $maxWidth $img.Width) }}
   {{- $placeholderSvg := printf "<svg xmlns=%q viewBox=%q></svg>" "http://www.w3.org/2000/svg" (printf "0 0 %d %d" $img.Width $img.Height) | safeHTML }}
   {{- $placeholderInlineImg := printf "data:image/svg+xml,%s" $placeholderSvg | replaceRE " " "%20" | replaceRE "<" "%3c" | replaceRE ">" "%3e" | replaceRE "\"" "'" | safeURL }}
 
