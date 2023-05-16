@@ -34,7 +34,7 @@
 //   -webkit-mask-size: 50.5% 50.5%
 //   -webkit-mask-repeat: no-repeat
 
-@mixin nav-background($color: var(--text-active), $background: var(--theme-bg-active), $border: var(--theme-bg-active), $top-left: 0.5rem, $top-right: 0.5rem, $bottom-right: 0, $bottom-left: 0)
+@mixin nav-background($color: var(--text-active), $background: var(--theme-bg-active), $border: var(--theme-bg-active), $top-left: 0.5rem, $top-right: 0.5rem, $bottom-right: 0.5rem, $bottom-left: 0.5rem)
   color: $color
   z-index: ($main-z-index + 1)
   &::after
@@ -54,26 +54,25 @@
     .nav_group_menu &::after
       background-size: 100% 100%
       background: $background
-      border: 1px solid $border
+      border-bottom: 0.25em solid $border
       height: unset
-      border-radius: 0.25rem
-      border-radius: $top-left $top-right $bottom-right $bottom-left
-      margin: 0.25rem 0 0 0
-      border-bottom: none
+      border-radius: 0
+      // border-radius: $top-left $top-right $bottom-right $bottom-left
+      // margin: 0.25rem 0 0 0
   .icon
     fill: $color
     // filter: invert(100%)
 
-@mixin nav-active-background($color: var(--theme-text-active), $background: var(--theme-bg-active), $border: var(--theme-bg-active))
+@mixin nav-active-background($color: var(--text), $background: rgba(var(--RGB_theme), 0.25), $border: var(--theme) )
   @include nav-background($color, $background, $border)
   cursor: default
   &:hover
     color: $color
 
-@mixin nav-active-section-background($color: var(--theme-text), $background: var(--bg), $border: var(--theme-bg-active))
+@mixin nav-active-section-background($color: var(--text), $background: transparent, $border: var(--theme) )
   @include nav-background($color, $background, $border)
 
-@mixin nav-hover-background($color: var(--theme-text-hover), $background: var(--theme-bg-hover), $border: var(--theme-bg-hover))
+@mixin nav-hover-background($color: var(--text), $background: rgba(var(--RGB_theme), 0.25), $border: var(--theme) )
   @include nav-background($color, $background, $border)
 
 @mixin nav-open-background($color: var(--theme-text), $background: var(--theme-bg), $border: var(--theme-bg-active))
@@ -158,9 +157,9 @@
         color: var(--xaccent)
       &:focus
         outline: var(--accent)
-    &_in_section
-      z-index: ($main-z-index + 1)
-      @include nav-active-section-background
+    // &_in_section
+    //   z-index: ($main-z-index + 1)
+    //   @include nav-active-section-background
   &_open_sub
     .nav_active.nav_child.nav_item
       // color: var(--text)
@@ -174,6 +173,9 @@
     // FIXME: Do not use position relative, otherwise alignment gets out of shape
     // position: relative
     @include nav-active-background
+    a:not(:has(~ &), &).nav_active_in_section
+      // z-index: ($main-z-index + 1)
+      @include nav-active-section-background
 
   &_icon
     width: 0.7rem
@@ -282,7 +284,14 @@
     padding: 0.96rem 0 0
     background: transparent
 
-  &_parent, &_brand_parent
+  // &_parent, &_brand_parent // FIXME: Get rid of nav_parent
+  &_item
+    position: relative
+    display: flex
+    align-items: center
+    border-radius: 0.5rem
+    z-index: ($main-z-index + 1) // Required for IE 11
+  &_brand_parent
     position: relative
     display: flex
     align-items: center
@@ -702,7 +711,8 @@
       display: flex
       align-items: center
       // padding: 0.25rem 0
-    &_parent
+    // &_parent // FIXME: Get rid of nav_parent
+    &_item
       padding: 0.25rem 0
     // .icon
     //   width: 1.25rem

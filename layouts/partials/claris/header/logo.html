@@ -23,7 +23,7 @@
 {{- with $logoURL }}
         <a href='{{ . }}' title='{{ $t }}' class='nav_brand_parent'>
 {{- end }}
-          <div class="nav_brand nav_item{{ with $logoClass }} {{ . }}{{ end }}">
+          <div class="nav_brand{{ with $logoClass }} {{ . }}{{ end }}">
   {{- with $logoImage }}
             <img src="{{ absURL .Permalink }}" class="logo" width="{{ .Width }}" height="{{ .Height }}" alt="{{ $t }}">
   {{- else -}}

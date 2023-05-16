@@ -5,7 +5,7 @@
 {{- $hideSubMenus := eq site.Params.hideSubMenus true }}
 {{- $menuData := $page.Site.Data.menu }}
 {{- $link := $page.Permalink }}
-{{- $logoURL := absURL site.Params.logoURL }}
+{{- $logoURL := absLangURL site.Params.logoURL }}
 {{- $url := "" }}
 {{- $name := "" }}
 {{- $children := false }}
@@ -36,7 +36,7 @@
     {{- $url = printf "%s/" (strings.TrimRight "/" $url) -}}
     {{/* {{ partial "html-comment" (printf ".URL:%s $url:%s $link:%s currentPage.Section:%s currentPage.Permalink:%s" .URL $url $link $page.Section $page.Permalink ) }} */}}
     {{- $parentID := default "" (printf "%s-%s" $elementIdPrefix (default $name .Identifier) | plainify | urlize) }}
-            <div class="nav_parent">
+            {{/* <div class="nav_parent"> */}}
               <a href="{{ $url }}" id="{{ $parentID }}" class="nav_menu nav_item
       {{- if (and (not .HasChildren) (eq $url $logoURL) ) }} nav_logourl{{ end -}}
       {{- if (and (not .HasChildren) (eq $url $link) ) }} nav_active{{ end -}}
@@ -82,7 +82,7 @@
               </div>
       {{- end }}
       {{- end }}
-            </div>
+            {{/* </div> */}}
   {{- end }}
           </div>
 {{- end }}

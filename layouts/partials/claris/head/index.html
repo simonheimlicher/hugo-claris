@@ -2,8 +2,8 @@
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/head/index" }}
 
-{{- $themeColorLit := default "hsl(47, 20%, 98%)" (.Page.Param "themeColorLit") }}
-{{- $themeColorDim := default "hsl(47, 20%, 10%)" (.Page.Param "themeColorDim") }}
+{{- $colorPrimaryLit := default "hsl(47, 20%, 98%)" (.Page.Param "colorPrimaryLit") }}
+{{- $colorPrimaryDim := default "hsl(47, 20%, 10%)" (.Page.Param "colorPrimaryDim") }}
 
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
@@ -11,8 +11,8 @@
 {{- with $page }}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="{{- $themeColorLit -}}">
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="{{- $themeColorDim -}}">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="{{- $colorPrimaryLit -}}">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="{{- $colorPrimaryDim -}}">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     {{- $title := default $meta.Site.Data.Fulltitle $meta.Single.Data.Fulltitle | safeHTML }}
     {{- $contentType := partialCached "claris/_functions/alternative-type" (dict "Page" .Page "Current" false) . .Type }}
