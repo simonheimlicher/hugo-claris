@@ -5,7 +5,6 @@
     "@babel/plugin-transform-runtime": "^7.14.3",
     "@babel/preset-env": "^7.14.2",
     "postcss": "^8.4.23",
-    "postcss-aspect-ratio-polyfill": "^2.0.0",
     "postcss-custom-properties": "^13.1.4",
     "postcss-object-fit-images": "^1.1.2"
   },
@@ -21,7 +20,8 @@
     "object-fit-images": "^3.2.4",
     "postcss-cli": "^8.3.1",
     "qrcode-svg": "^1.1.0",
-    "regenerator-runtime": "^0.13.7"
+    "regenerator-runtime": "^0.13.7",
+    "web-vitals": "^3.3.1"
   },
   "name": "claris",
   "description": "This repository offers an example site for [Hugo](https://gohugo.io/) and also it provides the default content for demos hosted on the [Hugo Themes Showcase](https://themes.gohugo.io/).",

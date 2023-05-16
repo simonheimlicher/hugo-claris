@@ -36,4 +36,7 @@ document.addEventListener('DOMContentLoaded', mediumZoomInit);
 // document.addEventListener("lazybeforeunveil", e => {
 //   mediumZoom("[data-zoomable]", mediumZoomOptions);
 // });
+
+import './web-vitals-analytics';
+
 // console.log('END   theme/enhanced.js');
