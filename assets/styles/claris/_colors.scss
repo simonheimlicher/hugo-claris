@@ -1,59 +1,33 @@
-$theme-hue-lit: hue($themeColorLit);
-$theme-sat-lit: saturation($themeColorLit);
-$theme-lum-lit: lightness($themeColorLit);
+$primary-hue-lit: hue($colorPrimaryLit);
+$primary-sat-lit: saturation($colorPrimaryLit);
+$primary-lum-lit: lightness($colorPrimaryLit);
 
-$theme-hue-dim: hue($themeColorDim);
-$theme-sat-dim: saturation($themeColorDim);
-$theme-lum-dim: lightness($themeColorDim);
-
-$theme-hue-lit: hue($themeColorBackgroundLit);
-$theme-sat-lit: saturation($themeColorBackgroundLit);
-$theme-lum-lit: lightness($themeColorBackgroundLit);
-
-$theme-hue-dim: hue($themeColorBackgroundDim);
-$theme-sat-dim: saturation($themeColorBackgroundDim);
-$theme-lum-dim: lightness($themeColorBackgroundDim);
-
-$theme-hue-lit: hue($themeNeutralBackgroundLit);
-$theme-sat-lit: saturation($themeNeutralBackgroundLit);
-$theme-lum-lit: lightness($themeNeutralBackgroundLit);
-
-$theme-hue-dim: hue($themeNeutralBackgroundDim);
-$theme-sat-dim: saturation($themeNeutralBackgroundDim);
-$theme-lum-dim: lightness($themeNeutralBackgroundDim);
+$primary-hue-dim: hue($colorPrimaryDim);
+$primary-sat-dim: saturation($colorPrimaryDim);
+$primary-lum-dim: lightness($colorPrimaryDim);
 
 $theme-sat-neutral-lit: 0%;
 $theme-sat-neutral-dim: 0%;
 
-$text-lum-lit: lightness( darken(hsl($theme-hue-lit, $theme-sat-lit, $theme-lum-lit), 87% ) );
-$text-lit:                hsl($theme-hue-lit, $theme-sat-lit, $text-lum-lit);
-$text-hover-lit: darken( hsl($theme-hue-lit, $theme-sat-lit, $text-lum-lit), 20%);
-$text-opa-10-lit: hsla($theme-hue-lit, $theme-sat-lit, $text-lum-lit, 0.1);
-$text-opa-20-lit: hsla($theme-hue-lit, $theme-sat-lit, $text-lum-lit, 0.2);
-$text-opa-80-lit: hsla($theme-hue-lit, $theme-sat-lit, $text-lum-lit, 0.8);
-$text-opa-90-lit: hsla($theme-hue-lit, $theme-sat-lit, $text-lum-lit, 0.9);
+$text-lit: $onBackgroundLit;
+$text-hover-lit: darken($onBackgroundLit, 20%);
 
-$text-lum-dim: lightness( lighten(hsl($theme-hue-lit, $theme-sat-lit, $theme-lum-lit), 0% ) );
-$text-dim:               hsl($theme-hue-dim, $theme-sat-dim, $text-lum-dim);
-$text-hover-dim: lighten( hsl($theme-hue-dim, $theme-sat-dim, $text-lum-dim), 10%);
-$text-opa-10-dim: hsla($theme-hue-dim, $theme-sat-dim, $text-lum-dim, 0.1);
-$text-opa-20-dim: hsla($theme-hue-dim, $theme-sat-dim, $text-lum-dim, 0.2);
-$text-opa-80-dim: hsla($theme-hue-dim, $theme-sat-dim, $text-lum-dim, 0.8);
-$text-opa-90-dim: hsla($theme-hue-dim, $theme-sat-dim, $text-lum-dim, 0.9);
+$text-dim: $onBackgroundDim;
+$text-hover-dim: darken($onBackgroundDim, 20%);
 
-$text-light-lit: hsl($theme-hue-lit, $theme-sat-lit, $text-lum-lit);
-$text-light-dim: hsl($theme-hue-dim, $theme-sat-dim, $text-lum-lit);
+$text-light-lit: $onBackgroundLit;
+$text-light-dim: $onBackgroundLit;
 
-$text-dark-lit: hsl($theme-hue-lit, $theme-sat-lit, $text-lum-dim);
-$text-dark-dim: hsl($theme-hue-dim, $theme-sat-dim, $text-lum-dim);
+$text-dark-lit: $onBackgroundLit;
+$text-dark-dim: $onBackgroundDim;
 
-$text-faint-lit: hsl($theme-hue-lit, $theme-sat-neutral-lit, 30%);
-$text-faint-dim: hsl($theme-hue-dim, $theme-sat-neutral-dim, 85%);
+$text-faint-lit: lighten(desaturate($text-lit, 0%), 25%);
+$text-faint-dim: darken(desaturate($text-dim, 0%), 15%);
 
-$bg-lit: $themeNeutralBackgroundLit;
+$bg-lit: $colorBackgroundLit;
 $bg-hover-lit: lighten(desaturate($bg-lit, 10%), 5%);
 
-$bg-dim: $themeNeutralBackgroundDim;
+$bg-dim: $colorBackgroundDim;
 $bg-hover-dim: lighten(saturate($bg-dim, 10%), 5%);
 
 $bg-light-lit: darken($bg-lit, 5%);
@@ -68,53 +42,35 @@ $bg-dark-hover-lit: lighten($bg-dark-lit, 20%);
 $bg-dark-dim: darken($bg-dim, 15%);
 $bg-dark-hover-dim: lighten($bg-dark-dim, 20%);
 
-$theme-lit: $themeColorLit;
+$theme-lit: $colorPrimaryLit;
 $theme-hover-lit: darken($theme-lit, 10%);
-$theme-opa-10-lit: hsla($theme-hue-lit, $theme-sat-lit,$theme-lum-lit, 0.1);
-$theme-opa-20-lit: hsla($theme-hue-lit, $theme-sat-lit,$theme-lum-lit, 0.2);
-$theme-opa-80-lit: hsla($theme-hue-lit, $theme-sat-lit,$theme-lum-lit, 0.8);
-$theme-opa-90-lit: hsla($theme-hue-lit, $theme-sat-lit,$theme-lum-lit, 0.9);
 
-$theme-dim: $themeColorDim;
+$theme-dim: $colorPrimaryDim;
 $theme-hover-dim: lighten($theme-dim, 10%);
-$theme-opa-10-dim: hsla($theme-hue-dim, $theme-sat-dim, $theme-lum-dim, 0.1);
-$theme-opa-20-dim: hsla($theme-hue-dim, $theme-sat-dim, $theme-lum-dim, 0.2);
-$theme-opa-80-dim: hsla($theme-hue-dim, $theme-sat-dim, $theme-lum-dim, 0.8);
-$theme-opa-90-dim: hsla($theme-hue-dim, $theme-sat-dim, $theme-lum-dim, 0.9);
 
-$theme-text-lum-lit: lightness( darken(hsl($theme-hue-lit, $theme-sat-lit, $theme-lum-lit), 70% ) );
-$theme-text-lit: hsl($theme-hue-lit, $theme-sat-lit, $theme-text-lum-lit);
-$theme-text-opa-10-lit: hsla($theme-hue-lit, $theme-sat-lit, $theme-text-lum-lit, 0.1);
-$theme-text-opa-20-lit: hsla($theme-hue-lit, $theme-sat-lit, $theme-text-lum-lit, 0.2);
-$theme-text-opa-80-lit: hsla($theme-hue-lit, $theme-sat-lit, $theme-text-lum-lit, 0.8);
-$theme-text-opa-90-lit: hsla($theme-hue-lit, $theme-sat-lit, $theme-text-lum-lit, 0.9);
+$theme-text-lit: $onPrimaryLit;
 $theme-text-active-lit: lighten($theme-text-lit, 80%);
 $theme-text-hover-lit: lighten($theme-text-lit, 80%);
 
-$theme-text-lum-dim: lightness( lighten(hsl($theme-hue-lit, $theme-sat-lit, $theme-lum-lit), 1% ) );
-$theme-text-dim: hsl($theme-hue-dim, $theme-sat-dim, $theme-text-lum-dim);
-$theme-text-opa-10-dim: hsla($theme-hue-dim, $theme-sat-dim, $theme-text-lum-dim, 0.1);
-$theme-text-opa-20-dim: hsla($theme-hue-dim, $theme-sat-dim, $theme-text-lum-dim, 0.2);
-$theme-text-opa-80-dim: hsla($theme-hue-dim, $theme-sat-dim, $theme-text-lum-dim, 0.8);
-$theme-text-opa-90-dim: hsla($theme-hue-dim, $theme-sat-dim, $theme-text-lum-dim, 0.9);
+$theme-text-dim: $onPrimaryDim;
 $theme-text-active-dim: darken($theme-text-dim, 100%);
 $theme-text-hover-dim: darken($theme-text-dim, 100%);
 
-$link-lit: hsl($theme-hue-lit, 100%, 25%);
-$link-hover-lit: hsl($theme-hue-lit, 100%, 30%);
-$link-active-lit: hsl($theme-hue-lit, 100%, 40%);
+$link-lit: hsl($primary-hue-lit, 100%, 35%);
+$link-hover-lit: hsl($primary-hue-lit, 100%, 50%);
+$link-active-lit: hsl($primary-hue-lit, 100%, 20%);
 
-$link-dim: hsl($theme-hue-dim, 100%, 75%);
-$link-hover-dim: hsl($theme-hue-dim, 100%, 85%);
-$link-active-dim: hsl($theme-hue-dim, 100%, 90%);
+$link-dim: hsl($primary-hue-dim, 100%, 75%);
+$link-hover-dim: hsl($primary-hue-dim, 100%, 85%);
+$link-active-dim: hsl($primary-hue-dim, 100%, 90%);
 
 // $theme-bg-lit: darken(saturate($theme-lit, 50%), 2%);
-$theme-bg-lit: $themeColorBackgroundLit;
+$theme-bg-lit: $surfacePrimaryLit;
 $theme-bg-active-lit: darken(desaturate($theme-bg-lit, 50%), 50%);
 $theme-bg-hover-lit: darken(saturate($theme-bg-lit, 20%), 40%);
 
 // $theme-bg-dim:  lighten(saturate($theme-dim, 5%), 5%);
-$theme-bg-dim: $themeColorBackgroundDim;
+$theme-bg-dim: $surfacePrimaryDim;
 $theme-bg-active-dim: lighten(saturate($theme-bg-dim, 0%), 40%);
 $theme-bg-hover-dim: lighten(saturate($theme-bg-dim, 20%), 50%);
 
@@ -183,10 +139,6 @@ $highlight-bg-yellow-dim: hsl(60, 100%, 20%);
 
 $colors-lit: (
   text: $text-lit,
-  text-opa-10: $text-opa-10-lit,
-  text-opa-20: $text-opa-20-lit,
-  text-opa-80: $text-opa-80-lit,
-  text-opa-90: $text-opa-90-lit,
   text-hover: $text-hover-lit,
   text-light: $text-light-lit,
   text-dark: $text-dark-lit,
@@ -209,10 +161,6 @@ $colors-lit: (
 
   theme: $theme-lit,
   theme-hover: $theme-hover-lit,
-  theme-opa-10: $theme-opa-10-lit,
-  theme-opa-20: $theme-opa-20-lit,
-  theme-opa-80: $theme-opa-80-lit,
-  theme-opa-90: $theme-opa-90-lit,
 
   theme-bg: $theme-bg-lit,
   theme-bg-active: $theme-bg-active-lit,
@@ -226,10 +174,6 @@ $colors-lit: (
   // theme-bg-hue-5: $theme-bg-hue-5-lit,
 
   theme-text: $theme-text-lit,
-  theme-text-opa-10: $theme-text-opa-10-lit,
-  theme-text-opa-20: $theme-text-opa-20-lit,
-  theme-text-opa-80: $theme-text-opa-80-lit,
-  theme-text-opa-90: $theme-text-opa-90-lit,
   theme-text-active: $theme-text-active-lit,
   theme-text-hover: $theme-text-hover-lit,
   neutral-theme: hsl(0, 0%, 13%),
@@ -276,10 +220,6 @@ $colors-lit: (
 
 $colors-dim: (
   text: $text-dim,
-  text-opa-10: $text-opa-10-dim,
-  text-opa-20: $text-opa-20-dim,
-  text-opa-80: $text-opa-80-dim,
-  text-opa-90: $text-opa-90-dim,
   text-hover: $text-hover-dim,
   text-light: $text-light-dim,
   text-dark: $text-dark-dim,
@@ -303,10 +243,6 @@ $colors-dim: (
 
   theme: $theme-dim,
   theme-hover: $theme-hover-dim,
-  theme-opa-10: $theme-opa-10-dim,
-  theme-opa-20: $theme-opa-20-dim,
-  theme-opa-80: $theme-opa-80-dim,
-  theme-opa-90: $theme-opa-90-dim,
 
   theme-bg: $theme-bg-dim,
   theme-bg-active: $theme-bg-active-dim,
@@ -320,10 +256,6 @@ $colors-dim: (
   // theme-bg-hue-5: $theme-bg-hue-5-dim,
 
   theme-text: $theme-text-dim,
-  theme-text-opa-10: $theme-text-opa-10-dim,
-  theme-text-opa-20: $theme-text-opa-20-dim,
-  theme-text-opa-80: $theme-text-opa-80-dim,
-  theme-text-opa-90: $theme-text-opa-90-dim,
   theme-text-active: $theme-text-active-dim,
   theme-text-hover: $theme-text-hover-dim,
   neutral-theme: hsl(0, 0%, 80%),

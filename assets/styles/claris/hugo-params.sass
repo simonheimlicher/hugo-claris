@@ -5,14 +5,35 @@ $contentType: '{{ .ContentType }}'
 $mediaType: '{{ .MediaType }}'
 /* File='styles/claris/hugo-params.sass': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' $contentTypeListID='#{$contentTypeListID}' $contentType='#{$contentType}' $mediaType='#{$mediaType}' */
 
-$themeColorLit: {{ default "hsl(47, 80%, 50%)" ($page.Param "themeColorLit") }}
-$themeColorDim: {{ default "hsl(47, 80%, 50%)" ($page.Param "themeColorDim") }}
+$colorPrimaryLit: {{ default "hsl(200, 100%, 50%)" ($page.Param "colorPrimaryLit") }}
+$colorPrimaryDim: {{ default "hsl(200, 100%, 20%)" ($page.Param "colorPrimaryDim") }}
 
-$themeColorBackgroundLit: {{ default "lighten(desaturate($themeColorLit, 50%), 45%)" ($page.Param "themeColorBackgroundLit") }}
-$themeColorBackgroundDim: {{ default "darken(desaturate($themeColorDim, 60%), 35%)" ($page.Param "themeColorBackgroundDim") }}
+$onPrimaryLit: {{ default "darken(desaturate($colorPrimaryLit, 50%), 25%)" ($page.Param "onPrimaryLit") }}
+$onPrimaryDim: {{ default "lighten(desaturate($colorPrimaryDim, 75%), 75%)" ($page.Param "onPrimaryDim") }}
 
-$themeNeutralBackgroundLit: {{ default "lighten(desaturate($themeColorBackgroundLit, 95%), 0%)" ($page.Param "themeNeutralBackgroundLit") }}
-$themeNeutralBackgroundDim: {{ default "darken(desaturate($themeColorBackgroundDim, 95%), 0%)" ($page.Param "themeNeutralBackgroundDim") }}
+$surfacePrimaryLit: {{ default "lighten(desaturate($colorPrimaryLit, 50%), 45%)" ($page.Param "surfacePrimaryLit") }}
+$surfacePrimaryDim: {{ default "darken(desaturate($colorPrimaryDim, 60%), 25%)" ($page.Param "surfacePrimaryDim") }}
+
+$colorSecondaryLit: {{ default "hsl(170, 100%, 50%)" ($page.Param "colorSecondaryLit") }}
+$colorSecondaryDim: {{ default "hsl(170, 40%, 15%)" ($page.Param "colorSecondaryDim") }}
+
+$onSecondaryLit: {{ default "darken(desaturate($colorSecondaryLit, 50%), 45%)" ($page.Param "onSecondaryLit") }}
+$onSecondaryDim: {{ default "lighten(desaturate($colorSecondaryDim, 60%), 35%)" ($page.Param "onSecondaryDim") }}
+
+$surfaceSecondaryLit: {{ default "lighten(desaturate($colorSecondaryLit, 50%), 45%)" ($page.Param "surfaceSecondaryLit") }}
+$surfaceSecondaryDim: {{ default "darken(desaturate($colorSecondaryDim, 60%), 35%)" ($page.Param "surfaceSecondaryDim") }}
+
+$colorSurfaceLit: {{ default "lighten(desaturate($colorPrimaryLit, 10%), 48%)" ($page.Param "colorSurfaceLit") }}
+$colorSurfaceDim: {{ default "darken(desaturate($colorPrimaryDim, 10%), 10%)" ($page.Param "colorSurfaceDim") }}
+
+$onSurfaceLit: {{ default "darken(desaturate($colorSurfaceLit, 50%), 45%)" ($page.Param "colorSurfaceLit") }}
+$onSurfaceDim: {{ default "lighten(desaturate($colorSurfaceDim, 60%), 35%)" ($page.Param "colorSurfaceDim") }}
+
+$colorBackgroundLit: {{ default "lighten(desaturate($colorSurfaceLit, 95%), 0%)" ($page.Param "colorBackgroundLit") }}
+$colorBackgroundDim: {{ default "darken(desaturate($colorSurfaceDim, 95%), 0%)" ($page.Param "colorBackgroundDim") }}
+
+$onBackgroundLit: {{ default "darken(desaturate($colorBackgroundLit, 50%), 85%)" ($page.Param "colorBackgroundLit") }}
+$onBackgroundDim: {{ default "lighten(desaturate($colorBackgroundDim, 60%), 65%)" ($page.Param "colorBackgroundDim") }}
 
 $fontFamilySans: '{{ default "Source Sans 3" ($page.Param "fontFamilySans") }}'
 $fontFamilySerif: '{{ default "Merriweather" ($page.Param "fontFamilySerif") }}'
