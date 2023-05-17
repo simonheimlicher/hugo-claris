@@ -114,22 +114,26 @@ $dark-bg-hue-3-dim: scale-color($theme-bg-dim, $hue: (100/7 * 1), $saturation: -
 $dark-bg-hue-4-dim: scale-color($theme-bg-dim, $hue: (100/7 * 2), $saturation: -60%, $lightness: -10%);
 $dark-bg-hue-5-dim: scale-color($theme-bg-dim, $hue: (100/7 * 3), $saturation: -90%, $lightness: -0%);
 
-$haze-lit: darken(desaturate($bg-lit, 15%), 2%);
+// $haze-lit: darken(desaturate($bg-lit, 15%), 2%);
+$haze-lit: $colorSurfaceLit;
 $xhaze-lit: darken($haze-lit, 10%);
 $xxhaze-lit: darken($xhaze-lit, 10%);
 $xxxhaze-lit: darken($xxhaze-lit, 10%);
 
-$haze-dim: lighten(desaturate($bg-dim, 10%), 10%);
+// $haze-dim: lighten(desaturate($bg-dim, 10%), 10%);
+$haze-dim: $colorSurfaceDim;
 $xhaze-dim: lighten($haze-dim, 10%);
 $xxhaze-dim: lighten($xhaze-dim, 10%);
 $xxxhaze-dim: lighten($xxhaze-dim, 10%);
 
-$theme-haze-lit: darken(saturate($theme-bg-lit, 20%), 5%);
+// $theme-haze-lit: darken(saturate($theme-bg-lit, 20%), 5%);
+$theme-haze-lit: $surfacePrimaryLit;
 $theme-xhaze-lit: darken($theme-haze-lit, 5%);
 $theme-xxhaze-lit: darken($theme-xhaze-lit, 5%);
 $theme-xxxhaze-lit: darken($theme-xxhaze-lit, 5%);
 
-$theme-haze-dim: lighten(saturate($theme-bg-dim, 10%), 10%);
+// $theme-haze-dim: lighten(saturate($theme-bg-dim, 10%), 10%);
+$theme-haze-dim: $surfacePrimaryDim;
 $theme-xhaze-dim: lighten($theme-haze-dim, 10%);
 $theme-xxhaze-dim: lighten($theme-xhaze-dim, 10%);
 $theme-xxxhaze-dim: lighten($theme-xxhaze-dim, 10%);

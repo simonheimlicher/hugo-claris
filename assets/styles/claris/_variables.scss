@@ -21,6 +21,11 @@ $main-z-index: 1;
   // Add RGB / RGBA color definitions
   @each $color, $value in $colors {
     --#{$color}: #{$value};
+    // --RGB_#{$color}: #{mapColorVarToRGB($colors, $value)};
+  }
+  // Only define RGB values for select colors
+  @each $color in (text bg theme theme-bg choice-bg xhaze highlight-bg-yellow) {
+    $value: map-get($colors, $color);
     --RGB_#{$color}: #{mapColorVarToRGB($colors, $value)};
   }
 }
@@ -142,34 +147,36 @@ $main-z-index: 1;
 }
 
 @mixin link-lvhfa($link: var(--link), $visited: var(--link), $hover: var(--link-hover), $focus: var(--link-hover), $active: var(--link-active)) {
-  a:not(.button):not(nav a):not(sup a) {
-    color: $link;
-    text-decoration: none;
-    &:link {
+  @media only screen {
+    a:not(.button):not(nav a):not(sup a) {
       color: $link;
-    }
-    &:visited {
-      color: $link;
-    }
-    &:hover {
-      @media (any-hover: hover) {
-        color: $hover;
+      text-decoration: none;
+      &:link {
+        color: $link;
+      }
+      &:visited {
+        color: $link;
+      }
+      &:hover {
+        @media (any-hover: hover) {
+          color: $hover;
+          text-decoration: underline;
+          text-underline-position: under;
+          text-underline-offset: 0.1em;
+        }
+      }
+      &:focus {
+        color: $focus;
         text-decoration: underline;
         text-underline-position: under;
         text-underline-offset: 0.1em;
       }
-    }
-    &:focus {
-      color: $focus;
-      text-decoration: underline;
-      text-underline-position: under;
-      text-underline-offset: 0.1em;
-    }
-    &:active {
-      color: $active;
-      text-decoration: underline;
-      text-underline-position: under;
-      text-underline-offset: 0.1em;
+      &:active {
+        color: $active;
+        text-decoration: underline;
+        text-underline-position: under;
+        text-underline-offset: 0.1em;
+      }
     }
   }
 }
@@ -651,14 +658,12 @@ html {
   --navigation-header-height: 0;
 
   @include generate_colors($colors-lit);
-  --choice-bg-menu: var(--xhaze);
-  --choice-bg-menu-active: rgba(var(--RGB_bg-dark), 0.5);
+  --choice-bg-menu: var(--haze);
+  --choice-bg-menu-active: var(--xxxhaze);
 
   &:not(.kind-page) {
     --choice-bg: var(--theme-bg);
     --RGB_choice-bg: var(--RGB_theme-bg);
-    --choice-bg-menu: var(--theme-xxxhaze);
-    --choice-bg-menu-active: rgba(var(--RGB_theme-xxxhaze), 0.05);
   }
 
   @mixin color-scheme-dark {
@@ -684,22 +689,6 @@ html {
         fill: #fafafa;
       }
     }
-    // .nav_color-scheme {
-    //   &_choice {
-    //     &_sprite {
-    //       transform: translateX(-2.5rem);
-    //     }
-    //   }
-    // }
-    // @media (any-hover: hover) {
-    //   &:not([data-color-scheme-transition]) .nav_color-scheme_choice:hover {
-    //     .nav_color-scheme_choice {
-    //       &_sprite {
-    //         transform: translateX(0rem);
-    //       }
-    //     }
-    //   }
-    // }
     .nav_color-scheme {
       &_choice {
         &_light {
@@ -727,16 +716,6 @@ html {
     }
 
     @include generate_colors( map-merge($colors-lit, $colors-dim) );
-    /*
-    --choice-bg-menu: var(--xxhaze);
-    --choice-bg-menu-active: var(--xhaze);
-    &:not(.kind-page) {
-      --choice-bg: var(--theme-bg);
-      --RGB_choice-bg: var(--RGB_theme-bg);
-      --choice-bg-menu: var(--xhaze);
-      --choice-bg-menu-active: rgba(var(--RGB_light), 0.05);
-    }
-    */
     img:not([src*=".svg"]) {
       filter: var(--dim-image-filter);
     }

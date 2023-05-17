@@ -15,29 +15,13 @@
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="{{- $colorPrimaryDim -}}">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     {{- $title := default $meta.Site.Data.Fulltitle $meta.Single.Data.Fulltitle | safeHTML }}
-    {{- $contentType := partialCached "claris/_functions/alternative-type" (dict "Page" .Page "Current" false) . .Type }}
-    {{- with $contentType }}
-      {{- $partialHeadTitle := printf "%s/head/title" $contentType }}
-      {{ partial "html-comment"
-          (printf "BASEOF: Looking for %s" (printf "partials/%s" $partialHeadTitle) ) }}
-      {{- if (templates.Exists (printf "partials/%s.html" $partialHeadTitle) ) }}
-        {{- $title = partial $partialHeadTitle $page }}
-      {{- end }}
-    {{- end }}
     <title>{{ $title }}</title>
     {{ hugo.Generator }}
-    {{- partial "claris/head/schema-org" (dict "Page" $page "Meta" $meta) }}
+    {{- partial "claris/head/schema-org" . }}
     <meta name="description" content="{{ default $meta.Site.Data.Description $meta.Single.Data.Description }}">
-    {{- partial "claris/head/opengraph" (dict "Page" $page "Meta" $meta) }}
-    {{- partial "claris/head/twitter-card" (dict "Page" $page "Meta" $meta) }}
-    {{- $partialHeadRobots := printf "%s/head/robots" $contentType }}
-    {{- if and $contentType (templates.Exists (printf "partials/%s.html" $partialHeadRobots) ) }}
-      {{ partial "html-comment"
-          (printf "BASEOF: Looking for %s" (printf "partials/%s" $partialHeadRobots) ) -}}
-      {{- partial $partialHeadRobots (dict "Page" $page "Meta" $meta "ContentType" $contentType) }}
-    {{- else }}
-    {{ partial "claris/head/robots" (dict "Page" $page "Meta" $meta "ContentType" $contentType) }}
-    {{- end }}
+    {{- partial "claris/head/opengraph" . }}
+    {{- partial "claris/head/twitter-card" . }}
+    {{ partial "claris/head/robots" . }}
 {{- with .Page.Param "googleSiteVerification" }}
     <meta name="google-site-verification" content="{{ . }}">
 {{- end -}}

@@ -28,8 +28,6 @@
     {{- end }}
   {{- end }}
 
-  {{- $title := $titleVariant.title }}
-
   {{- $tagline := .Params.tagline }}
 
   {{- $description := "" }}
@@ -103,7 +101,7 @@
   {{- end }}
 
   {{- $genre := default (index .Params.categories 0) .Params.genre }}
-  {{- $keywords := apply (default (default (split (anchorize $title) "-") .Params.tags) .Params.keywords) "lower" "." }}
+  {{- $keywords := apply (default (default (split (anchorize $titleVariant.title) "-") .Params.tags) .Params.keywords) "lower" "." }}
 
   <!-- HTML 'id' attribute of the DOM container of the main content -->
   {{- $articleID := default "contentContainer" ($page.Param "articleID") }}
@@ -118,7 +116,7 @@
         "ArticleSection" ( default "Root" (default .Params.section (humanize .Section) ) )
         "ArticleID" $articleID
         "EntityID" (printf "%s#%s" $canonicalURL $articleID)
-        "Title" $title
+        "Title" $titleVariant.title
         "Subtitle" $titleVariant.subtitle
         "Supertitle" $titleVariant.supertitle
         "Fulltitle" $titleVariant.fulltitle

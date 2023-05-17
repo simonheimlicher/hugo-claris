@@ -2,7 +2,6 @@
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- $contentType := .ContentType }}
 {{- $template := "claris/head/robots" }}
 {{- $robotsGenerate := false -}}
 {{- if (or (isset $page.Params "robots") (isset site.Params "robots") ) -}}

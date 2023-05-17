@@ -11,8 +11,8 @@ $colorPrimaryDim: {{ default "hsl(200, 100%, 20%)" ($page.Param "colorPrimaryDim
 $onPrimaryLit: {{ default "darken(desaturate($colorPrimaryLit, 50%), 25%)" ($page.Param "onPrimaryLit") }}
 $onPrimaryDim: {{ default "lighten(desaturate($colorPrimaryDim, 75%), 75%)" ($page.Param "onPrimaryDim") }}
 
-$surfacePrimaryLit: {{ default "lighten(desaturate($colorPrimaryLit, 50%), 45%)" ($page.Param "surfacePrimaryLit") }}
-$surfacePrimaryDim: {{ default "darken(desaturate($colorPrimaryDim, 60%), 25%)" ($page.Param "surfacePrimaryDim") }}
+$surfacePrimaryLit: {{ default "lighten(desaturate($colorPrimaryLit, 20%), 40%)" ($page.Param "surfacePrimaryLit") }}
+$surfacePrimaryDim: {{ default "darken(desaturate($colorPrimaryDim, 20%), 10%)" ($page.Param "surfacePrimaryDim") }}
 
 $colorSecondaryLit: {{ default "hsl(170, 100%, 50%)" ($page.Param "colorSecondaryLit") }}
 $colorSecondaryDim: {{ default "hsl(170, 40%, 15%)" ($page.Param "colorSecondaryDim") }}
@@ -33,7 +33,7 @@ $colorBackgroundLit: {{ default "lighten(desaturate($colorSurfaceLit, 95%), 0%)"
 $colorBackgroundDim: {{ default "darken(desaturate($colorSurfaceDim, 95%), 0%)" ($page.Param "colorBackgroundDim") }}
 
 $onBackgroundLit: {{ default "darken(desaturate($colorBackgroundLit, 50%), 85%)" ($page.Param "colorBackgroundLit") }}
-$onBackgroundDim: {{ default "lighten(desaturate($colorBackgroundDim, 60%), 65%)" ($page.Param "colorBackgroundDim") }}
+$onBackgroundDim: {{ default "lighten(desaturate($colorBackgroundDim, 60%), 85%)" ($page.Param "colorBackgroundDim") }}
 
 $fontFamilySans: '{{ default "Source Sans 3" ($page.Param "fontFamilySans") }}'
 $fontFamilySerif: '{{ default "Merriweather" ($page.Param "fontFamilySerif") }}'

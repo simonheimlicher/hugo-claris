@@ -63,16 +63,16 @@
     fill: $color
     // filter: invert(100%)
 
-@mixin nav-active-background($color: var(--text), $background: rgba(var(--RGB_theme), 0.25), $border: var(--theme) )
+@mixin nav-active-background($color: var(--text), $background: var(--theme-xxhaze), $border: var(--theme) )
   @include nav-background($color, $background, $border)
   cursor: default
   &:hover
     color: $color
 
-@mixin nav-active-section-background($color: var(--text), $background: transparent, $border: var(--theme) )
+@mixin nav-active-section-background($color: var(--text), $background: var(--theme-haze), $border: var(--theme) )
   @include nav-background($color, $background, $border)
 
-@mixin nav-hover-background($color: var(--text), $background: rgba(var(--RGB_theme), 0.25), $border: var(--theme) )
+@mixin nav-hover-background($color: var(--text), $background: var(--theme-xxxhaze), $border: var(--theme) )
   @include nav-background($color, $background, $border)
 
 @mixin nav-open-background($color: var(--theme-text), $background: var(--theme-bg), $border: var(--theme-bg-active))
@@ -112,21 +112,6 @@
   .nav
     display: flex
 
-@media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
-  .kind-section .main_inner
-    &::before
-      content: ''
-      position: absolute
-      top: $screenViewNavHeightNarrow
-      top: var(--screenViewNavHeight)
-      left: 0
-      width: 100%
-      // height: $screenViewNavHeightNarrow
-      // height: var(--screenViewNavHeight)
-      // background: linear-gradient(to bottom, var(--theme-bg-active) 10%, transparent 100%)
-      // outline-top: 2px solid var(--theme-bg-active)
-      height: 0.25rem
-      background: var(--theme-bg-active)
 .nav
   position: relative
   justify-content: space-between
@@ -251,9 +236,9 @@
     display: inline-flex
     border-radius: 0
     align-items: center
-  @media (any-hover: hover)
-    &_item:not(&_active):hover
-      @include nav-hover-background
+    @media (any-hover: hover)
+      &:not(&_active):hover
+        @include nav-hover-background
 
   &_group
     &_color-scheme_mobile.nav_group
@@ -291,16 +276,20 @@
     align-items: center
     border-radius: 0.5rem
     z-index: ($main-z-index + 1) // Required for IE 11
-  &_brand_parent
+  &_brand
     position: relative
     display: flex
     align-items: center
     border-radius: 0.5rem
     z-index: ($main-z-index + 1) // Required for IE 11
+    @media (any-hover: hover)
+      &:not(.nav_active):hover
+        @include nav-hover-background
 
   &_parent
     // Display as grid to position sub menus properly
     display: grid
+    position: relative
     &_follow, &_color-scheme
       flex-wrap: wrap
       width: auto
@@ -710,13 +699,8 @@
       position: relative
       display: flex
       align-items: center
-      // padding: 0.25rem 0
-    // &_parent // FIXME: Get rid of nav_parent
     &_item
-      padding: 0.25rem 0
-    // .icon
-    //   width: 1.25rem
-    //   height: 1.25rem
+      padding: 0.25rem 0.25rem
 
     &_sub
       position: absolute
