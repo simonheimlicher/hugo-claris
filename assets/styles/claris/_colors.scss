@@ -18,7 +18,7 @@ $text-hover-dim: darken($onBackgroundDim, 20%);
 $text-light-lit: $onBackgroundLit;
 $text-light-dim: $onBackgroundLit;
 
-$text-dark-lit: $onBackgroundLit;
+$text-dark-lit: $onBackgroundDim;
 $text-dark-dim: $onBackgroundDim;
 
 $text-faint-lit: lighten(desaturate($text-lit, 0%), 25%);
