@@ -72,7 +72,7 @@
 @mixin nav-active-section-background($color: var(--text), $background: var(--theme-haze), $border: var(--theme) )
   @include nav-background($color, $background, $border)
 
-@mixin nav-hover-background($color: var(--text), $background: var(--theme-xxxhaze), $border: var(--theme) )
+@mixin nav-hover-background($color: var(--theme-text-hover), $background: var(--theme-bg-hover), $border: var(--theme) )
   @include nav-background($color, $background, $border)
 
 @mixin nav-open-background($color: var(--theme-text), $background: var(--theme-bg), $border: var(--theme-bg-active))
@@ -407,8 +407,8 @@
     &_choice
       &_mask
         position: relative
-        width: 2.5rem
-        height: 2.5rem
+        width: $screenViewNavHeightNarrow
+        height: $screenViewNavHeightNarrow
       &_icon
         position: absolute
         top: 0
@@ -423,8 +423,10 @@
         .icon
           display: block
           fill: var(--text)
-          width: 1.5rem
-          height: 1.5rem
+          // width: var(--icon-height-nav)
+          // height: var(--icon-height-nav)
+          width: 1rem
+          height: 1rem
           margin: 0
           padding: 0
       &_dark
@@ -438,9 +440,11 @@
           .nav_color-scheme_choice
             &_icon
               background: var(--theme-bg-hover)
-              transition: all 0.2s var(--color-scheme-timing);
+              transition: background 0.35s var(--color-scheme-timing);
               .icon
                 fill: var(--bg)
+                width: 1.25rem
+                height: 1.25rem
             &_dark
               opacity: 1.0
               z-index: 1
