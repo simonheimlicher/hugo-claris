@@ -526,6 +526,7 @@ html {
   --font-size: 100%;
   --font-size-nav: 1.5rem;
   --font-size-meta: 0.875rem;
+  --font-size-button: 0.875rem;
   --font-size-aside: 0.875rem;
   --font-size-footer: 0.875rem;
 @media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
@@ -537,6 +538,7 @@ html {
     --font-size: 125%;
     --font-size-nav: 1.0rem;
     --font-size-meta: 1.0rem;
+    --font-size-button: 1.0rem;
     --font-size-aside: 1.0rem;
     --font-size-footer: 1.0rem;
   }
