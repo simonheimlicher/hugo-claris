@@ -306,12 +306,12 @@
       border: 1px solid var(--theme-text-hover)
 
   &_translucent, .article_content &_translucent, .sidebar &_translucent
-      background-color: var(--text-opa-10)
+      background-color: rgba(var(--RGB_text), 10%)
       // color: var(--theme)
       // Ensure constrast ratio requirements are met
       color: var(--text)
       // border: 1px solid transparent
-      border: 1px solid var(--text-opa-20)
+      border: 1px solid rgba(var(--RGB_text), 20%)
       &:hover, &:focus
         @media (any-hover: hover)
           color: var(--text-hover)
