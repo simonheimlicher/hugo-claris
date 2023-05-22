@@ -20,8 +20,8 @@
   {{- if not $logoImageResource }}
     {{- errorf "[%s]: Logo image resource '%v' not found" $template $logoImageResource }}
   {{- end }}
-{{- else }}
-  {{- warnf "[%s]: invalid logo image: .LogoImageSpec='%v'" $template $logoImageSpec }}
+{{- /* {{- else }}
+  {{- warnf "[%s]: invalid logo image: .LogoImageSpec='%v'" $template $logoImageSpec }} */ -}}
 {{- end }}
 
 {{- return $logoImageResource -}}

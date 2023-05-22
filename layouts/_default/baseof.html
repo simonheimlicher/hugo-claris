@@ -29,7 +29,7 @@
   "OutputFormat" $outputFormat
   "OnlyMediaType" ($page.Param "onlyMediaType")
   "MediaTypeList" $mediaTypeList
-  "ContentType" (index $contentTypeList 0)
+  "ContentType" (index (last 1 $contentTypeList) 0)
   "ContentTypeList" $contentTypeList
   "ContentTypeListID" $contentTypeListID
   "BundleParams" (dict
