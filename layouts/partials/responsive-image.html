@@ -116,9 +116,11 @@
   "aspect-ratio" $imageResourceArgs.aspectratio
   "border-radius" $imageResourceArgs.borderradius
   "min-width" $imageResourceArgs.minwidth
-  "max-width" $imageResourceArgs.maxwidth
   "min-height" $imageResourceArgs.minheight
-  "max-height" $imageResourceArgs.maxheight) -}}
+  "max-height" $imageResourceArgs.maxheight
+  "max-width" (cond (not (not $imageResourceArgs.maxwidth)) (printf "min(100%%, %s)" $imageResourceArgs.maxwidth) false)
+  "max-height" (cond (not (not $imageResourceArgs.maxheight)) (printf "min(100%%, %s)" $imageResourceArgs.maxheight) false)
+  ) -}}
   {{- if $value -}}
     {{- $imgInlineStyleSlice = append $imgInlineStyleSlice (slice (printf "%s: %v" $attr $value) ) -}}
   {{- end -}}
