@@ -384,14 +384,27 @@
     z-index: 999
     width: min-content
     // Setting min-height is required to avoid nav bar incl. burger menu icon from collapsing
-    min-height: $screenViewNavHeightNarrow
+    height: $screenViewNavHeightNarrow
     img
-      height: $screenViewNavHeightNarrow
+      // height: $screenViewNavHeightNarrow
+      max-height: 100%
       width: auto
       max-width: unset
       background: transparent !important
     &_parent
       margin-right: auto
+    &.padding-1
+      img
+        padding: 0.25em
+    &.padding-2
+      img
+        padding: 0.5em
+    &.padding-3
+      img
+        padding: 0.75em
+    &.padding-4
+      img
+        padding: 1em
 
   &_mobile_toggle, &_color-scheme_choice
     position: relative
@@ -743,8 +756,8 @@
       margin-right: 0rem
       padding-left: $screenViewInnerPaddingOneColumn
       // padding-right: $screenViewInnerPaddingOneColumn
-      img
-        height: $screenViewNavHeight
+      // img
+      //   height: $screenViewNavHeight
     &_mobile_toggle
       // padding-left: $screenViewInnerPaddingOneColumn
       padding-right: $screenViewInnerPaddingOneColumn

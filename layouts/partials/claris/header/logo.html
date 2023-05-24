@@ -1,5 +1,5 @@
 {{- $page := .Page }}
-{{- $logoImageSpec := default site.Params.logo .resource }}
+{{- $logoImageResource := default site.Params.logo site.Params.header.logo.resource }}
 {{- $logoURL := .logourl }}
 {{- $logoClass := .logoclass }}
 
@@ -19,7 +19,16 @@
 
 {{- $t := site.Title -}}
 
-{{- $logoImage := partialCached "claris/_functions/resources/images/logo-image" (dict "Page" $page "resource" $logoImageSpec) -}}
+{{- with site.Params.header.logo }}
+  {{- with .padding }}
+    {{- $logoClass = printf "%spadding-%d" (cond (not (not $logoClass)) $logoClass "")  (int .) }}
+  {{- end }}
+  {{- with .resource }}
+    {{- $logoImageResource = . }}
+  {{- end }}
+{{- end }}
+
+{{- $logoImage := partialCached "claris/_functions/resources/images/logo-image" (dict "Page" $page "resource" $logoImageResource) -}}
 {{- with $logoURL }}
         <a href='{{ . }}' title='{{ $t }}' class='nav_brand_parent'>
 {{- end }}
