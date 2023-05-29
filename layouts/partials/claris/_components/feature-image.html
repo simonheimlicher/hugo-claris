@@ -1,39 +1,42 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $title := .Title }}
+{{- $featureImageStyle := default "wide" ($page.Param "image.feature.style") }}
+{{- $template := "claris/_components/feature-image" }}
+
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?leadership` $page.RelPermalink) ) ) -}} */}}
 {{/* {{- $debug = or $debug (eq $page.Kind "home" ) -}} */}}
 
-{{- $template := "claris/_components/feature-image" }}
-
 {{- $featureImage := false }}
 {{- with $meta.Single.Data.Images }}
   {{- with $featureImage = .feature.variant.default }}
-    {{- $page.Scratch.Add "claris.image.prioritized" 1 }}
-    {{- if $debug }}
-      {{- warnf "%s[%s]: claris.image.prioritized incremented to %d" $page $template ($page.Scratch.Get "claris.image.prioritized") }}
-    {{- end }}
+    {{- $classPrefix := printf "feature-image" }}
     {{- $featureImageArgs := (dict
-      "resource" .version.default.resource
+      "resource" (default .version.default.resource (index .version $featureImageStyle).resource)
       "position" $featureImage.position
       "alt" $featureImage.alt
       "title" $featureImage.title
       "credit" $featureImage.credit
-      "figureclass" "hero-image_above-main"
-      "imgclass" "hero-image_above-main_img"
+      "figureclass" (printf "%s_figure" $classPrefix)
+      "imgclass" (printf "%s_img" $classPrefix)
       "fetchpriority" "high"
     ) }}
-    {{/* {{- if $debug }}
+    {{- if $debug }}
       {{- warnf "%s[%s]: Found feature image resource $featureImage.version.default.resource=%v in \nfeatureImage=%v\nNow calling responsive-image with .resource=%v in featureImageArgs=%v"
           $page $template $featureImage.version.default.resource
           (jsonify (dict "indent" "  ") $featureImage)
           $featureImageArgs.resource
           (jsonify (dict "indent" "  ") $featureImageArgs) -}}
-    {{- end }} */}}
+    {{- end }}
 
     {{- partial "responsive-image" (merge $featureImageArgs (dict "Page" $page)) $featureImageArgs }}
+
+    {{- $page.Scratch.Add "claris.image.prioritized" 1 }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: claris.image.prioritized incremented to %d" $page $template ($page.Scratch.Get "claris.image.prioritized") }}
+    {{- end }}
   {{- end }}
 {{- end }}
 {{- if not $featureImage }}

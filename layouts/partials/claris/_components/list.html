@@ -29,7 +29,7 @@
 
   {{- if (eq $listLayout "grid") }}
     {{- $excerptPartial = default $excerptPartial "claris/_components/excerpt" }}
-    <div class="{{ $containerClass }}{{ if $mainSection }} main-section{{ end }}">
+    <div class="{{ $containerClass }}{{ if $mainSection }} section_main-section{{ end }}">
       <div class="excerpt_grid">
   {{- else if (eq $listLayout "list") }}
     <ul class="content_list">

@@ -116,6 +116,10 @@ $main-z-index: 1;
   @include element-padding('inner', unset, 1);
 }
 
+@mixin full-bleed_horizontal-padding() {
+  @include element-padding('inner', unset, 0);
+}
+
 @mixin background_dark() {
   background: var(--bg-dark);
   color: var(--text-dark);
@@ -206,6 +210,7 @@ $main-z-index: 1;
 
 @mixin content_base_centered() {
   @include content_base();
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -235,7 +240,8 @@ $main-z-index: 1;
 }
 
 // Content that has multiple panels that span the entire width
-@mixin content_panel() {
+@mixin content_full-bleed() {
+  @include content_base();
   padding: 0;
   margin: 0;
 }

@@ -2,11 +2,13 @@
 {{- $page := .Page }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `transformation/$` $page.RelPermalink) ) ) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo)?leadership/$` $page.RelPermalink) ) ) }} */}}
 {{- $template := "claris/_functions/meta/image/kind-variant-meta" }}
 
+{{- $processAllImages := true }}
 {{- $imageKindVariantMeta := .imagekindvariantmeta }}
 {{- $imageKind := .kind }}
+{{- $generate := .generate }}
 {{- $versions := .versions }}
 
 {{- $imageResourceBaseArgs := (dict
@@ -106,71 +108,79 @@
         {{- $versionResource := . }}
         {{- $origin := "existing" }}
 
-        {{- $processMethod := "fill" }}
-        {{- $centerMethod := "Center" }}
+        {{- if or $generate $processAllImages }}
+          {{- $processMethod := "fill" }}
+          {{- $centerMethod := "Center" }}
 
-        {{- $cropWidth := $verSpec.width }}
-        {{- $cropHeight := $verSpec.height }}
+          {{- $cropWidth := $verSpec.width }}
+          {{- $cropHeight := $verSpec.height }}
 
-        {{- if (gt $lowestAspectDeviation 0.01) }}
-          <!-- If the target aspect ratio differs too much from the original,
-          we rely on the "Smart" method to identify the center -->
-          {{- $centerMethod = "Smart" }}
+          {{- if (gt $lowestAspectDeviation 0.01) }}
+            <!-- If the target aspect ratio differs too much from the original,
+            we rely on the "Smart" method to identify the center -->
+            {{- $centerMethod = "Smart" }}
+            {{- if $debug }}
+              {{- warnf "%s[%s]: %v/%v/%v: aspectDeviation=%.3f sizeRatio=%.3f: aspect deviation is too large; use center method=%v"
+                  $page $template $imageKind $variantName $verSpec
+                  $lowestAspectDeviation $greatestSizeRatio
+                  $centerMethod }}
+            {{- end }}
+          {{- end }}
+
+          {{- if (lt $greatestSizeRatio 1.0) }}
+            {{- $processMethod = "crop" }}
+            {{- $originalAspect := div (mul 1.0 .Width) .Height }}
+            {{- if gt $originalAspect $targetAspect }}
+              <!-- Original aspect ratio > target aspect ratio:
+              use height of original but reduce width to match target aspect ratio -->
+              {{- $cropWidth = (int (math.Round (mul .Height (mul 1.0 $targetAspect)) ) ) }}
+              {{- $cropHeight = .Height }}
+            {{- else }}
+              <!-- Original aspect ratio < target aspect ratio:
+              use width of original but reduce height to match target aspect ratio -->
+              {{- $cropWidth = .Width }}
+              {{- $cropHeight = (int (math.Round (div .Width (mul 1.0 $targetAspect)) ) ) }}
+            {{- end }}
+            {{- if $debug }}
+              {{- warnf "%s[%s]: %v/%v/%v: aspectDeviation=%.3f sizeRatio=%.3f: original is too small; use method %v to scale from %dx%d to %dx%d"
+                  $page $template $imageKind $variantName $verSpec
+                  $lowestAspectDeviation $greatestSizeRatio
+                  $processMethod .Width .Height $cropWidth $cropHeight }}
+            {{- end }}
+          {{- end }}
+
+          {{- $imageResourceArgs := merge $imageResourceBaseArgs (dict
+            "resource" .
+            "process" (dict
+              "method" $processMethod
+              "args" (printf "%vx%v %s" $cropWidth $cropHeight $centerMethod)
+            )
+          ) }}
+
           {{- if $debug }}
-            {{- warnf "%s[%s]: %v/%v/%v: aspectDeviation=%.3f sizeRatio=%.3f: aspect deviation is too large; use center method=%v"
+            {{- warnf "%s[%s]: %v/%v/%v: aspectDeviation=%.3f sizeRatio=%.3f Use processing method=%v and center method=%v to generate version from imgResource=%v[%T] in imageResourceArgs=%v"
                 $page $template $imageKind $variantName $verSpec
                 $lowestAspectDeviation $greatestSizeRatio
-                $centerMethod }}
+                $imageResourceArgs.process.method $centerMethod
+                . . $imageResourceArgs }}
           {{- end }}
-        {{- end }}
 
-        {{- if (lt $greatestSizeRatio 1.0) }}
-          {{- $processMethod = "crop" }}
-          {{- $originalAspect := div (mul 1.0 .Width) .Height }}
-          {{- if gt $originalAspect $targetAspect }}
-            <!-- Original aspect ratio > target aspect ratio:
-            use height of original but reduce width to match target aspect ratio -->
-            {{- $cropWidth = (int (math.Round (mul .Height (mul 1.0 $targetAspect)) ) ) }}
-            {{- $cropHeight = .Height }}
+          {{- $versionResource = partial "claris/_functions/resources/images/image-resource" $imageResourceArgs }}
+          {{- with $versionResource }}
+            {{- if $debug }}
+              {{- warnf "%s[%s]: %v/%v/%v: Generated imgResource=%v [imageResourceArgs=%v]"
+                  $page $template $imageKind $variantName $verSpec
+                  $versionResource $imageResourceArgs }}
+            {{- end }}
           {{- else }}
-            <!-- Original aspect ratio < target aspect ratio:
-            use width of original but reduce height to match target aspect ratio -->
-            {{- $cropWidth = .Width }}
-            {{- $cropHeight = (int (math.Round (div .Width (mul 1.0 $targetAspect)) ) ) }}
-          {{- end }}
-          {{- if $debug }}
-            {{- warnf "%s[%s]: %v/%v/%v: aspectDeviation=%.3f sizeRatio=%.3f: original is too small; use method %v to scale from %dx%d to %dx%d"
+            {{- errorf "%s[%s]: %v/%v/%v: Failed to generate imgResource from imageResourceArgs=%v"
                 $page $template $imageKind $variantName $verSpec
-                $lowestAspectDeviation $greatestSizeRatio
-                $processMethod .Width .Height $cropWidth $cropHeight }}
+                $imageResourceArgs }}
           {{- end }}
         {{- end }}
-
-        {{- $imageResourceArgs := merge $imageResourceBaseArgs (dict
-          "resource" .
-          "process" (dict
-            "method" $processMethod
-            "args" (printf "%vx%v %s" $cropWidth $cropHeight $centerMethod)
-          )
-        ) }}
-
-        {{- if $debug }}
-          {{- warnf "%s[%s]: %v/%v/%v: aspectDeviation=%.3f sizeRatio=%.3f Use processing method=%v and center method=%v to generate version from imgResource=%v[%T] in imageResourceArgs=%v"
-              $page $template $imageKind $variantName $verSpec
-              $lowestAspectDeviation $greatestSizeRatio
-              $imageResourceArgs.process.method $centerMethod
-              . . $imageResourceArgs }}
-        {{- end }}
-
-        {{- $versionResource = partial "claris/_functions/resources/images/image-resource" $imageResourceArgs }}
 
         {{- with $versionResource }}
           {{- $origin = "generated" }}
-          {{- if $debug }}
-            {{- warnf "%s[%s]: %v/%v/%v: Generated imgResource=%v [imageResourceArgs=%v]"
-                $page $template $imageKind $variantName $verSpec
-                $versionResource $imageResourceArgs }}
-          {{- end }}
 
           {{- $versionMeta := (dict
             "resource" $versionResource
@@ -193,10 +203,6 @@
                 (jsonify (dict "indent" "  ") $processedVersionMeta)
                 $processedImageKindURLs }}
           {{- end }}
-        {{- else }}
-          {{- errorf "%s[%s]: %v/%v/%v: Failed to generate imgResource from imageResourceArgs=%v"
-              $page $template $imageKind $variantName $verSpec
-              $imageResourceArgs }}
         {{- end }}
 
       {{- end }}
@@ -270,26 +276,21 @@
               (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
         {{- end }}
     {{- else }}
-      {{- range $versionID, $versionResource := $variantMeta.version }}
+      {{- range $versionID, $versionMeta := $variantMeta.version }}
         {{- if $debug }}
           {{- warnf "%s[%s]: %v/%v/%v: Before adding default versionID=%v: processedImageKindVariantMeta=\n%v"
               $page $template $imageKind $variantName $versionID $defaultVersionID
               (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
         {{- end }}
-        {{- $versionMeta := (dict
-          "resource" $versionResource
-          "url" $versionResource.Permalink
-          "canonicalurl" (partial "claris/_functions/canonical-url" $versionResource)
-        ) }}
         {{- $cleanVariantMeta := merge $variantMeta (dict "version" false) }}
         {{- $processedImageKindVariantMeta = merge $processedImageKindVariantMeta (dict
           $variantName (merge (merge $variantMeta (dict "version" false)) (dict "version" (dict $defaultVersionID $versionMeta)) )
         ) }}
         {{- if $debug }}
           {{- warnf "%s[%s]: %v/%v/%v: Using %v in versionMeta=%v as default version %v[%vx%v]: processedImageKindVariantMeta=\n%v"
-              $page $template $imageKind $variantName $versionID $versionResource
+              $page $template $imageKind $variantName $versionID $versionMeta.resource
               (jsonify (dict "indent" "  ") $versionMeta)
-              $defaultVersionID $versionResource.Width $versionResource.Height
+              $defaultVersionID $versionMeta.resource.Width $versionMeta.resource.Height
               (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
         {{- end }}
       {{- end }}

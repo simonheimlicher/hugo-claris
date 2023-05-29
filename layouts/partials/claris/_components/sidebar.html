@@ -1,6 +1,7 @@
 {{- $page := .Page }}
 {{- $template := "claris/_components/sidebar" }}
 {{- $headingLevel := default 2 .HeadingLevel }}
+{{- $containerClass := default "" .ContainerClass }}
 {{- with $page }}
   {{- $recentMaxYears := default 5 ($page.Param "recentMaxYears") }}
   {{- $relatedIndices := default (slice "tags" "keywords") ($page.Param "relatedIndices") }}
@@ -43,7 +44,7 @@
         $page $template $numAvailableArticles $numRelationshipTypes $relatedArticles $featuredArticles $recentArticles }} */}}
 
     {{- if (gt $numRelationshipTypes 0) }}
-    <aside class="sidebar">
+    <aside class="sidebar{{ with $containerClass }} {{ . }}{{ end }}">
       <div class="sidebar_inner">
         {{- if (gt $numRelationshipTypes 1) }}
         <h{{ $headingLevel }}>{{ T "read_on" }}</h{{ $headingLevel }}>

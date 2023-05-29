@@ -525,80 +525,6 @@
       left: 0
       width: 100%
 
-.hero-image_above-main
-  &_figure
-    margin: 0
-    padding: 0
-    z-index: ($main-z-index + 1)
-    // FIXME: Let's not push the image under the navigation bar
-    // margin-top: (-1 * #{$screenViewNavHeight})
-  &_img
-    margin: 0
-    padding: 0
-    max-width: unset
-    max-height: unset
-    width: 100%
-    height: auto
-    max-height: 40vh
-    // Minimal aspect ratio is 3:1
-    max-height: calc(min(40vh, 33vw))
-    object-fit: cover
-    object-position: center center
-    border-radius: 0
-    @media screen and (min-height: $screenViewBreakpointHeightTall)
-      max-height: 30vh
-      // Maximal aspect ratio is 2:1
-      max-height: calc(min(30vh, 50vw))
-
-.hero-image_background
-  &_main
-    position: relative
-    padding-bottom: 0
-    .main_inner
-      position: relative
-      display: flex
-      flex-direction: column
-      justify-content: flex-end
-      align-items: center
-      min-height: 100vh
-      min-height: 100svh
-      // padding-bottom: $screenViewInnerPaddingOneColumn
-      z-index: ($main-z-index + 2)
-    .content-title
-      color: white
-      text-shadow: 1.5px 1.5px 1.5px black
-      font-size: 3rem
-      text-align: center
-      position: relative
-      margin-bottom: 2rem
-      @media screen and (min-width: $screenViewBreakpointWidthNarrow) and (min-height: $screenViewBreakpointHeightStickyFooter)
-        font-size: 4rem
-        margin-bottom: 3rem
-    &_figure
-      display: none
-    & ~ .footer
-      position: relative
-      z-index: ($main-z-index + 1)
-      // padding-top: ($screenViewInnerPaddingOneColumn)
-      background: var(--bg-dark)
-      @include color-scheme_transition
-      color: var(--text-dark)
-      h1, h2, h3, a
-        color: var(--text-dark)
-  &_figure
-    display: block
-    position: fixed
-    top: 0
-    z-index: ($main-z-index - 1)
-    width: 100%
-  &_img
-    margin: 0
-    padding: 0
-    border-radius: 0
-    width: 100%
-    height: 100vh
-    height: 100lvh
-
 // FIXME: Mobile Safari gets confused with position: sticky on footer
 // https://browserstrangeness.bitbucket.io/css_hacks.html#safari
 // https://syntaxfix.com/question/5666/css-media-query-to-target-only-ios-devices
@@ -607,9 +533,8 @@
     .hero-image_background
       &_main
         .main_inner
-          min-height: 100vh
-          min-height: 100svh
-          padding-top: 55vh
+          min-height: 40vh // (100svh - 60vh)
+          min-height: 40svh // (100svh - 60svh)
           margin: -3rem auto -100vh auto
           margin-bottom: -100lvh
           z-index: ($main-z-index + 2)
@@ -977,14 +902,14 @@ html.content-above-header
   @include nav-bar-anchor-offset
   .nav_header
     position: sticky
-.lede, .main-section .article_body > p:nth-of-type(1):not(h2 + p)
+.lede, .section_main-section .article_body > p:nth-of-type(1):not(h2 + p)
   margin: 1rem 0 3rem 0
   font-style: italic
   font-size: 133%
   font-weight: var(--font-weight-light)
   line-height: 1.5
 
-.drop-cap, .main-section .article_body > p + p:nth-of-type(2)
+.drop-cap, .section_main-section .article_body > p + p:nth-of-type(2)
   margin-top: 2rem
   &:first-letter
     color: var(--initial)

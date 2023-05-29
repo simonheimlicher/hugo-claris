@@ -62,19 +62,19 @@
     (dict "kind" "feature"
       "generate" false
       "versions" (slice
-        (dict "id" "default"
-          "width" 3840 "height" 2160)
+        (dict "id" "wide"
+          "width" 3840 "height" 1920)
+        (dict "id" "aside"
+          "width" 1920 "height" 1920)
+        (dict "id" "background"
+          "width" 3840 "height" 1920)
       )
     )
     (dict "kind" "hero"
       "generate" false
       "versions" (slice
         (dict "id" "default"
-          "width" 3840 "height" 2160)
-        (dict "id" "aspect_16x9"
-          "width" 3840 "height" 2160)
-        (dict "id" "aspect_9x16"
-          "width" 2160 "height" 3840)
+          "width" 3840 "height" 3840)
       )
     )
   ) }}
@@ -149,6 +149,7 @@
           "imagekindvariantmeta" $imageKindMeta.variant
           "kind" $imageKind
           "versions" $versions
+          "generate" $generate
           "Debug" $debug
         ) }}
         {{- $imageKindMeta = merge $imageKindMeta (partial "claris/_functions/meta/images/kind-variant-meta" (

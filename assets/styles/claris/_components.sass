@@ -6,7 +6,8 @@
 
   &_inner
     // margin-top: var(--inner_margin-y)
-    @include element-padding('inner', 2, unset, unset, unset)
+    @include element-padding('inner', 0, unset, unset, unset)
+    clear: both
     h1:first-child
       margin-top: 0
       padding-top: 0
@@ -26,6 +27,9 @@
 .inner_horizontal.inner_bottom-0
   @include element-padding('inner', unset, 1, 0, 1)
 
+.full-bleed_horizontal
+  @include element-padding('inner', unset, 0)
+
 .content
   @include content
   &_singlecolumn
@@ -36,25 +40,17 @@
     // padding-top: inherit
     @include content_multicolumn
     padding-bottom: var(--inner_padding-y)
-  &-title
-    @include content_multicolumn
-    // width: 100%
-    width: fit-content
+  &_full-bleed
+    @include content_full-bleed
+
+.main-kind_page
+  .main_header, .content
+    font-family: var(--font-article)
 
 .panel
   &_content
-    // color: var(--text-dark)
-    min-height: 1px // For IE 11
-    width: 100%
-    h2, h3, h4
-      color: var(--text)
-      margin: 0
-      padding: 0
-    h2
-      font-size: 150%
-      font-variant: all-small-caps
-      line-height: 0.7
-      padding: 0 0 var(--inner_padding-y) 0
+    // width: 100%
+    --header-text: var(--text)
     h3
       font-size: 125%
 
@@ -67,39 +63,49 @@
     display: flex
     flex-direction: column
 
+  &_title
+    font-size: 150%
+    margin: 0
+    padding: 0 0 var(--inner_padding-y) 0
+    // font-variant: all-small-caps
+    // line-height: 0.7
+
   &_item
     @include inner_horizontal-padding()
-    border-top: 1px solid var(--xhaze)
+    border-top: 2px solid var(--text-faint)
     padding: var(--inner_padding-y) 0
     @include color-scheme_transition
-    &-0
-      background: var(--theme-bg-hue-0)
-    &-1
-      background: var(--theme-bg-hue-1)
-    &-2
-      background: var(--theme-bg-hue-2)
-    &-3
-      background: var(--theme-bg-hue-3)
-    &-4
-      background: var(--theme-bg-hue-4)
-    &-5
-      background: var(--theme-bg-hue-5)
-    &.background-dark
-      &-0
-        background: var(--dark-bg-hue-0)
-      &-1
-        background: var(--dark-bg-hue-1)
-      &-2
-        background: var(--dark-bg-hue-2)
-      &-3
-        background: var(--dark-bg-hue-3)
-      &-4
-        background: var(--dark-bg-hue-4)
-      &-5
-        background: var(--dark-bg-hue-5)
+    background: var(--bg)
+    // &-0
+    //   background: var(--theme-bg-hue-0)
+    // &-1
+    //   background: var(--theme-bg-hue-1)
+    // &-2
+    //   background: var(--theme-bg-hue-2)
+    // &-3
+    //   background: var(--theme-bg-hue-3)
+    // &-4
+    //   background: var(--theme-bg-hue-4)
+    // &-5
+    //   background: var(--theme-bg-hue-5)
+    // &.background-dark
+    //   &-0
+    //     background: var(--dark-bg-hue-0)
+    //   &-1
+    //     background: var(--dark-bg-hue-1)
+    //   &-2
+    //     background: var(--dark-bg-hue-2)
+    //   &-3
+    //     background: var(--dark-bg-hue-3)
+    //   &-4
+    //     background: var(--dark-bg-hue-4)
+    //   &-5
+    //     background: var(--dark-bg-hue-5)
     &_inner
       margin: 0 auto
       max-width: var(--content_multicolumn_max-width)
+    h3, h4
+      margin: 0
 
 .card
   &_container
@@ -116,12 +122,14 @@
     @media only screen and (min-width: $screenViewBreakpointWidthNarrow)
       &
         justify-content: space-evenly
-    h2, h3
-      color: var(--text-heading)
+  &_title
+    font-size: 125%
+    margin: 0
+    padding: 0
   &_item
-    min-height: 1px // For IE 11
     flex: 1 1 10%
     background: var(--bg)
+    @include drop-shadow(3rem, 0.1, 0.1)
     @include color-scheme_transition
     border-radius: 0.25em
     padding: var(--inner_padding-y) var(--inner_padding-x)
@@ -130,8 +138,10 @@
       flex: 1 1 auto
       @media only screen and (min-width: $screenViewBreakpointWidthNarrow)
         flex: 1 1 40%
-      @media only screen and (min-width: $screenViewBreakpointWidthOneColumn)
+      @media only screen and (min-width: $screenViewBreakpointWidthTwoColumn)
         flex: 1 1 30%
+    h3, h4
+      margin: 0
 
 .footer
   @include background_dark
@@ -395,7 +405,7 @@
     @include list-style
     background: var(--choice-bg)
     @include color-scheme_transition
-    font-family: var(--font-article)
+    // font-family: var(--font-article)
     margin-top: calc( (1 - var(--line-height-heading) ) * 1em)
   &_body
     width: 100% // For IE 11, otherwise responsive images exceed the width of .article_body
@@ -484,6 +494,177 @@
   padding: 0.5rem 0
   text-align: end
   font-weight: var(--font-weight-subtitle)
+
+.feature-image
+  &_figure
+    margin: 0
+    padding: 0
+    // z-index: ($main-z-index + 1)
+  &_img
+    margin: 0
+    padding: 0
+    max-width: unset
+    max-height: unset
+    width: 100%
+    height: auto
+    object-fit: cover
+    object-position: center center
+    border-radius: 0
+
+.main_header
+  position: relative
+  grid-column: 3
+  z-index: ($main-z-index + 2)
+  .content-title
+    z-index: ($main-z-index + 5)
+
+  &.feature-image
+    &_style
+      &-wide
+        .content-title
+          @include content_multicolumn
+          width: fit-content
+          padding: 0
+          margin: 1em auto
+          @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+            min-width: var(--content_max-width)
+        .feature-image
+          &_figure
+            display: grid
+            grid-template-columns: minmax(0px, 1fr) calc(min(100%, var(--content_max-width) + min(20vw, 0.2 * var(--content_max-width)), min(var(--content_max-width), 100vh))) minmax(0px, 1fr)
+            .background
+              z-index: ($main-z-index + 3)
+              &.left
+                margin-right: calc( max( min(0px, var(--content_max-width) + 20vw - 100vw, min(var(--content_max-width), 100vh) - 100vw) * 1000, max(-10vw, -0.1 * var(--content_max-width)) ) )
+              &.right
+                margin-left: calc( max( min(0px, var(--content_max-width) + 20vw - 100vw, min(var(--content_max-width), 100vh) - 100vw) * 1000, max(-10vw, -0.1 * var(--content_max-width)) ) )
+          &_figure,
+          &_img
+            max-height: calc(min(0.4 * var(--content_max-width), 40vh))
+
+      &-aside
+        .content-title
+          @include inner_horizontal-padding
+        .feature-image
+          &_figure
+            float: left
+          &_img
+            margin: 0
+            padding: 0
+            // max-width: unset
+            max-height: unset
+            width: auto
+            max-width: 40vw
+            // FIXME: Minimal aspect ratio should be 1:3
+            max-width: calc(min(40vh, 33vw))
+            height: 100%
+            object-fit: cover
+            object-position: center center
+            border-radius: 0
+            @media screen and (min-width: $screenViewBreakpointWidthNarrow)
+              max-width: 30vw
+              // FIXME: Maximal aspect ratio should be 1:2
+              max-width: calc(min(30vw, 50vh))
+
+      &-background
+        display: grid
+        grid-template-columns: 0px 1fr 1fr 0px
+        grid-template-rows: minmax(0px, 2fr) 5fr minmax(0px, 1fr)
+        min-height: 33vw
+        @media screen and (min-width: $screenViewBreakpointHeightTall)
+          min-height: 25vw
+        max-height: 75vh
+        @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+          max-height: 33vh
+        .content-title
+          @include inner_horizontal-padding
+          margin: 0 auto
+          width: fit-content
+          grid-column: 3
+          grid-row: 2
+          @media screen and (min-width: $screenViewBreakpointWidthWide)
+            grid-column: 3 / span 2
+            // margin-left: 50%
+        .feature-image
+          &_figure
+            grid-column: 1 / span all
+            grid-row: 1 / span 3
+            // height: 100%
+          &_img
+            margin: 0
+            padding: 0
+            max-width: 100%
+            width: 100%
+            height: 100%
+            object-fit: cover
+            object-position: center center
+            border-radius: 0
+    &_overlay
+      &_color-white
+        color: white
+        --header-text: white
+      &_position-left
+        .content-title
+          grid-column: 2
+
+
+.hero-image_background
+  &_main
+    position: relative
+    padding-bottom: 0
+    .main_header
+      height: 40vh
+      height: 40svh
+      @media screen and (min-height: $screenViewBreakpointHeightTall)
+        height: 60vh
+        height: 60svh
+    .main_inner
+      position: relative
+      display: flex
+      flex-direction: column
+      justify-content: flex-end
+      align-items: center
+      min-height: 60vh // (100vh - 40vh)
+      min-height: 60svh // (100svh - 40svh)
+      // padding-bottom: $screenViewInnerPaddingOneColumn
+      @media screen and (min-height: $screenViewBreakpointHeightTall)
+        min-height: 40vh // (100vh - 60vh)
+        min-height: 40svh // (100svh - 60svh)
+      z-index: ($main-z-index + 2)
+    .content-title
+      color: white
+      text-shadow: 1.5px 1.5px 1.5px black
+      font-size: 3rem
+      text-align: center
+      position: relative
+      margin-bottom: 2rem
+      @media screen and (min-width: $screenViewBreakpointWidthNarrow) and (min-height: $screenViewBreakpointHeightStickyFooter)
+        font-size: 4rem
+        margin-bottom: 3rem
+    &_figure
+      display: none
+    & ~ .footer
+      position: relative
+      z-index: ($main-z-index + 1)
+      // padding-top: ($screenViewInnerPaddingOneColumn)
+      background: var(--bg-dark)
+      @include color-scheme_transition
+      color: var(--text-dark)
+      h1, h2, h3, a
+        color: var(--text-dark)
+  &_figure
+    display: block
+    position: fixed
+    top: 0
+    z-index: ($main-z-index - 1)
+    width: 100%
+  &_img
+    margin: 0
+    padding: 0
+    border-radius: 0
+    width: 100%
+    height: 100vh
+    height: 100lvh
 
 .scrollable
   display: grid
@@ -1253,7 +1434,6 @@ html[data-color-scheme="dark"]
 // {{ </responsive-code> }}
 
 .shortcode_responsive-figure, img.responsive
-  display: block
   margin: var(--inner_margin_y) auto
   // padding: var(--inner_padding-y) var(--inner_padding-x)
   border-radius: 0.125rem
@@ -1265,20 +1445,21 @@ html[data-color-scheme="dark"]
   //   display: block
   //   max-width: 100% // IE 11
   //   max-height: 100% // IE 11
-  @supports (display: flex)
-    display: flex;
-    flex-direction: column
-    flex-wrap: nowrap
-    align-content: center
-    justify-content: center
-    align-items: center
+  // @supports (display: flex)
+  //   display: flex;
+  //   flex-direction: column
+  //   flex-wrap: nowrap
+  //   align-content: center
+  //   justify-content: center
+  //   align-items: center
   // Remove any surrounding margins and padding from elements
   // within the figure
   & > div
     margin: 0
     padding: 0
   &_img
-    margin: 0
+    display: block
+    margin: 0 auto
     padding: 0
     border-radius: 0.125rem
     // height: auto

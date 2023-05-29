@@ -3,22 +3,25 @@
 {{- $template := "partials/claris/main/index" }}
 {{- $itemType := "article" }}
 {{- $type := "claris" }}
-{{- $kindMap := (dict
-    "page" "page"
-    "home" "section"
-    "section" "section"
-    "taxonomy" "section"
-    "term" "section"
-) }}
 {{- with $page }}
-  {{- $kind := default "page" (index $kindMap .Kind) }}
-
   {{- $s := site.Params }}
   {{- $p := .Params }}
-
+  {{- $mainKind := (.Scratch.Get "claris.render.main.kind") }}
   {{- $mainInnerClassList := (slice "main_inner") }}
-  {{ if (and (eq $kind "page") (not (or (eq $p.singleColumn true) (eq $p.sidebar false) ) ) ) }}
-    {{- $mainInnerClassList = append (slice "grid-main-single inner_horizontal") $mainInnerClassList }}
+  {{ if eq $mainKind "page" }}
+    {{- if not (or (eq $p.singleColumn true) (eq $p.sidebar false) ) }}
+      {{- $mainInnerClassList = append (slice "grid-main-single") $mainInnerClassList }}
+    {{- end }}
+    {{ if in ($page.Param "mainSections") .Section }}
+      {{- $mainInnerClassList = append (slice "section_main-section") $mainInnerClassList }}
+    {{- end }}
+  {{- end }}
+
+  {{- $featureImageClassList := slice (printf "feature-image_style-%s" (default "wide" ($page.Param "image.feature.style") ) ) }}
+  {{- range $param := (slice "overlay") }}
+    {{- range $key, $value :=  $page.Param (printf "image.feature.%s" $param) }}
+      {{- $featureImageClassList = append (slice (printf "feature-image_%s_%s-%s" $param $key $value) ) $featureImageClassList }}
+    {{- end }}
   {{- end }}
 
   {{- $componentParams := (dict
@@ -29,16 +32,22 @@
   ) }}
 
   {{- $sidebar := default false ($page.Param "sidebar") }}
-  {{- if (in (slice "page") $kind) }}
+  {{- if (in (slice "page") $mainKind) }}
     {{- $sidebar = default true ($page.Param "sidebar") }}
   {{- end }}
 
   {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
-  {{ partial (printf "%s/_components/feature-image" $type) $componentParams }}
+  <header class="main_header {{ delimit $featureImageClassList " " }}">
+    {{- partial "claris/_components/feature-image" . }}
+    {{- partial "claris/_components/title" . }}
+  </header>
   <div class="{{ delimit $mainInnerClassList " " }}" id="contentContainer">
-    {{ partial (printf "%s/main/%s" $type $kind) $componentParams }}
+    {{ partial (printf "%s/main/%s" $type $mainKind) $componentParams }}
     {{- if $sidebar }}
-      {{ partial "claris/_components/sidebar" (dict "Page" $page "ItemType" $itemType) }}
+      {{ partial "claris/_components/sidebar" (merge $componentParams (dict
+        "HeadingLevel" 2
+        "ContainerClass" "inner_horizontal"
+      ) ) }}
     {{- end }}
   </div>
   {{ partial "html-comment" (printf "[%s]: END" $template) }}

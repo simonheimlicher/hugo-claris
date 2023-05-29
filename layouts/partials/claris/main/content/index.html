@@ -1,5 +1,5 @@
 {{- $template := "partials/claris/main/content/index" }}
-{{- $layout := default "article" (default .Page.Layout (.Page.Param "layout") ) }}
-{{ partial "html-comment" (printf "[%s]: BEGIN: layout=%v" $template $layout) }}
-{{- partial (printf "claris/main/content/%s" $layout) . }}
+{{- $mainKind := (page.Scratch.Get "claris.render.main.kind") }}
+{{ partial "html-comment" (printf "[%s]: BEGIN: mainKind=%v" $template $mainKind) }}
+{{- partial (printf "claris/main/content/%s" $mainKind) . }}
 {{ partial "html-comment" (printf "[%s]:   END" $template) }}

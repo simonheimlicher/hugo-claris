@@ -252,11 +252,25 @@
           $page $template (jsonify (dict "indent" "  ") .) -}}
     {{- end }}
 
+    {{- $backgroundLeftInlineStyle := "" -}}
+    {{- $backgroundRightInlineStyle := "" -}}
+
     {{- if $figureClass }}
       <figure class="{{ $figureClass }}{{ if $lazy }} lazyload{{ end }}">
       <!-- Would prefer to use NPM module medium-zoom to zoom in on the figure including the caption
       but doing this by adding the following attribute appears not to work: -->
       {{- /* with $lightbox }} data-zoomable="{{ . | safeHTMLAttr }}"{{- end -}} */ -}}
+      {{- if true }}
+        {{- with index (where $pictureResources "variant" "eq" $defaultVariantName) 0 }}
+          {{- $dominantColorsHEX := (index (first 1 .formatsrcsets.formats) 0).resource.Colors }}
+          {{- $dominantColorHEX := index $dominantColorsHEX 0 }}
+          {{- $backgroundLeftInlineStyle = printf "background: linear-gradient(270deg, transparent 0px, %s calc( min(10vw, 0.1 * var(--content_max-width))))"
+            (index $dominantColorsHEX 0) -}}
+          {{- $backgroundRightInlineStyle = printf "background: linear-gradient(90deg, transparent 0px, %s calc( min(10vw, 0.1 * var(--content_max-width))))"
+            (index $dominantColorsHEX 0) -}}
+        <div class="background left" {{ printf `style="%s"` $backgroundLeftInlineStyle | safeHTMLAttr }}></div>
+        {{- end }}
+      {{- end }}
     {{- end }}
         <!-- HTML element is a grouping element and must not contain any styles -->
         <picture>
@@ -386,6 +400,9 @@
           <figcaption>
             {{- . | $page.RenderString -}}
           </figcaption>
+      {{- end }}
+      {{- with $backgroundRightInlineStyle }}
+        <div class="background right" {{ printf `style="%s"` $backgroundRightInlineStyle | safeHTMLAttr }}></div>
       {{- end }}
         </figure>
     {{- end }}

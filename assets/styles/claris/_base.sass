@@ -99,13 +99,15 @@ a
 h1,h2,h3,h4,h5,h6
   font-weight: var(--font-weight-heading)
   padding: $heading-padding-top 0 calc(#{$heading-padding-top} * 0.25) 0
-  margin: $heading-margin-top 2em calc(#{$heading-margin-top} * 0.25) 0
+  margin: $heading-margin-top 0 calc(#{$heading-margin-top} * 0.25) 0
   color: var(--header-text)
   line-height: var(--line-height-heading)
   hyphens: manual
   .icon, .icon svg
     width: 1em
     height: 1em
+  &.heading_link
+    margin-right: 2em
   .link
     position: relative
     margin: 0 -2em 0 0

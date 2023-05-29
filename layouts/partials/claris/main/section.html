@@ -1,10 +1,9 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "partials/claris/main/section" }}
-{{- $headingLevel := default 1 .HeadingLevel }}
 {{- $itemType := "article" }}
 
-{{- if eq .Kind "section" }}
+{{- if eq $page.Kind "section" }}
   {{- $itemType = "section" }}
 {{- end }}
 
@@ -12,20 +11,12 @@
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{/* {{- $debug = or $debug (not (not (findRE `/index` $page.RelPermalink) ) ) }} */}}
 
-{{- with $page }}
-  {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
+{{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
 
-  {{- if .Content }}
-    {{ partial "html-comment" (printf "[%s]: .Content: calling claris/main/content/index with HeadingLevel=%d" $template $headingLevel) }}
-    {{ partial "claris/main/content/index" (dict "HeadingLevel" $headingLevel) }}
-    {{- $headingLevel = add $headingLevel 1 }}
-  {{- else }}
-    {{ partial "html-comment" (printf "[%s]: no .Content: calling claris/_components/title with HeadingLevel=%d" $template  $headingLevel) }}
-    {{ partial "claris/_components/title" (dict "HeadingLevel" $headingLevel) }}
-    {{- $headingLevel = add $headingLevel 1 }}
-  {{- end }}
-
-  {{- partial "claris/main/list/index" (dict "HeadingLevel" $headingLevel) }}
-
+{{- if $page.Content }}
+  {{ partial "claris/main/content/index" . }}
 {{- end }}
+
+{{- partial "claris/main/list/index" (merge . (dict "HeadingLevel" (sub .HeadingLevel 1))) }}
+
 {{ partial "html-comment" (printf "[%s]:   END" $template) }}

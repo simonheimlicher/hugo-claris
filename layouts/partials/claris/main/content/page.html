@@ -1,6 +1,6 @@
-{{- $page := .Page }}
+{{- $page := default page .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
-{{- $template := "partials/claris/main/content/article" }}
+{{- $template := "partials/claris/main/content/page" }}
 
 {{- $itemType := $meta.Single.Data.ItemType }}
 {{- $outdated := $meta.Classification.Outdated }}
@@ -17,8 +17,7 @@
       {{ partial "claris/_components/table-of-contents" . }}
     </aside>
 {{- end }}
-<article class="article_content content_singlecolumn content{{ if $mainSection }} main-section{{ end }}">
-  {{- partial "claris/_components/title" . }}
+<article class="article_content content_singlecolumn content">
   {{- if (and (eq $itemType "article") $mainSection) -}}
     {{- partial "claris/_components/meta" (dict
       "Page" $page

@@ -14,12 +14,7 @@
 {{- end }}
 
 {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
-<div class="panel_content content_panel content">
-{{- with .Content }}
-  <div class="article_body inner_horizontal">
-  {{- . }}
-  </div>
-{{- end }}
+<div class="panel_content content_full-bleed content">
 {{- $panelRootPage := page.GetPage $panelRoot }}
 {{- $panelResources := slice }}
 {{- with $panelRootPage }}

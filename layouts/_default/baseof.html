@@ -18,6 +18,7 @@
 {{- $legacySuffix := "_legacy" }}
 
 {{- $contentTypeList := partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type }}
+{{- $contentType := index (last 1 $contentTypeList) 0 }}
 {{- $contentTypeListID := delimit $contentTypeList "-" }}
 {{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
 {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
@@ -29,7 +30,7 @@
   "OutputFormat" $outputFormat
   "OnlyMediaType" ($page.Param "onlyMediaType")
   "MediaTypeList" $mediaTypeList
-  "ContentType" (index (last 1 $contentTypeList) 0)
+  "ContentType" $contentType
   "ContentTypeList" $contentTypeList
   "ContentTypeListID" $contentTypeListID
   "BundleParams" (dict
@@ -47,6 +48,16 @@
   {{/* {{- warnf "%s[%s]: claris.assets.variant=\n%v"
       $page $template (jsonify (dict "indent" "  ") (.Scratch.Get "claris.assets.variant") ) -}} */}}
 {{- end }}
+
+{{- $kindMap := (dict
+    "page" "page"
+    "home" "section"
+    "section" "section"
+    "taxonomy" "section"
+    "term" "section"
+) -}}
+{{- .Scratch.Set "claris.render.main.kind" (default "page" (index $kindMap .Kind) ) }}
+
 
 {{- .Scratch.Set "claris.module.qrcode.count" 0 }}
 {{- .Scratch.Set "claris.image.prioritized" 0 }}
@@ -152,7 +163,9 @@
 {{- define "body" }}
   {{- $page := . }}
   {{- $template := "_default/baseof" }}
-  {{- $mainClassList := slice "main" }}
+
+  {{- $mainClassList := (slice "main" (printf "main-kind_%s" (.Scratch.Get "claris.render.main.kind") ) ) }}
+
   {{- $mainPartial := "main" }}
   {{- $debug := false }}
   {{/* {{- $debug = or $debug (not (not (findRE `^$` $page.RelPermalink) ) ) }} */}}
@@ -163,6 +176,7 @@
   {{- end }}
 
   {{- $meta := .Scratch.Get "clarismeta" }}
+
   {{- $heroImageStyle := false }}
   {{- with $meta.Single.Data.Images.hero }}
     {{- $heroImageStyle = .style }}
