@@ -210,7 +210,9 @@ $main-z-index: 1;
 
 @mixin content_base_centered() {
   @include content_base();
-  width: 100%;
+  // FIXME: Must not use width: 100% as otherwise
+  // the grid track is exceeded when column-gap is > 0px
+  // width: 100%;
   margin-left: auto;
   margin-right: auto;
 }
