@@ -518,7 +518,8 @@ html {
 */
 
 html {
-  --dim-image-filter: grayscale(30%);
+  // --dim-image-filter: grayscale(30%);
+  --dim-image-filter: brightness(75%);
 }
 
 html {
