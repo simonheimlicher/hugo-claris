@@ -1,102 +1,22 @@
 {{- $meta := page.Scratch.Get "clarismeta" }}
-{{- $template := "partials/claris/main/content/panel" }}
+{{- $template := "partials/claris/main/list/panel" }}
+{{- $headingLevel := default 2 .HeadingLevel }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- /* {{- $debug = or $debug (not (not (findRE `leadership` page.RelPermalink) ) ) }} */ -}}
+{{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/$` page.RelPermalink) ) ) }}
 
-{{- $panelRoot := "_index" }}
-{{- $panelPageResourceGlob := "*.md" }}
-{{- $panelCardResourceGlob := "*/index.md" }}
-
-{{- if $debug }}
-  {{- warnf "%s[%s]: Rendering page resources matching '%v/%v' as panels"
-      page $template $panelRoot $panelPageResourceGlob }}
-{{- end }}
+{{- $panelsPartialParams := (dict
+  "HeadingLevel" $headingLevel) }}
 
 {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
 <div class="panel_content content_full-bleed content">
-{{- $panelRootPage := page.GetPage $panelRoot }}
-{{- $panelResources := slice }}
-{{- with $panelRootPage }}
-  {{- with .Resources.Match $panelPageResourceGlob }}
-    {{- $panelResources = append . $panelResources }}
-  {{- end }}
-  {{- with .Resources.Match $panelCardResourceGlob }}
-    {{- $panelResources = append . $panelResources }}
-  {{- end }}
-  {{- if $debug }}
-    {{- warnf "%s[%s]: panelRootPage=%v panelPageResourceGlob=%v panelCardResourceGlob=%v panelResources=%v"
-        page $template $panelRootPage $panelPageResourceGlob $panelCardResourceGlob $panelResources }}
-  {{- end }}
-  {{- with $panelResources }}
-    {{- $panelResources = sort . ".Params.weight" }}
-  {{- else }}
-    {{- if $debug }}
-      {{- warnf "%s[%s]: No page resources match panelPageResourceGlob=%v panelCardResourceGlob=%v: panelResources=%v"
-          page $template $panelPageResourceGlob $panelCardResourceGlob $panelResources }}
-    {{- end }}
-  {{- end }}
-{{- else }}
-  {{- if $debug }}
-    {{- warnf "%s[%s]: page.GetPage %v failed"
-        page $template $panelRoot }}
-  {{- end }}
+
+{{- if $debug }}
+  {{- warnf "%s[%s]: Calling 'claris/_components/panels' with panelsPartialParams=%v" page $template $panelsPartialParams }}
 {{- end }}
 
-{{- with $panelResources }}
-  <div class="panel_container">
-  {{- $imageCount := 0 }}
-  {{- range $panelID, $panelPage := $panelResources }}
-    {{- $panelStyle := default false .Params.inlinestyle }}
-    {{- with $panelStyle }}
-      {{- $panelStyle = printf ` style="%v"` . | safeHTMLAttr }}
-    {{- end }}
-    <div class="panel_item panel_item-{{ $panelID }}"{{ with $panelStyle }}{{ . }}{{ end }}>
-      <section class="panel_item_inner">
-    {{- with .Title }}
-        <h2 class="panel_title">{{ page.RenderString . }}</h2>
-    {{- end }}
-    {{ .Content }}
-    {{- $panelPageName := .Name }}
-    {{- $cardResourceGlob := printf "%v/*.md" (path.Dir $panelPageName) }}
-    {{- $cardPages := $panelRootPage.Resources.Match $cardResourceGlob }}
-    {{- with $cardPages }}
-        <div class="card_container">
-      {{- $cardPages = sort (where $cardPages "Name" "ne" $panelPageName) ".Params.weight" }}
-      {{- range $cardID, $cardPage := $cardPages }}
-        {{- $cardStyle := default false .Params.inlinestyle }}
-        {{- with $cardStyle }}
-          {{- $cardStyle = printf ` style="%v"` . | safeHTMLAttr }}
-        {{- end }}
-          <div class="card_item"{{ with $cardStyle }}{{ . }}{{ end }}>
-        {{- with .Title }}
-            <h3 class="card_title">{{ page.RenderString . }}</h3>
-        {{- end }}
-        {{- with .Params.image.excerpt.resource }}
-            {{- partial "responsive-image" (dict
-              "Page" page
-              "resource" .
-              "float" "left"
-              "fetchpriority" (cond (eq $imageCount 0) "high" "low")
-              "width" 512
-              "relativewidth" 20) -}}
-            {{- $imageCount = add $imageCount 1 }}
-        {{- end }}
-        {{ .Content }}
-          </div>
-      {{- end }}
-        </div>
-      </section>
-    {{- else }}
-      {{- if $debug }}
-        {{- warnf "%s[%s]: panelPage=%v: no page resources matching %v"
-            page $template $panelPage $cardResourceGlob }}
-      {{- end }}
-    {{- end }}
-    </div>
-  {{- end }}
-  </div>
-{{- end }}
+{{- partial "claris/_components/panels" (merge $panelsPartialParams (dict "Page" page)) $panelsPartialParams }}
 {{- partial "claris/_components/i18nlist" . }}
 </div>
 {{ partial "html-comment" (printf "[%s]: END" $template) }}
+{{- /* */ -}}

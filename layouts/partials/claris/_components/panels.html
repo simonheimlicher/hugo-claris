@@ -1,0 +1,99 @@
+{{- $meta := page.Scratch.Get "clarismeta" }}
+{{- $template := "claris/_components/panels" }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
+{{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/$` page.RelPermalink) ) ) }} */}}
+
+{{- $headingLevel := default 2 .HeadingLevel }}
+{{- $containerClass := default "content_multicolumn content" .ContainerClass }}
+
+{{- if $debug }}
+  {{- warnf "%s[%s]: excerptPartial=%v headingLevel=%v containerClass=%v"
+      page $template $headingLevel $containerClass }}
+{{- end }}
+
+<!-- NOTE: This partial assumes that all output should be rendered via page.RenderString
+This may pose issues in the future as we might be passing rendered HTML to `page.RenderString`
+In particular, if we include a page as a panel or a card, we currently do so using its
+`.Content` attribute, which is rendered HTML, not Markdown.
+The proper way would be to use '.RawContent' and then render it here using `page.RenderString`.
+However, this 'proper' way would mean to disallow use of shortcodes because `page.RenderString`
+does not render shortcodes as of Hugo version 0.113.0
+See https://github.com/gohugoio/hugo/issues/7297
+-->
+
+{{- $panelCardsData := default (partial "claris/_functions/data/panels" . ) page.Params.panels }}
+
+{{- with $panelCardsData }}
+  <div class="panel_container">
+  {{- $imageCount := 0 }}
+  {{- range $panelID, $panelPage := $panelCardsData }}
+  {{- $panelStyle := false }}
+    {{- with .style }}
+      {{- $panelStyle = printf ` style="%v"` . | safeHTMLAttr }}
+    {{- end }}
+    <div class="panel_item panel_item-{{ $panelID }}"{{ with $panelStyle }}{{ . }}{{ end }}>
+    {{- $panelLink := false }}
+    {{- with .link }}
+      {{- $panelLink = . }}
+      <a href="{{ . | absLangURL }}">
+    {{- end }}
+      <section class="panel_item_inner">
+    {{- with .title }}
+        <h2 class="panel_title">{{ page.RenderString . }}</h2>
+    {{- end }}
+    {{- with .content }}
+        {{ page.RenderString . }}
+    {{- end }}
+    {{- with .cards }}
+        <div class="card_container">
+      {{- range $cardID, $cardPage := . }}
+        {{- $cardStyle := false }}
+        {{- with .style }}
+          {{- $cardStyle = printf ` style="%v"` . | safeHTMLAttr }}
+        {{- end }}
+        {{- $cardLink := false }}
+        {{- with .link }}
+          {{- $cardLink = . }}
+          <a href="{{ . | absLangURL }}">
+        {{- end }}
+          <div class="card_item"{{ with $cardStyle }}{{ . }}{{ end }}>
+        {{- with .title }}
+            <h3 class="card_title">{{ page.RenderString . }}</h3>
+        {{- end }}
+        {{- with .image.resource }}
+            {{- partial "responsive-image" (dict
+              "Page" page
+              "resource" .
+              "float" "left"
+              "fetchpriority" (cond (eq $imageCount 0) "high" "low")
+              "width" 512
+              "relativewidth" 20) -}}
+            {{- $imageCount = add $imageCount 1 }}
+        {{- end }}
+        {{- with .content }}
+            {{ page.RenderString . }}
+        {{- end }}
+          </div>
+        {{- if and (not $panelLink) $cardLink }}
+          </a>
+        {{- end }}
+      {{- end }}
+        </div>
+    {{- else }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: panelPage=%v: no cards"
+            page $template $panelPage }}
+      {{- end }}
+    {{- end }}
+      </section>
+    {{- if $panelLink }}
+      </a>
+    {{- end }}
+    </div>
+  {{- end }}
+  </div>
+
+{{- else }}
+  {{- warnf "%s[%s]: Nothing to list: .Items=%v" page $template $panelCardsData }}
+{{- end }}
