@@ -3,7 +3,7 @@ $baseURL: '{{- site.BaseURL}}'
 $contentTypeListID: '{{ printf "%v" .ContentTypeListID }}'
 $contentType: '{{ .ContentType }}'
 $mediaType: '{{ .MediaType }}'
-/* File='styles/claris/hugo-params.sass': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' $contentTypeListID='#{$contentTypeListID}' $contentType='#{$contentType}' $mediaType='#{$mediaType}' */
+/* File='styles/claris/hugo-params.sass': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .ContentTypeList='{{ printf "%v" .ContentTypeList }}' .ContentTypeListID='{{ .ContentTypeListID }}' .ContentType='{{ .ContentType }}' .MediaType='{{ .MediaType }}' */
 
 $colorPrimaryLit: {{ default "hsl(200, 100%, 50%)" ($page.Param "colorPrimaryLit") }}
 $colorPrimaryDim: {{ default "hsl(200, 100%, 20%)" ($page.Param "colorPrimaryDim") }}
