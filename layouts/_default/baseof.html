@@ -164,7 +164,7 @@
   {{- $page := . }}
   {{- $template := "_default/baseof" }}
 
-  {{- $mainClassList := (slice "main" (printf "main-kind_%s" (.Scratch.Get "claris.render.main.kind") ) ) }}
+  {{- $mainClassList := (slice "main_claris" (printf "main-kind_%s" (.Scratch.Get "claris.render.main.kind") ) ) }}
 
   {{- $mainPartial := "main" }}
   {{- $debug := false }}
@@ -191,7 +191,9 @@
     {{- with $heroImageStyle }}
       {{ partial "claris/_components/hero-image" . }}
     {{- end }}
+    <header class="header_claris">
     {{- partial "claris/header/index" . }}
+    </header>
     <main id="mainContainer" class="{{ delimit $mainClassList " " }}">
       {{- block "main" . -}}{{ end }}
       {{- with $heroImageStyle }}
@@ -201,11 +203,8 @@
         {{- partialCached "claris/_components/top" . }}
       {{- end }}
     </main>
-    {{- block "footer" . }}
-    {{- end }}
+    <footer class="footer_claris">
+      {{ partialCached "claris/footer/index" . .Kind .Type }}
+    </footer>
   {{ partial "html-comment" (printf "BASEOF [%s]: END   define body" $template) }}
 {{ end -}}
-
-{{- define "footer" }}
-{{ partialCached "claris/footer/index" . .Kind .Type }}
-{{- end }}

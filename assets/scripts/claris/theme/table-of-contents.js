@@ -23,7 +23,7 @@ function injectTableOfContents() {
     const tableOfContentsNav = tableOfContentsAside.querySelector('#TableOfContents');
     if (!tableOfContentsNav) return;
 
-    const navigationBar = elem('.nav_header');
+    const navigationBar = elem('.header_claris');
     if (!navigationBar) return;
 
     const navigationElements = function (tableOfContentsNav) {
@@ -271,7 +271,7 @@ function injectTableOfContents() {
 
             /*
             const scrollHandler = function (entries) {
-                // const visibleTop = document.querySelector('.nav_header').getBoundingClientRect().bottom;
+                // const visibleTop = document.querySelector('.header_claris').getBoundingClientRect().bottom;
                 const visibleTop = 120;
                 const visibleBottom = window.innerHeight;
                 const currentClassName = 'current';

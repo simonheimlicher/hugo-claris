@@ -108,11 +108,38 @@
       &:hover svg
         opacity: 1
 
+.header_claris
+  position: relative
+  left: 0
+  top: 0
+  width: 100%
+  height: $screenViewNavHeightNarrow
+  z-index: 99
+  padding: 0
+  background: transparent
+  line-height: 1.5rem
+
+  &:after
+    content: ''
+    position: absolute
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    // IE requires this z-index to be -2
+    z-index: -2
+    background: rgba(var(--RGB_choice-bg), 0.98)
+    @include background-gradient-translucent("to top", 0.9)
+    // @include shadow-centered-narrow
+    @include color-scheme_transition
+
+
 @media screen
-  .nav
-    display: flex
+  .header_claris
+    display: block
 
 .nav
+  display: flex
   position: relative
   justify-content: space-between
   color: var(--text)
@@ -204,31 +231,6 @@
       z-index: -1
       background: rgba(var(--RGB_choice-bg), 0.98)
       @include background-gradient-translucent("to bottom", 0.9)
-      @include color-scheme_transition
-
-  &_header
-    position: relative
-    left: 0
-    top: 0
-    width: 100%
-    height: $screenViewNavHeightNarrow
-    z-index: 99
-    padding: 0
-    background: transparent
-    line-height: 1.5rem
-
-    &:after
-      content: ''
-      position: absolute
-      top: 0
-      left: 0
-      width: 100%
-      height: 100%
-      // IE requires this z-index to be -2
-      z-index: -2
-      background: rgba(var(--RGB_choice-bg), 0.98)
-      @include background-gradient-translucent("to top", 0.9)
-      // @include shadow-centered-narrow
       @include color-scheme_transition
 
   &_item
@@ -495,22 +497,22 @@
     padding-top: 0
     top: 0.25rem
 
-.main
+.main_claris
   @media only screen
-    // Ensure .main is under nav_header when nav_header is position: relative
+    // Ensure .main_claris is under header_claris when header_claris is position: relative
     padding-top: #{$screenViewNavHeight}
     margin-top: - #{$screenViewNavHeight}
     min-height: 100vh
     min-height: 100lvh
     // Ensure main covers whole width of footer
     width: 100%
-    // Ensure .main extends padding to reach under nav_header
-    // when nav_header is position: relative
+    // Ensure .main_claris extends padding to reach under header_claris
+    // when header_claris is position: relative
     // padding-top: 0
     padding: #{$screenViewNavHeightNarrow} 0 0 0
     margin: - #{$screenViewNavHeightNarrow} auto 0 auto
 
-.footer
+.footer_claris
   // Footer shall stick to the bottom and reveal when body scrolls up
   // But only if positions: sticky is fully supported
   // FIXME: Mobile Safari gets confused with position: sticky on footer
@@ -538,7 +540,7 @@
           margin: -3rem auto -100vh auto
           margin-bottom: -100lvh
           z-index: ($main-z-index + 2)
-        & ~ .footer
+        & ~ .footer_claris
           position: sticky
           bottom: 0
           z-index: ($main-z-index - 1)
@@ -556,7 +558,7 @@
 @media screen and (max-width: #{$screenViewBreakpointWidthMobileMenu - 0.01})
   html.jsopen
     @include nav-bar-anchor-offset
-    .nav_header
+    .header_claris
       position: fixed
   .jsopen
     &:after
@@ -602,11 +604,11 @@
 
 // Narrow navigation menu bar
 @media screen and (min-width: $screenViewBreakpointWidthMobileMenu)
+  .header_claris
+    font-size: 0.875rem // For IE 11
+    @supports (color: var(--color-test))
+      font-size: var(--font-size-nav)
   .nav
-    &_header
-      font-size: 0.875rem // For IE 11
-      @supports (color: var(--color-test))
-        font-size: var(--font-size-nav)
     &, &_body
       flex-direction: row
     &_body
@@ -669,10 +671,10 @@
 
 // Full navigation menu bar
 @media screen and (min-width: $screenViewBreakpointWidthNarrow)
-  .nav
-    &_header, &_brand
+  .header_claris, .nav_brand
       height: $screenViewNavHeight
       line-height: 1.5rem
+  .nav
     &_item, &_follow
       padding: 0.5rem 0.5rem
     &_brand
@@ -889,18 +891,18 @@ body:not(.modern-js) .article_aside .table_of_contents
 .sidebar
   @include link-lvhfa
 
-.footer
+.footer_claris
   @include link-lvhfa-dark
 
 @media screen and (min-height: $screenViewBreakpointHeightShallow)
   html
     @include nav-bar-anchor-offset
-    .nav_header
+    .header_claris
       position: fixed
 
 html.content-above-header
   @include nav-bar-anchor-offset
-  .nav_header
+  .header_claris
     position: sticky
 .lede, .section_main-section .article_body > p:nth-of-type(1):not(h2 + p)
   margin: 1rem 0 3rem 0

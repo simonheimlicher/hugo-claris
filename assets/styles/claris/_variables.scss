@@ -151,7 +151,7 @@ $main-z-index: 1;
 }
 
 @mixin link-lvhfa($link: var(--link), $visited: var(--link), $hover: var(--link-hover), $focus: var(--link-hover), $active: var(--link-active)) {
-  @media only screen {
+  @media screen {
     a:not(.button):not(nav a):not(sup a) {
       color: $link;
       text-decoration: none;
@@ -398,10 +398,12 @@ $main-z-index: 1;
   &:hover {
     box-shadow: 0 0 $dist hsla(0, 0, 0%, $hover-opacity);
   }
-  html[data-color-scheme="dark"] & {
-    box-shadow: 0 0 $dist hsla(0, 0, 100%, $opacity);
-    &:hover {
-      box-shadow: 0 0 $dist hsla(0, 0, 100%, $hover-opacity);
+  @media screen {
+    html[data-color-scheme="dark"] & {
+      box-shadow: 0 0 $dist hsla(0, 0, 100%, $opacity);
+      &:hover {
+        box-shadow: 0 0 $dist hsla(0, 0, 100%, $hover-opacity);
+      }
     }
   }
   @media screen and (prefers-color-scheme: dark) {
@@ -450,7 +452,7 @@ $main-z-index: 1;
 // html {
 //   --navigation-header-height: #{$offset};
 // }
-// .main {
+// .main_claris {
 //   padding-top: #{$offset}; // For IE11 with postCSS Autoprefixer
 //   padding-top: var(--navigation-header-height);
 // }
@@ -458,7 +460,7 @@ $main-z-index: 1;
 // not only headings
 @mixin nav-bar-offset($offset: $screenViewNavHeight) {
   $anchor-offset: 1rem;
-  .main {
+  .main_claris {
     padding-top: $offset;
     margin-top: 0;
   }
@@ -538,7 +540,7 @@ html {
   --font-size-button: 0.875rem;
   --font-size-aside: 0.875rem;
   --font-size-footer: 0.875rem;
-@media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
+  @media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
     --font-size-nav: 0.875rem;
   }
   @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
@@ -732,10 +734,11 @@ html {
     }
   }
 
-  &[data-color-scheme="dark"] {
-    @include color-scheme-dark;
+  @media screen {
+    &[data-color-scheme="dark"] {
+      @include color-scheme-dark;
+    }
   }
-
   @media screen and (prefers-color-scheme: dark) {
     &:not([data-color-scheme="light"]) {
       @include color-scheme-dark;

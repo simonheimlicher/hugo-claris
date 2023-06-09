@@ -42,7 +42,8 @@ $hostedFontPath: '{{ default (absURL "fonts") ($page.Param "hostedFontPath") }}'
 @import 'claris/components'
 {{- if (in (slice "all" "screen") $mediaType) }}
 @import 'claris/components_screen'
-{{- else if (in (slice "all" "print") $mediaType) }}
+{{- end }}
+{{- if (in (slice "all" "print") $mediaType) }}
 @import 'claris/components_print'
 {{- end }}
 @import 'claris/utils'

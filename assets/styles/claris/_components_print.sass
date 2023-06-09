@@ -1,5 +1,12 @@
-.nav, .footer, .button, .sidebar
-  display: none
+@media print
+  nav, button, .header_claris, .footer_claris, .button, .sidebar
+    display: none
 
-html
-  font-size: 10pt
+  body, .main_claris, .article_content
+    background: white
+
+  html
+    font-size: 10pt
+
+  .main_claris .article_content a::after
+    content: " (" attr(href) ") "
