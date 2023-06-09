@@ -2,14 +2,18 @@
 {{- $template := "claris/_components/panels" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/$` page.RelPermalink) ) ) }} */}}
+{{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/profile` page.RelPermalink) ) ) }}
 
 {{- $headingLevel := default 2 .HeadingLevel }}
-{{- $containerClass := default "content_multicolumn content" .ContainerClass }}
+{{- $containerClass := default "panel_container" .ContainerClass }}
+{{- $nested := default true .Nested }}
+{{- if $containerClass }}
+  {{- $containerClass = printf "%s layout-%s" $containerClass (cond $nested "flex" "grid") }}
+{{- end }}
 
 {{- if $debug }}
-  {{- warnf "%s[%s]: excerptPartial=%v headingLevel=%v containerClass=%v"
-      page $template $headingLevel $containerClass }}
+  {{- warnf "%s[%s]: nested=%v headingLevel=%v containerClass=%v"
+      page $template $nested $headingLevel $containerClass }}
 {{- end }}
 
 {{- $optInline := dict "display" "inline" }}
@@ -33,29 +37,35 @@ See https://github.com/gohugoio/hugo/issues/7297
 {{- $panelCardsData := default (default (partial "claris/_functions/data/panels" . ) page.Params.panels) .Panels }}
 
 {{- with $panelCardsData }}
-  <div class="panel_container">
-    {{- $imageCount := 0 }}
-    {{- range $panelID, $panelItem := $panelCardsData }}
-      {{- $panelStyle := false }}
-      {{- $panelLink := false }}
-      {{- if reflect.IsMap . }}
-        {{- with .style }}
-          {{- $panelStyle = printf ` style="%v"` . | safeHTMLAttr }}
-        {{- end }}
-        {{- with .link }}
-          {{- $panelLink = . }}
-        {{- end }}
+  {{- with $containerClass }}
+    <div class="{{ . }}">
+  {{- end }}
+  {{- $imageCount := 0 }}
+  {{- range $panelIndex, $panelItem := $panelCardsData }}
+    {{- $panelID := add $panelIndex 1 }}
+    {{- $panelStyle := false }}
+    {{- $panelLink := false }}
+    {{- if reflect.IsMap . }}
+      {{- with .style }}
+        {{- $panelStyle = printf ` style="%v"` . | safeHTMLAttr }}
       {{- end }}
-      <div class="panel_item panel_item-{{ $panelID }}"{{ with $panelStyle }}{{ . }}{{ end }}>
-        {{- with $panelLink }}
-          <a href="{{ . | absLangURL }}">
-        {{- end }}
-        <section class="panel_item_inner">
-          {{- if reflect.IsMap . }}
-            {{- with .title }}
-              <h2 class="panel_title">{{ page.RenderString . }}</h2>
-            {{- end }}
-            {{- with .content }}
+      {{- with .link }}
+        {{- $panelLink = . }}
+      {{- end }}
+    {{- end }}
+    {{- if $nested }}
+    <div class="panel_item panel_item-{{ $panelID }}"{{ with $panelStyle }}{{ . }}{{ end }}>
+      {{- with $panelLink }}
+        <a href="{{ . | absLangURL }}">
+      {{- end }}
+      <section class="panel_item_inner">
+    {{- end }}
+        {{- if reflect.IsMap . }}
+          {{- with .title }}
+            <h2 class="panel_title panel_item-{{ $panelID }}">{{ page.RenderString . }}</h2>
+          {{- end }}
+          {{- with .content }}
+            <div class="panel_content panel_item-{{ $panelID }}">
               {{- if strings.HasPrefix (printf "%T" . ) "template" }}
                 <!-- Since .content is the original .Content from the page,
                 we don't need to call page.Renderstring -->
@@ -63,78 +73,95 @@ See https://github.com/gohugoio/hugo/issues/7297
               {{- else }}
                 {{- page.RenderString $renderOptPanel . }}
               {{- end }}
-            {{- end }}
-            {{- with .cards }}
-              <div class="card_container">
-                {{- range $cardID, $cardPage := . }}
-                  {{- $cardStyle := false }}
-                  {{- $cardLink := false }}
-                  {{- if reflect.IsMap . }}
-                    {{- with .style }}
-                      {{- $cardStyle = printf ` style="%v"` . | safeHTMLAttr }}
-                    {{- end }}
-                    {{- with .link }}
-                      {{- $cardLink = . }}
-                    {{- end }}
-                  {{- end }}
-                  {{- if and (not $panelLink) $cardLink }}
-                    <a href="{{ $cardLink | absLangURL }}">
-                  {{- end }}
-                  <div class="card_item"{{ with $cardStyle }}{{ . }}{{ end }}>
-                    {{- if reflect.IsMap . }}
-                      {{- with .title }}
-                        <h3 class="card_title">{{ page.RenderString . }}</h3>
-                      {{- end }}
-                      {{- with .image.resource }}
-                        {{- partial "responsive-image" (dict
-                        "Page" page
-                        "resource" .
-                        "float" "left"
-                        "fetchpriority" (cond (eq $imageCount 0) "high" "low")
-                        "width" 512
-                        "relativewidth" 20) -}}
-                        {{- $imageCount = add $imageCount 1 }}
-                      {{- end }}
-                      {{- with .content }}
-                        {{- if strings.HasPrefix (printf "%T" . ) "template" }}
-                          {{ . }}
-                        {{- else }}
-                          {{- page.RenderString $renderOptCard . }}
-                        {{- end }}
-                      {{- end }}
-                    {{- else }}
-                      {{- if strings.HasPrefix (printf "%T" . ) "template" }}
-                        {{ . }}
-                      {{- else }}
-                        {{- page.RenderString $renderOptCard . }}
-                      {{- end }}
-                    {{- end }}
-                  </div>
-                  {{- if and (not $panelLink) $cardLink }}
-                    </a>
-                  {{- end }}
-                {{- end }}
-              </div>
-              {{- else }}
-                {{- if $debug }}
-                  {{- warnf "%s[%s]: panelItem=%v: no cards"
-                  page $template $panelItem }}
-                {{- end }}
-              {{- end }}
-            {{- else }}
-              {{- if strings.HasPrefix (printf "%T" . ) "template" }}
-                {{ . }}
-              {{- else }}
-                {{- page.RenderString $renderOptPanel . }}
-              {{- end }}
-            {{- end }}
-          </section>
-          {{- if $panelLink }}
-            </a>
+            </div>
           {{- end }}
+          {{- with .cards }}
+            {{- if $nested }}
+              <div class="card_container">
+            {{- end }}
+            {{- range $cardIndex, $cardPage := . }}
+              {{- $cardID := add $cardIndex 1 }}
+              {{- $cardStyle := false }}
+              {{- $cardLink := false }}
+              {{- if reflect.IsMap . }}
+                {{- with .style }}
+                  {{- $cardStyle = printf ` style="%v"` . | safeHTMLAttr }}
+                {{- end }}
+                {{- with .link }}
+                  {{- $cardLink = . }}
+                {{- end }}
+              {{- end }}
+              {{- if and (not $panelLink) $cardLink }}
+                <a href="{{ $cardLink | absLangURL }}">
+              {{- end }}
+              <div class="card_item panel_item-{{ $panelID }} card_item-{{ $cardID }}"{{ with $cardStyle }}{{ . }}{{ end }}>
+              {{- if reflect.IsMap . }}
+                {{- with .title }}
+                  <h3 class="card_title panel_item-{{ $panelID }} card_item-{{ $cardID }}">{{ page.RenderString . }}</h3>
+                {{- end }}
+                {{- with .image.resource }}
+                  {{- partial "responsive-image" (dict
+                  "Page" page
+                  "resource" .
+                  "float" "left"
+                  "figureclass" "card_figure"
+                  "fetchpriority" (cond (eq $imageCount 0) "high" "low")
+                  "width" 512
+                  "relativewidth" 20) -}}
+                  {{- $imageCount = add $imageCount 1 }}
+                {{- end }}
+                {{- with .content }}
+                  <div class="card_content">
+                  {{- if strings.HasPrefix (printf "%T" . ) "template" }}
+                    {{ . }}
+                  {{- else }}
+                    {{ page.RenderString $renderOptCard . }}
+                  {{- end }}
+                  </div>
+                {{- end }}
+              {{- else }}
+                {{- with . }}
+                  <div class="card_content">
+                  {{- if strings.HasPrefix (printf "%T" . ) "template" }}
+                    {{ . }}
+                  {{- else }}
+                    {{- page.RenderString $renderOptCard . }}
+                  {{- end }}
+                  </div>
+                {{- end }}
+              {{- end }}
+              </div>
+              {{- if and (not $panelLink) $cardLink }}
+                </a>
+              {{- end }}
+            {{- end }}
+            {{- if $nested }}
+              <div class="card_container">
+            {{- end }}
+          {{- else }}
+            {{- if $debug }}
+              {{- warnf "%s[%s]: panelItem=%v: no cards"
+              page $template $panelItem }}
+            {{- end }}
+          {{- end }}
+        {{- else }}
+          {{- if strings.HasPrefix (printf "%T" . ) "template" }}
+            {{ . }}
+          {{- else }}
+            {{- page.RenderString $renderOptPanel . }}
+          {{- end }}
+        {{- end }}
+        {{- if $nested }}
+          </section>
+        {{- if $panelLink }}
+          </a>
+        {{- end }}
       </div>
     {{- end }}
-  </div>
+  {{- end }}
+  {{- with $containerClass }}
+    </div>
+  {{- end }}
 
 {{- else }}
   {{- warnf "%s[%s]: Nothing to list: .Items=%v" page $template $panelCardsData }}

@@ -48,8 +48,28 @@
     font-family: var(--font-article)
 
 .panel
+  &_container
+    &.layout
+      &-flex
+        display: flex
+        flex-direction: column
+      &-grid
+        display: grid
+        column-gap: var(--inner_margin-x)
+
+  &_title
+    margin: 0
+    padding: 0 0 var(--inner_margin-y-2) 0
+    .layout-flex &
+      font-size: 150%
+    .layout-grid &
+      grid-row: 1
+      font-variant: all-small-caps
+      letter-spacing: 0.1em
+      // text-transform: uppercase
+      font-weight: var(--font-weight)
+
   &_content
-    // width: 100%
     --header-text: var(--text)
     h3
       font-size: 125%
@@ -58,19 +78,8 @@
       color: var(--text-dark)
       h2, h3
         color: var(--text-dark)
-
-  &_container
-    display: flex
-    flex-direction: column
-
-  &_title
-    font-size: 150%
-    margin: 0
-    padding: 0
-    // font-variant: all-small-caps
-    // line-height: 0.7
-    & + div
-      padding-top: var(--inner_padding-y)
+    .layout-grid &
+      grid-row: 2
 
   &_item
     @include inner_horizontal-padding()
@@ -106,44 +115,67 @@
     &_inner
       margin: 0 auto
       max-width: var(--content_multicolumn_max-width)
-    h3, h4
-      margin: 0
+    .layout-grid &
+      &-1
+        grid-column: 1
+      &-2
+        grid-column: 2
+      &-3
+        grid-column: 3
+      &-4
+        grid-column: 4
+      &-5
+        grid-column: 5
 
 .card
   &_container
     color: var(--text)
-    display: flex
-    flex-direction: row
-    flex-wrap: wrap
-    gap: var(--inner_margin-x)
-    // FIXME: IE 11 bug
-    // https://github.com/philipwalton/flexbugs/issues/75
-    // Setting a min-height on the container (body does not work)
-    // avoids scaled images taking up as much space as they would if not scaled
-    // FIXME: Does not work. responsive-figure images still blow up
-    @media only screen and (min-width: $screenViewBreakpointWidthNarrow)
-      &
-        justify-content: space-evenly
+    margin-top: var(--inner_margin-y-2)
+    .layout-flex &
+      display: flex
+      flex-direction: row
+      flex-wrap: wrap
+      gap: var(--inner_margin-x)
+      // FIXME: IE 11 bug
+      // https://github.com/philipwalton/flexbugs/issues/75
+      // Setting a min-height on the container (body does not work)
+      // avoids scaled images taking up as much space as they would if not scaled
+      // FIXME: Does not work. responsive-figure images still blow up
+      @media only screen and (min-width: $screenViewBreakpointWidthNarrow)
+        &
+          justify-content: space-evenly
+    .layout-grid &
+      grid-row: 3
   &_title
     font-size: 125%
-    margin: 0
-    padding: 0
+    padding-top: 0
   &_item
-    flex: 1 1 10%
-    background: var(--bg)
-    @include drop-shadow(3rem, 0.1, 0.1)
-    @include color-scheme_transition
-    border-radius: 0.25em
-    padding: var(--inner_padding-y) var(--inner_padding-x)
-    padding-bottom: var(--inner_padding-y-3)
-    @supports (display: flex)
-      flex: 1 1 auto
-      @media only screen and (min-width: $screenViewBreakpointWidthNarrow)
-        flex: 1 1 40%
-      @media only screen and (min-width: $screenViewBreakpointWidthTwoColumn)
-        flex: 1 1 30%
     h3, h4
-      margin: 0
+      margin-top: 0
+    .layout-flex &
+      flex: 1 1 10%
+      background: var(--bg)
+      @include drop-shadow(3rem, 0.1, 0.1)
+      @include color-scheme_transition
+      border-radius: 0.25em
+      padding: var(--inner_padding-y) var(--inner_padding-x)
+      @supports (display: flex)
+        flex: 1 1 auto
+        @media only screen and (min-width: $screenViewBreakpointWidthNarrow)
+          flex: 1 1 40%
+        @media only screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+          flex: 1 1 30%
+    .layout-grid &
+      &-1
+        grid-row: 2
+      &-2
+        grid-row: 3
+      &-3
+        grid-row: 4
+      &-4
+        grid-row: 5
+      &-5
+        grid-row: 6
 
 .footer_claris
   @include background_dark
@@ -1437,7 +1469,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%)
 // {{ <responsive-code caption="Example code"> }}
 // {{ </responsive-code> }}
 
-.shortcode_responsive-figure, img.responsive
+.shortcode_responsive-figure, .responsive-image_container
   margin: var(--inner_margin_y) auto
   // padding: var(--inner_padding-y) var(--inner_padding-x)
   border-radius: 0.125rem
