@@ -41,10 +41,10 @@ $fontFamilyMono: '{{ default "DM Mono" ($page.Param "fontFamilyMono") }}'
 
 // URL path to directory containing icons, e.g. for color scheme switch.
 // The code below ensures that it does not begin with a slash but ends with a slash
-$icons: '{{ absURL (printf "%s/" (default "icons/" (strings.TrimLeft "/" (strings.TrimRight "/" site.Params.iconsDir) ) ) ) }}';
+$icons: '{{ absURL (printf "%s/" (default "icons/" (strings.TrimLeft "/" (strings.TrimRight "/" site.Params.iconsDir) ) ) ) }}'
 // URL path to directory containing images, e.g. for color scheme switch
 // The code below ensures that it does not begin with a slash but ends with a slash
-$images: '{{ absURL (printf "%s/" (default "images/" (strings.TrimLeft "/" (strings.TrimRight "/" site.Params.imagesDir) ) ) ) }}';
+$images: '{{ absURL (printf "%s/" (default "images/" (strings.TrimLeft "/" (strings.TrimRight "/" site.Params.imagesDir) ) ) ) }}'
 
 
 // Adapt to width of screen
@@ -108,16 +108,16 @@ $screenViewColumnGap: {{ default "1rem" ($page.Param "screenViewColumnGap") }}
 $screenViewWidthAsideMin: {{ default "12rem" ($page.Param "screenViewWidthAsideMin") }}
 
 // Parameters for layout with two columns: main content and one aside
-$screenViewColumnWidthMin: ($screenViewBreakpointWidthTwoColumn - 2 * $screenViewBodyPaddingOneColumn - $screenViewWidthAsideMin - $screenViewColumnGap);
-// $screenViewColumnWidthMax: (#{$screenViewBreakpointWidthTwoColumn} - 2 * #{$screenViewBodyPaddingOneColumn});
-$screenViewColumnWidthMax: ($screenViewBreakpointWidthWide - $screenViewWidthAsideMin - 2 * $screenViewBodyPaddingOneColumn - $screenViewColumnGap);
+$screenViewColumnWidthMin: ($screenViewBreakpointWidthTwoColumn - 2 * $screenViewBodyPaddingOneColumn - $screenViewWidthAsideMin - $screenViewColumnGap)
+// $screenViewColumnWidthMax: (#{$screenViewBreakpointWidthTwoColumn} - 2 * #{$screenViewBodyPaddingOneColumn})
+$screenViewColumnWidthMax: ($screenViewBreakpointWidthWide - $screenViewWidthAsideMin - 2 * $screenViewBodyPaddingOneColumn - $screenViewColumnGap)
 
 // Parameters for layout with three columns: main content and two asides
 $screenViewColumnGapWide: {{ default "2rem" ($page.Param "screenViewColumnGapWide") }}
 $screenViewColumnWidthWideMax: {{ default "60rem" ($page.Param "screenViewColumnWidthWideMax") }}
 $screenViewWidthWideAsideMin: {{ default "12rem" ($page.Param "screenViewWidthWideAsideMin") }}
 $screenViewWidthWideAsideMax: {{ default "19rem" ($page.Param "screenViewWidthWideAsideMax") }}
-$screenViewColumnWidthWideMin: ($screenViewBreakpointWidthWide - 2 * $screenViewWidthWideAsideMin - 2 * $screenViewBodyPaddingOneColumn - 2 * $screenViewColumnGapWide);
+$screenViewColumnWidthWideMin: ($screenViewBreakpointWidthWide - 2 * $screenViewWidthWideAsideMin - 2 * $screenViewBodyPaddingOneColumn - 2 * $screenViewColumnGapWide)
 
 // Parameters for layout with three columns: main content and two asides and wider sections in main column, e.g., for code or figures
 $screenViewWidthUltrawide: {{ default "57rem" ($page.Param "screenViewWidthUltrawide") }}
