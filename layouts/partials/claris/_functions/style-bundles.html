@@ -54,7 +54,7 @@ appears to be broken, as mentioned above.
 {{- $targetExt := "css" -}}
 {{- $fingerprintOptions := default "sha256" site.Params.resourceFingerprintOptions }}
 
-{{- $toCSSoptionsBase := dict }}
+{{- $toCSSoptionsBase := (dict "transpiler" "dartsass") }}
 {{- if $minifyCSS }}
   {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "compressed" "enableSourceMap" "false") -}}
 {{- else }}

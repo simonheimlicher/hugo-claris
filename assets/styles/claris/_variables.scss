@@ -303,9 +303,9 @@ $main-z-index: 1;
   }
 }
 
-@mixin list-style($margin-vertical: $screenViewInnerPaddingMobile / 2, $padding-vertical: $screenViewInnerPaddingMobile / 2, $indent: $list-style-indent) {
+@mixin list-style_indented($margin-vertical: $screenViewInnerPaddingMobile / 2, $padding-vertical: $screenViewInnerPaddingMobile / 2, $indent: $list-style-indent) {
   ul, ol {
-    // list-style: disc outside none; // initial;
+    // list-style: disc outside none;;
     padding: $padding-vertical 0;
     margin: 0 0 0 $indent;
     li {
@@ -458,7 +458,7 @@ $main-z-index: 1;
 // }
 // Note: the CSS below must be applied to all elements with an id, such as footnotes,
 // not only headings
-@mixin nav-bar-offset($offset: $screenViewNavHeight) {
+@mixin nav-bar-offset_legacy($offset: $screenViewNavHeight) {
   $anchor-offset: 1rem;
   .main_claris {
     padding-top: $offset;
@@ -494,32 +494,26 @@ $main-z-index: 1;
   // }
 }
 
+@mixin nav-bar-offset($offset: $screenViewNavHeight) {
+  $anchor-offset: 0.5rem;
+  .main_claris {
+    padding-top: $offset;
+    margin-top: 0;
+    h1, h2, h3, h4, h5, h6 {
+      $heading-offset: -1rem;
+      &[id]:target {
+        scroll-margin-top: #{$anchor-offset + $offset};
+      }
+    }
+  }
+}
+
 @mixin nav-bar-anchor-offset {
   @include nav-bar-offset($screenViewNavHeightNarrow);
   @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
     @include nav-bar-offset($screenViewNavHeight);
   }
 }
-
-// Alternative from web.dev
-// FIXME: Does not work the same. The heaadings do not expand despite containing the ::before
-/*
-html {
-  scroll-padding-top:calc(#{$screenViewNavHeight}+ #{$heading-padding-top})}
-
-[id]:not([href]) {
-  h1, h2, h3, h4, h5, h6 {
-    &::before {
-      content: " ";
-      display: block;
-      height: calc(#{$screenViewNavHeight} + #{$heading-padding-top});
-      margin-top: calc(-#{$screenViewNavHeight} - #{$heading-padding-top});
-      pointer-events: none;
-      visibility: hidden;
-    }
-  }
-}
-*/
 
 html {
   // --dim-image-filter: grayscale(30%);
