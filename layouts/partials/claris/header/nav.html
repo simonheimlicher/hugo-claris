@@ -163,7 +163,10 @@
           </div>
   {{- end }}
   {{- with .AlternativeOutputFormats.Get "html" -}}
-    {{- $relatedNavEntries = true }}
+    {{- if not $relatedNavEntries }}
+        <div class="nav_group nav_group_related">
+      {{- $relatedNavEntries = true }}
+    {{- end }}
           <div class="nav_parent nav_parent_print">
             <a href="{{ .Permalink }}" class="nav_item" title="{{ T "screen-view" }}">{{ partial "sprite" (dict "icon" "arrow") }}</a>
           </div>

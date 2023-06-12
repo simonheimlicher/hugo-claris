@@ -8,28 +8,30 @@
 {{- if not $logoURL }}
   {{- errorf "%s[%s]: Invalid logoURL=%v" $page $template $logoURL }}
 {{- end }}
-<nav class="nav inner_horizontal inner_top-0">
-  {{- /* FIXME: partial "claris/header/logo" is required for mobile navigation to work. Otherwise, JS "theme/navigation-menu.js" will terminate early" */ -}}
-  {{- if $centerLogo }}
-    {{- partialCached "claris/header/logo" (dict "logoclass" "nav_hide" "logourl" $logoURL "Page" $page) }}
-  {{- else }}
-    {{- partialCached "claris/header/logo" (dict "logourl" $logoURL "Page" $page) }}
-  {{- end }}
-  {{- partialCached "claris/header/nav-menu" (dict "logoclass" "" "Page" $page) }}
-  <div class='nav_body nav_body_{{ default "right" $s.mobileNavigation }}'>
-    {{- $menuData := site.Data.menu }}
-    {{- with $menuData }}
-      {{ partial "claris/header/nav" (dict "ctx" $page "Page" $page "Menu" $menuData) }}
-    {{- else }}
-      {{ partial "claris/header/nav" (dict "ctx" $page "Page" . "Menu" site.Menus.main) }}
-    {{- end }}
-    {{- if $centerLogo }}
-      {{ partial "claris/header/logo" (dict "logoclass" "nav_center" "Page" $page) }}
-    {{- end }}
-    <div class="nav_group nav_group_follow">
-      <div class="nav_parent_follow">
-      {{- partialCached "claris/header/follow" . $contentType }}
-      </div>
-    </div>
-  </div>
-</nav>
+      <nav class="nav inner_horizontal inner_top-0">
+        {{- /* FIXME: partial "claris/header/logo" is required for mobile navigation to work. Otherwise, JS "theme/navigation-menu.js" will terminate early" */ -}}
+        {{- if $centerLogo }}
+          {{- partialCached "claris/header/logo" (dict "logoclass" "nav_hide" "logourl" $logoURL "Page" $page) }}
+        {{- else }}
+          {{- partialCached "claris/header/logo" (dict "logourl" $logoURL "Page" $page) }}
+        {{- end }}
+        {{- partialCached "claris/header/nav-menu" (dict "logoclass" "" "Page" $page) }}
+        <div class='nav_body nav_body_{{ default "right" $s.mobileNavigation }}'>
+          {{- $menuData := site.Data.menu }}
+          {{- with $menuData }}
+            {{ partial "claris/header/nav" (dict "ctx" $page "Page" $page "Menu" $menuData) }}
+          {{- else }}
+            {{ partial "claris/header/nav" (dict "ctx" $page "Page" . "Menu" site.Menus.main) }}
+          {{- end }}
+          {{- if $centerLogo }}
+            {{ partial "claris/header/logo" (dict "logoclass" "nav_center" "Page" $page) }}
+          {{- end }}
+          {{- with site.Menus.social }}
+          <div class="nav_group nav_group_follow">
+            <div class="nav_parent_follow">
+            {{- partialCached "claris/header/follow" . $contentType }}
+            </div>
+          </div>
+          {{- end }}
+        </div>
+      </nav>

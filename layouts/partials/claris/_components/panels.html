@@ -62,7 +62,7 @@ See https://github.com/gohugoio/hugo/issues/7297
     {{- end }}
         {{- if reflect.IsMap . }}
           {{- with .title }}
-            <h2 class="panel_title panel_item-{{ $panelID }}">{{ page.RenderString . }}</h2>
+            <h{{ $headingLevel }} class="panel_title panel_item-{{ $panelID }}">{{ page.RenderString . }}</h{{ $headingLevel }}>
           {{- end }}
           {{- with .content }}
             <div class="panel_content panel_item-{{ $panelID }}">
@@ -97,7 +97,7 @@ See https://github.com/gohugoio/hugo/issues/7297
               <div class="card_item panel_item-{{ $panelID }} card_item-{{ $cardID }}"{{ with $cardStyle }}{{ . }}{{ end }}>
               {{- if reflect.IsMap . }}
                 {{- with .title }}
-                  <h3 class="card_title panel_item-{{ $panelID }} card_item-{{ $cardID }}">{{ page.RenderString . }}</h3>
+                  <h{{ add $headingLevel 1 }} class="card_title panel_item-{{ $panelID }} card_item-{{ $cardID }}">{{ page.RenderString . }}</h{{ add $headingLevel 1 }}>
                 {{- end }}
                 {{- with .image.resource }}
                   {{- partial "responsive-image" (dict

@@ -72,10 +72,8 @@
     }
     .layout-grid & {
       grid-row: 1;
-      font-variant: all-small-caps;
-      letter-spacing: 0.1em;
-      // text-transform: uppercase
       font-weight: var(--font-weight);
+      padding-bottom: var(--inner_margin-y-1);
     }
   }
   &_content {
