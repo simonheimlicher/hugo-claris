@@ -56,9 +56,9 @@ appears to be broken, as mentioned above.
 
 {{- $toCSSoptionsBase := (dict "transpiler" "dartsass") }}
 {{- if $minifyCSS }}
-  {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "compressed" "enableSourceMap" "false") -}}
+  {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "compressed" "enableSourceMap" false) -}}
 {{- else }}
-  {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "expanded" "enableSourceMap" "true") -}}
+  {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "expanded" "enableSourceMap" true) -}}
 {{- end }}
 {{- $toCSSIncludePaths := slice }}
 {{- range $contentTypeList }}

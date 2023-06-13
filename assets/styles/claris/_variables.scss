@@ -2,8 +2,10 @@
  * File='styles/claris/_variables.scss'
  */
 
+@use 'sass:math';
+
 $list-excerpt-width: 20rem;
-$list-excerpt-width: (($screenViewBreakpointWidthOneColumn - (3 * $screenViewInnerPaddingOneColumn) ) / 2);
+$list-excerpt-width: math.div(($screenViewBreakpointWidthOneColumn - (3 * $screenViewInnerPaddingOneColumn) ), 2);
 
 $list-style-indent: 0;
 $list-style-ul-indent: $list-style-indent;
@@ -303,14 +305,14 @@ $main-z-index: 1;
   }
 }
 
-@mixin list-style_indented($margin-vertical: $screenViewInnerPaddingMobile / 2, $padding-vertical: $screenViewInnerPaddingMobile / 2, $indent: $list-style-indent) {
+@mixin list-style_indented($margin-vertical: math.div($screenViewInnerPaddingMobile, 2), $padding-vertical: math.div($screenViewInnerPaddingMobile, 2), $indent: $list-style-indent) {
   ul, ol {
     // list-style: disc outside none;;
     padding: $padding-vertical 0;
     margin: 0 0 0 $indent;
     li {
-      margin: ($margin-vertical / 2) 0;
-      padding: ($padding-vertical / 2) 0;
+      margin: calc(0.5 * $margin-vertical) 0;
+      padding: calc(0.5 * $padding-vertical) 0;
     }
   }
   ul > li {
@@ -349,7 +351,7 @@ $main-z-index: 1;
 // Inline list with separators
 // https://www.jankollars.com/posts/multi-line-horizontal-list-with-separators/
 @mixin inline-separator-list($list-item-separation: 2ch, $list-separator: '•') {
-  $list-sep-width: $list-item-separation / 3.0 + 0.5ch;
+  $list-sep-width: math.div($list-item-separation, 3.0) + 0.5ch;
   ul {
     display: flex;
     flex-wrap: wrap;
@@ -365,14 +367,14 @@ $main-z-index: 1;
     li {      // padding-left: 1ch;
       list-style: none;
       padding-left: $list-item-separation;
-      margin-left: -$list-item-separation / 3.0 - $list-sep-width;
+      margin-left: math.div(-$list-item-separation, 3.0) - $list-sep-width;
     }
     li::before {
       content: '•';
       display: inline-block;
       // margin-right: 0.5ch;
       // margin-right: 0.5ch;
-      margin-right: $list-item-separation / 3.0 - 0.5ch;
+      margin-right: math.div($list-item-separation, 3.0) - 0.5ch;
       // width: 1ch;
       width: $list-sep-width;
       text-align: center;
@@ -394,23 +396,23 @@ $main-z-index: 1;
 }
 
 @mixin drop-shadow($dist: 3rem, $opacity: 0.2, $hover-opacity: 0.4) {
-  box-shadow: 0 0 $dist hsla(0, 0, 0%, $opacity);
+  box-shadow: 0 0 $dist hsla(0, 0%, 0%, $opacity);
   &:hover {
-    box-shadow: 0 0 $dist hsla(0, 0, 0%, $hover-opacity);
+    box-shadow: 0 0 $dist hsla(0, 0%, 0%, $hover-opacity);
   }
   @media screen {
     html[data-color-scheme="dark"] & {
-      box-shadow: 0 0 $dist hsla(0, 0, 100%, $opacity);
+      box-shadow: 0 0 $dist hsla(0, 0%, 100%, $opacity);
       &:hover {
-        box-shadow: 0 0 $dist hsla(0, 0, 100%, $hover-opacity);
+        box-shadow: 0 0 $dist hsla(0, 0%, 100%, $hover-opacity);
       }
     }
   }
   @media screen and (prefers-color-scheme: dark) {
     html:not([data-color-scheme="light"]) & {
-      box-shadow: 0 0 $dist hsla(0, 0, 100%, $opacity);
+      box-shadow: 0 0 $dist hsla(0, 0%, 100%, $opacity);
       &:hover {
-        box-shadow: 0 0 $dist hsla(0, 0, 100%, $hover-opacity);
+        box-shadow: 0 0 $dist hsla(0, 0%, 100%, $hover-opacity);
       }
     }
   }
@@ -639,8 +641,8 @@ html {
       @if $paddingBase {
         @each $sizeDesc, $numQuarters in ('-1': 1, '-2': 2, '-3': 3, '': 4) {
           @each $direction in ('x', 'y') {
-            --#{$where}_margin-#{$direction}#{$sizeDesc}: #{( $marginBase * $numQuarters / 4 )};
-            --#{$where}_padding-#{$direction}#{$sizeDesc}: #{( $paddingBase * $numQuarters / 4 )};
+            --#{$where}_margin-#{$direction}#{$sizeDesc}: #{math.div( $marginBase * $numQuarters, 4)};
+            --#{$where}_padding-#{$direction}#{$sizeDesc}: #{math.div($paddingBase * $numQuarters, 4)};
           }
         }
       }
