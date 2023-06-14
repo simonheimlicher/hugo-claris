@@ -614,22 +614,6 @@
     @include color-scheme_transition;
   }
 }
-.supertitle {
-  display: block;
-  font-size: 40%;
-  padding: 1.5rem 0 0.25rem 0;
-  text-align: start;
-  // font-variant: small-caps
-  text-transform: uppercase;
-  font-weight: var(--font-weight-supertitle);
-}
-.subtitle {
-  display: block;
-  font-size: 60%;
-  padding: 0.5rem 0;
-  text-align: end;
-  font-weight: var(--font-weight-subtitle);
-}
 .feature-image {
   &_figure {
     margin: 0;
@@ -653,6 +637,22 @@
   z-index: ($main-z-index + 2);
   .content-title {
     z-index: ($main-z-index + 5);
+    .supertitle {
+      display: block;
+      font-size: 40%;
+      padding: 1.5rem 0 0.25rem 0;
+      text-align: start;
+      // font-variant: small-caps
+      text-transform: uppercase;
+      font-weight: var(--font-weight-supertitle);
+    }
+    .subtitle {
+      display: block;
+      font-size: 60%;
+      padding: 0.5rem 0;
+      text-align: end;
+      font-weight: var(--font-weight-subtitle);
+    }
   }
   &.feature-image {
     &_style {
