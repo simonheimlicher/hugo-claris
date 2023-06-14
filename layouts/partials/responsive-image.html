@@ -2,7 +2,7 @@
 {{- $page := .Page }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?$` $page.RelPermalink) ) ) -}} */}}
+{{- /* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?$` $page.RelPermalink) ) ) -}} */ -}}
 {{- $imageResourceArgs := merge . (dict
   "Debug" $debug
 ) -}}
@@ -13,13 +13,11 @@
 {{- $imgAlt := default (humanize (path.BaseName $resourceSpec) ) .alt -}}
 {{- $imgTitle := default $imgAlt .title -}}
 {{- $imgCredit := default false .credit -}}
+{{- $fullBleedHorizontal := default false .fullbleedhorizontal }}
 
 {{- $imgClass := default "responsive" .imgclass -}}
 {{- $defaultPosition := "center center" }}
 {{- $imgPosition := default $defaultPosition .position -}}
-{{/* {{- if (ne $imgPosition $defaultPosition) }}
-  {{- warnf "%s[%s]: imgPosition=%v" $page $template $imgPosition }}
-{{- end }} */}}
 
 {{- $defaultSizes := "100vw" }}
 
@@ -36,7 +34,7 @@
   $page $template $resourceSpec
   (jsonify (dict "indent" "  ") $variantSpec.default ) }}
 {{- end }}
-{{/* {{- warnf "%s[%s]: .resource has type [%T]" $page $template $resourceSpec -}} */}}
+{{- /* {{- warnf "%s[%s]: .resource has type [%T]" $page $template $resourceSpec -}} */ -}}
 
 {{- with .float -}}
   {{- $containerClass = printf "%s float-%s" $containerClass . -}}
@@ -67,7 +65,7 @@
   {{- $imgClass = printf "%s shape-%s" $imgClass . }}
 {{- end }}
 
-{{ $supportIE11 := default true site.Params.supportIE11 }}
+{{- $supportIE11 := default true site.Params.supportIE11 }}
 
 {{- $lightbox := default false .lightbox -}}
 
@@ -130,8 +128,8 @@
 {{- $imgInlineStyle = delimit $imgInlineStyleSlice "; " -}}
 {{- end }}
 
-{{- with $page }}<!-- Restore "." to refer to page context from which the partial was called -->
-  {{- $pictureResources := slice }}
+{{- with $page }}
+  {{- $pictureResources := slice -}}
   <!-- Ensure we can use partialCached without accidentally re-using cached versions of the wrong image
   FIXME: Using only a single dictionary as a "cache busting" 2nd argument to `partialCached`
   does not seem sufficient to avoid accidental re-use of image resources.
@@ -156,10 +154,10 @@
       {{- $imgTitle = .title }}
       {{- $imgSizes = default $defaultSizes .sizes }}
       {{- $imgPosition = default $defaultPosition .position }}
-      {{ $variantInlineStyleAttr := printf "object-fit: cover; object-position: %s%s%s"
+      {{- $variantInlineStyleAttr := printf "object-fit: cover; object-position: %s%s%s"
           $imgPosition
           (cond $supportIE11 (printf "; font-family: 'object-fit: cover; object-position: %s'" $imgPosition) "")
-          (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") }}
+          (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") -}}
       {{- $imgAlt = default $imgTitle .alt }}
       {{- $imgCredit = default $imgTitle .credit }}
       {{- $version := default $defaultVersionName .aspect }}
@@ -189,10 +187,10 @@
         {{- $imgCredit = default $imgTitle .credit }}
         {{- $res := .version.default.resource }}
         {{- $imgPosition = default $defaultPosition .position }}
-        {{ $variantInlineStyleAttr := printf "object-fit: cover; object-position: %s%s%s"
+        {{- $variantInlineStyleAttr := printf "object-fit: cover; object-position: %s%s%s"
             $imgPosition
             (cond $supportIE11 (printf "; font-family: 'object-fit: cover; object-position: %s'" $imgPosition) "")
-            (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") }}
+            (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") -}}
         {{- if $debug }}
           {{- warnf "%s[%s]: imgPosition=%v in defaultVariant=%v" $page $template $imgPosition . }}
         {{- end }}
@@ -215,10 +213,10 @@
     {{- end }}
   {{- else }}
     {{- with (partialCached "claris/_functions/resources/images/image-srcset" $imageResourceArgs $resourceSpec $imageResourceVariant) }}
-      {{ $variantInlineStyleAttr := printf "object-fit: cover; object-position: %s%s%s"
+      {{- $variantInlineStyleAttr := printf "object-fit: cover; object-position: %s%s%s"
           $imgPosition
           (cond $supportIE11 (printf "; font-family: 'object-fit: cover; object-position: %s'" $imgPosition) "")
-          (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") }}
+          (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") -}}
       {{- $pictureResources = append $pictureResources (slice (dict
           "variant" $defaultVariantName
           "media" $defaultMedia
@@ -232,9 +230,9 @@
       {{- warnf "%s[%s]: .resource: %v failed to get srcSet with %s" $page $template $resourceSpec $imageResourceArgs -}}
     {{- end }}
   {{- end }}
-  {{/* {{- warnf "%s[%s]: .resource=%q[%T] with imageResourceVariant=%v with imageResourceArgs=%v: pictureResources:\n%v\n"
+  {{- /* {{- warnf "%s[%s]: .resource=%q[%T] with imageResourceVariant=%v with imageResourceArgs=%v: pictureResources:\n%v\n"
       $page $template $imageResourceArgs.resource $imageResourceArgs.resource $imageResourceVariant
-      $imageResourceArgs $pictureResources -}} */}}
+      $imageResourceArgs $pictureResources -}} */ -}}
 
   {{- with $pictureResources }}
     {{- if $debug }}
@@ -257,10 +255,10 @@
 
     {{- if $figureClass }}
       <figure class="{{ $figureClass }}{{ if $lazy }} lazyload{{ end }}">
-      <!-- Would prefer to use NPM module medium-zoom to zoom in on the figure including the caption
-      but doing this by adding the following attribute appears not to work: -->
+      {{- /* <!-- Would prefer to use NPM module medium-zoom to zoom in on the figure including the caption
+      but doing this by adding the following attribute appears not to work: --> */ -}}
       {{- /* with $lightbox }} data-zoomable="{{ . | safeHTMLAttr }}"{{- end -}} */ -}}
-      {{- if true }}
+      {{- if $fullBleedHorizontal }}
         {{- with index (where $pictureResources "variant" "eq" $defaultVariantName) 0 }}
           {{- $dominantColorsHEX := (index (first 1 .formatsrcsets.formats) 0).resource.Colors }}
           {{- $dominantColorHEX := index $dominantColorsHEX 0 }}
@@ -271,7 +269,7 @@
         <div class="background left" {{ printf `style="%s"` $backgroundLeftInlineStyle | safeHTMLAttr }}></div>
         {{- end }}
       {{- end }}
-    {{- end }}
+    {{- end -}}
         <!-- HTML element is a grouping element and must not contain any styles -->
         <picture>
     {{- $multiVariant := false }}
