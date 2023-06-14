@@ -22,12 +22,10 @@
   &_singlecolumn {
     // padding-top: inherit
     @include content_singlecolumn;
-    padding-bottom: var(--inner_padding-y);
   }
   &_multicolumn {
     // padding-top: inherit
     @include content_multicolumn;
-    padding-bottom: var(--inner_padding-y);
   }
   &_full-bleed {
     @include content_full-bleed;
