@@ -22,6 +22,23 @@
 .shadow {
   box-shadow: 0 0 60px rgba(0, 0, 0, 0.17);
 }
+
+.outer_horizontal {
+  @include element-padding('outer', unset, 1);
+}
+.inner_horizontal {
+  @include element-padding('inner', unset, 1);
+}
+.inner_horizontal.inner_top-0 {
+  @include element-padding('inner', 0, 1, unset, 1);
+}
+.inner_horizontal.inner_bottom-0 {
+  @include element-padding('inner', unset, 1, 0, 1);
+}
+.full-bleed_horizontal {
+  @include element-padding('inner', unset, 0);
+}
+
 @supports (display: grid) {
   @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
     .grid-main-single {
