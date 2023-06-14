@@ -56,13 +56,13 @@ $theme-text-dim: $onPrimaryDim;
 $theme-text-active-dim: darken($theme-text-dim, 100%);
 $theme-text-hover-dim: darken($theme-text-dim, 100%);
 
-$link-lit: hsl($primary-hue-lit, 100%, 35%);
-$link-hover-lit: hsl($primary-hue-lit, 100%, 50%);
-$link-active-lit: hsl($primary-hue-lit, 100%, 20%);
+$link-lit: hsl($primary-hue-lit, 100%, 25%);
+$link-hover-lit: hsl($primary-hue-lit, 100%, 20%);
+$link-active-lit: hsl($primary-hue-lit, 100%, 40%);
 
-$link-dim: hsl($primary-hue-dim, 100%, 75%);
-$link-hover-dim: hsl($primary-hue-dim, 100%, 85%);
-$link-active-dim: hsl($primary-hue-dim, 100%, 90%);
+$link-dim: hsl($primary-hue-dim, 100%, 85%);
+$link-hover-dim: hsl($primary-hue-dim, 100%, 90%);
+$link-active-dim: hsl($primary-hue-dim, 100%, 70%);
 
 // $theme-bg-lit: darken(saturate($theme-lit, 50%), 2%);
 $theme-bg-lit: $surfacePrimaryLit;
