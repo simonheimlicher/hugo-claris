@@ -191,6 +191,41 @@ $main-z-index: 1;
   @include link-lvhfa($link: var(--link-dark), $visited: var(--link-dark), $hover: var(--link-dark-hover), $focus: var(--link-dark-hover), $active: var(--link-dark-active));
 }
 
+@mixin link-lvhfa-reset($link: var(--text), $visited: $link, $hover: $link, $focus: $link, $active: $link) {
+  @media screen {
+    a:not(.button):not(nav a):not(sup a) {
+      color: $link;
+      text-decoration: none;
+      &:link {
+        color: $link;
+      }
+      &:visited {
+        color: $link;
+      }
+      &:hover {
+        @media (any-hover: hover) {
+          color: $hover;
+          text-decoration: none;
+          text-underline-position: auto;
+          text-underline-offset: auto;
+        }
+      }
+      &:focus {
+        color: $focus;
+        text-decoration: none;
+        text-underline-position: auto;
+        text-underline-offset: auto;
+      }
+      &:active {
+        color: $active;
+        text-decoration: none;
+        text-underline-position: auto;
+        text-underline-offset: auto;
+      }
+    }
+  }
+}
+
 @mixin link-lvhfa-inherit() {
   a:not(.button):not(nav a):not(sup a) {
     &, &:link, &:visited, &:hover, &:focus, &:active {
