@@ -9,7 +9,6 @@ html {
   // Replaced by settings smooth scrolling only for 'html:focus-within', see below
   font-kerning: normal;
   -webkit-text-size-adjust: 100%;
-  -webkit-font-feature-settings: "kern" 1;
   text-rendering: optimizeSpeed;
   &::-webkit-scrollbar-corner {
     background-color: transparent;
@@ -154,8 +153,11 @@ h6 {
     fill: var(--link-hover);
   }
 }
+html {
+  --font-size-title: 1.8rem;
+}
 h1 {
-  font-size: 180%;
+  font-size: var(--font-size-title);
 }
 h2 {
   font-size: 140%;
@@ -169,8 +171,11 @@ h6 {
   font-size: 100%;
 }
 @media screen and (min-width: $screenViewBreakpointWidthOneColumn) {
+  html {
+    --font-size-title: 3rem;
+  }
   h1 {
-    font-size: 240%;
+    font-size: var(--font-size-title);
   }
   h2 {
     font-size: 180%;

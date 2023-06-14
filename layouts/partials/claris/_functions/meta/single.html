@@ -2,12 +2,12 @@
 {{- $template := "claris/_functions/meta/single" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `profile` $page.RelPermalink) ) ) }} */}}
+{{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/(de/)?transformation/why-okr` $page.RelPermalink) ) ) }}
 
 {{/* {{- warnf "%s[%s]: .Page=%T page=%T" $page $template .Page page }} */}}
 {{- $singleMeta := dict -}}
 
-{{- $assetVariant := $page.Scratch.Get "claris.assets.variant" }}
+{{- $assetVariant := partial "claris/_functions/asset-variant" $page }}
 
 {{- with $page }}
 
@@ -22,10 +22,10 @@
       {{- $titleVariant = partial $titlePartial (dict "Page" $page) }}
     {{- end }}
   {{- else }}
-    {{- if $debug }}
+    {{/* {{- if $debug }} */}}
       {{- warnf "%s[%s]: $assetVariant=%v"
           $page $template $assetVariant }}
-    {{- end }}
+    {{/* {{- end }} */}}
   {{- end }}
 
   {{- $tagline := .Params.tagline }}
@@ -151,4 +151,7 @@
   {{/* {{- warnf "%s[%s]: returning %v" $page $template
       $singleMeta }} */}}
 {{- end }}
+{{/* {{- if not $singleMeta.Single.Data.Fulltitle }}
+  {{- errorf "%s[%s]: invalid $singleMeta.Single.Data.Fulltitle='%v'" $page $template $singleMeta.Single.Data.Fulltitle }}
+{{- end }} */}}
 {{- return $singleMeta }}

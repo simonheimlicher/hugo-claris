@@ -7,7 +7,7 @@
 
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `about` $page.RelPermalink) ) ) }} */}}
+{{- /* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/de/transformation/why-okr` $page.RelPermalink) ) ) }} */ -}}
 {{- with $page }}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
@@ -15,6 +15,11 @@
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="{{- $colorPrimaryDim -}}">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     {{- $title := default $meta.Site.Data.Fulltitle $meta.Single.Data.Fulltitle | safeHTML }}
+    {{- if not $meta.Single.Data.Fulltitle }}
+      {{- warnf "%s[%s]: Invalid meta.Single.Data.Fulltitle='%s'; using default $title='%s' [.Title='%s' .Supertitle='%v' .Subtitle='%v']"
+          $page $template $meta.Single.Data.Fulltitle $title $meta.Single.Data.Title
+          $meta.Single.Data.Supertitle $meta.Single.Data.Subtitle -}}
+    {{- end }}
     <title>{{ $title }}</title>
     {{ hugo.Generator }}
     {{- partial "claris/head/schema-org" . }}

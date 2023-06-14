@@ -19,6 +19,37 @@
   {{- $headingLevel = default $headingLevel .HeadingLevel }}
 {{- end }}
 
+{{- $supertitlePlain := default "" ($supertitle | page.RenderString | plainify) }}
+{{- $subtitlePlain := default "" ($subtitle | page.RenderString | plainify) }}
+
+{{- $supertitleOutside := $supertitle }}
+{{- $subtitleOutside := $subtitle }}
+{{- $supertitleInside := "" }}
+{{- $subtitleInside := "" }}
+
+{{- if or $supertitlePlain $subtitlePlain }}
+  {{- $min := default 10 (index (page.Param "meta.title.targetlength") 0) }}
+  {{- $max := default 60 (index (page.Param "meta.title.targetlength") 1) }}
+  {{- if le (len $title) $max }}
+    {{- if and $supertitlePlain (le (add (len $title) (len $supertitlePlain) 2) $max) }}
+      {{- $supertitleInside = $supertitleOutside }}
+      {{- $supertitleOutside = "" }}
+      {{- if and $subtitlePlain (le (add (len $title) (len $supertitlePlain) (len $subtitlePlain) 5) $max) }}
+        {{- $subtitleInside = $subtitleOutside }}
+        {{- $subtitleOutside = "" }}
+      {{- end }}
+    {{- else }}
+      {{- if and $subtitlePlain (le (add (len $title) (len $subtitlePlain) 2) $max) }}
+        {{- $subtitleInside = $subtitleOutside }}
+        {{- $subtitleOutside = "" }}
+      {{- end }}
+    {{- end }}
+  {{- else }}
+    {{- warnf "%s[%s]: Title=%v [%d characters] > targetlength=%d: %v"
+        page $template $title (len $title) $max (substr $title 0 $max) }}
+  {{- end }}
+{{- end }}
+
 {{- with page -}}<!-- Restore "." to refer to page context from which the partial was called -->
   {{- with $meta.Single.Data }}
     {{- partial "html-comment" (printf "[%s]: BEGIN: Kind=%v $meta.Single.Title=%v .Supertitle=%v .Subtitle=%v .Tagline=%v"
@@ -26,15 +57,25 @@
   {{- end }}
 
   {{- if $title }}
-          <h{{ $headingLevel }} id="articleTop"{{- with $titleClass }} class="{{ . }}" {{ end -}}>
-  {{- with $supertitle }}
-           <span class="supertitle">{{. | page.RenderString }}</span>
-  {{- end -}}
-  {{ $title | page.RenderString }}
-  {{- with $subtitle }}
-            <span class="subtitle">{{. | page.RenderString }}</span>
-  {{- end -}}
+          <div id="articleTop"{{- with $titleClass }} class="{{ . }}"{{ end }}>
+    {{- with $supertitleOutside -}}
+           <span class="supertitle">{{. | page.RenderString }}<span class="visually-hidden">: </span></span>
+    {{- end -}}
+          <h{{ $headingLevel }}>
+    {{- with $supertitleInside -}}
+           <span class="supertitle">{{. | page.RenderString }}<span class="visually-hidden">: </span></span>
+    {{- end -}}
+
+    {{- $title | page.RenderString -}}
+
+    {{- with $subtitleInside -}}
+            <span class="subtitle"><span class="visually-hidden"> –&nbsp;</span>{{. | page.RenderString }}</span>
+    {{- end -}}
          </h{{ $headingLevel }}>
-  {{- end -}}
-{{- end -}}
-{{- partial "html-comment" (printf "[%s]:   END" $template) }}
+    {{- with $subtitleOutside -}}
+            <span class="subtitle"><span class="visually-hidden"> –&nbsp;</span>{{. | page.RenderString }}</span>
+    {{- end -}}
+        </div>
+  {{- end }}
+{{- end }}
+{{ partial "html-comment" (printf "[%s]:   END" $template) }}

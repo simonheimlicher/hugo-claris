@@ -3,24 +3,46 @@
 {{- $template := "claris/head/title" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `leadership` $page.RelPermalink) ) ) }} */}}
+{{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/de/transformation/why-okr` $page.RelPermalink) ) ) }}
 
 {{- with $page }}
   {{- $title := .Title | $page.RenderString | plainify }}
 
-  {{- $subtitle := .Params.subtitle | $page.RenderString | plainify }}
-  {{- $supertitle := .Params.supertitle | $page.RenderString | plainify }}
-
+  {{- $subtitle := default "" (.Params.subtitle | $page.RenderString | plainify) }}
+  {{- $supertitle := default "" (.Params.supertitle | $page.RenderString | plainify) }}
   {{- $fulltitle := $title }}
-  {{- if $subtitle }}
-    {{- if findRE `^\s*[[:alnum:]]+` $subtitle }}
-      {{- $fulltitle = ( printf "%s: %s" $title $subtitle ) }}
+  {{- if or $supertitle $subtitle }}
+    {{- $min := default 10 (index (page.Param "meta.title.targetlength") 0) }}
+    {{- $max := default 60 (index (page.Param "meta.title.targetlength") 1) }}
+    {{- if le (len $title) $max }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: Title='%v'[%d] targetlength=[%d,%d] supertitle='%v'[%d], subtitle='%v'[%d]"
+            $page $template $title (len $title) $min $max $supertitle (len $supertitle) $subtitle (len $subtitle) }}
+      {{- end }}
+      {{- if $supertitle }}
+        {{- if (le (add (len $title) (len $supertitle) 2) $max) }}
+          {{- if and $subtitle (le (add (len $title) (len $supertitle) (len $subtitle) 5) $max) }}
+            {{- $fulltitle = printf "%s: %s – %s" $supertitle $title $subtitle }}
+          {{- else }}
+            {{- $fulltitle = printf "%s: %s" $supertitle $title }}
+          {{- end }}
+        {{- end }}
+      {{- else }}
+        {{- if $subtitle }}
+          {{- if le (add (len $title) (len $subtitle) 2) $max }}
+            {{- $fulltitle = printf "%s: %s" $title $subtitle }}
+          {{- else }}
+            {{- if lt (len $fulltitle) $min }}
+              {{- warnf "%s[%s]: Title=%v [%d characters] < min=%d: adding separator and subtitle would yield %d characters [supertitle=%d, subtitle=%d]"
+                  $page $template $title (len $title) $min (add (len $title) (len $subtitle) 2) (len $supertitle) (len $subtitle) }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
     {{- else }}
-      {{- $fulltitle = ( printf "%s%s" $title $subtitle ) }}
-      {{/* {{- warnf "%s[%s]: subtitle does not begin with alpha-numeric character: A%vZ"
-          $page $template (index (findRE `^\s*[[:alnum:]]+` $subtitle) 0) }} */}}
+      {{- warnf "%s[%s]: Title=%v [%d characters] > targetlength=%d: %v"
+          $page $template $title (len $title) $max (substr $title 0 $max) }}
     {{- end }}
-
   {{- else if in (slice "taxonomy") .Kind }}
     {{- $title = default .Data.Plural (T (printf "all_%s" .Data.Plural) ) | strings.FirstUpper }}
 
@@ -40,7 +62,7 @@
       {{- $supertitle = printf "%s %s" (T "articles_in_taxonomy") (T .Data.Singular 1) }}
     {{- end }}
     {{/* {{- $fulltitle = printf "%s %s %s" (humanize $supertitle) (T .Data.Plural 1) ($page.RenderString (printf "*%s*" (default $title (T (lower $title) ) ) ) ) | safeHTML }} */}}
-    {{- $fulltitle = printf "%s %s" (humanize $supertitle) $title | strings.FirstUpper }}
+    {{- $fulltitle = printf "%s: %s" $supertitle $title | strings.FirstUpper }}
 
     {{- if $debug }}
       {{- warnf "%s[%s]: .Kind=%s: title=%s supertitle=%v fulltitle=%s [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
@@ -67,9 +89,12 @@
     "fulltitle" $fulltitle
     ) }}
   {{- if $debug }}
-    {{- warnf "%s[%s]: .Kind=%s title=%s supertitle=%v fulltitle=%s [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
-        $page $template .Kind $titleVariant.title $titleVariant.supertitle $titleVariant.fulltitle
+    {{- warnf "%s[%s]: .Kind=%s title=%s supertitle='%v' subtitle='%v' fulltitle='%s' [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
+        $page $template .Kind $titleVariant.title $titleVariant.supertitle $titleVariant.subtitle $titleVariant.fulltitle
         .Data.Singular .Data.Plural .Section .Title }}
+  {{- end }}
+  {{- if not $titleVariant.fulltitle }}
+    {{- errorf "%s[%s]: invalid $titleVariant.fulltitle='%v'" $page $template $titleVariant.fulltitle }}
   {{- end }}
 {{- end }}
 {{- return $titleVariant }}

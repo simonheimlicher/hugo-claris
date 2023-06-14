@@ -636,10 +636,16 @@
   grid-column: 3;
   z-index: ($main-z-index + 2);
   .content-title {
+    font-size: calc(var(--font-size-title));
     z-index: ($main-z-index + 5);
+    h1 {
+      margin: 0;
+      padding: 0;
+    }
     .supertitle {
       display: block;
-      font-size: 40%;
+      white-space: nowrap;
+      font-size: calc(var(--font-size-supertitle));
       padding: 1.5rem 0 0.25rem 0;
       text-align: start;
       // font-variant: small-caps
@@ -648,7 +654,8 @@
     }
     .subtitle {
       display: block;
-      font-size: 60%;
+      white-space: nowrap;
+      font-size: calc(var(--font-size-subtitle));
       padding: 0.5rem 0;
       text-align: end;
       font-weight: var(--font-weight-subtitle);
@@ -801,14 +808,19 @@
       z-index: ($main-z-index + 2);
     }
     .content-title {
+      position: relative;
       color: white;
       text-shadow: 1.5px 1.5px 1.5px black;
-      font-size: 3rem;
+      --font-size-title: 3rem;
+      --header-text: white;
       text-align: center;
-      position: relative;
       margin-bottom: 2rem;
+      .subtitle {
+        font-size: calc(var(--font-size-subtitle));
+      }
       @media screen and (min-width: $screenViewBreakpointWidthNarrow) and (min-height: $screenViewBreakpointHeightStickyFooter) {
-        font-size: 4rem;
+        --font-size-title: 4rem;
+        --font-size-subtitle: 0.6 * var(--font-size-title);
         margin-bottom: 3rem;
       }
     }

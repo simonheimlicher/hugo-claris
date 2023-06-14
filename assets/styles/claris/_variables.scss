@@ -567,6 +567,9 @@ html {
   --font-article: var(--font-serif);
   --font-code: var(--font-mono);
   --font-size: 100%;
+  --font-size-title: 1.8rem;
+  --font-size-supertitle: 0.4 * var(--font-size-title);
+  --font-size-subtitle: 0.6 * var(--font-size-title);
   --font-size-nav: 1.5rem;
   --font-size-meta: 0.875rem;
   --font-size-button: 0.875rem;

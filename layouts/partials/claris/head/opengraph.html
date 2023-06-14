@@ -11,10 +11,10 @@
 {{- $opengraph := default $meta.Site.Classification.Opengraph $meta.Classification.Opengraph }}
 {{- if $opengraph }}
   {{- with $meta.Site.Data }}
-    <meta property="og:site_name" content="{{ .Title }}">
+    <meta property="og:site_name" content="{{ .Fulltitle }}">
   {{- end }}
   {{- with $meta.Single.Data }}
-    <meta property="og:title" content="{{ .Title }}">
+    <meta property="og:title" content="{{ .Fulltitle }}">
     <meta property="og:description" content="{{ default $meta.Site.Data.Description .Description }}">
     <meta property="og:type" content="{{ if $page.IsPage }}article{{ else }}website{{ end }}">
     <meta property="og:url" content="{{ .CanonicalURL }}">

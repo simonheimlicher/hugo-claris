@@ -16,8 +16,7 @@
         "@type" "WebSite"
         "@id" .EntityID
         "name" .Name
-        "headline" .Title
-        "alternativeHeadline" .Fulltitle
+        "headline" .Fulltitle
         "description" (default .Fulltitle .Description)
         "image" .Images.search.canonicalurl
         "thumbnailUrl" .Images.search.canonicalurl
@@ -27,6 +26,8 @@
       )
     )
   ) }}
+        {{/* "headline" .Title
+        "alternativeHeadline" .Fulltitle */}}
 {{- else }}
   {{- errorf "%s[%s]: Missing parameter $meta.Site.Data" $page $template }}
 {{- end }}

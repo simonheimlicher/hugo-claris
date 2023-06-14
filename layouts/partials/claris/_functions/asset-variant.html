@@ -1,0 +1,42 @@
+{{- $assetVariant := .Scratch.Get "claris.assets.variant" }}
+{{- if not $assetVariant }}
+  {{- $page := .Page }}
+  {{- $template := "claris/_functions/asset-variant" }}
+
+  {{- $outputFormat := partial "claris/_functions/output-format" . }}
+  {{- $onlyMediaType := default "all" ($page.Param "onlyMediaType") }}
+  {{- $mediaTypeList := (slice "all" "screen" "print") }}
+  {{- if not (eq $onlyMediaType "all") }}
+    {{- $mediaTypeList = (slice $onlyMediaType) }}
+  {{- end }}
+  {{- $legacyMediaType := default "all" $onlyMediaType }}
+  {{- $legacySuffix := "_legacy" }}
+
+  {{- $contentTypeList := partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type }}
+  {{- $contentType := index (last 1 $contentTypeList) 0 }}
+  {{- $contentTypeListID := delimit $contentTypeList "-" }}
+  {{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
+  {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
+  {{- $supportIE11 := default true (site.Params.supportIE11 | and (not $envDevel) ) }}
+  {{- $minifyBundles := $envProd }}
+
+  {{- $assetVariant = (dict
+    "Kind" .Kind
+    "OutputFormat" $outputFormat
+    "OnlyMediaType" ($page.Param "onlyMediaType")
+    "MediaTypeList" $mediaTypeList
+    "ContentType" $contentType
+    "ContentTypeList" $contentTypeList
+    "ContentTypeListID" $contentTypeListID
+    "BundleParams" (dict
+      "MinifyBundles" $minifyBundles
+      "SupportIE11" $supportIE11
+      "LegacyMediaType" $legacyMediaType
+      "LegacySuffix" $legacySuffix
+    )
+  ) -}}
+
+  {{- .Scratch.Set "claris.assets.variant" $assetVariant }}
+{{- end }}
+
+{{- return $assetVariant }}
