@@ -195,8 +195,11 @@
     // FIXME: Do not use position relative, otherwise alignment gets out of shape
     // position: relative
     @include nav-active-background;
-    a:not(:has( ~ &), &).nav_active_in_section {
-      // z-index: ($main-z-index + 1)
+    // FIXME: dart sass fails to convert "~ &"; it leaves out "~":
+    // '~ &' becomes '.nav_active' instead of '~ .nav_active'
+    // a:not(:has( ~ &), &).nav_active_in_section {
+    a:not(:has( ~ .nav_active), .nav_active).nav_active_in_section {
+        // z-index: ($main-z-index + 1)
       @include nav-active-section-background;
     }
   }
