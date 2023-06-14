@@ -364,7 +364,8 @@ $main-z-index: 1;
     & > * {
       padding-left: $list-item-separation;
     }
-    li {      // padding-left: 1ch;
+    li {
+      // padding-left: 1ch;
       list-style: none;
       padding-left: $list-item-separation;
       margin-left: math.div(-$list-item-separation, 3.0) - $list-sep-width;

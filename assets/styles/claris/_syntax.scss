@@ -18,7 +18,8 @@ code {
   // word-break: break-all
   word-break: break-word;
   &.noClass,
-  &:not(pre > &) {    // color: var(--text)
+  &:not(pre > &) {
+    // color: var(--text)
     display: inline;
     // line-break: anywhere
     padding: 0.0625rem 0.25rem;
@@ -102,7 +103,8 @@ pre {
   & & {
     margin: 0;
   }
-  pre {    // For IE 11
+  pre {
+    // For IE 11
     color: white !important;
     color: var(--code-text) !important;
     border-radius: 0.125rem;
@@ -338,7 +340,8 @@ pre {
       height: 1.5rem;
     }
   }
-  &_hide {    // hide icon if not needed
+  &_hide {
+    // hide icon if not needed
     display: none;
   }
   &_from {

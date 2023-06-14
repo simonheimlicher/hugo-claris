@@ -4,7 +4,8 @@
   z-index: $main-z-index;
   @include link-lvhfa;
 
-  &_inner {    // margin-top: var(--inner_margin-y)
+  &_inner {
+    // margin-top: var(--inner_margin-y)
     @include element-padding('inner', 0, unset, unset, unset);
     clear: both;
     h1:first-child {
@@ -18,11 +19,13 @@
 }
 .content {
   @include content;
-  &_singlecolumn {    // padding-top: inherit
+  &_singlecolumn {
+    // padding-top: inherit
     @include content_singlecolumn;
     padding-bottom: var(--inner_padding-y);
   }
-  &_multicolumn {    // padding-top: inherit
+  &_multicolumn {
+    // padding-top: inherit
     @include content_multicolumn;
     padding-bottom: var(--inner_padding-y);
   }
@@ -236,7 +239,8 @@
   @include list-style_indented;
   z-index: ($main-z-index  - 1);
 
-  @media screen and (min-width: $screenViewBreakpointWidthOneColumn) {    // For IE 11
+  @media screen and (min-width: $screenViewBreakpointWidthOneColumn) {
+    // For IE 11
     font-size: 1rem;
     font-size: var(--font-size-footer);
   }
@@ -343,7 +347,8 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        li {          // one before the last child
+        li {
+          // one before the last child
           &:nth-last-child(2) {
             flex: 1;
           }
@@ -435,7 +440,8 @@
   &s {
     margin-top: 2rem;
   }
-  &_link.grid {    // FIXME: Height 100% required for Safari
+  &_link.grid {
+    // FIXME: Height 100% required for Safari
     height: 100%;
   }
   &_tag,
@@ -528,7 +534,8 @@
     // font-family: var(--font-article)
     margin-top: calc( (1 - var(--line-height-heading) ) * 1em);
   }
-  &_body {    // For IE 11, otherwise responsive images exceed the width of .article_body
+  &_body {
+    // For IE 11, otherwise responsive images exceed the width of .article_body
     width: 100%;
   }
 }
@@ -787,7 +794,8 @@
       // (100svh - 40svh)
       min-height: 60svh;
       // padding-bottom: $screenViewInnerPaddingOneColumn
-      @media screen and (min-height: $screenViewBreakpointHeightTall) {        // (100vh - 60vh)
+      @media screen and (min-height: $screenViewBreakpointHeightTall) {
+        // (100vh - 60vh)
         min-height: 40vh;
         // (100svh - 60svh)
         min-height: 40svh;
@@ -1158,8 +1166,11 @@ svg.qrcode-svg {
     &_read-on {
       display: none;
       .read-on {
+        // Note: The content below contains UTF-8-encoded &nbsp;
+        // Do not use &nbsp; because Dart SASS does not support mixing
+        // Unicode with HTML escaped symbols within a string
         &::before {
-          content: "↳&nbsp;&nbsp;";
+          content: "↳  ";
         }
       }
       text-align: right;

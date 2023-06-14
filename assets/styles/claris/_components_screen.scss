@@ -60,7 +60,8 @@
       border-radius: 0;
     }
   }
-  .icon {    // filter: invert(100%)
+  .icon {
+    // filter: invert(100%)
     fill: $color;
   }
 }
@@ -162,7 +163,8 @@
   @supports (color: var(--color-test)) {
     font-size: var(--font-size-nav);
   }
-  @media screen and (max-width: $screenViewBreakpointWidthMobileMenu) {    // For IE 11
+  @media screen and (max-width: $screenViewBreakpointWidthMobileMenu) {
+    // For IE 11
     font-size: 1.5rem;
   }
   .icon {
