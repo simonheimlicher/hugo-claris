@@ -154,7 +154,7 @@ $main-z-index: 1;
 
 @mixin link-lvhfa($link: var(--link), $visited: var(--link), $hover: var(--link-hover), $focus: var(--link-hover), $active: var(--link-active)) {
   @media screen {
-    a:not(.button):not(nav a):not(sup a) {
+    a:not(.button):not(sup a) {
       color: $link;
       text-decoration: none;
       &:link {
@@ -193,7 +193,7 @@ $main-z-index: 1;
 
 @mixin link-lvhfa-reset($link: var(--text), $visited: $link, $hover: $link, $focus: $link, $active: $link) {
   @media screen {
-    a:not(.button):not(nav a):not(sup a) {
+    a:not(.button):not(sup a) {
       color: $link;
       text-decoration: none;
       &:link {
