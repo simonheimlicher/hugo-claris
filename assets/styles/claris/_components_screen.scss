@@ -1080,8 +1080,7 @@ html.content-above-header {
     position: sticky;
   }
 }
-.lede,
-false {
+.lede, .section_main-section .article_body > p:nth-of-type(1):not(h2 + p) {
   margin: 1rem 0 3rem 0;
   font-style: italic;
   font-size: 133%;
