@@ -1,0 +1,41 @@
+{{- $page := page }}
+{{- $template := "shortcodes/content-excerpt" }}
+
+{{- $subjectRef := .Get "page" | default (.Get 0) -}}
+{{- $subjectPage := false -}}
+
+{{- if strings.HasPrefix "/" $subjectRef }}
+  {{- $subjectPage = site.GetPage $subjectRef -}}
+{{- else }}
+  {{- $subjectRef = strings.TrimLeft "./" $subjectRef }}
+  {{- $subjectPage = page.GetPage $subjectRef -}}
+{{- end }}
+
+{{- $fetchPriority := default "auto" (.Get "fetchpriority") }}
+{{- $showDate := default true (.Get "showdate") }}
+{{- $relativeDates := default false (.Get "relativedates") }}
+{{- $showTags := default false (.Get "showtags") }}
+{{- $showAuthor := default false (.Get "showauthor") }}
+{{- $showAuthorLink := default false (.Get "authorlink") }}
+{{- $showAuthorAvatar := default false (.Get "authoravatar") }}
+{{- $headerPartial := default "" (.Get "headerpartial") }}
+{{- $itemType := default "page" (.Get "itemtype") }}
+{{- $headingLevel := default 3 (.Get "headinglevel") }}
+
+{{- $contentParams := (dict
+  "containerclass" (printf "shortcode_content-excerpt shortcode_content-excerpt_%s %s" $itemType (default "" (.Get "containerclass")) )
+  "ContainerFloat" (.Get "float")
+  "ContainerRelativeWidth" (.Get "relativewidth")
+
+  "SubjectPage" $subjectPage
+  "ItemType" $itemType
+  "HeadingLevel" $headingLevel
+  "ShowDate" $showDate
+  "RelativeDates" $relativeDates
+  "ShowAuthor" $showAuthor
+  "ShowTags" $showTags
+) -}}
+
+{{- warnf "%s[%s]: shortcode called with page=%v --> $subjectPage=%v. Calling claris/_components/excerpt with contentParams=%v"
+    $page $template $subjectRef $subjectPage $contentParams }}
+{{- partial "claris/_components/excerpt" (merge $contentParams (dict "Page" $subjectPage) ) }}
