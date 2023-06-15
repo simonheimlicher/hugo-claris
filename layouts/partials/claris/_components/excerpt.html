@@ -1,6 +1,6 @@
 {{- $page := .Page }}
 {{- $excerptMeta := .Meta }}
-{{- $template := "partials/_components/excerpt" }}
+{{- $template := "claris/_components/excerpt" }}
 
 {{- $subjectPage := .SubjectPage }}
 {{- $fetchPriority := default "auto" .fetchpriority }}
@@ -13,20 +13,43 @@
 {{- $headerPartial := default "" .HeaderPartial }}
 {{- $itemType := default "page" .ItemType }}
 {{- $headingLevel := default 3 .HeadingLevel }}
+{{- $containerFloat := default false .ContainerFloat }}
+{{- $containerRelativeWidth := default false .ContainerRelativeWidth }}
+
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?leadership` $page.RelPermalink) ) ) -}} */}}
+{{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo/)?/leadership` $page.RelPermalink) ) ) -}}
 {{/* {{- $debug = or $debug (eq $page.Kind "home") -}} */}}
+
+{{- if not $excerptMeta }}
+  {{- $excerptMeta = partial "claris/_functions/meta/single" (dict "Page" $subjectPage) }}
+{{- end }}
 
 {{- if $debug }}
   {{- warnf "%s[%s]: .SubjectPage=%v[%T] $excerptMeta.Single.Page=%v" $page $template $subjectPage $subjectPage $excerptMeta.Single.Page }}
 {{- end }}
+
+{{- $containerClassList := slice "excerpt_container" }}
+{{ if $page.Param "featured" }}
+  {{- $containerClassList = append "featured" $containerClassList }}
+{{- end }}
+
+{{- with $containerFloat }}
+  {{- $containerClassList = append (printf "float-%s" .) $containerClassList -}}
+{{- end -}}
+
+{{- with $containerRelativeWidth }}
+  {{- $containerClassList = append (printf "relative-width-%d" (int .)) $containerClassList -}}
+{{- end -}}
 
 {{- if (eq $itemType "article") }}
   {{- $headerPartial = default "claris/_components/meta" .HeaderPartial  }}
 {{- end }}
 
 {{- with $subjectPage }}
+
+{{ if not (.Scratch.Get "claris.page.excerpt-rendered") }}
+
   {{- $excerptImage := false }}
   {{- $imageMeta := $excerptMeta.Single.Data.Images }}
   {{- if not $imageMeta }}
@@ -63,7 +86,7 @@
   {{- $excerptContent = $excerptContent | $page.RenderString | plainify }}
   {{- $title := default .Title $excerptMeta.Single.Data.Title }}
   {{- $plainTitle := $title | plainify }}
-  <div class="excerpt_container {{ if .Params.featured }} featured{{ end }}">
+  <div class="{{ delimit $containerClassList " " }}">
     <div class="excerpt_header">
       <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
         <h{{ $headingLevel }} class="excerpt_title">
@@ -141,4 +164,6 @@
       </a>
     </div>
   </div>
+  {{ .Scratch.Set "claris.page.excerpt-rendered" true }}
+{{- end }}
 {{- end }}

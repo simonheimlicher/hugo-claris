@@ -709,17 +709,12 @@ html {
   --choice-bg-menu: var(--haze);
   --choice-bg-menu-active: var(--xxxhaze);
 
-  &:not(.kind-page) {
-    --choice-bg: var(--theme-bg);
-    --RGB_choice-bg: var(--RGB_theme-bg);
-  }
-
   @mixin color-scheme-dark {
     --theme-text-dim: hsla(0,0%,100%,0.87);
     --color-scheme: 'dark';
     --text: var(--theme-text-dim);
     --accent: var(--bubble);
-    --choice-bg: var(--bg);
+    // --choice-bg: var(--bg);
     --code-bg: var(--translucent);
     --header-text: var(--theme-text-dim);
     --table-bg: var(--code-bg);
@@ -778,5 +773,10 @@ html {
     &:not([data-color-scheme="light"]) {
       @include color-scheme-dark;
     }
+  }
+
+  &:not(.kind-page) {
+    --choice-bg: var(--theme-bg);
+    --RGB_choice-bg: var(--RGB_theme-bg);
   }
 }

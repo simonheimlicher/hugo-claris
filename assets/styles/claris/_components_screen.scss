@@ -34,7 +34,7 @@
 //   -webkit-mask-size: 50.5% 50.5%
 //   -webkit-mask-repeat: no-repeat
 
-@mixin nav-background($color: var(--text-active), $background: var(--theme-bg-active), $border: var(--theme-bg-active), $top-left: 0.5rem, $top-right: 0.5rem, $bottom-right: 0.5rem, $bottom-left: 0.5rem) {
+@mixin nav-background($color: var(--text-active), $background: var(--theme-bg-active), $border: var(--theme-bg-active), $underline: var(--theme-bg-active), $top-left: 0.5rem, $top-right: 0.5rem, $bottom-right: 0.5rem, $bottom-left: 0.5rem) {
   color: $color;
   z-index: ($main-z-index + 1);
   &::after {
@@ -47,7 +47,7 @@
     left: 0;
     background-size: 100% 10%;
     background: $background;
-    border: none;
+    border: 0.125em solid $border;
     height: unset;
     border-radius: 0.25rem;
   }
@@ -55,7 +55,8 @@
     .nav_group_menu &::after {
       background-size: 100% 100%;
       background: $background;
-      border-bottom: 0.25em solid $border;
+      border: none;
+      border-bottom: 0.25em solid $underline;
       height: unset;
       border-radius: 0;
     }
@@ -65,20 +66,20 @@
     fill: $color;
   }
 }
-@mixin nav-active-background($color: var(--text), $background: var(--theme-xxhaze), $border: var(--theme) ) {
+@mixin nav-active-background($color: var(--text), $background: var(--theme-xxhaze), $border: var(--theme-xxhaze), $underline: var(--theme-haze) ) {
   @include nav-background($color, $background, $border);
   cursor: default;
   &:hover {
     color: $color;
   }
 }
-@mixin nav-active-section-background($color: var(--text), $background: var(--theme-haze), $border: var(--theme) ) {
+@mixin nav-active-section-background($color: var(--text), $background: transparent, $border: var(--theme-haze), $underline: var(--theme-haze) ) {
   @include nav-background($color, $background, $border);
 }
-@mixin nav-hover-background($color: var(--theme-text-hover), $background: var(--theme-bg-hover), $border: var(--theme) ) {
+@mixin nav-hover-background($color: var(--theme-text-hover), $background: var(--theme-bg-hover), $border: var(--theme), $underline: var(--theme-haze) ) {
   @include nav-background($color, $background, $border);
 }
-@mixin nav-open-background($color: var(--theme-text), $background: var(--theme-bg), $border: var(--theme-bg-active)) {
+@mixin nav-open-background($color: var(--theme-text), $background: var(--theme-bg), $border: var(--theme-bg), $underline: var(--theme-haze) ) {
   @include nav-background($color, $background, $border);
 }
 @media screen {
@@ -193,6 +194,13 @@
       @include nav-active-background;
     }
   }
+  // FIXME: dart sass fails to convert "~ &"; it leaves out "~":
+  // '~ &' becomes '.nav_active' instead of '~ .nav_active'
+  // a:not(:has( ~ &), &).nav_active_in_section {
+  a:not(:has( ~ .nav_active), &_active).nav_active_in_section {
+    // z-index: ($main-z-index + 1)
+    @include nav-active-section-background;
+  }
   &_active {
     // FIXME: Do not use position relative, otherwise alignment gets out of shape
     // position: relative
@@ -200,10 +208,10 @@
     // FIXME: dart sass fails to convert "~ &"; it leaves out "~":
     // '~ &' becomes '.nav_active' instead of '~ .nav_active'
     // a:not(:has( ~ &), &).nav_active_in_section {
-    a:not(:has( ~ .nav_active), .nav_active).nav_active_in_section {
-        // z-index: ($main-z-index + 1)
-      @include nav-active-section-background;
-    }
+    // a:not(:has( ~ .nav_active), .nav_active).nav_active_in_section {
+    //     // z-index: ($main-z-index + 1)
+    //   @include nav-active-section-background;
+    // }
   }
   &_icon {
     width: 0.7rem;
@@ -259,7 +267,7 @@
     border-radius: 0;
     align-items: center;
     @media (any-hover: hover) {
-      &:not(&_active):hover {
+      &:not(.nav_active):hover, a.nav_active_in_section:hover {
         @include nav-hover-background;
       }
     }
@@ -591,7 +599,7 @@
     // Ensure .main_claris extends padding to reach under header_claris
     // when header_claris is position: relative
     // padding-top: 0
-    padding: #{$screenViewNavHeightNarrow} 0 var(--inner_padding-x) 0;
+    padding: #{$screenViewNavHeightNarrow} 0 0 0;
     margin: - #{$screenViewNavHeightNarrow} auto 0 auto;
   }
 }
