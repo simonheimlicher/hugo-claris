@@ -316,6 +316,9 @@ blockquote {
   position: relative;
   // Setting overflow: hidden ensures that the blockquote only takes up
   // the available horizontal space when it is next to a float
+  // FIXME: This seems to trigger a but in Chrome v. 113: when scrolling to #fnref:2, e.g.,
+  // https://simon.heimlicher.com/transformation/why-okr-objectives-key-results-already-have-goals/#fnref:2
+  // the content of the blockquote shifts upward.
   overflow: hidden;
   background: transparent;
 

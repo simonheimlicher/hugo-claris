@@ -537,7 +537,7 @@ $main-z-index: 1;
   .main_claris {
     padding-top: $offset;
     margin-top: 0;
-    h1, h2, h3, h4, h5, h6 {
+    h1, h2, h3, h4, h5, h6, sup {
       $heading-offset: -1rem;
       &[id]:target {
         scroll-margin-top: #{$anchor-offset + $offset};
