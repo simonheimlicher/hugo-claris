@@ -2,6 +2,13 @@
 {{- $excerptMeta := .Meta }}
 {{- $template := "claris/_components/excerpt" }}
 
+{{- $scratchExcerptRenderedKey := "claris.page.excerpt-rendered" }}
+{{- if not ($page.Scratch.Get $scratchExcerptRenderedKey) }}
+  {{- $page.Scratch.Add $scratchExcerptRenderedKey slice }}
+{{- end }}
+
+{{- $excerptImageKey := default "excerpt.variant.default.version.default" .ExcerptImageKey }}
+
 {{- $subjectPage := .SubjectPage }}
 {{- $fetchPriority := default "auto" .fetchpriority }}
 {{- $showDate := default true .ShowDate }}
@@ -18,7 +25,7 @@
 
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo/)?/leadership` $page.RelPermalink) ) ) -}}
+{{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo/)?/leadership/` $page.RelPermalink) ) ) -}} */}}
 {{/* {{- $debug = or $debug (eq $page.Kind "home") -}} */}}
 
 {{- if not $excerptMeta }}
@@ -46,124 +53,126 @@
   {{- $headerPartial = default "claris/_components/meta" .HeaderPartial  }}
 {{- end }}
 
-{{- with $subjectPage }}
-
-{{ if not (.Scratch.Get "claris.page.excerpt-rendered") }}
-
-  {{- $excerptImage := false }}
-  {{- $imageMeta := $excerptMeta.Single.Data.Images }}
-  {{- if not $imageMeta }}
-    {{- with $excerptMeta.List }}
-      {{- $imageMeta = .Data.Images }}
-    {{- end }}
+{{- if not (in ($page.Scratch.Get $scratchExcerptRenderedKey) $subjectPage) }}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: %s is not in excerpts rendered=[%v]" $page $template $subjectPage (delimit ($page.Scratch.Get $scratchExcerptRenderedKey) ", ") }}
   {{- end }}
-  {{/* {{- if $debug }}
-    {{- warnf "%s[%s]: imageMeta=%v"
-        $subjectPage $template
-        (jsonify (dict "indent" "  ") $imageMeta) }}
-  {{- end }} */}}
-  {{- with $imageMeta }}
-    {{- with .excerpt.variant.default.version.default }}
-      {{- $excerptImage = .resource }}
-      {{- if $debug }}
+
+  {{- with $subjectPage }}
+    {{- $excerptImage := false }}
+    {{- $imageMeta := $excerptMeta.Single.Data.Images }}
+    {{- if not $imageMeta }}
+      {{- with $excerptMeta.List }}
+        {{- $imageMeta = .Data.Images }}
+      {{- end }}
+    {{- end }}
+    {{/* {{- if $debug }}
+      {{- warnf "%s[%s]: imageMeta=%v"
+          $subjectPage $template
+          (jsonify (dict "indent" "  ") $imageMeta) }}
+    {{- end }} */}}
+    {{- with $imageMeta }}
+      {{- with (index . (split $excerptImageKey ".")) }}
+        {{- $excerptImage = .resource }}
+        {{- if $debug }}
+          {{- with $excerptImage }}
+            {{- warnf "%s[%s]: %s has excerptImage=%v"
+                $page $template $subjectPage $excerptImage }}
+          {{- else }}
+            {{- warnf "%s[%s]: %s: no key '%s' in imageResources=%v"
+                $page $template $subjectPage $excerptImageKey (jsonify (dict "indent" "  ") .) }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+
+    {{- $excerptContent := "" }}
+    {{- range (slice .Params.excerpt .Summary .Params.description .Params.summary) }}
+      {{- with . }}
+        {{- $excerptContent = . }}
+      {{- end }}
+    {{- end }}
+    {{- $excerptContent = $excerptContent | $page.RenderString | plainify }}
+    {{- $title := default .Title $excerptMeta.Single.Data.Title }}
+    {{- $plainTitle := $title | plainify }}
+    <div class="{{ delimit $containerClassList " " }}">
+      <div class="excerpt_header">
+        <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
+          <h{{ $headingLevel }} class="excerpt_title">
+          {{ $title | $page.RenderString }}
+          </h{{ $headingLevel }}>
+        </a>
+        {{- with $headerPartial }}
+          {{- partial $headerPartial (dict
+            "Page" $page
+            "SubjectPage" $subjectPage
+            "ContainerClass" "excerpt_meta"
+            "ShowAuthor" $showAuthor
+            "AuthorAvatar" $showAuthorAvatar
+            "AuthorLink" $showAuthorLink
+            "ShowDate" $showDate
+            "RelativeDates" $relativeDates
+            "ShowTags" $showTags) }}
+        {{- end }}
+      </div>
+      <div class="excerpt_main{{ if $excerptImage }} image{{ end }}{{ if $excerptContent }} content{{ end }}">
+        <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
         {{- with $excerptImage }}
-          {{- warnf "%s[%s]: Rendering excerpt of page with excerptImage=%v"
-              $subjectPage $template $excerptImage }}
-        {{- else }}
-          {{- warnf "%s[%s]: No .excerpt.variant.default.version.default found in imageResources=%v"
-              $subjectPage $template (jsonify (dict "indent" "  ") .) }}
-        {{- end }}
-      {{- end }}
-    {{- end }}
-  {{- end }}
 
-  {{- $excerptContent := "" }}
-  {{- range (slice .Params.excerpt .Summary .Params.description .Params.summary) }}
-    {{- with . }}
-      {{- $excerptContent = . }}
-    {{- end }}
-  {{- end }}
-  {{- $excerptContent = $excerptContent | $page.RenderString | plainify }}
-  {{- $title := default .Title $excerptMeta.Single.Data.Title }}
-  {{- $plainTitle := $title | plainify }}
-  <div class="{{ delimit $containerClassList " " }}">
-    <div class="excerpt_header">
-      <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
-        <h{{ $headingLevel }} class="excerpt_title">
-        {{ $title | $page.RenderString }}
-        </h{{ $headingLevel }}>
-      </a>
-      {{- with $headerPartial }}
-        {{- partial $headerPartial (dict
-          "Page" $page
-          "SubjectPage" $subjectPage
-          "ContainerClass" "excerpt_meta"
-          "ShowAuthor" $showAuthor
-          "AuthorAvatar" $showAuthorAvatar
-          "AuthorLink" $showAuthorLink
-          "ShowDate" $showDate
-          "RelativeDates" $relativeDates
-          "ShowTags" $showTags) }}
-      {{- end }}
-    </div>
-    <div class="excerpt_main{{ if $excerptImage }} image{{ end }}{{ if $excerptContent }} content{{ end }}">
-      <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
-      {{- with $excerptImage }}
-
-        {{- $fetchPriority := "low" }}
-        {{- if lt ($page.Scratch.Get "claris.image.prioritized") 1 }}
-          {{- $page.Scratch.Add "claris.image.prioritized" 1 }}
-          {{- $fetchPriority = "high" }}
-          {{- if $debug }}
-            {{- warnf "%s[%s]: claris.image.prioritized incremented to %d. Prioritizing excerpt image for %v"
-                $page $template ($page.Scratch.Get "claris.image.prioritized") $subjectPage }}
+          {{- $fetchPriority := "low" }}
+          {{- if lt ($page.Scratch.Get "claris.image.prioritized") 1 }}
+            {{- $page.Scratch.Add "claris.image.prioritized" 1 }}
+            {{- $fetchPriority = "high" }}
+            {{- if $debug }}
+              {{- warnf "%s[%s]: claris.image.prioritized incremented to %d. Prioritizing excerpt image for %v"
+                  $page $template ($page.Scratch.Get "claris.image.prioritized") $subjectPage }}
+            {{- end }}
+          {{- else }}
+            {{- if $debug }}
+              {{- warnf "%s[%s]: claris.image.prioritized already at %d. Not prioritizing excerpt image for %v"
+                  $page $template ($page.Scratch.Get "claris.image.prioritized") $subjectPage }}
+            {{- end }}
           {{- end }}
-        {{- else }}
-          {{- if $debug }}
-            {{- warnf "%s[%s]: claris.image.prioritized already at %d. Not prioritizing excerpt image for %v"
-                $page $template ($page.Scratch.Get "claris.image.prioritized") $subjectPage }}
-          {{- end }}
-        {{- end }}
 
-        <div class="excerpt_thumbnail">
-            {{- partial "responsive-image" (dict
-              "Page" $page
-              "resource" .
-              "title" $title
-              "alt" (default $title $imageMeta.excerpt.variant.default.alt)
-              "fetchpriority" $fetchPriority
-              "quality" "low"
-            ) }}
-        </div>
-      {{- end }}
-        {{- with $excerptContent }}
-        <div class="excerpt_content">
-          {{- page.RenderString . -}}
-        </div>
+          <div class="excerpt_thumbnail">
+              {{- partial "responsive-image" (dict
+                "Page" $page
+                "resource" .
+                "title" $title
+                "alt" (default $title $imageMeta.excerpt.variant.default.alt)
+                "fetchpriority" $fetchPriority
+                "quality" "low"
+              ) }}
+          </div>
         {{- end }}
-      </a>
+          {{- with $excerptContent }}
+          <div class="excerpt_content">
+            {{- page.RenderString . -}}
+          </div>
+          {{- end }}
+        </a>
+      </div>
+      <div class="excerpt_footer">
+        <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
+          {{- $pageCount := 0 }}
+          {{/* {{- if $debug }}
+            {{- warnf "%s[%s]: Items in excerpt: %v" $subjectPage $template $excerptMeta.List }}
+          {{- end }} */}}
+          {{- with $excerptMeta.List }}
+            {{- $pageCount = len .Data.Items }}
+          {{- end }}
+          {{- if (gt $pageCount 0) }}
+          <p class="excerpt_footer_page-count">
+          {{ $pageCount }} {{ T "articles" $pageCount }}
+          </p>
+          {{- else }}
+          <div class="excerpt_footer_read-on">
+            <span class="read-on">{{- T "read_on" }}</span>
+          </div>
+          {{- end }}
+        </a>
+      </div>
     </div>
-    <div class="excerpt_footer">
-      <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
-        {{- $pageCount := 0 }}
-        {{/* {{- if $debug }}
-          {{- warnf "%s[%s]: Items in excerpt: %v" $subjectPage $template $excerptMeta.List }}
-        {{- end }} */}}
-        {{- with $excerptMeta.List }}
-          {{- $pageCount = len .Data.Items }}
-        {{- end }}
-        {{- if (gt $pageCount 0) }}
-        <p class="excerpt_footer_page-count">
-        {{ $pageCount }} {{ T "articles" $pageCount }}
-        </p>
-        {{- else }}
-        <div class="excerpt_footer_read-on">
-          <span class="read-on">{{- T "read_on" }}</span>
-        </div>
-        {{- end }}
-      </a>
-    </div>
-  </div>
-  {{ .Scratch.Set "claris.page.excerpt-rendered" true }}
-{{- end }}
+    {{ $page.Scratch.Add $scratchExcerptRenderedKey $subjectPage }}
+  {{- end }}
 {{- end }}

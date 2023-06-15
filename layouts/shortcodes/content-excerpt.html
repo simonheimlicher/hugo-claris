@@ -1,5 +1,8 @@
 {{- $page := page }}
 {{- $template := "shortcodes/content-excerpt" }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
+{{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo/)?/leadership/` $page.RelPermalink) ) ) -}} */}}
 
 {{- $subjectRef := .Get "page" | default (.Get 0) -}}
 {{- $subjectPage := false -}}
@@ -36,6 +39,8 @@
   "ShowTags" $showTags
 ) -}}
 
-{{- warnf "%s[%s]: shortcode called with page=%v --> $subjectPage=%v. Calling claris/_components/excerpt with contentParams=%v"
-    $page $template $subjectRef $subjectPage $contentParams }}
-{{- partial "claris/_components/excerpt" (merge $contentParams (dict "Page" $subjectPage) ) }}
+{{- if $debug }}
+  {{- warnf "%s[%s]: shortcode called with page=%v --> $subjectPage=%v. Calling claris/_components/excerpt with contentParams=%v"
+      $page $template $subjectRef $subjectPage $contentParams -}}
+{{- end }}
+{{- partial "claris/_components/excerpt" (merge $contentParams (dict "Page" $page) ) }}
