@@ -17,20 +17,20 @@ other = "All rights reserved"
 other = "Share on"
 
 [articles]
-one = "Article"
-other = "Articles"
+one = "article"
+other = "articles"
 
 [featured_articles]
-one = "Featured article"
-other = "Featured articles"
+one = "featured article"
+other = "featured articles"
 
 [recent_articles]
-one = "Recent article"
-other = "Recent articles"
+one = "recent article"
+other = "recent articles"
 
 [related_articles]
-one = "Related article"
-other = "Related articles"
+one = "related article"
+other = "related articles"
 
 [articles_in_taxonomy]
 one = "article in"
@@ -54,16 +54,16 @@ one = "This page is also available in another language"
 other = "This page is also available in other languages"
 
 [category]
-one = "Category"
-other = "Categories"
+one = "category"
+other = "categories"
 
 [tag]
-one = "Tag"
-other = "Tags"
+one = "tag"
+other = "tags"
 
 [series]
-one = "Series"
-other = "Series"
+one = "series"
+other = "series"
 
 [all_categories]
 other = "All categories"
