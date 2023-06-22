@@ -22,7 +22,7 @@
       {{- /* partial "html-comment" (printf "Page menu.    .URL:%s absURL:%s absLangURL:%s" .URL (absURL .URL) (absLangURL .URL) ) */ -}}
     {{- else }}
       {{- $children = .Children }}
-      {{- $name = or (T .Identifier) .Name }}
+      {{- $name = or (T .Name) .Name }}
       {{- $url = absURL .URL }}
       {{- $permalink := (site.GetPage (printf "%s" .URL)) }}
       {{- /* partial "html-comment" (printf "site.GetPage '/resume/print':'%s' site.GetPage '%s':%s .Permalink:%s"
@@ -61,7 +61,7 @@
             {{- $name = .name }}
             {{- $url = absURL .link }}
           {{- else }}
-            {{- $name = or (T .Identifier) .Name }}
+            {{- $name = or (T .Name) .Name }}
             {{- $url = absLangURL .URL }}
           {{- end }}
           {{- $childID := default "" (printf "%s-%s" $parentID ( (default $name .Identifier) | plainify | urlize) ) }}

@@ -54,7 +54,7 @@
 
   {{- else if in (slice "term") .Kind }}
 
-    {{- $title = (default $title (T (lower $title) ) ) | strings.FirstUpper }}
+    {{- $title = (default $title (T $title 1) ) }}
     {{- $fulltitle = default .Data.Singular $title }}
     {{ if in (slice "tag") .Data.Singular }}
       {{ $supertitle = printf "%s %s" (T "articles_with_taxonomy") (T .Data.Singular 1) | strings.FirstUpper }}

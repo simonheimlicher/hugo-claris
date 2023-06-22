@@ -8,8 +8,9 @@
 {{- with $subjectPage -}}
 {{ if .Param $taxonomy }}
   {{ range $index, $value := (.GetTerms $taxonomy) }}
-    <a href="{{ .RelPermalink }}" title="{{ .LinkTitle }}" class="article_meta_tag button button_translucent">
-      {{- .LinkTitle -}}
+    {{- $linkTitle := default .LinkTitle (T .LinkTitle) }}
+    <a href="{{ .RelPermalink }}" title="{{ $linkTitle }}" class="article_meta_tag button button_translucent">
+      {{- $linkTitle -}}
     </a>
   {{ end }}
 {{ end }}
