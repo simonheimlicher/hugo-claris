@@ -142,7 +142,7 @@
   {{/* {{- $debug = or $debug (not (not (findRE `^$` $page.RelPermalink) ) ) }} */}}
 
   {{- with partialCached "claris/_functions/alternative-type" . "Alternative" .Type }}
-    {{- $mainClassList = append (slice .) $mainClassList }}
+    {{- $mainClassList = append (printf "main-type_%s" .) $mainClassList }}
     {{- $mainPartial = printf "main/%s" . }}
   {{- end }}
 
