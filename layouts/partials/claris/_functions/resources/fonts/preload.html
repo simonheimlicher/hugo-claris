@@ -28,7 +28,7 @@
 {{ $preloadFontFormats = apply $preloadFontFormats "lower" "." }}
 
 
-{{- $fontMatchRE := `@font-face[^{]*\{[^}]*[^}]+?src:[^;]*url\(['"][^'"]+\.[a-z0-9]+['"]` }}
+{{- $fontMatchRE := `@font-face[^{]*\{[^}]*[^}]+?src:[^;]*url\(['"][^'"]+\.[a-z0-9]+['"][^}]+\}` }}
 {{- $fontFamilyRE := `@font-face[^{]*\{[^}]*[^}]+?font-family:\s*['"]([^'"]+)['"]` }}
 {{- $fontStyleRE := `@font-face[^{]*\{[^}]*[^}]+?font-style:\s*([^;:\s]+)[^}]+?src:[^;]*url\(['"][^'"]+\.[a-z0-9]+['"]` }}
 {{- $fontWeightRE := `@font-face[^{]*\{[^}]*[^}]+?font-weight:\s*([^;:\s]+)[^}]+?src:[^;]*url\(['"][^'"]+\.[a-z0-9]+['"]` }}
@@ -48,34 +48,34 @@
         {{- warnf "%s[%s]: No match for fontFamilyRE=%v in %v" $page $template $fontStyleRE . }}
       {{- end }}
       {{- if in $preloadFontFamilies (lower $fontFamily) }}
-        {{/* {{- if $debug }}
-          {{- warnf "%s[%s]: fontFamily=%v in preloadFontFamilies=%v: considering @font-face declaration=\n%v"
+        {{- if $debug }}
+          {{- warnf "%s[%s]: fontFamily=%v in preloadFontFamilies=%v: considering @font-face declaration:\n%v"
               $page $template $fontFamily $preloadFontFamilies . }}
-        {{- end }} */}}
+        {{- end }}
         {{- $fontStyle := findRESubmatch $fontStyleRE (lower . ) }}
         {{- with $fontStyle }}
           {{- $fontStyle = index (last 1 (index . 0) ) 0 }}
         {{- else }}
-          {{- warnf "%s[%s]: No match for fontStyleRE=%v in %v" $page $template $fontStyleRE . }}
+          {{- warnf "%s[%s]: No match for fontStyleRE=%v in\n%v" $page $template $fontStyleRE . }}
         {{- end }}
         {{- $fontWeight := findRESubmatch $fontWeightRE (lower . ) }}
         {{- with $fontWeight }}
           {{- $fontWeight = index (last 1 (index . 0) ) 0 }}
         {{- else }}
-          {{- warnf "%s[%s]: No match for fontWeightRE=%v in %v" $page $template $fontWeightRE . }}
+          {{- warnf "%s[%s]: No match for fontWeightRE=%v in\n%v" $page $template $fontWeightRE . }}
         {{- end }}
         {{- if and (in $preloadFontStyles (lower $fontStyle) ) (in $preloadFontWeights (lower $fontWeight) ) }}
           {{- $availableFontFiles := findRE $availableFontFilesRE (lower . ) }}
           {{- with $availableFontFiles }}
             {{- if $debug }}
-              {{- warnf "%s[%s]: availableFontFiles=%v" $page $template $availableFontFiles }}
+              {{- warnf "%s[%s]: availableFontFiles:\n%v" $page $template $availableFontFiles }}
             {{- end }}
             {{- range $availableFontFiles }}
               {{- $fontFormat := findRESubmatch $fontFormatRE (lower . ) }}
               {{- with $fontFormat }}
                 {{- $fontFormat = index (last 1 (index . 0) ) 0 }}
               {{- else }}
-                {{- warnf "%s[%s]: No match for fontFormatRE=%v in %v" $page $template $fontFormatRE . }}
+                {{- warnf "%s[%s]: No match for fontFormatRE=%v in\n%v" $page $template $fontFormatRE . }}
               {{- end }}
               {{- if (in $preloadFontFormats (lower $fontFormat) ) }}
                 {{- $preloadFontURL := findRESubmatch $fontFileURLRE (lower . ) }}
@@ -86,28 +86,28 @@
                   {{- end }}
                   {{- $preloadFonts = append (slice (dict "URL" $preloadFontURL "Type" $fontFormat) ) $preloadFonts }}
                 {{- else }}
-                  {{- warnf "%s[%s]: No match for fontFileURLRE=%v in %v" $page $template $fontFileURLRE . }}
+                  {{- warnf "%s[%s]: No match for fontFileURLRE=%v in\n%v" $page $template $fontFileURLRE . }}
                 {{- end }}
               {{- else }}
                 {{- if $debug }}
-                  {{- warnf "%s[%s]: Not preloading font: family=%v font-style=%v but format=%v not in %v"
+                  {{- warnf "%s[%s]: Not preloading font: family=%v font-style=%v but format=%v not in\n%v"
                     $page $template $fontFamily $fontStyle $fontFormat $preloadFontFormats -}}
                 {{- end }}
               {{- end }}
             {{- end }}
           {{- else }}
-            {{- warnf "%s[%s]: No match for availableFontFilesRE=%v in %v" $page $template $availableFontFilesRE . }}
+            {{- warnf "%s[%s]: No match for availableFontFilesRE=%v in\n%v" $page $template $availableFontFilesRE . }}
           {{- end }}
         {{- else }}
           {{- if $debug }}
-            {{- warnf "%s[%s]: Not preloading font: family=%v but style=%v not in %v or weight=%v not in %v"
+            {{- warnf "%s[%s]: Not preloading font: family=%v but style=%v not in %v or weight=%v not in\n%v"
               $page $template $fontFamily $fontStyle $preloadFontStyles
               $fontWeight $preloadFontWeights -}}
           {{- end }}
         {{- end }}
       {{- else }}
         {{- if $debug }}
-          {{- warnf "%s[%s]: Not preloading font: family=%v not in %v"
+          {{- warnf "%s[%s]: Not preloading font: family=%v not in\n%v"
             $page $template $fontFamily $preloadFontFamilies -}}
         {{- end }}
       {{- end }}

@@ -23,14 +23,24 @@
   (dict "key" "fontFamilySerif" "family" $fontFamilySerif)
   (dict "key" "fontFamilyMono"  "family" $fontFamilyMono)
 ) }}
-$hostedFontPath: '{{ default (absURL "fonts") ($page.Param "hostedFontPath") }}'
+{{- $hostedFontPath := default (absURL "fonts") ($page.Param "hostedFontPath") }}
+$hostedFontPath: '{{ $hostedFontPath }}'
 {{- range $fontFamilies }}
-{{- $fontFamilyKey := .key }}
-{{- $fontFamilyUrlized :=  (urlize .family) }}
+  {{- $fontFamilyKey := .key }}
+  {{- $fontFamilyUrlized :=  (urlize .family) }}
 @import 'claris/fonts/{{ $fontFamilyUrlized }}'
-{{ printf "$%sFallback: '%s-fallback'" $fontFamilyKey $fontFamilyUrlized }}
-{{ printf "$%sFallbackAndroid: '%s-fallback-android'" $fontFamilyKey $fontFamilyUrlized }}
+  {{- $fontStack := slice .family }}
+  {{- $fallbankFontFamilyStylesheet := printf `/styles/claris/fonts/fallback/%s.*` $fontFamilyUrlized }}
+  {{- if resources.GetMatch $fallbankFontFamilyStylesheet }}
+    {{- $fontStack = append (slice
+        (printf `%s-fallback` $fontFamilyUrlized)
+        (printf `%s-fallback-android` $fontFamilyUrlized)
+      ) $fontStack }}
 @import 'claris/fonts/fallback/{{ $fontFamilyUrlized }}'
+  {{- else }}
+/* No fallback stylesheet found for font family {{ .family }} at {{ $fallbankFontFamilyStylesheet }} */
+  {{- end }}
+{{ printf `$%vStack: '"%v"'` $fontFamilyKey (delimit $fontStack `", "` ) }}
 {{- end }}
 {{- end }}
 
