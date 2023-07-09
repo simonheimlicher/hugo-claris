@@ -211,9 +211,10 @@ main img {
 }
 @include list-style_indented;
 
-em {
-  font-weight: var(--font-weight);
-}
+// em {
+//   font-weight: var(--font-weight);
+// }
+
 b,
 strong {
   font-weight: var(--font-weight-strong);
