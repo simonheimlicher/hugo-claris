@@ -341,14 +341,14 @@ $main-z-index: 1;
 }
 
 // @mixin list-style_indented($margin-vertical: math.div($screenViewInnerPaddingMobile, 2), $padding-vertical: math.div($screenViewInnerPaddingMobile, 2), $indent: $list-style-indent) {
-@mixin list-style_indented($margin-vertical: 0, $padding-vertical: 0.5em, $indent: $list-style-indent) {
+@mixin list-style_indented($margin-vertical: 0, $padding-vertical: 0.5em, $margin-horizontal: 0, $padding-horizontal: 0) {
     ul, ol {
     // list-style: disc outside none;;
-    padding: $padding-vertical 0;
-    margin: 0 0 0 $indent;
-    li {
-      margin: calc(0.5 * $margin-vertical) 0;
-      padding: calc(0.5 * $padding-vertical) 0;
+    margin-left: $margin-horizontal;
+    padding-left: $padding-horizontal;
+    & > li + li {
+      margin-top: $margin-vertical;
+      padding-top: $padding-vertical;
     }
   }
   ul > li {
