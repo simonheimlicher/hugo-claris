@@ -44,10 +44,12 @@
         {{- end }}
       {{- end }}
     {{- else }}
-      {{- warnf "%s[%s]: Missing share image in lang=%v: $meta.Site=%#v $meta.Single=%#v"
-          $page $template site.Language.Lang
-          $meta.Site.Data.Images.share.variant.default.version
-          $meta.Single.Data.Images.share.variant.default.version }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: Missing share image in lang=%v: $meta.Site=%#v $meta.Single=%#v"
+            $page $template site.Language.Lang
+            $meta.Site.Data.Images.share.variant.default.version
+            $meta.Single.Data.Images.share.variant.default.version }}
+      {{- end }}
     {{- end }}
   {{- end }}
 

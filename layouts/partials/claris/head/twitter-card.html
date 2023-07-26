@@ -22,10 +22,12 @@
         {{- $shareImageAlt = . }}
       {{- end }}
     {{- else }}
-      {{- warnf "%s[%s]: Missing share image in lang=%v: $meta.Site=%#v $meta.Single=%#v"
-          $page $template site.Language.Lang
-          $meta.Site.Data.Images.share.variant.default.version
-          $meta.Single.Data.Images.share.variant.default.version -}}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: Missing share image in lang=%v: $meta.Site=%#v $meta.Single=%#v"
+            $page $template site.Language.Lang
+            $meta.Site.Data.Images.share.variant.default.version
+            $meta.Single.Data.Images.share.variant.default.version -}}
+      {{- end }}
     {{- end }}
     {{- with $shareImageURL }}
     <meta name="twitter:card" content="summary_large_image">
@@ -35,10 +37,12 @@
       {{- end }}
     {{- else }}
     <meta name="twitter:card" content="summary">
-      {{- warnf "%s[%s]: Missing share image: $meta.Site=%#v $meta.Single=%#v"
-          $page $template
-          $meta.Site.Data.Images.share.variant.default.version
-          $meta.Single.Data.Images.share.variant.default.version }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: Missing share image: $meta.Site=%#v $meta.Single=%#v"
+            $page $template
+            $meta.Site.Data.Images.share.variant.default.version
+            $meta.Single.Data.Images.share.variant.default.version }}
+      {{- end }}
     {{- end }}
     <meta name="twitter:title" content="{{ .Fulltitle }}">
     {{- with (default $meta.Site.Data.Description .Description) }}
