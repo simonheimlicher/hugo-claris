@@ -3,7 +3,7 @@
 {{- $template := "claris/_functions/is-page-hidden" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `profile` $page.RelPermalink) ) ) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/(de/)?transformation/why-okr` $page.RelPermalink) ) ) }} */}}
 
 {{- with $page }}
 
@@ -20,23 +20,20 @@
     {{- $pageHidden = false }}
 
     {{- $outputFormat := partial "claris/_functions/output-format" $page }}
-    {{- $visibleOutputFormats := default (slice "HTML") ($page.Param ".visible.outputFormats") }}
+    {{- $visibleOutputFormats := default (slice "html") ($page.Param ".visible.outputFormats") }}
     {{- $hiddenOutputFormats := default (slice "print") ($page.Param ".hidden.outputFormats") }}
 
-    {{- if not (in $visibleOutputFormats $outputFormat.Name) }}
+    {{- if not (in $visibleOutputFormats (lower $outputFormat.Name)) }}
       {{- $pageHidden = true }}
-    {{- else if in $hiddenOutputFormats $outputFormat.Name }}
+    {{- else if in $hiddenOutputFormats (lower $outputFormat.Name) }}
       {{- $pageHidden = true }}
-    {{- end }}
-
-    {{- if ne (lower $outputFormat.Name) "html" }}
-      {{- if $debug }}
-        {{- warnf "%s[%s]: \nRelPermalink=%v\npageHidden=%v based on $hiddenOutputFormats=%v outputFormat=%v"
-            $page $template .RelPermalink $pageHidden $hiddenOutputFormats $outputFormat.Name -}}
-      {{- end }}
     {{- end }}
 
     {{- if $pageHidden }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: \nRelPermalink=%v\npageHidden=%v based on $visibleOutputFormats=%v  $hiddenOutputFormats=%v outputFormat=%v"
+            $page $template .RelPermalink $pageHidden $visibleOutputFormats $hiddenOutputFormats $outputFormat.Name -}}
+      {{- end }}
     {{- else }}
       {{- $pagePath := "" }}
       {{- with $page.File }}

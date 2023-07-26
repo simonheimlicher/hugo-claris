@@ -58,7 +58,7 @@ enableMissingTranslationPlaceholders = true
 [security]
   enableInlineShortcodes = false
   [security.exec]
-    allow = ['^dart-sass-embedded$', '^go$', '^npx$', '^postcss$', '^babel$']
+    allow = ['^dart-sass-embedded$', '^sass', '^go$', '^npx$', '^postcss$', '^babel$']
     osEnv = ['(?i)^(PATH|PATHEXT|APPDATA|TMP|TEMP|TERM)$']
   [security.funcs]
     getenv = ['^HUGO_']

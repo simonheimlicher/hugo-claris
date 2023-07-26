@@ -54,11 +54,11 @@ appears to be broken, as mentioned above.
 {{- $targetExt := "css" -}}
 {{- $fingerprintOptions := default "sha256" site.Params.resourceFingerprintOptions }}
 
-{{- $toCSSoptionsBase := (dict "transpiler" "dartsass") }}
+{{- $toCSSoptionsBase := (dict "transpiler" "dartsass" "includePaths" (slice "node_modules")) }}
 {{- if $minifyCSS }}
   {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "compressed" "enableSourceMap" false) -}}
 {{- else }}
-  {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "expanded" "enableSourceMap" true) -}}
+  {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "expanded" "enableSourceMap" true "sourceMapIncludeSources" true) -}}
 {{- end }}
 {{- $toCSSIncludePaths := slice }}
 {{- range $contentTypeList }}

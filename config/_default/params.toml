@@ -119,7 +119,7 @@ sidebarTaxonomies = ["tags"]
 [website]
   name = "simon.heimlicher.com"
 
-  # The year when ths website was created, this value is used in the copyright
+  # The year when this website was created, this value is used in the copyright
   # notice of the footer.
   established = 1999
 
