@@ -881,8 +881,8 @@ html.content-above-header {
         // background-color: $icon-color
 
         // Triangle
-        top: 0.33em;
-        left: -1.5em;
+        top: var(--triangle_top);
+        left: var(--triangle_left);
         height: 0;
         width: 0;
         opacity: 1;
@@ -919,8 +919,8 @@ html.content-above-header {
       // opacity: 1
 
       // Triangle
-      top: 0.33em;
-      left: -1.5em;
+      top: var(--triangle_top);
+      left: var(--triangle_left);
       height: 0;
       width: 0;
       opacity: 1;
@@ -934,6 +934,12 @@ html.content-above-header {
 .table_of_contents {
   visibility: hidden;
   @include aside-meta;
+  @include link-lvhfa-reset;
+
+  // These values depend on the font family and need to be adjusted accordingly
+  --triangle_top: 0.25em;
+  --triangle_left: -1.0em;
+
   width: 100%;
 
   h2 {
@@ -954,7 +960,8 @@ html.content-above-header {
     width: 100%;
   }
   li {
-    list-style-type: circle;
+    // list-style-type: circle;
+    list-style-type: none;
     // padding: 0 0 0 0.5em
     // width: 100%
     &::before {
