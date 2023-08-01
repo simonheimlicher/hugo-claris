@@ -52,7 +52,7 @@
         {{- end }}
 
         {{- with $relatedArticles }}
-        <h{{ $headingLevel }}>{{ T "related_articles" (len $relatedArticles) }}</h{{ $headingLevel }}>
+        <h{{ $headingLevel }}>{{ T "related_articles" (len $relatedArticles) | strings.FirstUpper }}</h{{ $headingLevel }}>
         <ul class="flex-column">
           {{- range . }}
           <li>
@@ -63,7 +63,7 @@
         {{- end }}
 
         {{- with $featuredArticles }}
-        <h{{ $headingLevel }}>{{ T "featured_articles" (len $featuredArticles) }}</h{{ $headingLevel }}>
+        <h{{ $headingLevel }}>{{ T "featured_articles" (len $featuredArticles) | strings.FirstUpper }}</h{{ $headingLevel }}>
         <ul>
           {{- range . }}
           <li>
@@ -74,7 +74,7 @@
         {{- end }}
 
         {{- with $recentArticles }}
-        <h{{ $headingLevel }}>{{ T "recent_articles" (len $recentArticles) }}</h{{ $headingLevel }}>
+        <h{{ $headingLevel }}>{{ T "recent_articles" (len $recentArticles) | strings.FirstUpper }}</h{{ $headingLevel }}>
         <ul class="flex-column">
           {{- range . }}
           <li>
