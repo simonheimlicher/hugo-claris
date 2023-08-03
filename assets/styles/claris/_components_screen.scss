@@ -942,6 +942,21 @@ html.content-above-header {
 
   width: 100%;
 
+  nav {
+    margin-top: 0.5em;
+    &#TableOfContents {
+      position: relative;
+      &::before {
+        position: absolute;
+        content: "";
+        top: 0.5em;
+        bottom: 0.5em;
+        left: 0;
+        border-left: 1px solid var(--theme-bg-hover);
+      }
+    }
+  }
+
   h2 {
     font-size: 100%;
     margin: 0 0 0 -1em;
@@ -993,10 +1008,10 @@ html.content-above-header {
   nav:not(.active) ul ul li.visible {
     @include table-of-contents-current;
   }
-  nav:not(.active) li.visible ~ li.visible {
-    list-style-type: circle;
-    cursor: auto;
-  }
+  // nav:not(.active) li.visible ~ li.visible {
+  //   list-style-type: circle;
+  //   cursor: auto;
+  // }
 }
 body:not(.modern-js) .article_aside .table_of_contents {
   visibility: visible;
