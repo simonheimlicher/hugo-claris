@@ -52,6 +52,9 @@ $images: '{{ absURL (printf "%s/" (default "images/" (strings.TrimLeft "/" (stri
 // to interact with (the "page chrome")
 $screenViewWidthChrome: {{ default "100rem" ($page.Param "screenViewWidthChrome") }}
 
+// Maximum widht of feature images
+$screenViewFeatureImageWidthMax: {{ default "3840px" ($page.Param "screenViewFeatureImageWidthMax") }}
+
 // Padding around body up to narrow breakpoint
 $screenViewBodyMarginMobile: {{ default "0rem" ($page.Param "screenViewBodyMarginMobile") }}
 // Padding around main elements (header, main, footer) up to narrow breakpoint

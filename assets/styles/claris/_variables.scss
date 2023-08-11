@@ -620,6 +620,7 @@ html {
 
   --screenViewWidthChrome: #{$screenViewWidthChrome};
   --screenViewWidthUltrawide: #{$screenViewWidthUltrawide};
+  --screenViewFeatureImageWidthMax: #{$screenViewFeatureImageWidthMax};
 
   --content_multicolumn_max-width: #{$screenViewWidthChrome};
   --content_max-width: #{$screenViewColumnWidthMax};
