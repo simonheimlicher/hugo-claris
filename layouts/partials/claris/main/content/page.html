@@ -32,7 +32,79 @@
     {{- warnf "%s[%s]: article is outdated" $page $template }}
     {{- partial "claris/_components/outdated" . -}}
   {{- end -}}
-  {{- .Content }}
+
+  {{- $content := .Content }}
+
+  {{- $ledeRE := (dict
+    "match" `(?s)<p>(.*?)</p\s*>`
+    "replace" `<p class="lede">$1</p>`
+  ) -}}
+  {{- if and true (findRE $ledeRE.match $content 1) }}
+    {{- $content = replaceRE $ledeRE.match $ledeRE.replace $content 1 }}
+
+    {{- $initialParaRE := `(?s)<p>(.*?)</p\s*>` }}
+    {{- $initialPara := findRE $initialParaRE $content 1 }}
+    {{- with $initialPara = index $initialPara 0 }}
+      {{- if gt (len .) 200 }}
+        {{- /*
+        {{- $paraInitialReplace := `<p class="drop-cap"><span class="initial-letter">$1</span><span class="initial-words">$2</span>` }}
+
+        <!-- https://regex101.com/r/YjV0Mn/7 -->
+        {{- $paraInitialRE := `<p>(.*?[\p{L}])\s*((?:[\p{L}\p{P}]+\s+)(?:(?:[\p{L}]+\s+){0,4}\p{L}+\p{P}+|(?:\p{L}+\s+){0,2}(?:[\p{L}\p{P}]{3,}))\s*)` }}
+        {{- $content = replaceRE $paraInitialRE $paraInitialReplace $content 1 }}
+        */ -}}
+        {{- $initialPara = replaceRE $initialParaRE `$1` $initialPara }}
+        {{- $tokens := findRE `(?s)(\S+)\s*` $initialPara }}
+        {{- $modifiedTokens := slice }}
+
+        {{- $initialLetterRE := `(.*?[\p{L}])\s*` }}
+        {{- $initialLetter := "" }}
+
+        {{- $initialWordList := slice }}
+        {{- $initialWords := "" }}
+
+        {{- range $tokens }}
+          {{- $token := (replaceRE `(?s)(\S+)\s*` `$1` .) }}
+          {{- if not $initialLetter }}
+            {{- with findRE $initialLetterRE $token 1 }}
+              {{- $initialLetter = index . 0 }}
+              {{- $initialWordList = slice (substr $token (len $initialLetter)) }}
+              {{- $token = false }}
+            {{- end }}
+          {{- else if not $initialWords }}
+            {{- if gt (len $initialWordList) 3 }}
+              {{- $initialWords = delimit $initialWordList " " }}
+            {{- else if gt (len (delimit $initialWordList " ")) 25 }}
+              {{- $initialWords = delimit $initialWordList " " }}
+            {{- else }}
+              {{- if findRE `^\P{L}` $token 1 }}
+                {{- $initialWords = delimit $initialWordList " " }}
+              {{- else if findRE `\P{L}` $token 1 }}
+                {{- $initialWordList = append $token $initialWordList }}
+                {{- $initialWords = delimit $initialWordList " " }}
+                {{- $token = false }}
+              {{- else if findRE `^(the|and|der|die|das|und)` $token 1 }}
+                {{- $initialWords = delimit $initialWordList " " }}
+              {{- else if lt (len $token) 3 }}
+                {{- $initialWords = delimit $initialWordList " " }}
+              {{- else }}
+                {{- $initialWordList = append $token $initialWordList }}
+                {{- $token = false }}
+              {{- end }}
+            {{- end }}
+          {{- end }}
+
+          {{- with $token }}
+            {{- $modifiedTokens = append . $modifiedTokens }}
+          {{- end }}
+        {{- end }}
+        {{- $modifiedInitialPara := printf `<p class="drop-cap"><span class="initial-letter">%s</span><span class="initial-words">%s</span> %s` $initialLetter $initialWords (delimit $modifiedTokens " ") }}
+        {{- $content = replaceRE $initialParaRE $modifiedInitialPara $content 1 }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+
+  {{- $content | safeHTML }}
   </div>
   {{- if $showComments }}
     {{- partial "claris/_components/comments" . }}
