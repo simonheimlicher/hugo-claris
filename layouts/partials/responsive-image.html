@@ -265,10 +265,11 @@
         {{- with index (where $pictureResources "variant" "eq" $defaultVariantName) 0 }}
           {{- $dominantColorsHEX := (index (first 1 .formatsrcsets.formats) 0).resource.Colors }}
           {{- $dominantColorHEX := index $dominantColorsHEX 0 }}
-          {{- $backgroundLeftInlineStyle = printf "background: linear-gradient(270deg, transparent 0px, %s calc( min( var(--border_overlap_fraction) * 100vw, var(--border_overlap_fraction) * var(--feature-image_max-width)) / 2) )"
-            (index $dominantColorsHEX 0) -}}
-          {{- $backgroundRightInlineStyle = printf "background: linear-gradient(90deg, transparent 0px, %s calc( min( var(--border_overlap_fraction) * 100vw, var(--border_overlap_fraction) * var(--feature-image_max-width)) / 2) )"
-            (index $dominantColorsHEX 0) -}}
+          {{- $gradienEndPosition := `calc( min( var(--border_overlap_fraction) * 100vw, var(--border_overlap_fraction) * var(--feature-image_max-width)) / 2) )` }}
+          {{- $backgroundLeftInlineStyle = printf "background: linear-gradient(270deg, transparent 0px, %s %s"
+            (index $dominantColorsHEX 0) $gradienEndPosition -}}
+          {{- $backgroundRightInlineStyle = printf "background: linear-gradient(90deg, transparent 0px, %s %s"
+            (index $dominantColorsHEX 0) $gradienEndPosition -}}
         <div class="background left" {{ printf `style="%s"` $backgroundLeftInlineStyle | safeHTMLAttr }}></div>
         {{- end }}
       {{- end }}
