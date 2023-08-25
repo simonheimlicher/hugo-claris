@@ -154,7 +154,7 @@ h6 {
   }
 }
 html {
-  --font-size-title: 1.8rem;
+  --font-size-title: 2.4rem;
 }
 h1 {
   font-size: var(--font-size-title);
@@ -172,7 +172,7 @@ h6 {
 }
 @media screen and (min-width: $screenViewBreakpointWidthOneColumn) {
   html {
-    --font-size-title: 3rem;
+    --font-size-title: 3.6rem;
   }
   h1 {
     font-size: var(--font-size-title);
