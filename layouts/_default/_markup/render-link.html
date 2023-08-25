@@ -1,6 +1,6 @@
-<!-- https://github.com/bep/portable-hugo-links/blob/master/layouts/_default/_markup/render-link.html -->
+{{- /* https://github.com/bep/portable-hugo-links/blob/master/layouts/_default/_markup/render-link.html */ -}}
 {{- $link := .Destination }}
-{{ $isRemote := strings.HasPrefix $link "http" }}
+{{- $isRemote := strings.HasPrefix $link "http" }}
 {{- if $isRemote -}}
 {{- /* If URLs contain ports, then even local URLs may appear to be remote */ -}}
 {{- /* Complex logic below has not been properly tested and is now disabled 2023-02-08 */ -}}
@@ -30,9 +30,9 @@
 {{- end -}}
 {{- */ -}}
 {{- else }}
-{{ $url := urls.Parse .Destination }}
+{{- $url := urls.Parse .Destination -}}
 {{- if $url.Path -}}
-{{ $fragment := "" }}
+{{- $fragment := "" }}
 {{- with $url.Fragment }}{{ $fragment = printf "#%s" . }}{{ end -}}
 {{- with .Page.GetPage $url.Path }}{{ $link = printf "%s%s" .RelPermalink $fragment }}{{ end }}{{ end -}}
 {{- end -}}
