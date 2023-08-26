@@ -570,7 +570,23 @@ html {
   --font-size: 1rem;
   --font-size-title: 1.8rem;
   --font-size-supertitle: 0.4 * var(--font-size-title);
+  --font-size-supertitle: calc(clamp(
+    1 * var(--font-size),
+    2vw,
+    0.4 * var(--font-size-title)
+  ));
   --font-size-subtitle: 0.6 * var(--font-size-title);
+  --font-size-subtitle: calc(clamp(
+    1.25 * var(--font-size),
+    3vw,
+    0.6 * var(--font-size-title)
+  ));
+  --font-size-lede: 1.25 * var(--font-size);
+  --font-size-lede: calc(clamp(
+    1.2 * var(--font-size),
+    0.6 * var(--font-size-title),
+    1.5 * var(--font-size)
+  ));
   --font-size-nav: 1.5rem;
   --font-size-meta: 0.875rem;
   --font-size-button: 0.875rem;
