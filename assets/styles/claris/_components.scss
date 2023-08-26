@@ -666,8 +666,8 @@
     &_style {
       &-wide {
         --feature-image_aspect-ratio_max: calc(4 / 1);
-        --screen_aspect-ratiop_max: calc(2 / 1);
-        --img-coverage_shallow_max: calc(var(--screen_aspect-ratiop_max) / var(--feature-image_aspect-ratio_max));
+        --screen_aspect-ratio_max: calc(2 / 1);
+        --img-coverage_shallow_max: calc(var(--screen_aspect-ratio_max) / var(--feature-image_aspect-ratio_max));
         --feature-image_max-width: calc(min((100vh * var(--img-coverage_shallow_max) * var(--feature-image_aspect-ratio_max)), var(--screenViewFeatureImageWidthMax)));
         --border_overlap_fraction: 0.1;
         --transition_factor: 1e9;
