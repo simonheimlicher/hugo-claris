@@ -1,18 +1,12 @@
 goldmark:
   renderer:
-    hardWraps: false
     # change to false to disable inclusion of rawHTML and math functions
     unsafe: true
-    xhtml: false
-  extensions:
-    definitionList: true
-    footnote: true
-    linkify: true
-    linkifyProtocol: https
-    strikethrough: true
-    table: true
-    taskList: true
-    typographer: true
+
+tableOfContents:
+  ordered: false
+  startLevel: 2
+  endLevel: 2
 
 highlight:
   codeFences: true
@@ -26,11 +20,6 @@ highlight:
   noClasses: false
   style: modus-vivendi
   tabWidth: 2
-
-tableOfContents:
-  ordered: false
-  startLevel: 2
-  endLevel: 2
 
 # Defaults from https://gohugo.io/getting-started/configuration-markup/
 # asciidocExt:
