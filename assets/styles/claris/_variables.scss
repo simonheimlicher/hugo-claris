@@ -7,9 +7,7 @@
 $list-excerpt-width: 20rem;
 $list-excerpt-width: math.div(($screenViewBreakpointWidthOneColumn - (3 * $screenViewInnerPaddingOneColumn) ), 2);
 
-$list-style-indent: 0;
-$list-style-ul-indent: $list-style-indent;
-$list-style-ol-indent: $list-style-indent;
+$list-style-indent: 1em;
 
 $screenViewNavHeightNarrow: 2.5rem;
 $screenViewNavHeight: 3rem;
@@ -39,7 +37,7 @@ $main-z-index: 1;
   @if index('top' 'bottom', $value) != null {
     @return 'y';
   }
-  @error "Expected 'top', 'right', 'bottom' or 'left' but got #{$value}"
+  @error "Expected 'top', 'right', 'bottom' or 'left' but got #{$value}";
 }
 
 @function is-number($value) {
@@ -191,7 +189,7 @@ $main-z-index: 1;
   @include link-lvhfa($link: var(--link-dark), $visited: var(--link-dark), $hover: var(--link-dark-hover), $focus: var(--link-dark-hover), $active: var(--link-dark-active));
 }
 
-@mixin link-lvhfa-reset($link: var(--text), $visited: $link, $hover: $link, $focus: $link, $active: $link) {
+@mixin link-lvhfa-reset($link: unset, $visited: $link, $hover: unset, $focus: unset, $active: unset) {
   @media screen {
     a:not(.button):not(sup a) {
       color: $link;
@@ -341,14 +339,14 @@ $main-z-index: 1;
 }
 
 // @mixin list-style_indented($margin-vertical: math.div($screenViewInnerPaddingMobile, 2), $padding-vertical: math.div($screenViewInnerPaddingMobile, 2), $indent: $list-style-indent) {
-@mixin list-style_indented($margin-vertical: 0, $padding-vertical: 0.5em, $margin-horizontal: 0, $padding-horizontal: 0) {
+@mixin list-style_indented($margin-horizontal: 0, $padding-horizontal: $list-style-indent, $margin-between: 0, $padding-between: 0.5em) {
     ul, ol {
     // list-style: disc outside none;;
     margin-left: $margin-horizontal;
     padding-left: $padding-horizontal;
     & > li + li {
-      margin-top: $margin-vertical;
-      padding-top: $padding-vertical;
+      margin-top: $margin-between;
+      padding-top: $padding-between;
     }
   }
   ul > li {
@@ -559,6 +557,86 @@ html {
   --dim-image-filter: brightness(75%);
 }
 
+/* Fluid font size variables, for browsers that support clamp */
+// https://www.fluid-type-scale.com/calculate?minFontSize=16&minWidth=360&minRatio=1.25&maxFontSize=20&maxWidth=720&maxRatio=1.333&steps=smaller-2%2C+smaller-1%2Cnormal%2Clarger-1%2C+larger-2%2C+larger-3%2C+larger-4%2C+larger-5&baseStep=normal&prefix=font-size&decimals=2&includeFallbacks=on&useRems=on&remValue=16&previewFont=Inter&previewText=Almost+before+we+knew+it%2C+we+had+left+the+ground&previewWidth=90
+@supports (font-size: clamp(1rem, 1vw, 1rem)) {
+  :root {
+    --font-size-smaller-2: clamp(0.64rem, 0.28vw + 0.58rem, 0.7rem);
+		--font-size-smaller-1: clamp(0.8rem, 0.61vw + 0.66rem, 0.94rem);
+		--font-size-normal: clamp(1rem, 1.11vw + 0.75rem, 1.25rem);
+		--font-size-larger-1: clamp(1.25rem, 1.85vw + 0.83rem, 1.67rem);
+		--font-size-larger-2: clamp(1.56rem, 2.93vw + 0.9rem, 2.22rem);
+		--font-size-larger-3: clamp(1.95rem, 4.48vw + 0.95rem, 2.96rem);
+		--font-size-larger-4: clamp(2.44rem, 6.69vw + 0.94rem, 3.95rem);
+		--font-size-larger-5: clamp(3.05rem, 9.82vw + 0.84rem, 5.26rem);
+  }
+}
+/* Fallback variables for browsers that don't support clamp */
+@supports not (font-size: clamp(1rem, 1vw, 1rem)) {
+  :root {
+    --font-size-smaller-2: 0.64rem;
+		--font-size-smaller-1: 0.8rem;
+		--font-size-normal: 1rem;
+		--font-size-larger-1: 1.25rem;
+		--font-size-larger-2: 1.56rem;
+		--font-size-larger-3: 1.95rem;
+		--font-size-larger-4: 2.44rem;
+		--font-size-larger-5: 3.05rem;
+  }
+  @media screen and (min-width: 720px) {
+    :root {
+      --font-size-smaller-2: 0.7rem;
+			--font-size-smaller-1: 0.94rem;
+			--font-size-normal: 1.25rem;
+			--font-size-larger-1: 1.67rem;
+			--font-size-larger-2: 2.22rem;
+			--font-size-larger-3: 2.96rem;
+			--font-size-larger-4: 3.95rem;
+			--font-size-larger-5: 5.26rem;
+    }
+  }
+}
+
+// https://www.fluid-type-scale.com/calculate?minFontSize=16&minWidth=320&minRatio=1.18920712&maxFontSize=32&maxWidth=1216&maxRatio=1.18920712&steps=heading-smaller-2%2Cheading-smaller-1%2Cheading-normal%2Cheading-larger-1%2Cheading-larger-2%2Cheading-larger-3%2Cheading-larger-4%2Cheading-larger-5&baseStep=heading-normal&prefix=font-size&decimals=2&includeFallbacks=on&useRems=on&remValue=16&previewFont=Inter&previewText=Almost+before+we+knew+it%2C+we+had+left+the+ground&previewWidth=90
+/* Fluid font size variables, for browsers that support clamp */
+@supports (font-size: clamp(1rem, 1vw, 1rem)) {
+  :root {
+    --font-size-heading-smaller-2: clamp(0.71rem, 1.26vw + 0.45rem, 1.41rem);
+		--font-size-heading-smaller-1: clamp(0.84rem, 1.5vw + 0.54rem, 1.68rem);
+		--font-size-heading-normal: clamp(1rem, 1.79vw + 0.64rem, 2rem);
+		--font-size-heading-larger-1: clamp(1.19rem, 2.12vw + 0.76rem, 2.38rem);
+		--font-size-heading-larger-2: clamp(1.41rem, 2.53vw + 0.91rem, 2.83rem);
+		--font-size-heading-larger-3: clamp(1.68rem, 3vw + 1.08rem, 3.36rem);
+		--font-size-heading-larger-4: clamp(2rem, 3.57vw + 1.29rem, 4rem);
+		--font-size-heading-larger-5: clamp(2.38rem, 4.25vw + 1.53rem, 4.76rem);
+  }
+}
+/* Fallback variables for browsers that don't support clamp */
+@supports not (font-size: clamp(1rem, 1vw, 1rem)) {
+  :root {
+    --font-size-heading-smaller-2: 0.71rem;
+		--font-size-heading-smaller-1: 0.84rem;
+		--font-size-heading-normal: 1rem;
+		--font-size-heading-larger-1: 1.19rem;
+		--font-size-heading-larger-2: 1.41rem;
+		--font-size-heading-larger-3: 1.68rem;
+		--font-size-heading-larger-4: 2rem;
+		--font-size-heading-larger-5: 2.38rem;
+  }
+  @media screen and (min-width: 76rem) {
+    :root {
+      --font-size-heading-smaller-2: 1.41rem;
+			--font-size-heading-smaller-1: 1.68rem;
+			--font-size-heading-normal: 2rem;
+			--font-size-heading-larger-1: 2.38rem;
+			--font-size-heading-larger-2: 2.83rem;
+			--font-size-heading-larger-3: 3.36rem;
+			--font-size-heading-larger-4: 4rem;
+			--font-size-heading-larger-5: 4.76rem;
+    }
+  }
+}
+
 html {
   --to-be-eliminated-by-csspurge: black;
   --font-sans: #{$fontFamilySansStack}, "Helvetica Neue", "Helvetica", sans-serif;
@@ -566,44 +644,36 @@ html {
   --font-mono: #{$fontFamilyMonoStack}, "Inconsolata", "Menlo", "Lucida Sans Typewriter", "Monaco", "Courier New", "Courier", monospace;
   --font: var(--font-sans);
   --font-article: var(--font-serif);
+
+  // @include font-size-scale(1rem);
+
   --font-code: var(--font-mono);
-  --font-size: 1rem;
-  --font-size-title: 1.8rem;
-  --font-size-supertitle: 0.4 * var(--font-size-title);
-  --font-size-supertitle: calc(clamp(
-    1 * var(--font-size),
-    2vw,
-    0.4 * var(--font-size-title)
-  ));
-  --font-size-subtitle: 0.6 * var(--font-size-title);
-  --font-size-subtitle: calc(clamp(
-    1.25 * var(--font-size),
-    3vw,
-    0.6 * var(--font-size-title)
-  ));
-  --font-size-lede: 1.25 * var(--font-size);
-  --font-size-lede: calc(clamp(
-    1.2 * var(--font-size),
-    0.6 * var(--font-size-title),
-    1.5 * var(--font-size)
-  ));
+  --font-size: var(--font-size-normal);
+  // --font-size: calc(clamp(var(--font-size-normal), min(2.3vw, 8vh), var(--font-size-larger-2)));
+  --font-size-lede: var(--font-size-larger-1);
+  --font-size-meta: var(--font-size-smaller-1);
+  --font-size-button: var(--font-size-smaller-1);
+  --font-size-aside: var(--font-size-smaller-1);
+  --font-size-footer: var(--font-size-smaller-1);
+
+  --font-size-title: var(--font-size-heading-larger-4);
+  --font-size-supertitle: var(--font-size-heading-normal);
+  --font-size-subtitle: var(--font-size-heading-larger-1);
+
   --font-size-nav: 1.5rem;
-  --font-size-meta: 0.875rem;
-  --font-size-button: 0.875rem;
-  --font-size-aside: 0.875rem;
-  --font-size-footer: 0.875rem;
   @media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
     --font-size-nav: 0.875rem;
   }
   @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
   }
   @media screen and (min-width: $screenViewBreakpointWidthOneColumn) {
-    --font-size: 1.25rem;
+    // @include font-size-scale(1.25rem);
+    // --font-size: var(--font-size-normal);
     --font-size-nav: 1.0rem;
-    --font-size-meta: 1.0rem;
-    --font-size-button: 1.0rem;
-    --font-size-aside: 1.0rem;
-    --font-size-footer: 1.0rem;
+    // --font-size-meta: 1.0rem;
+    // --font-size-button: 1.0rem;
+    // --font-size-aside: 1.0rem;
+    // --font-size-footer: 1.0rem;
   }
   @media screen and (min-width: $screenViewBreakpointWidthWide) {
     --font-size-nav: 1.25rem;

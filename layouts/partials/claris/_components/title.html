@@ -57,11 +57,11 @@
   {{- end }}
 
   {{- if $title }}
-          <div id="articleTop"{{- with $titleClass }} class="{{ . }}"{{ end }}>
+          <div{{- with $titleClass }} class="{{ . }}"{{ end }}>
     {{- with $supertitleOutside -}}
            <span class="supertitle">{{. | page.RenderString }}<span class="visually-hidden">: </span></span>
     {{- end -}}
-          <h{{ $headingLevel }}>
+          <h{{ $headingLevel }} id="articleTop">
     {{- with $supertitleInside -}}
            <span class="supertitle">{{. | page.RenderString }}<span class="visually-hidden">: </span></span>
     {{- end -}}
