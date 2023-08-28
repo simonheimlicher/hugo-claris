@@ -5,14 +5,16 @@ $contentType: '{{ .ContentType }}'
 $mediaType: '{{ .MediaType }}'
 /* File='styles/claris/hugo-params.sass': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .ContentTypeList='{{ printf "%v" .ContentTypeList }}' .ContentTypeListID='{{ .ContentTypeListID }}' .ContentType='{{ .ContentType }}' .MediaType='{{ .MediaType }}' */
 
+@use 'sass:math'
+
 $colorPrimaryLit: {{ default "hsl(200, 100%, 50%)" ($page.Param "colorPrimaryLit") }}
-$colorPrimaryDim: {{ default "hsl(200, 100%, 20%)" ($page.Param "colorPrimaryDim") }}
+$colorPrimaryDim: {{ default "hsl(200, 100%, 50%)" ($page.Param "colorPrimaryDim") }}
 
 $onPrimaryLit: {{ default "darken(desaturate($colorPrimaryLit, 50%), 25%)" ($page.Param "onPrimaryLit") }}
-$onPrimaryDim: {{ default "lighten(desaturate($colorPrimaryDim, 75%), 75%)" ($page.Param "onPrimaryDim") }}
+$onPrimaryDim: {{ default "lighten(desaturate($colorPrimaryDim, 75%), 50%)" ($page.Param "onPrimaryDim") }}
 
 $surfacePrimaryLit: {{ default "lighten(desaturate($colorPrimaryLit, 50%), 45%)" ($page.Param "surfacePrimaryLit") }}
-$surfacePrimaryDim: {{ default "darken(desaturate($colorPrimaryDim, 50%), 5%)" ($page.Param "surfacePrimaryDim") }}
+$surfacePrimaryDim: {{ default "darken(desaturate($colorPrimaryDim, 50%), 35%)" ($page.Param "surfacePrimaryDim") }}
 
 $colorSecondaryLit: {{ default "hsl(170, 100%, 50%)" ($page.Param "colorSecondaryLit") }}
 $colorSecondaryDim: {{ default "hsl(170, 40%, 15%)" ($page.Param "colorSecondaryDim") }}
@@ -24,7 +26,7 @@ $surfaceSecondaryLit: {{ default "lighten(desaturate($colorSecondaryLit, 50%), 4
 $surfaceSecondaryDim: {{ default "darken(desaturate($colorSecondaryDim, 60%), 35%)" ($page.Param "surfaceSecondaryDim") }}
 
 $colorSurfaceLit: {{ default "lighten(desaturate($colorPrimaryLit, 10%), 48%)" ($page.Param "colorSurfaceLit") }}
-$colorSurfaceDim: {{ default "darken(desaturate($colorPrimaryDim, 10%), 10%)" ($page.Param "colorSurfaceDim") }}
+$colorSurfaceDim: {{ default "darken(desaturate($colorPrimaryDim, 10%), 40%)" ($page.Param "colorSurfaceDim") }}
 
 $onSurfaceLit: {{ default "darken(desaturate($colorSurfaceLit, 50%), 45%)" ($page.Param "colorSurfaceLit") }}
 $onSurfaceDim: {{ default "lighten(desaturate($colorSurfaceDim, 60%), 35%)" ($page.Param "colorSurfaceDim") }}
@@ -38,6 +40,8 @@ $onBackgroundDim: {{ default "lighten(desaturate($colorBackgroundDim, 60%), 85%)
 $fontFamilySans: '{{ default "Source Sans 3" ($page.Param "fontFamilySans") }}'
 $fontFamilySerif: '{{ default "Merriweather" ($page.Param "fontFamilySerif") }}'
 $fontFamilyMono: '{{ default "DM Mono" ($page.Param "fontFamilyMono") }}'
+
+$fontScaleFactor: {{ default "math.pow(2.0, math.div(1, 3) )" ($page.Param "fontScaleFactor") }}
 
 // URL path to directory containing icons, e.g. for color scheme switch.
 // The code below ensures that it does not begin with a slash but ends with a slash
