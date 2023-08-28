@@ -78,6 +78,8 @@
 <!-- Always include the low-quality placeholder to avoid the jarring white whole on slow connections -->
 {{- $includePlaceholder := true }}
 
+{{- $requiresNoScriptFallback := or $includePlaceholder $scriptBasedLoading }}
+
 {{- $defaultMedia := "default" }}
 {{- $defaultVariantName := "default" }}
 
@@ -275,7 +277,7 @@
       {{- end }}
     {{- end -}}
         <!-- HTML element is a grouping element and must not contain any styles -->
-        <picture>
+        <picture{{ if $requiresNoScriptFallback }} class="lazyload"{{ end }}>
     {{- $multiVariant := false }}
     {{- range $variant := where $pictureResources "variant" "ne" $defaultVariantName }}
       {{- $multiVariant = true }}
@@ -331,7 +333,7 @@
         {{- $srcURL := .resource.RelPermalink }}
         {{- $imgWidth := default .resource.Width $imageResourceArgs.Width }}
         {{- $imgHeight := default .resource.Height $imageResourceArgs.Height }}
-          <img  class="{{ with $imgClass }}{{ . }}{{ end }}{{ if $scriptBasedLoading }} lazyload{{ end }}"
+          <img  class="{{ with $imgClass }}{{ . }}{{ end }}{{ if $requiresNoScriptFallback }} lazyload{{ end }}"
                 width="{{ $imgWidth }}" height="{{ $imgHeight }}"
             {{- if $includePlaceholder }}
                   {{ printf "src=%q" $placeholderInlineImg | safeHTMLAttr }}
@@ -366,7 +368,7 @@
     {{- end }}
           </picture>
 
-    {{- if $scriptBasedLoading }}
+    {{- if $requiresNoScriptFallback }}
       {{- range $variant := where $pictureResources "variant" "eq" $defaultVariantName }}
         {{- $variantInlineStyleAttr := .style }}
         {{- range (last 1 .formatsrcsets.formats) }}
