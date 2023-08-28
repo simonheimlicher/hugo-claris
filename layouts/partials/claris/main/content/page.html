@@ -13,9 +13,9 @@
 
 {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
 {{- if $displayTableOfContents }}
-    <aside class="article_aside">
-      {{ partial "claris/_components/table-of-contents" . }}
-    </aside>
+  <aside class="article_aside">
+    {{ partial "claris/_components/table-of-contents" . }}
+  </aside>
 {{- end }}
 <article class="article_content content_singlecolumn content">
   {{- if (and (eq $itemType "article") $mainSection) -}}
@@ -36,7 +36,7 @@
   {{- $content := .Content }}
 
   {{- $ledeRE := (dict
-    "match" `(?s)<p>(.*?)</p\s*>`
+    "match" `(?s)^\s*<p>(.*?)</p\s*>`
     "replace" `<p class="lede">$1</p>`
   ) -}}
   {{- if and true (findRE $ledeRE.match $content 1) }}
