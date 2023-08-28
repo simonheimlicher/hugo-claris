@@ -637,15 +637,20 @@
 // .drop-cap,
 // .section_main-section .article_body > p + p:nth-of-type(2) {
 .drop-cap {
-  margin-top: 2rem;
-  // &:first-letter {
+  --initial_font-size: 7em;
+  --initial_line-height: 1.5;
+  margin-top: 2em;
   .initial-letter {
     color: var(--initial);
     float: left;
-    font-size: 8em;
-    line-height: 6.7rem;
-    padding: 0 0.5rem 0 0;
-    margin: -2rem 0 0 -0.5rem;
+    font-size: var(--initial_font-size);
+    --initial_padding: 0.125em;
+    line-height: var(--initial_line-height);
+    padding: 0 var(--initial_padding) 0 0;
+    margin: calc(0px - 4 * var(--initial_padding))
+    0
+    calc(0px - 3 * var(--initial_padding))
+    calc(0px - 1 * var(--initial_padding));
   }
   .initial-words {
     // text-transform: uppercase;
