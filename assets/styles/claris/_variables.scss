@@ -353,6 +353,11 @@ $main-z-index: 1;
     list-style: disc outside;
     margin-left: 0.8em;
     padding-left: 0.2em;
+    // Ensure the link provide a touch target of more than 32px
+    & > a {
+      display: inline-flex;
+      padding: calc(max(0px, 2.125rem - $padding-between - 1em * var(--line-height)) / 2) 0;
+    }
     & > ul li {
       list-style-type: none;
       margin-left: 0;
@@ -558,41 +563,42 @@ html {
 }
 
 /* Fluid font size variables, for browsers that support clamp */
-// https://www.fluid-type-scale.com/calculate?minFontSize=16&minWidth=360&minRatio=1.25&maxFontSize=20&maxWidth=720&maxRatio=1.333&steps=smaller-2%2C+smaller-1%2Cnormal%2Clarger-1%2C+larger-2%2C+larger-3%2C+larger-4%2C+larger-5&baseStep=normal&prefix=font-size&decimals=2&includeFallbacks=on&useRems=on&remValue=16&previewFont=Inter&previewText=Almost+before+we+knew+it%2C+we+had+left+the+ground&previewWidth=90
+// https://www.fluid-type-scale.com/calculate?minFontSize=16&minWidth=320&minRatio=1.18920712&maxFontSize=20&maxWidth=768&maxRatio=1.18920712&steps=smaller-2%2Csmaller-1%2Cnormal%2Clarger-1%2Clarger-2%2Clarger-3%2Clarger-4%2Clarger-5&baseStep=normal&prefix=font-size&decimals=2&includeFallbacks=on&useRems=on&remValue=16&previewFont=Inter&previewText=Almost+before+we+knew+it%2C+we+had+left+the+ground&previewWidth=90
+/* Fluid font size variables, for browsers that support clamp */
 @supports (font-size: clamp(1rem, 1vw, 1rem)) {
   :root {
-    --font-size-smaller-2: clamp(0.64rem, 0.28vw + 0.58rem, 0.7rem);
-		--font-size-smaller-1: clamp(0.8rem, 0.61vw + 0.66rem, 0.94rem);
-		--font-size-normal: clamp(1rem, 1.11vw + 0.75rem, 1.25rem);
-		--font-size-larger-1: clamp(1.25rem, 1.85vw + 0.83rem, 1.67rem);
-		--font-size-larger-2: clamp(1.56rem, 2.93vw + 0.9rem, 2.22rem);
-		--font-size-larger-3: clamp(1.95rem, 4.48vw + 0.95rem, 2.96rem);
-		--font-size-larger-4: clamp(2.44rem, 6.69vw + 0.94rem, 3.95rem);
-		--font-size-larger-5: clamp(3.05rem, 9.82vw + 0.84rem, 5.26rem);
+    --font-size-smaller-2: clamp(0.71rem, 0.63vw + 0.58rem, 0.88rem);
+		--font-size-smaller-1: clamp(0.84rem, 0.75vw + 0.69rem, 1.05rem);
+		--font-size-normal: clamp(1rem, 0.89vw + 0.82rem, 1.25rem);
+		--font-size-larger-1: clamp(1.19rem, 1.06vw + 0.98rem, 1.49rem);
+		--font-size-larger-2: clamp(1.41rem, 1.26vw + 1.16rem, 1.77rem);
+		--font-size-larger-3: clamp(1.68rem, 1.5vw + 1.38rem, 2.1rem);
+		--font-size-larger-4: clamp(2rem, 1.79vw + 1.64rem, 2.5rem);
+		--font-size-larger-5: clamp(2.38rem, 2.12vw + 1.95rem, 2.97rem);
   }
 }
 /* Fallback variables for browsers that don't support clamp */
 @supports not (font-size: clamp(1rem, 1vw, 1rem)) {
   :root {
-    --font-size-smaller-2: 0.64rem;
-		--font-size-smaller-1: 0.8rem;
+    --font-size-smaller-2: 0.71rem;
+		--font-size-smaller-1: 0.84rem;
 		--font-size-normal: 1rem;
-		--font-size-larger-1: 1.25rem;
-		--font-size-larger-2: 1.56rem;
-		--font-size-larger-3: 1.95rem;
-		--font-size-larger-4: 2.44rem;
-		--font-size-larger-5: 3.05rem;
+		--font-size-larger-1: 1.19rem;
+		--font-size-larger-2: 1.41rem;
+		--font-size-larger-3: 1.68rem;
+		--font-size-larger-4: 2rem;
+		--font-size-larger-5: 2.38rem;
   }
-  @media screen and (min-width: 720px) {
+  @media screen and (min-width: 48rem) {
     :root {
-      --font-size-smaller-2: 0.7rem;
-			--font-size-smaller-1: 0.94rem;
+      --font-size-smaller-2: 0.88rem;
+			--font-size-smaller-1: 1.05rem;
 			--font-size-normal: 1.25rem;
-			--font-size-larger-1: 1.67rem;
-			--font-size-larger-2: 2.22rem;
-			--font-size-larger-3: 2.96rem;
-			--font-size-larger-4: 3.95rem;
-			--font-size-larger-5: 5.26rem;
+			--font-size-larger-1: 1.49rem;
+			--font-size-larger-2: 1.77rem;
+			--font-size-larger-3: 2.1rem;
+			--font-size-larger-4: 2.5rem;
+			--font-size-larger-5: 2.97rem;
     }
   }
 }

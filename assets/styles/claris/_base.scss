@@ -391,22 +391,22 @@ blockquote {
   }
 }
 * + p {
-  padding-top: calc(1em * (var(--line-height) - 1));
+  margin-top: calc(1em * (var(--line-height) - 1));
 }
 p + * {
-  padding-top: calc(1.5em * (var(--line-height) - 1));
+  margin-top: calc(1.5em * (var(--line-height) - 1));
 }
 p + p {
-  padding-top: calc(2em * (var(--line-height) - 1));
+  margin-top: calc(2em * (var(--line-height) - 1));
 }
 blockquote + p {
-  padding-top: 0.25em;
-  padding-bottom: 0.75em;
+  margin-top: 0.25em;
+  margin-bottom: 0.75em;
 }
 ul + p,
 ol + p {
-  padding-top: 0.5em;
-  padding-bottom: 0.25em;
+  margin-top: 0.5em;
+  margin-bottom: 0.25em;
 }
 dl {
   --column-gap: 1em;
@@ -418,7 +418,7 @@ dl {
   width: 100%;
 }
 dl > * {
-  padding-top: 0.5em;
+  margin-top: 0.5em;
 }
 dt {
   width: var(--dt-width);

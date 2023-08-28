@@ -22,6 +22,7 @@
 }
 .content {
   @include content;
+  @include link-lvhfa;
   &_singlecolumn {
     // padding-top: inherit
     @include content_singlecolumn;
@@ -237,7 +238,7 @@
   // background: var(--footer-bg)
   padding-top: var(--inner_padding-y);
   // padding-bottom: var(--inner_padding-y)
-  @include list-style_indented;
+  @include list-style_indented(0, 0, 0, 0);
   z-index: ($main-z-index  - 1);
 
   @media screen and (min-width: $screenViewBreakpointWidthOneColumn) {
@@ -248,11 +249,17 @@
 
   .footer {
     &_inner {
+      h2 + p, h2 + ul {
+        margin-top: var(--inner_margin-y-2);
+      }
       @include footer;
 
       // https://codepen.io/tutsplus/details/yWrEgW
-      ul > li,
-      ul > a > li {
+      ul {
+        margin: 0;
+        padding: 0;
+      }
+      ul > li {
         list-style: none;
         margin-left: 0;
         padding-left: 0;
@@ -1422,7 +1429,7 @@ svg.qrcode-svg {
 }
 .pagination {
   display: flex;
-  margin: var(--inner_margin_y) 0;
+  margin: var(--inner_margin-y) 0;
 }
 .page {
   &-item {
@@ -1703,7 +1710,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
 .shortcode_responsive-figure,
 .responsive-image_container,
 .excerpt_container {
-  margin: var(--inner_margin_y) auto;
+  margin: var(--inner_margin-y) auto;
   // padding: var(--inner_padding-y) var(--inner_padding-x)
   border-radius: 0.125rem;
   // Remove any surrounding margins and padding from elements
