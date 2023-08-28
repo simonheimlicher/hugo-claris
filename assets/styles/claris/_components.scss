@@ -700,10 +700,21 @@
   &.feature-image {
     &_style {
       &-wide {
-        --feature-image_aspect-ratio_max: calc(4 / 1);
-        --screen_aspect-ratio_max: calc(2 / 1);
-        --img-coverage_shallow_max: calc(var(--screen_aspect-ratio_max) / var(--feature-image_aspect-ratio_max));
-        --feature-image_max-width: calc(min((100vh * var(--img-coverage_shallow_max) * var(--feature-image_aspect-ratio_max)), var(--screenViewFeatureImageWidthMax)));
+        --fi_ar_max: calc(4 / 1);
+        --fi_v-min: calc(8rem + min(10vh, 10vw));
+        --fi_v-max: calc(20rem + min(10vh, 10vw));
+        --fi_cov_h-max: 0.5;
+        --fi_cov_v-max: 0.5;
+        --feature-image_max-height: clamp(
+          var(--fi_v-min),
+          min(var(--fi_cov_h-max) * 100vw, var(--fi_cov_v-max) * 100vh),
+          var(--fi_v-max)
+        );
+        --feature-image_max-width: calc(min(
+          100vw,
+          var(--screenViewFeatureImageWidthMax),
+          var(--feature-image_max-height) * var(--fi_ar_max)
+        ));
         --border_overlap_fraction: 0.1;
         --transition_factor: 1e9;
         --border_overlap_vw: calc(100vw * var(--border_overlap_fraction));
@@ -723,15 +734,20 @@
               minmax(0px, 1fr)
               calc(min(100%, var(--feature-image_max-width) + min(var(--border_overlap_vw), var(--border_overlap_fraction) * var(--feature-image_max-width))))
               minmax(0px, 1fr);
+            picture, noscript {
+              grid-column: 2;
+            }
             .background {
               z-index: ($main-z-index + 3);
               &.left {
+                grid-column: 1;
                 margin-right: calc( max(
                   min(0px, var(--feature-image_max-width) - 100vw * (1.01 - var(--border_overlap_fraction))) * var(--transition_factor),
                   -1 * min((var(--border_overlap_vw) / 2), (var(--border_overlap_fraction) / 2) * var(--feature-image_max-width))
                 ) );
               }
               &.right {
+                grid-column: 3;
                 margin-left: calc( max(
                   min(0px, var(--feature-image_max-width) - 100vw * (1.01 - var(--border_overlap_fraction))) * var(--transition_factor),
                   -1 * min( (var(--border_overlap_vw) / 2), (var(--border_overlap_fraction) / 2) * var(--feature-image_max-width))
@@ -739,9 +755,9 @@
               }
             }
           }
-          &_figure,
           &_img {
-            max-height: calc(var(--feature-image_max-width) / var(--feature-image_aspect-ratio_max));
+            max-height: var(--feature-image_max-height);
+            // max-height: calc(min(100vw, 50vh));
           }
         }
       }
