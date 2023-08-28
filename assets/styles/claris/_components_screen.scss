@@ -858,102 +858,130 @@ html.content-above-header {
     min-height: 100lvh;
   }
 }
-@mixin table-of-contents-hover($hover-color: var(--theme-bg-hover), $active-color: var(--accent), $icon-color: var(--theme-bg-hover)) {
-  @media (any-hover: hover) {
-    &:hover {
-      color: $hover-color;
-      cursor: pointer;
-      list-style-type: none;
-      &::before {
-        content: none;
-      }
-      & > a::before {
-        content: '';
-        display: block;
-        position: absolute;
-        opacity: 1;
-        // Vertical bar
-        // width: 1ch
-        // height: 100%
-        // top: 0
-        // bottom: 0
-        // left: -1.5em
-        // background-color: $icon-color
 
-        // Triangle
-        top: var(--triangle_top);
-        left: var(--triangle_left);
-        height: 0;
-        width: 0;
-        opacity: 1;
-        background: transparent;
-        border-style: solid;
-        border-width: 0.75ch 0 0.75ch 1ch;
-        border-color: transparent transparent transparent $icon-color;
-      }
-      & > a {
-        color: $icon-color;
-      }
-    }
-    & > a:active {
-      color: $active-color;
-      cursor: pointer;
-    }
+@mixin table-of-contents_line($color: var(--text), $border-width: var(--toc_indicator_line_width), $border-color: var(--toc_indicator_line_color),
+$indicator-width: var(--toc_indicator_width)) {
+  position: relative;
+  &::before {
+    position: absolute;
+    content: "";
+    top: 0;
+    bottom: 0;
+    left: calc(0px - var(--toc_indent) - $border-width / 2 + $indicator-width / 2);
+    border-left: $border-width solid $border-color;
   }
 }
-@mixin table-of-contents-current($current-color: var(--text), $icon-color: var(--text)) {
+// Icon: vertical bar
+@mixin table-of-contents_bar($icon-color: var(--toc_indicator_icon_color), $icon-width: var(--toc_indicator_icon_width), $indicator-width: var(--toc_indicator_width)) {
   & > a {
-    color: $current-color;
+    position: relative;
     &::before {
       content: '';
       display: block;
       position: absolute;
-
-      // // Vertical bar
-      // width: 1ch
-      // height: 100%
-      // top: 0
-      // bottom: 0
-      // left: -1.5em
-      // background-color: $icon-color
-      // opacity: 1
-
-      // Triangle
-      top: var(--triangle_top);
-      left: var(--triangle_left);
-      height: 0;
-      width: 0;
+      width: $icon-width;
+      top: 0;
+      bottom: 0;
+      left: calc($indicator-width / 2 - $icon-width / 2 - var(--toc_indent));
+      background-color: $icon-color;
       opacity: 1;
-      background: transparent;
-      border-style: solid;
-      border-width: 0.75ch 0 0.75ch 1ch;
-      border-color: transparent transparent transparent $icon-color;
     }
   }
 }
+
+// Icon: triangle
+// FIXME: Untested
+@mixin table-of-contents_triangle($triangle-width: 0.5ch, $triangle-color: var(--text)) {
+  &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: var(--triangle_top);
+    left: var(--toc_indent);
+    height: 0;
+    width: 0;
+    opacity: 1;
+    background: transparent;
+    border-style: solid;
+    border-width: $triangle-width 0 $triangle-width ($triangle-width / 3 * 4);
+    border-color: transparent transparent transparent $triangle-color;
+  }
+}
+
+@mixin table-of-contents-hover($hover-color: var(--theme-bg-hover), $active-color: var(--accent), $icon-color: var(--theme-bg-hover)) {
+  @media (any-hover: hover) {
+    &, & > a:active {
+      color: $active-color;
+      cursor: pointer;
+    }
+    &:hover {
+      color: $hover-color;
+      // cursor: pointer;
+      list-style-type: none;
+      // @include table-of-contents_bar($hover-color, $icon-color);
+      & > a {
+        color: $hover-color;
+      }
+    }
+  }
+}
+@mixin table-of-contents-current($color: var(--text), $icon-color: var(--theme-bg-hover)) {
+  a {
+    color: $color;
+  }
+  @include table-of-contents_bar($icon-color);
+}
 .table_of_contents {
   visibility: hidden;
-  @include aside-meta;
-  @include link-lvhfa-reset;
-
-  // These values depend on the font family and need to be adjusted accordingly
-  --triangle_top: 0.25em;
-  --triangle_left: -1.0em;
-
   width: 100%;
+  @include aside-meta;
+  // @include link-lvhfa-reset;
 
-  nav {
+  // The top offset of the triangle depends on the font family and
+  // needs to be adjusted accordingly
+  // --triangle_top: 0.33em;
+  --toc_indent: 1.5em;
+  --toc_item_between: 0.5em;
+  --toc_indicator_line_color: var(--theme);
+  --toc_indicator_line_width: 1px;
+  --toc_indicator_width: calc(var(--toc_indent) / 2);
+  --toc_indicator_icon_color: var(--theme-bg-hover);
+  --toc_indicator_icon_width: calc(var(--toc_indicator_width) / 3);
+
+  .article_top {
     margin-top: 0.5em;
-    &#TableOfContents {
-      position: relative;
+    padding-bottom: 0.5em;
+    @include table-of-contents-hover;
+    padding-left: var(--toc_indent);
+    position: relative;
+    & > a {
       &::before {
+        content: '';
+        display: block;
+        position: absolute;
+        width: var(--toc_indicator_width);
+        height: var(--toc_indicator_width);
+        top: calc(1em * var(--line-height) / 2 - var(--toc_indicator_width) / 2);
+        // bottom: 0.5em;
+        left: 0;
+        border-radius: 50%;
+        background-color: var(--toc_indicator_icon_color);
+        opacity: 1;
+      }
+      &::after {
         position: absolute;
         content: "";
-        top: 0.5em;
-        bottom: 0.5em;
-        left: 0;
-        border-left: 1px solid var(--theme-bg-hover);
+        top: calc(1em * var(--line-height) / 2 + var(--toc_indicator_width) / 2);
+        bottom: 0;
+        left: calc(0px - var(--toc_indicator_line_width) / 2 + var(--toc_indicator_width) / 2);
+        border-left: var(--toc_indicator_line_width) solid var(--toc_indicator_line_color);
       }
+    }
+  }
+
+  nav {
+    &#TableOfContents {
+      position: relative;
     }
   }
 
@@ -967,24 +995,31 @@ html.content-above-header {
   a {
     text-decoration: none;
     color: var(--text);
-    position: relative;
   }
   ul {
     margin: 0;
     padding: 0;
     width: 100%;
+    & > li {
+      margin: 0 0 0 var(--toc_indent);
+      padding: 0;
+      list-style-type: none;
+      padding: 0;
+      ul {
+        padding-left: 1em;
+      }
+      @include table-of-contents_line;
+    }
   }
-  li {
-    // list-style-type: circle;
+  ul > li + li {
+    padding-top: var(--toc_item_between);
+  }
+
+  //li.visible:not(.active) + li.active,
+  li.active,
+  nav:not(.active) li.visible {
     list-style-type: none;
-    // padding: 0 0 0 0.5em
-    // width: 100%
-    &::before {
-      content: none;
-    }
-    ul {
-      padding-left: 1em;
-    }
+    @include table-of-contents-current;
   }
   // nav > a, nav:not(.active) li, nav:not(.active) li.visible ~ li, nav.active li
   nav:not(.active) li,
@@ -992,11 +1027,8 @@ html.content-above-header {
   nav.active li {
     @include table-of-contents-hover;
   }
-  //li.visible:not(.active) + li.active,
-  li.active,
-  nav:not(.active) li.visible {
-    list-style-type: none;
-    cursor: auto;
+  ul ul li.active,
+  nav:not(.active) ul ul li.visible {
     @include table-of-contents-current;
   }
   nav:not(.active) ul ul li,
@@ -1004,18 +1036,11 @@ html.content-above-header {
   nav.active ul ul li {
     @include table-of-contents-hover;
   }
-  ul ul li.active,
-  nav:not(.active) ul ul li.visible {
-    @include table-of-contents-current;
-  }
-  // nav:not(.active) li.visible ~ li.visible {
-  //   list-style-type: circle;
-  //   cursor: auto;
-  // }
 }
 body:not(.modern-js) .article_aside .table_of_contents {
   visibility: visible;
 }
+
 @media only screen {
   .outdated:before {
     content: '';

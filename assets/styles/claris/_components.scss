@@ -3,7 +3,7 @@
     background: var(--choice-bg);
     @include color-scheme_transition;
     z-index: $main-z-index;
-    @include link-lvhfa;
+    // @include link-lvhfa;
   }
   &_inner {
     // margin-top: var(--inner_margin-y)
