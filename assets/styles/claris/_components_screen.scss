@@ -161,12 +161,12 @@
   // FIXME: Overflow-y leads to scroll bars
   // Does not work because overlow-x and -y cannot be set independently
   // https://stackoverflow.com/q/6421966/617559
-  @supports (color: var(--color-test)) {
-    font-size: var(--font-size-nav);
-  }
   @media screen and (max-width: $screenViewBreakpointWidthMobileMenu) {
     // For IE 11
     font-size: 1.5rem;
+  }
+  @supports (color: var(--color-test)) {
+    font-size: var(--font-size-nav);
   }
   .icon {
     width: var(--icon-height-nav);

@@ -666,24 +666,18 @@ html {
   --font-size-supertitle: var(--font-size-heading-smaller-2);
   --font-size-subtitle: var(--font-size-heading-normal);
 
-  --font-size-nav: 1.5rem;
-  @media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
-    --font-size-nav: 0.875rem;
-  }
-  @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
-  }
-  @media screen and (min-width: $screenViewBreakpointWidthOneColumn) {
-    // @include font-size-scale(1.25rem);
-    // --font-size: var(--font-size-normal);
-    --font-size-nav: 1.0rem;
-    // --font-size-meta: 1.0rem;
-    // --font-size-button: 1.0rem;
-    // --font-size-aside: 1.0rem;
-    // --font-size-footer: 1.0rem;
-  }
-  @media screen and (min-width: $screenViewBreakpointWidthWide) {
-    --font-size-nav: 1.25rem;
-  }
+  --font-size-nav: var(--font-size-normal);
+  // @media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
+  //   --font-size-nav: 0.875rem;
+  // }
+  // @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
+  // }
+  // @media screen and (min-width: $screenViewBreakpointWidthOneColumn) {
+  //   --font-size-nav: 1.0rem;
+  // }
+  // @media screen and (min-width: $screenViewBreakpointWidthWide) {
+  //   --font-size-nav: 1.25rem;
+  // }
 
   --font-weight: 400;
   --font-weight-strong: 600;
