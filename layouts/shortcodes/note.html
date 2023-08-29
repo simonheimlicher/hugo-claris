@@ -25,7 +25,7 @@ There is a [possibly related issue and discussion](https://discourse.gohugo.io/t
 <div class="note_wrap">
   <div class="note {{ $noteClassName }}">
     <h2>{{ strings.FirstUpper $noteTitle }}</h2>
-    <div>{{ .Inner }}</div>
+    <div>{{ page.RenderString .Inner }}</div>
   </div>
 </div>
 {{- /* */ -}}
