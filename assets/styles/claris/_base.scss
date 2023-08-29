@@ -282,12 +282,10 @@ blockquote {
   --box-padding-bottom: calc(1.2 * var(--box-padding-top));
   --box-padding-left: calc(var(--quotation-mark-open-height));
 
-  --quotation-mark-font-size-to-height-factor: 4;
-  --quotation-mark-open-height: 1rem;
-  --quotation-mark-open-line-height: calc(var(--quotation-mark-open-height));
+  --quotation-mark-font-size-to-height-factor: 5;
+  --quotation-mark-open-height: calc(1 * var(--font-size));
   --quotation-mark-open-font-size: calc(var(--quotation-mark-open-height) * var(--quotation-mark-font-size-to-height-factor));
-  --quotation-mark-close-height: 2.0rem;
-  --quotation-mark-close-line-height: calc(var(--quotation-mark-close-height));
+  --quotation-mark-close-height: calc(2 * var(--font-size));
   --quotation-mark-close-font-size: calc(var(--quotation-mark-close-height) * var(--quotation-mark-font-size-to-height-factor));
 
   --quote-padding-left: calc(var(--box-padding-left) + 0.75 * var(--quotation-mark-open-height));
@@ -316,11 +314,10 @@ blockquote {
       font-family: var(--font-serif), Georgia, serif;
       content: "“";
       position: absolute;
-      top: calc(var(--box-padding-top) + 2 * var(--quotation-mark-open-height));
+      top: calc(var(--box-padding-top) + var(--quotation-mark-open-height));
       left: 0;
-      line-height: calc(var(--quotation-mark-open-line-height));
-      font-size: 5em;
-      font-size: calc(var(--quotation-mark-open-font-size));
+      line-height: var(--quotation-mark-open-height);
+      font-size: var(--quotation-mark-open-font-size);
       color: $blockquote-quotation-color-open;
       font-weight: normal;
     }
@@ -328,9 +325,9 @@ blockquote {
       font-family: var(--font-serif), Georgia, serif;
       content: "”";
       position: absolute;
-      bottom: calc(-0.8 * var(--quotation-mark-close-height));
+      bottom: calc(0px - 0.5 * var(--quotation-mark-close-height));
       right: calc( var(--box-padding-right) - 0.5 * var(--quotation-mark-close-height));
-      line-height: calc(var(--quotation-mark-close-line-height));
+      line-height: var(--quotation-mark-close-height);
       font-size: calc(var(--quotation-mark-close-font-size));
       color: $blockquote-quotation-color-close;
       font-weight: normal;
