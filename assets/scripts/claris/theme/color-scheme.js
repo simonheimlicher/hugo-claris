@@ -5,6 +5,7 @@ import {
   pushClass,
   containsClass,
   elemAttribute,
+  isObj,
 } from './functions';
 
 const initColorScheme = function () {
@@ -23,6 +24,12 @@ const initColorScheme = function () {
   catch (exception) {
     bank = undefined
   }
+
+  /**
+   * FIXME: Should use this approach
+   * https://stackoverflow.com/a/75124760/617559
+   * https://jsfiddle.net/35e0a97a/xmt1k659/78/
+   */
 
   /**
    * Make <picture> <source> elements with media="(prefers-color-scheme:)"
@@ -61,7 +68,7 @@ const initColorScheme = function () {
           // independently of the preferred color scheme...
           if (source?.dataset.media.match(colorSchemeMatchRegex)) {
             source.media = source.dataset.media.replace(colorSchemeEliminateRegex, '') || 'all';
-            // console.log('source.dataset.media=' + source.dataset.media + ' --> ' + source.media);
+            // deb('source.dataset.media=' + source.dataset.media + ' --> ' + source.media);
             source.srcset = source.dataset.srcset;
             variantStyleAttr = source.dataset.style;
           // ... otherwise, remove the 'srcset' attribute to hide the image
@@ -88,14 +95,67 @@ const initColorScheme = function () {
         });
       }
     });
-
-}
+  }
 
   function updateDocumentColorScheme(scheme) {
     elemAttribute(document.documentElement, 'data-color-scheme', scheme);
   }
 
+  function updateMetaColorScheme(schemeUser) {
+    let schemeSystem = schemeUser === 'dark' ? 'light' : 'dark';
+    let prefersMetaUser = document.head.querySelector('meta[name=theme-color][media*="prefers-color-scheme: ' + schemeUser + '"]');
+    if (!isObj(prefersMetaUser)) {
+      deb('claris/theme/color-scheme: Missing prefers-color-scheme meta for system schemeUser=', schemeUser);
+      return;
+    }
+    let dataMetaUser = document.head.querySelector('meta[name=data-theme-color][media*="prefers-color-scheme: ' + schemeUser + '"]');
+    if (window.matchMedia('(prefers-color-scheme: ' + schemeUser).matches) {
+      deb('claris/theme/color-scheme: system scheme[' + schemeSystem + '] matches user scheme[' + schemeUser + ']');
+      if (isObj(dataMetaUser)) {
+        // Restore content from value saved in 'data-theme-color' attribute
+        prefersMetaUser.content = dataMetaUser.content;
+        deb('claris/theme/color-scheme: restored prefersMetaUser[' + schemeUser + '] from dataMetaUser[' + schemeUser + ']: ', prefersMetaUser);
+      }
+    }
+    else {
+      deb('claris/theme/color-scheme: system scheme[' + schemeSystem + '] is different from user scheme[' + schemeUser + ']');
+      if (!window.matchMedia('(prefers-color-scheme: ' + schemeSystem).matches) {
+        deb('claris/theme/color-scheme: system scheme DOES NOT match other scheme ' + schemeSystem);
+        return;
+      }
+      let prefersMetaSystem = document.head.querySelector('meta[name=theme-color][media*="prefers-color-scheme: ' + schemeSystem + '"]');
+      if (!isObj(prefersMetaSystem)) {
+        deb('claris/theme/color-scheme: Missing prefers-color-scheme meta for schemeSystem=', schemeSystem);
+        return;
+      }
+      if (!isObj(dataMetaUser)) {
+        dataMetaUser = document.createElement('meta');
+        dataMetaUser.name = "data-theme-color";
+        dataMetaUser.media = "(prefers-color-scheme: " + schemeUser;
+        dataMetaUser.content = prefersMetaUser.content;
+        document.head.appendChild(dataMetaUser);
+        deb('claris/theme/color-scheme: Saved user theme prefers-color-scheme: ' + schemeUser + ': ', dataMetaUser);
+      }
+      deb('claris/theme/color-scheme: dataMetaUser: ', dataMetaUser);
+
+      let dataMetaSystem = document.head.querySelector('meta[name=data-theme-color][media*="prefers-color-scheme: ' + schemeSystem + '"]');
+      if (!isObj(dataMetaSystem)) {
+        dataMetaSystem = document.createElement('meta');
+        dataMetaSystem.name = "data-theme-color";
+        dataMetaSystem.media = "(prefers-color-scheme: " + schemeSystem;
+        dataMetaSystem.content = prefersMetaSystem.content;
+        document.head.appendChild(dataMetaSystem);
+        deb('claris/theme/color-scheme: Saved system theme prefers-color-scheme: ' + schemeSystem + ': ', dataMetaSystem);
+      }
+      deb('claris/theme/color-scheme: dataMetaSystem: ', dataMetaSystem);
+
+      prefersMetaSystem.content = dataMetaUser.content;
+      deb('claris/theme/color-scheme: override prefersMetaSystem[' + schemeSystem + '] from dataMetaUser[' + schemeUser + ']: ', prefersMetaSystem);
+    }
+  }
+
   function updateColorScheme(scheme) {
+    updateMetaColorScheme(scheme);
     updateDocumentColorScheme(scheme);
     updateSourceMedia(scheme);
   }
