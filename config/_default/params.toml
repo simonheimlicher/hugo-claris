@@ -96,6 +96,23 @@ supportIE11 = true
 
 sidebarTaxonomies = ["tags"]
 
+[colors]
+  colorPrimaryLit = "hsl(200, 100%, 50%)"
+  colorPrimaryDim = "hsl(200, 100%, 50%)"
+  onPrimaryLit = "hsl(200, 50%, 25%)"
+  onPrimaryDim = "hsl(200, 75%, 90%)"
+  surfacePrimaryLit = "hsl(200, 50%, 95%)"
+  surfacePrimaryDim = "hsl(200, 50%, 15%)"
+  colorSurfaceLit = "hsl(200, 80%, 98%)"
+  colorSurfaceDim = "hsl(200, 90%, 10%)"
+  onSurfaceLit = "hsl(200, 100%, 13%)"
+  onSurfaceDim = "hsl(200, 100%, 95%)"
+  colorBackgroundLit = "hsl(200, 10%, 98%)"
+  colorBackgroundDim = "hsl(200, 10%, 10%)"
+  onBackgroundLit = "hsl(200, 10%, 13%)"
+  onBackgroundDim = "hsl(200, 10%, 95%)"
+
+
 [meta]
   [meta.title]
     targetlength = [10, 60]

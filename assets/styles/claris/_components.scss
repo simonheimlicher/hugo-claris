@@ -89,7 +89,7 @@
     border-top: 2px solid var(--text-faint);
     padding: var(--inner_padding-y) 0;
     @include color-scheme_transition;
-    background: var(--bg);
+    background: var(--choice-bg);
     // &-0
     //   background: var(--theme-bg-hue-0)
     // &-1

@@ -56,20 +56,22 @@ $theme-text-dim: $onPrimaryDim;
 $theme-text-active-dim: darken($theme-text-dim, 100%);
 $theme-text-hover-dim: darken($theme-text-dim, 100%);
 
-$link-lit: hsl($primary-hue-lit, 100%, 25%);
-$link-hover-lit: hsl($primary-hue-lit, 100%, 20%);
-$link-active-lit: hsl($primary-hue-lit, 100%, 40%);
+$link-lit: darken($colorPrimaryLit, 20%);
+$link-hover-lit: darken($colorPrimaryLit, 10%);
+$link-active-lit: darken($colorPrimaryLit, 0%);
 
 $link-dim: hsl($primary-hue-dim, 100%, 85%);
 $link-hover-dim: hsl($primary-hue-dim, 100%, 90%);
 $link-active-dim: hsl($primary-hue-dim, 100%, 70%);
 
-// $theme-bg-lit: darken(saturate($theme-lit, 50%), 2%);
+$link-dim: lighten($colorPrimaryDim, 20%);
+$link-hover-dim: lighten($colorPrimaryDim, 30%);
+$link-active-dim: lighten($colorPrimaryDim, 0%);
+
 $theme-bg-lit: $surfacePrimaryLit;
 $theme-bg-active-lit: darken(saturate($theme-bg-lit, 0%), 50%);
 $theme-bg-hover-lit: darken(saturate($theme-bg-lit, 20%), 40%);
 
-// $theme-bg-dim:  lighten(saturate($theme-dim, 5%), 5%);
 $theme-bg-dim: $surfacePrimaryDim;
 $theme-bg-active-dim: lighten(saturate($theme-bg-dim, 0%), 40%);
 $theme-bg-hover-dim: lighten(saturate($theme-bg-dim, 20%), 50%);
