@@ -679,6 +679,7 @@
   grid-column: 3;
   z-index: ($main-z-index + 2);
   .content-title {
+    color: var(--header-text);
     z-index: ($main-z-index + 5);
     h1 {
       font-size: var(--font-size-title);
