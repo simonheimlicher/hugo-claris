@@ -74,11 +74,11 @@
 {{- $lazy := default (eq $fetchPriority "low") .lazy -}}
 
 {{- $scriptBasedLoading := or $lazy $variantSpec -}}
+{{- $includePlaceholder := $scriptBasedLoading }}
+{{- $includeNoscriptFallback := $scriptBasedLoading }}
 
 <!-- Always include the low-quality placeholder to avoid the jarring white whole on slow connections -->
-{{- $includePlaceholder := true }}
-
-{{- $requiresNoScriptFallback := or $includePlaceholder $scriptBasedLoading }}
+{{- $placeholderAsBackground := true }}
 
 {{- $defaultMedia := "default" }}
 {{- $defaultVariantName := "default" }}
@@ -277,7 +277,7 @@
       {{- end }}
     {{- end -}}
         <!-- HTML element is a grouping element and must not contain any styles -->
-        <picture{{ if $requiresNoScriptFallback }} class="lazyload"{{ end }}>
+        <picture{{ if $includeNoscriptFallback }} class="lazyload"{{ end }}>
     {{- $multiVariant := false }}
     {{- range $variant := where $pictureResources "variant" "ne" $defaultVariantName }}
       {{- $multiVariant = true }}
@@ -329,11 +329,18 @@
 
       {{- $placeholderInlineImg := .formatsrcsets.placeholder }}
       {{- $variantInlineStyleAttr := .style }}
+      {{- with $variantInlineStyleAttr }}
+        {{- $imgInlineStyleSlice = append . $imgInlineStyleSlice }}
+      {{- end }}
+      {{- if $placeholderAsBackground }}
+        {{ $imgInlineStyleSlice = append (printf `background-image: url('%s')` $placeholderInlineImg) $imgInlineStyleSlice}}
+      {{- end }}
       {{- range (last 1 .formatsrcsets.formats) }}
         {{- $srcURL := .resource.RelPermalink }}
         {{- $imgWidth := default .resource.Width $imageResourceArgs.Width }}
         {{- $imgHeight := default .resource.Height $imageResourceArgs.Height }}
-          <img  class="{{ with $imgClass }}{{ . }}{{ end }}{{ if $requiresNoScriptFallback }} lazyload{{ end }}"
+        {{- $imgInlineStyleSlice := slice }}
+          <img  class="{{ with $imgClass }}{{ . }}{{ end }}{{ if $includeNoscriptFallback }} lazyload{{ end }}"
                 width="{{ $imgWidth }}" height="{{ $imgHeight }}"
             {{- if $includePlaceholder }}
                   {{ printf "src=%q" $placeholderInlineImg | safeHTMLAttr }}
@@ -368,7 +375,7 @@
     {{- end }}
           </picture>
 
-    {{- if $requiresNoScriptFallback }}
+    {{- if $includeNoscriptFallback }}
       {{- range $variant := where $pictureResources "variant" "eq" $defaultVariantName }}
         {{- $variantInlineStyleAttr := .style }}
         {{- range (last 1 .formatsrcsets.formats) }}
