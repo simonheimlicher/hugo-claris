@@ -45,6 +45,12 @@
 
 .panel {
   &_container {
+    font-size: var(--font-size-larger-1);
+    p, ul, ol {
+      &:first-child {
+        margin-top: calc(1em * (1 - 0.92 * var(--line-height)));
+      }
+    }
     &.layout {
       &-flex {
         display: flex;
@@ -52,20 +58,20 @@
       }
       &-grid {
         display: grid;
-        column-gap: var(--inner_margin-x);
+        column-gap: var(--inner_margin);
       }
     }
   }
   &_title {
-    margin: 0;
-    padding: 0 0 var(--inner_margin-y-2) 0;
+    margin: calc(1em * (1 - var(--line-height-heading))) 0 var(--inner_margin) 0;
+    padding: 0;
     .layout-flex & {
       font-size: 150%;
     }
     .layout-grid & {
       grid-row: 1;
       font-weight: var(--font-weight);
-      padding-bottom: var(--inner_margin-y-1);
+      padding-bottom: var(--inner_margin_4-1);
     }
   }
   &_content {
@@ -85,9 +91,9 @@
     }
   }
   &_item {
-    @include inner_horizontal-padding();
+    @include full-bleed_horizontal-padding();
     border-top: 2px solid var(--text-faint);
-    padding: var(--inner_padding-y) 0;
+    padding: var(--inner_padding) 0;
     @include color-scheme_transition;
     background: var(--choice-bg);
     // &-0
@@ -119,6 +125,9 @@
       margin: 0 auto;
       max-width: var(--content_multicolumn_max-width);
     }
+    &_content {
+      @include inner_horizontal-padding();
+    }
     .layout-grid & {
       &-1 {
         grid-column: 1;
@@ -141,12 +150,12 @@
 .card {
   &_container {
     color: var(--text);
-    margin-top: var(--inner_margin-y-2);
+    margin-top: var(--inner_margin);
     .layout-flex & {
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
-      gap: var(--inner_margin-x);
+      gap: var(--inner_margin);
       // FIXME: IE 11 bug
       // https://github.com/philipwalton/flexbugs/issues/75
       // Setting a min-height on the container (body does not work)
@@ -163,8 +172,8 @@
     }
   }
   &_title {
-    font-size: 125%;
-    padding-top: 0;
+    margin: calc(1em * (1 - var(--line-height-heading))) 0 var(--inner_margin) 0;
+    padding: 0;
   }
   &_item {
     h3,
@@ -177,16 +186,8 @@
       @include drop-shadow(3rem, 0.1, 0.1);
       @include color-scheme_transition;
       border-radius: 0.25em;
-      padding: var(--inner_padding-y) var(--inner_padding-x);
-      @supports (display: flex) {
-        flex: 1 1 auto;
-        @media only screen and (min-width: $screenViewBreakpointWidthNarrow) {
-          flex: 1 1 40%;
-        }
-        @media only screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
-          flex: 1 1 30%;
-        }
-      }
+      padding: var(--inner_padding);
+      min-width: calc(min(100%, ($screenViewBreakpointWidthWide - 3 * var(--inner_margin)) / 2));
     }
     .layout-grid & {
       &-1 {
@@ -236,8 +237,8 @@
   }
   // border-top: 1px solid var(--xhaze)
   // background: var(--footer-bg)
-  padding-top: var(--inner_padding-y);
-  // padding-bottom: var(--inner_padding-y)
+  padding-top: var(--inner_padding);
+  // padding-bottom: var(--inner_padding)
   @include list-style_indented(0, 0, 0, 0);
   z-index: ($main-z-index  - 1);
 

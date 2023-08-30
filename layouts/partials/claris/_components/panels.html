@@ -61,11 +61,12 @@ See https://github.com/gohugoio/hugo/issues/7297
       <section class="panel_item_inner">
     {{- end }}
         {{- if reflect.IsMap . }}
-          {{- with .title }}
-            <h{{ $headingLevel }} class="panel_title panel_item-{{ $panelID }}">{{ page.RenderString . }}</h{{ $headingLevel }}>
-          {{- end }}
-          {{- with .content }}
-            <div class="panel_content panel_item-{{ $panelID }}">
+          {{- if or .title .content }}
+            <div class="panel_item_content panel_item-{{ $panelID }}">
+            {{- with .title }}
+              <h{{ $headingLevel }} class="panel_title panel_item-{{ $panelID }}">{{ page.RenderString . }}</h{{ $headingLevel }}>
+            {{- end }}
+            {{- with .content }}
               {{- if strings.HasPrefix (printf "%T" . ) "template" }}
                 <!-- Since .content is the original .Content from the page,
                 we don't need to call page.Renderstring -->
@@ -73,6 +74,7 @@ See https://github.com/gohugoio/hugo/issues/7297
               {{- else }}
                 {{- page.RenderString $renderOptPanel . }}
               {{- end }}
+            {{- end }}
             </div>
           {{- end }}
           {{- with .cards }}
