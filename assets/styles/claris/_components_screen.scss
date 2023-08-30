@@ -487,6 +487,7 @@
   }
   &_color-scheme {
     &_choice {
+      display: none;
       &_mask {
         position: relative;
         width: $screenViewNavHeightNarrow;
