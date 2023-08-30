@@ -25,7 +25,7 @@
 {{- with .figureclass -}}
   {{- $figureClass = trim (printf "%s %s" $figureClass .) " " -}}
 {{- end }}
-{{- $containerClass := "responsive-image_container" }}
+{{- $containerClass := default "responsive-image_container" .containerclass }}
 
 {{- $defaultVersionName := "default" }}
 
@@ -73,6 +73,7 @@
 
 {{- $lazy := default (eq $fetchPriority "low") .lazy -}}
 
+{{- $noscriptHideClass := "noscript-hide" }}
 {{- $scriptBasedLoading := or $lazy $variantSpec -}}
 {{- $includePlaceholder := $scriptBasedLoading }}
 {{- $includeNoscriptFallback := $scriptBasedLoading }}
@@ -277,7 +278,7 @@
       {{- end }}
     {{- end -}}
         <!-- HTML element is a grouping element and must not contain any styles -->
-        <picture{{ if $includeNoscriptFallback }} class="lazyload"{{ end }}>
+        <picture{{ if $includeNoscriptFallback }} class="{{ $noscriptHideClass }}"{{ end }}>
     {{- $multiVariant := false }}
     {{- range $variant := where $pictureResources "variant" "ne" $defaultVariantName }}
       {{- $multiVariant = true }}
@@ -340,7 +341,7 @@
         {{- $imgWidth := default .resource.Width $imageResourceArgs.Width }}
         {{- $imgHeight := default .resource.Height $imageResourceArgs.Height }}
         {{- $imgInlineStyleSlice := slice }}
-          <img  class="{{ with $imgClass }}{{ . }}{{ end }}{{ if $includeNoscriptFallback }} lazyload{{ end }}"
+          <img  class="{{ with $imgClass }}{{ . }}{{ end }}{{ if $includeNoscriptFallback }} {{ $noscriptHideClass }}{{ end }}"
                 width="{{ $imgWidth }}" height="{{ $imgHeight }}"
             {{- if $includePlaceholder }}
                   {{ printf "src=%q" $placeholderInlineImg | safeHTMLAttr }}

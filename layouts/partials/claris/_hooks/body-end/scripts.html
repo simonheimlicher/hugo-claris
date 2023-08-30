@@ -1,6 +1,85 @@
 {{- $page := .Page }}
 {{- $template := "claris/_hoos/body-end/scripts" }}
 
+    <script>
+      /**
+      * Make <picture> <source> elements with media="(prefers-color-scheme:)"
+      * respect custom theme preference overrides.
+      * Otherwise the `media` preference will only respond to the OS-level setting
+      * Unfortunately, if the user overrides the preferred color scheme,
+      * the image resource for the preferred color scheme will already have been requested
+      * by the time JavaScript is executed. Therefore, we need to initially put a
+      * placeholder in the srcset attribute and then switch over to the correct image
+      * in the function below.
+      * Source: https://larsmagnus.co/blog/how-to-make-images-react-to-light-and-dark-scheme
+      */
+      // console.log('claris/head/assets: pictures begin');
+      try {
+        const schemeUser = document.documentElement.dataset.colorScheme = window.localStorage.getItem('userSelectedColorScheme');
+        let scheme = null;
+        if ( ! window.matchMedia('(prefers-color-scheme: ' + schemeUser).matches) {
+          // console.log(`claris/head/assets: override system scheme with user scheme[${schemeUser}]`);
+          scheme = schemeUser;
+        }
+        const colorSchemeMatchRegex = new RegExp(`\\(\\s*prefers-color-scheme:\\s*${scheme}\\)`);
+        const colorSchemeEliminateRegex = new RegExp(`(\\s*and\\s*)?${colorSchemeMatchRegex.source}(\\s*and\\s*)?`);
+        const pictures = document.querySelectorAll('picture');
+        pictures.forEach((picture) => {
+          let variantStyleAttr = null;
+
+          const sources = picture.querySelectorAll(`
+              source[media*="prefers-color-scheme"],
+              source[data-media*="prefers-color-scheme"]
+            `);
+
+          sources.forEach((source) => {
+            // Preserve the source `media` as a data-attribute
+            // to be able to switch between preferences
+            if (source?.media.includes('prefers-color-scheme')) {
+              source.dataset.media = source.media;
+            }
+
+            // If argument 'scheme' is defined, we override the behavior of the browser
+            if (scheme) {
+              // If the source element `media` target is the `preference`,
+              // eliminate the 'prefers-scholor-scheme' condition to show the image
+              // independently of the preferred color scheme...
+              if (source?.dataset.media.match(colorSchemeMatchRegex)) {
+                source.media = source.dataset.media.replace(colorSchemeEliminateRegex, '') || 'all';
+                // deb('source.dataset.media=' + source.dataset.media + ' --> ' + source.media);
+                source.srcset = source.dataset.srcset;
+                variantStyleAttr = source.dataset.style;
+              // ... otherwise, remove the 'srcset' attribute to hide the image
+              } else if (source.srcset) {
+                source.media = source.dataset.media;
+                source.srcset = [];
+              }
+            }
+            // Otherwise, we let the browser decide which image to load
+            else {
+              source.media = source.dataset.media;
+              source.srcset = source.dataset.srcset;
+              variantStyleAttr = source.dataset.style;
+            }
+          });
+
+          if (variantStyleAttr) {
+            const imgs = picture.querySelectorAll(`img[style]`);
+            imgs.forEach((img) => {
+              if (img?.style) {
+                img.dataset.style = img.style;
+              }
+              img.style = variantStyleAttr;
+            });
+          }
+        });
+        // console.log('claris/head/assets: pictures done');
+      }
+      catch (e) {
+        // console.log(e);
+      }
+    </script>
+
 {{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
 
 {{- with partialCached "claris/_functions/asset-bundles" . $assetVariant -}}

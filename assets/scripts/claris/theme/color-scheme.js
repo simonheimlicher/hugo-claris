@@ -213,14 +213,16 @@ const initColorScheme = function () {
     }
   }
 
-  setUserColorScheme();
+  // FIXME: Moved into claris/head/assets to allow loading
+  // variant images before JavaScript bundle has been fetchd
+  // setUserColorScheme();
 
   const initColorSchemeToggle = function () {
     const htmlRootElement = clarisHugoParams.htmlRootElement;
     const htmlRootClassNoCSSProperties = clarisHugoParams.htmlRootClassNoCSSProperties;
 
     if (containsClass(htmlRootElement, htmlRootClassNoCSSProperties)) {
-      deb(`claris/theme/color-scheme: #{htmlRootElement} contains class #{htmlRootClassNoCSSProperties}}`);
+      deb(`claris/theme/color-scheme: ${htmlRootElement} contains class ${htmlRootClassNoCSSProperties}}`);
       return;
     }
 
