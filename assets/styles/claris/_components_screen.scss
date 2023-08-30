@@ -591,17 +591,16 @@
 .main_claris {
   @media only screen {
     // Ensure .main_claris is under header_claris when header_claris is position: relative
-    padding-top: #{$screenViewNavHeight};
-    margin-top: - #{$screenViewNavHeight};
+    padding-top: #{$screenViewNavHeightNarrow};
+    margin-top: - #{$screenViewNavHeightNarrow};
+    @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
+      padding-top: #{$screenViewNavHeight};
+      margin-top: - #{$screenViewNavHeight};
+    }
     min-height: 100vh;
     min-height: 100lvh;
     // Ensure main covers whole width of footer
     width: 100%;
-    // Ensure .main_claris extends padding to reach under header_claris
-    // when header_claris is position: relative
-    // padding-top: 0
-    padding: #{$screenViewNavHeightNarrow} 0 0 0;
-    margin: - #{$screenViewNavHeightNarrow} auto 0 auto;
   }
 }
 .footer_claris {

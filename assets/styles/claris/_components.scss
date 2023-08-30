@@ -694,7 +694,7 @@
     }
     .supertitle {
       display: block;
-      font-size: calc(var(--font-size-supertitle));
+      font-size: var(--font-size-supertitle);
       padding: 1.5rem 0 0.25rem 0;
       text-align: start;
       // font-variant: small-caps
@@ -703,7 +703,7 @@
     }
     .subtitle {
       display: block;
-      font-size: calc(var(--font-size-subtitle));
+      font-size: var(--font-size-subtitle);
       padding: 0.5rem 0;
       text-align: end;
       font-weight: var(--font-weight-subtitle);
@@ -861,12 +861,11 @@
     position: relative;
     padding-bottom: 0;
     .main_header {
-      height: 40vh;
-      height: 40svh;
-      @media screen and (min-height: $screenViewBreakpointHeightTall) {
-        height: 60vh;
-        height: 60svh;
-      }
+      min-height: clamp(
+        $screenViewBreakpointHeightTall / 4,
+        75vh - ($screenViewBreakpointHeightTall / 8),
+        100vh
+      );
     }
     .main_inner {
       position: relative;
@@ -874,36 +873,17 @@
       flex-direction: column;
       justify-content: flex-end;
       align-items: center;
-      // (100vh - 40vh)
-      min-height: 60vh;
-      // (100svh - 40svh)
-      min-height: 60svh;
-      // padding-bottom: $screenViewInnerPaddingOneColumn
-      @media screen and (min-height: $screenViewBreakpointHeightTall) {
-        // (100vh - 60vh)
-        min-height: 40vh;
-        // (100svh - 60svh)
-        min-height: 40svh;
-      }
       z-index: ($main-z-index + 2);
     }
     .content-title {
       position: relative;
       color: white;
       text-shadow: 1.5px 1.5px 1.5px black;
-      --font-size-title: 3rem;
+      --font-size-title: var(--font-size-heading-larger-5);
+      --font-size-subtitle: var(--font-size-heading-larger-3);
       --header-text: white;
       text-align: center;
       margin-bottom: 2rem;
-      .subtitle {
-        --font-size-subtitle: 0.6 * var(--font-size-title);
-        font-size: calc(var(--font-size-subtitle));
-      }
-      @media screen and (min-width: $screenViewBreakpointWidthNarrow) and (min-height: $screenViewBreakpointHeightStickyFooter) {
-        --font-size-title: 4rem;
-        --font-size-subtitle: 0.6 * var(--font-size-title);
-        margin-bottom: 3rem;
-      }
     }
     &_figure {
       display: none;
@@ -911,7 +891,6 @@
     & ~ .footer_claris {
       position: relative;
       z-index: ($main-z-index + 1);
-      // padding-top: ($screenViewInnerPaddingOneColumn)
       background: var(--bg-dark);
       @include color-scheme_transition;
       color: var(--text-dark);
