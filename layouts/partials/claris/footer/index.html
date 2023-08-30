@@ -9,7 +9,7 @@
 {{- $siteAuthor := $meta.Site.Data.Author.Name }}
 {{- $footerSection := site.Params.footer.section }}
 
-<div class="footer_inner inner_bottom-0">
+<div class="footer_inner inner_bottom">
   {{- $footerPages := slice }}
   {{- with site.GetPage site.Params.footer.section }}
     {{- with .Resources.Match "*.md" }}

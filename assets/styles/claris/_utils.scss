@@ -28,15 +28,22 @@
 }
 .inner_horizontal {
   @include element-padding('inner', unset, 1);
-}
-.inner_horizontal.inner_top-0 {
-  @include element-padding('inner', 0, 1, unset, 1);
-}
-.inner_horizontal.inner_bottom-0 {
-  @include element-padding('inner', unset, 1, 0, 1);
+
+  .inner_top, &.inner_top {
+    @include element-padding('inner', 1, 1, unset, 1);
+  }
+  .inner_bottom, &.inner_bottom {
+    @include element-padding('inner', unset, 1, 1, 1);
+  }
 }
 .full-bleed_horizontal {
   @include element-padding('inner', unset, 0);
+}
+.inner_top {
+  @include element-padding('inner', 1, unset, unset, unset);
+}
+.inner_bottom {
+  @include element-padding('inner', unset, unset, 1, unset);
 }
 
 @supports (display: grid) {
