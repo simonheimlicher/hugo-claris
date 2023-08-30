@@ -1714,7 +1714,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
 // {{ </responsive-code> }}
   }
 }
-// .responsive-image_container,
+.content .responsive-image_container,
 .shortcode_responsive-figure,
 .excerpt_container {
   margin: var(--inner_margin-y) auto;
