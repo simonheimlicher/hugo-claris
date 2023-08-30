@@ -677,6 +677,9 @@
 .main_header {
   position: relative;
   grid-column: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   z-index: ($main-z-index + 2);
   .content-title {
     color: var(--header-text);
@@ -1729,8 +1732,8 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
 // {{ </responsive-code> }}
   }
 }
+// .responsive-image_container,
 .shortcode_responsive-figure,
-.responsive-image_container,
 .excerpt_container {
   margin: var(--inner_margin-y) auto;
   // padding: var(--inner_padding-y) var(--inner_padding-x)

@@ -633,7 +633,10 @@
           min-height: 40vh;
           // (100svh - 60svh)
           min-height: 40svh;
-          margin: -3rem auto -100vh auto;
+          // FIXME: Not sure why we had -3rem margin-top
+          // It interferes with the hero image on the home page
+          // margin: -3rem auto -100vh auto;
+          margin: 0 auto -100vh auto;
           margin-bottom: -100lvh;
           z-index: ($main-z-index + 2);
         }
