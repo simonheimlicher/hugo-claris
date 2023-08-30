@@ -503,7 +503,10 @@
     .icon {
       width: var(--icon-height-meta);
       height: var(--icon-height-meta);
-      margin: 0 1ch 0 0;
+      margin: calc( (var(--line-height) * 1em - var(--icon-height-meta)) / 4 * 1)
+      0.5em
+      calc( (var(--line-height) * 1em - var(--icon-height-meta)) / 4 * 3)
+      0.5em;
     }
     &_tag-list {
       column-gap: var(--inner_padding-x-1);
