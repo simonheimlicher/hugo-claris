@@ -645,9 +645,22 @@ html {
 
 html {
   --to-be-eliminated-by-csspurge: black;
-  --font-sans: #{$fontFamilySansStack}, "Helvetica Neue", "Helvetica", sans-serif;
-  --font-serif: #{$fontFamilySerifStack}, "Georgia", "Palatino", serif;
-  --font-mono: #{$fontFamilyMonoStack}, "Inconsolata", "Menlo", "Lucida Sans Typewriter", "Monaco", "Courier New", "Courier", monospace;
+
+  // Humanist from https://github.com/system-fonts/modern-font-stacks#humanist
+  --font-sans: #{$fontFamilySansStack},
+    Seravek, 'Gill Sans Nova', Ubuntu, Calibri, 'DejaVu Sans', source-sans-pro,
+    sans-serif;
+
+  // Antique from https://github.com/system-fonts/modern-font-stacks#antique
+  --font-serif: #{$fontFamilySerifStack},
+    Georgia, 'URW Bookman', 'URW Bookman L',
+    serif;
+
+  // Monospace Code from https://github.com/system-fonts/modern-font-stacks#monospace-code
+  --font-mono: #{$fontFamilyMonoStack},
+    ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono',
+    monospace;
+
   --font: var(--font-sans);
   --font-article: var(--font-serif);
 
