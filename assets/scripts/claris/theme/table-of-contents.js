@@ -5,6 +5,13 @@ import {
   elems,
 } from './functions';
 
+const DEBUG = false;
+// const deb = function (...args) {
+//     if (DEBUG) {
+//       console.print(...args);
+//     }
+// }
+
 // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
 // https://codepen.io/saas/pen/LYENgqq
 let addScrollObserver = null;
@@ -26,10 +33,25 @@ function injectTableOfContents() {
     const navigationBar = elem('.header_claris');
     if (!navigationBar) return;
 
+    const articleTopNav = tableOfContentsAside.querySelector('.article_top');
+    if (articleTopNav) {
+        const articleTopLink = tableOfContentsAside.querySelector('.article_top_link');
+        deb('articleTopLink: ', articleTopLink);
+        const articleTopLI = document.createElement('li');
+        articleTopLI.classList.add('article_top');
+        if (DEBUG) {
+            articleTopLI.appendChild(articleTopLink.cloneNode(true));
+        }
+        else {
+            articleTopLI.appendChild(articleTopLink);
+            articleTopNav.remove();
+        }
+        const tableOfContentsUL = tableOfContentsNav.querySelector('ul');
+        if (tableOfContentsUL) {
+            tableOfContentsUL.insertBefore(articleTopLI, tableOfContentsUL.firstChild);
+        }
+    }
     const navigationElements = function (tableOfContentsNav) {
-
-        const navLists = elems('ul', tableOfContentsNav);
-        if (!navLists) return;
 
         const navListItems = elems('li', tableOfContentsNav);
         if (!navListItems) return;
@@ -133,7 +155,7 @@ function injectTableOfContents() {
                         deb("    no sectionHeading found for '" + navId + "'");
                     }
                 }
-                deb("sectionHeadings:"); deb(sectionHeadings);
+                deb("sectionHeadings:", sectionHeadings);
                 return sectionHeadings;
             }(navigationElements, content);
 

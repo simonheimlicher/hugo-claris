@@ -864,7 +864,6 @@ html.content-above-header {
 
 @mixin table-of-contents_line($color: var(--text), $border-width: var(--toc_indicator_line_width), $border-color: var(--toc_indicator_line_color),
 $indicator-width: var(--toc_indicator_width)) {
-  position: relative;
   &::before {
     position: absolute;
     content: "";
@@ -877,7 +876,6 @@ $indicator-width: var(--toc_indicator_width)) {
 // Icon: vertical bar
 @mixin table-of-contents_bar($icon-color: var(--toc_indicator_icon_color), $icon-width: var(--toc_indicator_icon_width), $indicator-width: var(--toc_indicator_width)) {
   & > a {
-    position: relative;
     &::before {
       content: '';
       display: block;
@@ -943,56 +941,18 @@ $indicator-width: var(--toc_indicator_width)) {
   // The top offset of the triangle depends on the font family and
   // needs to be adjusted accordingly
   // --triangle_top: 0.33em;
-  --toc_indent: 1.5em;
-  --toc_item_between: 0.5em;
+  --toc_indent: calc(1.5 * var(--font-size-normal));
+  --toc_item_between: calc(0.5 * var(--font-size-normal));
   --toc_indicator_line_color: var(--theme);
   --toc_indicator_line_width: 1px;
   --toc_indicator_width: calc(var(--toc_indent) / 2);
   --toc_indicator_icon_color: var(--theme-bg-hover);
   --toc_indicator_icon_width: calc(var(--toc_indicator_width) / 3);
 
-  .article_top {
-    margin-top: 0.5em;
-    padding-bottom: 0.5em;
-    @include table-of-contents-hover;
-    padding-left: var(--toc_indent);
-    position: relative;
-    & > a {
-      &::before {
-        content: '';
-        display: block;
-        position: absolute;
-        width: var(--toc_indicator_width);
-        height: var(--toc_indicator_width);
-        top: calc(1em * var(--line-height) / 2 - var(--toc_indicator_width) / 2);
-        // bottom: 0.5em;
-        left: 0;
-        border-radius: 50%;
-        background-color: var(--toc_indicator_icon_color);
-        opacity: 1;
-      }
-      &::after {
-        position: absolute;
-        content: "";
-        top: calc(1em * var(--line-height) / 2 + var(--toc_indicator_width) / 2);
-        bottom: 0;
-        left: calc(0px - var(--toc_indicator_line_width) / 2 + var(--toc_indicator_width) / 2);
-        border-left: var(--toc_indicator_line_width) solid var(--toc_indicator_line_color);
-      }
-    }
-  }
-
-  nav {
-    &#TableOfContents {
-      position: relative;
-    }
-  }
-
   h2 {
     font-size: 100%;
-    margin: 0 0 0 -1em;
-    padding: 0.25em 1em;
-    border-radius: 0.25em;
+    margin: calc(1em * (1 - var(--line-height-heading))) 0 var(--inner_margin_4-1) 0;
+    padding: 0;
     text-transform: uppercase;
   }
   a {
@@ -1004,24 +964,20 @@ $indicator-width: var(--toc_indicator_width)) {
     padding: 0;
     width: 100%;
     & > li {
-      margin: 0 0 0 var(--toc_indent);
-      padding: 0;
+      position: relative;
       list-style-type: none;
-      padding: 0;
+      margin: 0 0 0 var(--toc_indent);
+      padding: calc(var(--toc_item_between) / 2) 0;
       ul {
         padding-left: 1em;
       }
       @include table-of-contents_line;
     }
   }
-  ul > li + li {
-    padding-top: var(--toc_item_between);
-  }
 
   //li.visible:not(.active) + li.active,
   li.active,
   nav:not(.active) li.visible {
-    list-style-type: none;
     @include table-of-contents-current;
   }
   // nav > a, nav:not(.active) li, nav:not(.active) li.visible ~ li, nav.active li
@@ -1039,7 +995,55 @@ $indicator-width: var(--toc_indicator_width)) {
   nav.active ul ul li {
     @include table-of-contents-hover;
   }
+
+  nav {
+    &:not(.active), &.active {
+      .article_top {
+        margin: 0 0 0 var(--toc_indent);
+        padding: 0 0 calc(var(--toc_item_between) / 2) 0;
+        @include table-of-contents-hover;
+        position: relative;
+        font-size: var(--font-size-normal);
+        // font-weight: var(--font-weight-heading);
+        &::before {
+          content: none;
+        }
+        &, &.active, &.visible {
+          & > a {
+            &::before {
+              content: '';
+              display: block;
+              position: absolute;
+              top: calc(1em * var(--line-height) / 2 - var(--toc_indicator_width) / 2);
+              left:  calc(0px - var(--toc_indent));
+              width: var(--toc_indicator_width);
+              height: var(--toc_indicator_width);
+              border-radius: 50%;
+              outline: 2px solid var(--toc_indicator_icon_color);
+              opacity: 1;
+            }
+            &::after {
+              position: absolute;
+              content: "";
+              top: calc(1em * var(--line-height) / 2 + var(--toc_indicator_width) / 2);
+              bottom: 0;
+              left: calc(0px - var(--toc_indicator_line_width) / 2 + var(--toc_indicator_width) / 2 - var(--toc_indent));
+              border-left: var(--toc_indicator_line_width) solid var(--toc_indicator_line_color);
+            }
+          }
+        }
+        // @at-root .modern-js &.visible {
+        //   & > a {
+        //     &::before {
+        //       background-color: var(--toc_indicator_icon_color);
+        //     }
+        //   }
+        // }
+      }
+    }
+  }
 }
+
 body:not(.modern-js) .article_aside .table_of_contents {
   visibility: visible;
 }

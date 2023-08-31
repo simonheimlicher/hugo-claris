@@ -1,7 +1,9 @@
       <div class="table_of_contents">
         <h2 class="table_of_contents_heading">{{ T "table_of_contents" }}</h2>
-        <nav class="article_top">
-            <a href="#articleTop" title="Section {{ .Title}}">{{ .Title }}</a>
+        <nav>
+          <div class="article_top">
+            <a class="article_top_link" href="#articleTop" title="Section {{ .Title}}">{{ .Title }}</a>
+          </div>
         </nav>
         {{ .TableOfContents }}
       </div>

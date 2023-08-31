@@ -315,16 +315,19 @@ $main-z-index: 1;
 }
 
 @mixin aside() {
-  font-size: var(--font-size-aside);
+  @media screen and (min-width: $screenViewBreakpointWidthWide) {
+    @include geometric-scale('font-size', var(--font-size_root-smaller-1));
+  }
+  font-size: var(--font-size-normal);
   @include content_base();
   h1, h2 {
-    font-size: 125%;
+    font-size: var(--font-size-larger-2);
   }
   h3 {
-    font-size: 112.5%;
+    font-size: var(--font-size-larger-1);
   }
   h4, h5, h6 {
-    font-size: 100%;
+    font-size: var(--font-size-normal);
   }
 }
 
