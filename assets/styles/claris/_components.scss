@@ -572,18 +572,16 @@
   //   background: linear-gradient(180deg, rgba(var(--RGB_bg), 0.8) 0%, rgba(var(--RGB_bg), 0.8) 80%, rgba(var(--RGB_bg), 0.8) 100%)
   //   backdrop-filter: blur(50px)
   //   -webkit-backdrop-filter: blur(50px)
-  &:after {
-    content: "";
-    padding: 0.5px;
-    top: 0;
-    bottom: 0;
-    background: var(--xhaze);
-    background: linear-gradient(to bottom, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze));
-    @include color-scheme_transition;
-    position: absolute;
-    // right: 1px
-    right: calc(-0.5 * var(--column-gap));
-  }
+  // &:after {
+  //   position: absolute;
+  //   content: "";
+  //   top: 0;
+  //   bottom: 0;
+  //   padding: 0.5px;
+  //   background: var(--xhaze);
+  //   background: linear-gradient(to bottom, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze));
+  //   @include color-scheme_transition;
+  // }
   @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
     display: block;
   }
@@ -1411,14 +1409,16 @@ svg.qrcode-svg {
       &:after {
         position: absolute;
         content: "";
-        padding: 0.5px;
         top: 0;
         bottom: 0;
-        left: calc(-0.5 * var(--column-gap));
-        right: auto;
+        left: auto;
+        right: calc(-0.5 * var(--column-gap));
+        padding: 0.5px;
         background: var(--xhaze);
-        background: linear-gradient(to bottom, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze));
+        // background: linear-gradient(to bottom, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze));
         @include color-scheme_transition;
+        // right: 1px
+        right: calc(-0.5 * var(--column-gap));
       }
     }
   }
