@@ -91,7 +91,6 @@
     }
   }
   &_item {
-    @include full-bleed_horizontal-padding();
     border-top: 2px solid var(--text-faint);
     padding: var(--inner_padding) 0;
     @include color-scheme_transition;
@@ -186,8 +185,8 @@
       @include drop-shadow(3rem, 0.1, 0.1);
       @include color-scheme_transition;
       border-radius: 0.25em;
-      padding: var(--inner_padding);
-      min-width: calc(min(100%, ($screenViewBreakpointWidthWide - 3 * var(--inner_margin)) / 2));
+      @include inner-padding;
+      min-width: calc(min(100%, ($screenViewBreakpointWidthWide - 1 * var(--inner_margin)) / 2));
     }
     .layout-grid & {
       &-1 {
@@ -205,6 +204,19 @@
       &-5 {
         grid-row: 6;
       }
+    }
+  }
+  &_figure {
+    float: left;
+    margin: calc(1em * (0.92 * var(--line-height) - 1)) var(--inner_margin) var(--inner_margin) 0;
+    img {
+      max-width: unset;
+      max-height: unset;
+      width: clamp(8rem, 4rem + 20vw, 16rem);
+      height: auto;
+      // max-height: var(--max-dimension);
+      object-fit: cover;
+      overflow: hidden;
     }
   }
 }

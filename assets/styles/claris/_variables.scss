@@ -112,6 +112,10 @@ $main-z-index: 1;
   }
 }
 
+@mixin inner-padding() {
+  @include element-padding('inner', 1, 1);
+}
+
 @mixin inner_horizontal-padding() {
   @include element-padding('inner', unset, 1);
 }

@@ -101,26 +101,39 @@ See https://github.com/gohugoio/hugo/issues/7297
                 {{- with .title }}
                   <h{{ add $headingLevel 1 }} class="card_title panel_item-{{ $panelID }} card_item-{{ $cardID }}">{{ page.RenderString . }}</h{{ add $headingLevel 1 }}>
                 {{- end }}
-                {{- with .image.resource }}
-                  {{- partial "responsive-image" (dict
-                  "Page" page
-                  "resource" .
-                  "float" "left"
-                  "figureclass" "card_figure"
-                  "fetchpriority" (cond (eq $imageCount 0) "high" "low")
-                  "width" 512
-                  "relativewidth" 20) -}}
-                  {{- $imageCount = add $imageCount 1 }}
-                {{- end }}
-                {{- with .content }}
-                  <div class="card_content">
-                  {{- if strings.HasPrefix (printf "%T" . ) "template" }}
-                    {{ . }}
-                  {{- else }}
-                    {{ page.RenderString $renderOptCard . }}
+                {{- $cardImageFloat := true }}
+                <div class="card_inner">
+                  {{- with .image.resource }}
+                    {{- if $cardImageFloat }}
+                      {{- partial "responsive-image" (dict
+                      "Page" page
+                      "resource" .
+                      "figureclass" "card_figure"
+                      "containerclass" "card_figure"
+                      "fetchpriority" (cond (eq $imageCount 0) "high" "low")
+                      "width" 512) -}}
+                      {{- $imageCount = add $imageCount 1 }}
+                    {{- else }}
+                      {{- partial "responsive-image" (dict
+                      "Page" page
+                      "resource" .
+                      "figureclass" "card_figure"
+                      "containerclass" "card_figure"
+                      "fetchpriority" (cond (eq $imageCount 0) "high" "low")
+                      "width" 512) -}}
+                      {{- $imageCount = add $imageCount 1 }}
+                    {{- end }}
                   {{- end }}
-                  </div>
-                {{- end }}
+                  {{- with .content }}
+                    <div class="card_content">
+                    {{- if strings.HasPrefix (printf "%T" . ) "template" }}
+                      {{ . }}
+                    {{- else }}
+                      {{ page.RenderString $renderOptCard . }}
+                    {{- end }}
+                    </div>
+                  {{- end }}
+                </div>
               {{- else }}
                 {{- with . }}
                   <div class="card_content">
