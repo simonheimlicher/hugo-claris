@@ -87,7 +87,7 @@ $images: '{{ absURL (printf "%s/" (default "images/" (strings.TrimLeft "/" (stri
 // Adapt to width of screen
 // Maximum width for anything the user is supposed
 // to interact with (the "page chrome")
-$screenViewWidthChrome: {{ default "100rem" ($page.Param "screenViewWidthChrome") }}
+$screenViewWidthChrome: {{ default "96rem" ($page.Param "screenViewWidthChrome") }}
 
 // Maximum widht of feature images
 $screenViewFeatureImageWidthMax: {{ default "3840px" ($page.Param "screenViewFeatureImageWidthMax") }}
