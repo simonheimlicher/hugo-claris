@@ -21,7 +21,7 @@
 {{- $preloadFontStyles := default (slice "normal") ($page.Param "assets.fonts.preload.styles") }}
 {{ $preloadFontStyles = apply $preloadFontStyles "lower" "." }}
 
-{{- $preloadFontWeights := default (slice "400") ($page.Param "assets.fonts.preload.weights") }}
+{{- $preloadFontWeights := default (slice "400" "600") ($page.Param "assets.fonts.preload.weights") }}
 {{ $preloadFontWeights = apply $preloadFontWeights "lower" "." }}
 
 {{- $preloadFontFormats := default (slice "woff2") ($page.Param "assets.fonts.preload.weights") }}
