@@ -162,12 +162,8 @@ h2 {
 h3 {
   font-size: var(--font-size-larger-1);
 }
-h4 {
+h4, h5, h6 {
   font-size: var(--font-size-normal);
-}
-h5,
-h6 {
-  font-size: 100%;
 }
 
 img,
@@ -364,15 +360,6 @@ blockquote {
       --box-margin-left: 10%;
       --box-margin-right: 10%;
 
-      h2 {
-        font-size: 150%;
-      }
-      h3 {
-        font-size: 120%;
-      }
-      h4 {
-        font-size: 100%;
-      }
       h2,
       h3,
       h4,

@@ -7,6 +7,7 @@
 $list-excerpt-width: 20rem;
 $list-excerpt-width: math.div(($screenViewBreakpointWidthOneColumn - (3 * $screenViewInnerPaddingOneColumn) ), 2);
 
+// $list-style-indent: 0.16667em;
 $list-style-indent: 1em;
 
 $screenViewNavHeightNarrow: 2.5rem;
@@ -296,6 +297,7 @@ $main-z-index: 1;
 
 @mixin footer() {
   @include content_base_centered();
+  @include list-style_none;
   max-width: var(--screenViewWidthChrome);
 }
 
@@ -316,7 +318,7 @@ $main-z-index: 1;
 
 @mixin aside() {
   @media screen and (min-width: $screenViewBreakpointWidthWide) {
-    @include geometric-scale('font-size', var(--font-size_root-smaller-1));
+    @include geometric-scale('font-size', var(--font-size-aside));
   }
   font-size: var(--font-size-normal);
   @include content_base();
@@ -329,20 +331,13 @@ $main-z-index: 1;
   h4, h5, h6 {
     font-size: var(--font-size-normal);
   }
+  @include list-style_none;
 }
 
 @mixin aside-meta() {
   @include content_base();
-  font-size: var(--font-size-meta);
-  h1, h2 {
-    font-size: 125%;
-  }
-  h3 {
-    font-size: 112.5%;
-  }
-  h4, h5, h6 {
-    font-size: 100%;
-  }
+  @include geometric-scale('font-size', var(--font-size-aside-meta));
+  font-size: var(--font-size-normal);
 }
 
 // @mixin list-style_indented($margin-vertical: math.div($screenViewInnerPaddingMobile, 2), $padding-vertical: math.div($screenViewInnerPaddingMobile, 2), $indent: $list-style-indent) {
@@ -391,6 +386,28 @@ $main-z-index: 1;
   }
   li ul, li ol {
     padding-left: 1.25em;
+  }
+}
+
+@mixin list-style_none($padding-between: 0.5em) {
+  @include list-style_indented(0, 0, 0, $padding-between);
+  ul > li {
+    list-style: none;
+    margin-left: 0;
+    padding-left: 0;
+    // Ensure the link provide a touch target of more than 32px
+    & > a {
+      display: inline-flex;
+      padding: calc(max(0px, 2.125rem - $padding-between - 1em * var(--line-height)) / 2) 0;
+    }
+    & > ul li {
+      list-style-type: none;
+      margin-left: 0;
+      padding-left: 0.5em;
+      &::before {
+        content: none;
+      }
+    }
   }
 }
 
@@ -615,38 +632,38 @@ html {
 /* Fluid font size variables, for browsers that support clamp */
 @supports (font-size: clamp(1rem, 1vw, 1rem)) {
   :root {
-    --font-size-heading-smaller-2: clamp(0.71rem, 1.26vw + 0.45rem, 1.41rem);
-		--font-size-heading-smaller-1: clamp(0.84rem, 1.5vw + 0.54rem, 1.68rem);
-		--font-size-heading-normal: clamp(1rem, 1.79vw + 0.64rem, 2rem);
-		--font-size-heading-larger-1: clamp(1.19rem, 2.12vw + 0.76rem, 2.38rem);
-		--font-size-heading-larger-2: clamp(1.41rem, 2.53vw + 0.91rem, 2.83rem);
-		--font-size-heading-larger-3: clamp(1.68rem, 3vw + 1.08rem, 3.36rem);
-		--font-size-heading-larger-4: clamp(2rem, 3.57vw + 1.29rem, 4rem);
-		--font-size-heading-larger-5: clamp(2.38rem, 4.25vw + 1.53rem, 4.76rem);
+    --font-size_heading-smaller-2: clamp(0.71rem, 1.26vw + 0.45rem, 1.41rem);
+		--font-size_heading-smaller-1: clamp(0.84rem, 1.5vw + 0.54rem, 1.68rem);
+		--font-size_heading-normal: clamp(1rem, 1.79vw + 0.64rem, 2rem);
+		--font-size_heading-larger-1: clamp(1.19rem, 2.12vw + 0.76rem, 2.38rem);
+		--font-size_heading-larger-2: clamp(1.41rem, 2.53vw + 0.91rem, 2.83rem);
+		--font-size_heading-larger-3: clamp(1.68rem, 3vw + 1.08rem, 3.36rem);
+		--font-size_heading-larger-4: clamp(2rem, 3.57vw + 1.29rem, 4rem);
+		--font-size_heading-larger-5: clamp(2.38rem, 4.25vw + 1.53rem, 4.76rem);
   }
 }
 /* Fallback variables for browsers that don't support clamp */
 @supports not (font-size: clamp(1rem, 1vw, 1rem)) {
   :root {
-    --font-size-heading-smaller-2: 0.71rem;
-		--font-size-heading-smaller-1: 0.84rem;
-		--font-size-heading-normal: 1rem;
-		--font-size-heading-larger-1: 1.19rem;
-		--font-size-heading-larger-2: 1.41rem;
-		--font-size-heading-larger-3: 1.68rem;
-		--font-size-heading-larger-4: 2rem;
-		--font-size-heading-larger-5: 2.38rem;
+    --font-size_heading-smaller-2: 0.71rem;
+		--font-size_heading-smaller-1: 0.84rem;
+		--font-size_heading-normal: 1rem;
+		--font-size_heading-larger-1: 1.19rem;
+		--font-size_heading-larger-2: 1.41rem;
+		--font-size_heading-larger-3: 1.68rem;
+		--font-size_heading-larger-4: 2rem;
+		--font-size_heading-larger-5: 2.38rem;
   }
   @media screen and (min-width: 76rem) {
     :root {
-      --font-size-heading-smaller-2: 1.41rem;
-			--font-size-heading-smaller-1: 1.68rem;
-			--font-size-heading-normal: 2rem;
-			--font-size-heading-larger-1: 2.38rem;
-			--font-size-heading-larger-2: 2.83rem;
-			--font-size-heading-larger-3: 3.36rem;
-			--font-size-heading-larger-4: 4rem;
-			--font-size-heading-larger-5: 4.76rem;
+      --font-size_heading-smaller-2: 1.41rem;
+			--font-size_heading-smaller-1: 1.68rem;
+			--font-size_heading-normal: 2rem;
+			--font-size_heading-larger-1: 2.38rem;
+			--font-size_heading-larger-2: 2.83rem;
+			--font-size_heading-larger-3: 3.36rem;
+			--font-size_heading-larger-4: 4rem;
+			--font-size_heading-larger-5: 4.76rem;
     }
   }
 }
@@ -668,6 +685,20 @@ html {
 
 @function geometric-scaled-prop($prop, $scale-factor, $shift: 0, $factor-normal: 1) {
   @return calc(#{round-dec($factor-normal * math.pow($scale-factor, $shift), $fluidScaleDigits)} * var(--#{$prop}-base));
+}
+
+@mixin geometric-scale($prop, $base-size, $scale-factor: $geometricScaleFactor, $base-shift: 0, $smallest: 9, $largest: 9) {
+
+  $smaller-factor-idx-max: 5;
+  $larger-factor-idx-max: 6;
+  --#{$prop}-base: #{$base-size};
+  --#{$prop}-normal: #{geometric-scaled-prop($prop, $scale-factor, $base-shift)};
+  @for $i from 1 through $smaller-factor-idx-max {
+    --#{$prop}-smaller-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift - min($smallest, $i))};
+  }
+  @for $i from 1 through $larger-factor-idx-max {
+    --#{$prop}-larger-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift + min($largest, $i))};
+  }
 }
 
 @mixin fluid-geometric-scale($prop, $min-size, $max-size, $min-breakpoint: $screenViewBreakpointWidthMobile, $max-breakpoint: $screenViewBreakpointWidthWide, $unit: vw,
@@ -704,8 +735,9 @@ html {
 }
 
 :root {
+  @include fluid-geometric-scale('font-size_root', 1rem, 1.25rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
   @include fluid-geometric-scale('font-size', 1rem, 1.25rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
-  @include fluid-geometric-scale('font-size-heading', 1rem, 1.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
+  @include fluid-geometric-scale('font-size_heading', 1rem, 1.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
   @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
   @include fluid-fractional-scale('inner_padding', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
 
@@ -736,37 +768,25 @@ html {
   --font: var(--font-sans);
   --font-article: var(--font-serif);
 
-  // @include font-size-scale(1rem);
-
   --font-code: var(--font-mono);
   --font-size: var(--font-size-normal);
-  // --font-size: calc(clamp(var(--font-size-normal), min(2.3vw, 8vh), var(--font-size-larger-2)));
-  --font-size-lede: var(--font-size-larger-1);
-  --font-size-meta: var(--font-size-smaller-1);
-  --font-size-button: var(--font-size-smaller-1);
-  --font-size-aside: var(--font-size-smaller-1);
-  --font-size-footer: var(--font-size-smaller-1);
+  --font-size-aside: var(--font-size_root-normal);
+  --font-size-aside-meta: var(--font-size_root-smaller-1);
+  --font-size-footer: var(--font-size_root-smaller-1);
 
-  --font-size-title: var(--font-size-heading-larger-4);
-  --font-size-supertitle: var(--font-size-heading-smaller-2);
-  --font-size-subtitle: var(--font-size-heading-normal);
+  --font-size-lede: var(--font-size_root-larger-1);
+
+  --font-size-meta: var(--font-size_smaller-1);
+  --font-size-button: var(--font-size-smaller-1);
+
+  --font-size-title: var(--font-size_heading-larger-4);
+  --font-size-supertitle: var(--font-size_heading-smaller-2);
+  --font-size-subtitle: var(--font-size_heading-normal);
 
   --font-size-nav: var(--font-size-normal);
-  // @media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
-  //   --font-size-nav: 0.875rem;
-  // }
-  // @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
-  // }
-  // @media screen and (min-width: $screenViewBreakpointWidthOneColumn) {
-  //   --font-size-nav: 1.0rem;
-  // }
-  // @media screen and (min-width: $screenViewBreakpointWidthWide) {
-  //   --font-size-nav: 1.25rem;
-  // }
 
   --font-weight: 400;
   --font-weight-strong: 600;
-  // FIXME: No light variant available
   --font-weight-light: 400;
   --font-weight-heading: 600;
   --font-weight-supertitle: 600;

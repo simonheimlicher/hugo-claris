@@ -936,7 +936,6 @@ $indicator-width: var(--toc_indicator_width)) {
   visibility: hidden;
   width: 100%;
   @include aside-meta;
-  // @include link-lvhfa-reset;
 
   // The top offset of the triangle depends on the font family and
   // needs to be adjusted accordingly
@@ -950,7 +949,7 @@ $indicator-width: var(--toc_indicator_width)) {
   --toc_indicator_icon_width: calc(var(--toc_indicator_width) / 3);
 
   h2 {
-    font-size: 100%;
+    font-size: var(--font-size-normal);
     margin: calc(1em * (1 - var(--line-height-heading))) 0 var(--inner_margin_4-1) 0;
     padding: 0;
     text-transform: uppercase;
@@ -1003,7 +1002,7 @@ $indicator-width: var(--toc_indicator_width)) {
         padding: 0 0 calc(var(--toc_item_between) / 2) 0;
         @include table-of-contents-hover;
         position: relative;
-        font-size: var(--font-size-normal);
+        font-size: var(--font-size-larger-1);
         // font-weight: var(--font-weight-heading);
         &::before {
           content: none;

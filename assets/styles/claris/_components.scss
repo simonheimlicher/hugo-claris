@@ -228,8 +228,12 @@
 .footer_claris {
   @include background_dark;
   // For IE 11
-  font-size: 1rem;
+  // font-size: 1rem;
+  // font-size: var(--font-size-footer);
+
+  @include geometric-scale('font-size', var(--font-size-footer));
   font-size: var(--font-size-footer);
+
   // FIXME: IE 11 bug
   // https://github.com/philipwalton/flexbugs/issues/75
   // Setting a min-height on the container (body does not work)
@@ -245,7 +249,7 @@
     padding: 0;
   }
   h2 {
-    font-size: 125%;
+    font-size: var(--font-size-larger-1);
   }
   // border-top: 1px solid var(--xhaze)
   // background: var(--footer-bg)
@@ -254,11 +258,11 @@
   @include list-style_indented(0, 0, 0, 0);
   z-index: ($main-z-index  - 1);
 
-  @media screen and (min-width: $screenViewBreakpointWidthOneColumn) {
-    // For IE 11
-    font-size: 1rem;
-    font-size: var(--font-size-footer);
-  }
+  // @media screen and (min-width: $screenViewBreakpointWidthOneColumn) {
+  //   // For IE 11
+  //   font-size: 1rem;
+  //   font-size: var(--font-size-footer);
+  // }
 
   .footer {
     &_inner {
@@ -266,17 +270,17 @@
         margin-top: var(--inner_margin-y-2);
       }
       @include footer;
+      // ul {
+      //   margin: 0;
+      //   padding: 0;
+      // }
+      // ul > li {
+      //   list-style: none;
+      //   margin-left: 0;
+      //   padding-left: 0;
+      // }
 
       // https://codepen.io/tutsplus/details/yWrEgW
-      ul {
-        margin: 0;
-        padding: 0;
-      }
-      ul > li {
-        list-style: none;
-        margin-left: 0;
-        padding-left: 0;
-      }
       .icon-link {
         display: flex;
         flex-direction: column;
@@ -890,8 +894,8 @@
       position: relative;
       color: white;
       text-shadow: 1.5px 1.5px 1.5px black;
-      --font-size-title: var(--font-size-heading-larger-5);
-      --font-size-subtitle: var(--font-size-heading-larger-3);
+      --font-size-title: var(--font-size_heading-larger-5);
+      --font-size-subtitle: var(--font-size_heading-larger-3);
       --header-text: white;
       text-align: center;
       margin-bottom: 2rem;
@@ -1396,11 +1400,11 @@ svg.qrcode-svg {
   @include aside;
   &_inner {
     position: relative;
-    margin-top: var(--inner_margin-y);
+    // margin-top: calc(3 * var(--inner_margin-y));
     padding-top: var(--inner_padding-y);
     h2 {
       &:first-of-type {
-        margin-top: 0;
+        margin-top: calc(1em * (1 - var(--line-height-heading)));
         padding-top: 0;
       }
     }
