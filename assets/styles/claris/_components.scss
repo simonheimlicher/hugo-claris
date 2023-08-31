@@ -652,7 +652,7 @@
     margin: calc(0px - 4 * var(--initial_padding))
     0
     calc(0px - 3 * var(--initial_padding))
-    calc(0px - 1 * var(--initial_padding));
+    calc(0px - 0.25 * var(--initial_padding));
   }
   .initial-words {
     // text-transform: uppercase;
