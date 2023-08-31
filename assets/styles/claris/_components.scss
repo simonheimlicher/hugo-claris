@@ -1419,7 +1419,12 @@ svg.qrcode-svg {
       background: linear-gradient(to right, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze));
       @include color-scheme_transition;
     }
-    @media screen and (min-width: $screenViewBreakpointWidthWide) {
+  }
+  @media screen and (min-width: $screenViewBreakpointWidthWide) {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    &_inner {
       padding-top: 0;
       padding-bottom: 0;
       &:after {
