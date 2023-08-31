@@ -654,7 +654,7 @@ html {
 }
 
 // https://www.smashingmagazine.com/2022/10/fluid-typography-clamp-sass-functions/
-@function fluid($min-size, $max-size, $min-breakpoint: $screenViewBreakpointWidthNarrow, $max-breakpoint: $screenViewBreakpointWidthWide, $unit: vw) {
+@function fluid($min-size, $max-size, $min-breakpoint: $screenViewBreakpointWidthMobile, $max-breakpoint: $screenViewBreakpointWidthWide, $unit: vw) {
   $slope: math.div($max-size - $min-size, $max-breakpoint - $min-breakpoint);
   $slope-to-unit: round-dec($slope * 100, 2);
   $intercept-rem: round-dec($min-size - $slope * $min-breakpoint, 2);
@@ -667,7 +667,7 @@ html {
   @return calc(#{round-dec($factor-normal * math.pow($scale-factor, $shift), $fluidScaleDigits)} * var(--#{$prop}-base));
 }
 
-@mixin fluid-geometric-scale($prop, $min-size, $max-size, $min-breakpoint: $screenViewBreakpointWidthNarrow, $max-breakpoint: $screenViewBreakpointWidthWide, $unit: vw,
+@mixin fluid-geometric-scale($prop, $min-size, $max-size, $min-breakpoint: $screenViewBreakpointWidthMobile, $max-breakpoint: $screenViewBreakpointWidthWide, $unit: vw,
     $scale-factor: $geometricScaleFactor, $base-shift: 0, $smallest: 9, $largest: 9) {
 
   $smaller-factor-idx-max: 5;
@@ -689,7 +689,7 @@ html {
   @return calc(#{round-dec($factor-normal * math.div($numerator, $denominator), $fluidScaleDigits)} * var(--#{$prop}-base));
 }
 
-@mixin fluid-fractional-scale($prop, $min-size, $max-size, $min-breakpoint: $screenViewBreakpointWidthNarrow, $max-breakpoint: $screenViewBreakpointWidthWide, $unit: vw,
+@mixin fluid-fractional-scale($prop, $min-size, $max-size, $min-breakpoint: $screenViewBreakpointWidthMobile, $max-breakpoint: $screenViewBreakpointWidthWide, $unit: vw,
     $denominator: $fractionalScaleDenominator, $base-shift: 0) {
 
   $numerator-max: 4 * $denominator;
@@ -701,15 +701,15 @@ html {
 }
 
 :root {
-  @include fluid-geometric-scale('font-size', 1rem, 1.25rem, $screenViewBreakpointWidthNarrow, $screenViewBreakpointWidthOneColumn);
-  @include fluid-geometric-scale('font-size-heading', 1rem, 1.5rem, $screenViewBreakpointWidthNarrow, $screenViewBreakpointWidthWide);
-  @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthNarrow, $screenViewBreakpointWidthWide);
-  @include fluid-fractional-scale('inner_padding', 0.75rem, 2.5rem, $screenViewBreakpointWidthNarrow, $screenViewBreakpointWidthWide);
+  @include fluid-geometric-scale('font-size', 1rem, 1.25rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
+  @include fluid-geometric-scale('font-size-heading', 1rem, 1.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
+  @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
+  @include fluid-fractional-scale('inner_padding', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
 
-  @include fluid-fractional-scale('inner_margin-x', 0.75rem, 2rem, $screenViewBreakpointWidthNarrow, $screenViewBreakpointWidthWide);
-  @include fluid-fractional-scale('inner_padding-x', 0.75rem, 2rem, $screenViewBreakpointWidthNarrow, $screenViewBreakpointWidthWide);
-  @include fluid-fractional-scale('inner_margin-y', 0.75rem, 2rem, $screenViewBreakpointWidthNarrow, $screenViewBreakpointWidthWide);
-  @include fluid-fractional-scale('inner_padding-y', 0.75rem, 2rem, $screenViewBreakpointWidthNarrow, $screenViewBreakpointWidthWide);
+  @include fluid-fractional-scale('inner_margin-x', 0.75rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
+  @include fluid-fractional-scale('inner_padding-x', 0.75rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
+  @include fluid-fractional-scale('inner_margin-y', 0.75rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
+  @include fluid-fractional-scale('inner_padding-y', 0.75rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
 }
 
 html {
