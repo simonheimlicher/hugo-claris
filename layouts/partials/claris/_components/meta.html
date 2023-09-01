@@ -4,7 +4,7 @@
     (partialCached "claris/_functions/meta/index" (dict "Page" $subjectPage) $subjectPage.Permalink) }}
 {{- $showAuthor := default ($page.Param "showauthor") .ShowAuthor }}
 {{- $showDate := default ($page.Param "showdate") .ShowDate }}
-{{- $dateFormat := default "Jan 2, 2006" ($page.Param "dateformat") }}
+{{- $dateFormat := default ":date_long" ($page.Param "dateformat") }}
 {{- $showAuthorLink := default false .AuthorLink }}
 {{- $showAuthorAvatar := default false .AuthorAvatar }}
 {{- $relativeDates := default false .RelativeDates }}
@@ -61,14 +61,14 @@
                         {{- humanize (T "meta_date_updated" ) -}}{{ partial "relative-date" .Lastmod -}},</span>
                         <span class="article_meta_date_published article_meta_date">{{ (T "meta_date_published" ) -}}
                         &nbsp;
-                        {{- (.Date.Format $dateFormat) -}}
+                        {{- (.Date | time.Format $dateFormat) -}}
                         {{- end }}
                         {{- else }}
                         {{- if eq .Lastmod .Date -}}
-                        {{ (.Date.Format $dateFormat) -}}
+                        {{ (.Date | time.Format $dateFormat) -}}
                         {{- else }}
-                        {{- (.Date.Format $dateFormat) }}</span>
-                        <span class="article_meta_date_updated article_meta_date">({{ (T "meta_date_updated" ) -}}&nbsp;{{- (.Lastmod.Format $dateFormat) -}})
+                        {{- (.Date | time.Format $dateFormat) }}</span>
+                        <span class="article_meta_date_updated article_meta_date">({{ (T "meta_date_updated" ) -}}&nbsp;{{- (.Lastmod | time.Format $dateFormat) -}})
                         {{- end }}
                         {{- end -}}
                         </span>
