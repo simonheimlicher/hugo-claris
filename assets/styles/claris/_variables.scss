@@ -704,9 +704,18 @@ html {
 @mixin fluid-geometric-scale($prop, $min-size, $max-size, $min-breakpoint: $screenViewBreakpointWidthMobile, $max-breakpoint: $screenViewBreakpointWidthWide, $unit: vw,
     $scale-factor: $geometricScaleFactor, $base-shift: 0, $smallest: 9, $largest: 9) {
 
-  $smaller-factor-idx-max: 5;
+  $smaller-factor-idx-max: 3;
   $larger-factor-idx-max: 6;
   --#{$prop}-base: #{fluid($min-size, $max-size, $min-breakpoint, $max-breakpoint, $unit)};
+
+  /* Fallback variables for browsers that don't support clamp */
+  @supports not (font-size: clamp(1rem, 1vw, 1rem)) {
+    --#{$prop}-base: #{$min-size};
+    @media screen and (min-width: $max-breakpoint) {
+      --#{$prop}-base: #{$max-size};
+    }
+  }
+
   --#{$prop}-normal: #{geometric-scaled-prop($prop, $scale-factor, $base-shift)};
   @for $i from 1 through $smaller-factor-idx-max {
     --#{$prop}-smaller-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift - min($smallest, $i))};
