@@ -1,0 +1,3 @@
+// Monospace Code from https://github.com/system-fonts/modern-font-stacks#monospace-code
+$fontStack: map-get($fontFamily, 'name'), ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+$fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: (stack: $fontStack)));

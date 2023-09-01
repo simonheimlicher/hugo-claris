@@ -61,3 +61,25 @@
 //   font-weight: 700;
 //   src: url('#{$hostedFontPath}/valkyrie-ot/valkyrie_ot_a_bold_italic.woff2') format('woff2');
 // }
+
+$fontSpec: (
+  text: (
+    default: (
+      font-weight: 400,
+      line-height: 1.5
+    ),
+    bold: (
+      font-weight: 600,
+    )
+  ),
+  display: (
+    default: (
+      font-weight: 400,
+      line-height: 1.2
+    ),
+    bold: (
+      font-weight: 600,
+    )
+  )
+);
+$fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: (spec: $fontSpec)));

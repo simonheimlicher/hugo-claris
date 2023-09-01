@@ -100,7 +100,7 @@ h2 {
 
 body {
   background: var(--bg);
-  font-family: var(--font);
+  @include useFontFamily;
 }
 /*
 h1 {

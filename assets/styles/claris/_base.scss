@@ -44,9 +44,8 @@ body {
   background: var(--choice-bg);
   color: var(--text);
   font-size: var(--font-size);
-  font-family: var(--font);
-  font-weight: var(--font-weight);
-  line-height: var(--line-height);
+  @include defineAndUseFontFamily(sans);
+
   font-kerning: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -305,7 +304,7 @@ blockquote {
   // Only render the below if the browser supports CSS properties
   @supports (color: var(--text)) {
     &:before {
-      font-family: var(--font-serif), Georgia, serif;
+      @include useFontFamily(serif);
       content: "“";
       position: absolute;
       top: calc(var(--box-padding-top) + var(--quotation-mark-open-height));
@@ -316,7 +315,7 @@ blockquote {
       font-weight: normal;
     }
     &:after {
-      font-family: var(--font-serif), Georgia, serif;
+      @include useFontFamily(serif);
       content: "”";
       position: absolute;
       bottom: calc(0px - 0.5 * var(--quotation-mark-close-height));

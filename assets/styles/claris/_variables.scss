@@ -586,105 +586,103 @@ html {
   --dim-image-filter: brightness(75%);
 }
 
-// Alternative: https://utopia.fyi/type/calculator/?c=320,18,1.2,1240,20,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12
-/* Fluid font size variables, for browsers that support clamp */
-// https://www.fluid-type-scale.com/calculate?minFontSize=16&minWidth=320&minRatio=1.18920712&maxFontSize=20&maxWidth=768&maxRatio=1.18920712&steps=smaller-2%2Csmaller-1%2Cnormal%2Clarger-1%2Clarger-2%2Clarger-3%2Clarger-4%2Clarger-5&baseStep=normal&prefix=font-size&decimals=2&includeFallbacks=on&useRems=on&remValue=16&previewFont=Inter&previewText=Almost+before+we+knew+it%2C+we+had+left+the+ground&previewWidth=90
-/* Fluid font size variables, for browsers that support clamp */
-@supports (font-size: clamp(1rem, 1vw, 1rem)) {
-  :root {
-    --font-size-smaller-2: clamp(0.71rem, 0.63vw + 0.58rem, 0.88rem);
-		--font-size-smaller-1: clamp(0.84rem, 0.75vw + 0.69rem, 1.05rem);
-		--font-size-normal: clamp(1rem, 0.89vw + 0.82rem, 1.25rem);
-		--font-size-larger-1: clamp(1.19rem, 1.06vw + 0.98rem, 1.49rem);
-		--font-size-larger-2: clamp(1.41rem, 1.26vw + 1.16rem, 1.77rem);
-		--font-size-larger-3: clamp(1.68rem, 1.5vw + 1.38rem, 2.1rem);
-		--font-size-larger-4: clamp(2rem, 1.79vw + 1.64rem, 2.5rem);
-		--font-size-larger-5: clamp(2.38rem, 2.12vw + 1.95rem, 2.97rem);
-  }
-}
-/* Fallback variables for browsers that don't support clamp */
-@supports not (font-size: clamp(1rem, 1vw, 1rem)) {
-  :root {
-    --font-size-smaller-2: 0.71rem;
-		--font-size-smaller-1: 0.84rem;
-		--font-size-normal: 1rem;
-		--font-size-larger-1: 1.19rem;
-		--font-size-larger-2: 1.41rem;
-		--font-size-larger-3: 1.68rem;
-		--font-size-larger-4: 2rem;
-		--font-size-larger-5: 2.38rem;
-  }
-  @media screen and (min-width: 48rem) {
-    :root {
-      --font-size-smaller-2: 0.88rem;
-			--font-size-smaller-1: 1.05rem;
-			--font-size-normal: 1.25rem;
-			--font-size-larger-1: 1.49rem;
-			--font-size-larger-2: 1.77rem;
-			--font-size-larger-3: 2.1rem;
-			--font-size-larger-4: 2.5rem;
-			--font-size-larger-5: 2.97rem;
+$fontSpecDefault: (
+  text: (
+    default: (
+      font-weight: 400,
+      line-height: 1.5
+    ),
+    bold: (
+      font-weight: 600,
+    )
+  ),
+  display: (
+    default: (
+      font-weight: 400,
+      line-height: 1.2
+    ),
+    bold: (
+      font-weight: 600,
+    )
+  )
+);
+
+@mixin defineFontFamily($fontFamilyID, $key: null, $role: text, $weight: default) {
+  $prefix: if($key, 'font_#{$key}_', 'font_');
+  // --font-family-ID: #{$fontFamilyID};
+  $fontFamily: map-get($fontFamilyMap, $fontFamilyID);
+
+  @if ($fontFamily) {
+    $fontFamilyName: map-get($fontFamily, 'name');
+
+    --#{$prefix}name: #{$fontFamilyName};
+    $fontStack: map-get($fontFamily, stack);
+    --#{$prefix}font-family: #{inspect($fontStack)};
+
+    $fontSpec: map-get($fontSpecDefault, $role, $weight);
+    $fontSpecCustom: map-get($fontFamily, spec, $role, $weight);
+    @if ($fontSpecCustom) {
+      $fontSpec: map-merge($fontSpec, $fontSpecCustom);
+    }
+    @if ($fontSpec) {
+      @each $key, $value in $fontSpec {
+        --#{$prefix}#{$key}: #{$value};
+      }
+    }
+    @else {
+      --#{$prefix}#{$fontFamilyID}_defineFontFamily_spec_missing: #{$fontFamilyID};
     }
   }
+  @else {
+    --#{$prefix}#{$fontFamilyID}_defineFontFamily_family_missing: #{$fontFamilyID};
+  }
 }
 
-// https://www.fluid-type-scale.com/calculate?minFontSize=16&minWidth=320&minRatio=1.18920712&maxFontSize=32&maxWidth=1216&maxRatio=1.18920712&steps=heading-smaller-2%2Cheading-smaller-1%2Cheading-normal%2Cheading-larger-1%2Cheading-larger-2%2Cheading-larger-3%2Cheading-larger-4%2Cheading-larger-5&baseStep=heading-normal&prefix=font-size&decimals=2&includeFallbacks=on&useRems=on&remValue=16&previewFont=Inter&previewText=Almost+before+we+knew+it%2C+we+had+left+the+ground&previewWidth=90
-/* Fluid font size variables, for browsers that support clamp */
-@supports (font-size: clamp(1rem, 1vw, 1rem)) {
-  :root {
-    --font-size_heading-smaller-2: clamp(0.71rem, 1.26vw + 0.45rem, 1.41rem);
-		--font-size_heading-smaller-1: clamp(0.84rem, 1.5vw + 0.54rem, 1.68rem);
-		--font-size_heading-normal: clamp(1rem, 1.79vw + 0.64rem, 2rem);
-		--font-size_heading-larger-1: clamp(1.19rem, 2.12vw + 0.76rem, 2.38rem);
-		--font-size_heading-larger-2: clamp(1.41rem, 2.53vw + 0.91rem, 2.83rem);
-		--font-size_heading-larger-3: clamp(1.68rem, 3vw + 1.08rem, 3.36rem);
-		--font-size_heading-larger-4: clamp(2rem, 3.57vw + 1.29rem, 4rem);
-		--font-size_heading-larger-5: clamp(2.38rem, 4.25vw + 1.53rem, 4.76rem);
-  }
-}
-/* Fallback variables for browsers that don't support clamp */
-@supports not (font-size: clamp(1rem, 1vw, 1rem)) {
-  :root {
-    --font-size_heading-smaller-2: 0.71rem;
-		--font-size_heading-smaller-1: 0.84rem;
-		--font-size_heading-normal: 1rem;
-		--font-size_heading-larger-1: 1.19rem;
-		--font-size_heading-larger-2: 1.41rem;
-		--font-size_heading-larger-3: 1.68rem;
-		--font-size_heading-larger-4: 2rem;
-		--font-size_heading-larger-5: 2.38rem;
-  }
-  @media screen and (min-width: 76rem) {
-    :root {
-      --font-size_heading-smaller-2: 1.41rem;
-			--font-size_heading-smaller-1: 1.68rem;
-			--font-size_heading-normal: 2rem;
-			--font-size_heading-larger-1: 2.38rem;
-			--font-size_heading-larger-2: 2.83rem;
-			--font-size_heading-larger-3: 3.36rem;
-			--font-size_heading-larger-4: 4rem;
-			--font-size_heading-larger-5: 4.76rem;
+@mixin useFontFamily($key: null, $role: text, $weight: default) {
+  $prefix: if($key, 'font_#{$key}_', 'font_');
+
+  $fontFamilyID: default;
+
+  $fontFamily: map-get($fontFamilyMap, $fontFamilyID);
+
+  @if ($fontFamily) {
+    --font-family: var(--#{$prefix}font-family);
+    font-family: var(--font-family);
+
+    $fontSpec: map-get($fontSpecDefault, $role, $weight);
+    @if ($fontSpec) {
+        @each $key, $value in $fontSpec {
+        --#{$key}: var(--#{$prefix}#{$key});
+        #{$key}: var(--#{$prefix}#{$key});
+      }
+    }
+    @else {
+      --#{$prefix}#{$fontFamilyID}_useFontFamily_spec_missing: #{$fontFamilyID};
     }
   }
+  @else {
+    --#{$prefix}#{$fontFamilyID}_useFontFamily_family_missing: #{$fontFamilyID};
+  }
 }
 
-@function round-dec($value, $fractionDigits: 0) {
-  $power: math.pow(10, $fractionDigits);
-  @return math.div(math.round($power * $value), $power);
+@mixin defineAndUseFontFamily($fontFamilyID: default, $role: text, $weight: default, $key: null) {
+  @include defineFontFamily($fontFamilyID, $key, $role, $weight);
+  @include useFontFamily($key);
 }
 
-// https://www.smashingmagazine.com/2022/10/fluid-typography-clamp-sass-functions/
+// Generating fluid font scales for copy-paste: https://www.fluid-type-scale.com/calculate https://utopia.fyi/type/calculator/
+// Using SASS: https://www.smashingmagazine.com/2022/10/fluid-typography-clamp-sass-functions/
 @function fluid($min-size, $max-size, $min-breakpoint: $screenViewBreakpointWidthMobile, $max-breakpoint: $screenViewBreakpointWidthWide, $unit: vw) {
   $slope: math.div($max-size - $min-size, $max-breakpoint - $min-breakpoint);
-  $slope-to-unit: round-dec($slope * 100, 2);
-  $intercept-rem: round-dec($min-size - $slope * $min-breakpoint, 2);
-  $min-size-rem: round-dec($min-size, 2);
-  $max-size-rem: round-dec($max-size, 2);
+  $slope-to-unit: roundDec($slope * 100, 2);
+  $intercept-rem: roundDec($min-size - $slope * $min-breakpoint, 2);
+  $min-size-rem: roundDec($min-size, 2);
+  $max-size-rem: roundDec($max-size, 2);
   @return clamp(#{$min-size-rem}, #{$slope-to-unit}#{$unit} + #{$intercept-rem}, #{$max-size-rem});
 }
 
 @function geometric-scaled-prop($prop, $scale-factor, $shift: 0, $factor-normal: 1) {
-  @return calc(#{round-dec($factor-normal * math.pow($scale-factor, $shift), $fluidScaleDigits)} * var(--#{$prop}-base));
+  @return calc(#{roundDec($factor-normal * math.pow($scale-factor, $shift), $fluidScaleDigits)} * var(--#{$prop}-base));
 }
 
 @mixin geometric-scale($prop, $base-size, $scale-factor: $geometricScaleFactor, $base-shift: 0, $smallest: 9, $largest: 9) {
@@ -729,7 +727,7 @@ html {
   @if ($numerator == $denominator) {
     @return var(--#{$prop}-base);
   }
-  @return calc(#{round-dec($factor-normal * math.div($numerator, $denominator), $fluidScaleDigits)} * var(--#{$prop}-base));
+  @return calc(#{roundDec($factor-normal * math.div($numerator, $denominator), $fluidScaleDigits)} * var(--#{$prop}-base));
 }
 
 @mixin fluid-fractional-scale($prop, $min-size, $max-size, $min-breakpoint: $screenViewBreakpointWidthMobile, $max-breakpoint: $screenViewBreakpointWidthWide, $unit: vw,
@@ -754,30 +752,23 @@ html {
   @include fluid-fractional-scale('inner_padding-x', 0.75rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
   @include fluid-fractional-scale('inner_margin-y', 0.75rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
   @include fluid-fractional-scale('inner_padding-y', 0.75rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
+
 }
 
 html {
   --to-be-eliminated-by-csspurge: black;
 
-  // Humanist from https://github.com/system-fonts/modern-font-stacks#humanist
-  --font-sans: #{$fontFamilySansStack},
-    Seravek, 'Gill Sans Nova', Ubuntu, Calibri, 'DejaVu Sans', source-sans-pro,
-    sans-serif;
+  --font-sans: #{$fontFamilySansID};
 
-  // Antique from https://github.com/system-fonts/modern-font-stacks#antique
-  --font-serif: #{$fontFamilySerifStack},
-    Georgia, 'URW Bookman', 'URW Bookman L',
-    serif;
+  --font-serif: #{$fontFamilySerifID};
 
-  // Monospace Code from https://github.com/system-fonts/modern-font-stacks#monospace-code
-  --font-mono: #{$fontFamilyMonoStack},
-    ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono',
-    monospace;
+  --font-mono: #{$fontFamilyMonoID};
 
-  --font: var(--font-sans);
-  --font-article: var(--font-serif);
+  @include defineFontFamily(default, default, text, default);
+  @include defineFontFamily(serif, article, text, default);
+  @include defineFontFamily(mono, code, text, default);
+  @include defineFontFamily(sans, meta, text, default);
 
-  --font-code: var(--font-mono);
   --font-size: var(--font-size-normal);
   --font-size-aside: var(--font-size_root-normal);
   --font-size-aside-meta: var(--font-size_root-smaller-1);
@@ -785,7 +776,7 @@ html {
 
   --font-size-lede: var(--font-size_root-larger-1);
 
-  --font-size-meta: var(--font-size_smaller-1);
+  --font-size-meta: var(--font-size_root-smaller-1);
   --font-size-button: var(--font-size-smaller-1);
 
   --font-size-title: var(--font-size_heading-larger-4);
@@ -794,16 +785,22 @@ html {
 
   --font-size-nav: var(--font-size-normal);
 
-  --font-weight: 400;
+  --fontFamilySansID: #{$fontFamilySansID};
+  // --fontFamilySerifID: #{$fontFamilySerifID};
+
+  // --font-weight: 400;
+
   --font-weight-strong: 600;
   --font-weight-light: 400;
   --font-weight-heading: 600;
   --font-weight-supertitle: 600;
   --font-weight-subtitle: 400;
   --font-weight-code: 400;
-  --line-height: 1.5;
+
+  // --line-height: 1.5;
   --line-height-heading: 1.2;
   --line-height-label: 1.2;
+
 
   --icon-height: 1.5em;
   --icon-height-nav: 1.5rem;

@@ -142,3 +142,25 @@
   src: url('#{$hostedFontPath}/source-sans-3-v8-latin-ext/source-sans-3-v8-latin-ext-900italic.woff2') format('woff2'), /* Chrome 36+, Opera 23+, Firefox 39+ */
        url('#{$hostedFontPath}/source-sans-3-v8-latin-ext/source-sans-3-v8-latin-ext-900italic.woff') format('woff'); /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
+
+$fontSpec: (
+  text: (
+    default: (
+      font-weight: 400,
+      line-height: 1.5
+    ),
+    bold: (
+      font-weight: 600,
+    )
+  ),
+  display: (
+    default: (
+      font-weight: 400,
+      line-height: 1.2
+    ),
+    bold: (
+      font-weight: 500,
+    )
+  )
+);
+$fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: (spec: $fontSpec)));

@@ -12,6 +12,7 @@
 @import 'claris/{{ $themeColorSchemeFile }}'
 {{- end }}
 
+$fontFamilyMap: ()
 {{- $fontsSelfHosted := default false ($page.Param "fontsSelfHosted") }}
 {{- $customFonts := default false ($page.Param "customFonts") }}
 {{- if and $fontsSelfHosted (not $customFonts) -}}
@@ -19,28 +20,45 @@
 {{- $fontFamilySerif := default "Merriweather" ($page.Param "fontFamilySerif") }}
 {{- $fontFamilyMono := default "DM Mono" ($page.Param "fontFamilyMono") }}
 {{- $fontFamilies := (slice
-  (dict "key" "fontFamilySans"  "family" $fontFamilySans)
-  (dict "key" "fontFamilySerif" "family" $fontFamilySerif)
-  (dict "key" "fontFamilyMono"  "family" $fontFamilyMono)
+  (dict "role" "default"  "family" $fontFamilySans)
+  (dict "role" "sans"     "family" $fontFamilySans)
+  (dict "role" "serif"    "family" $fontFamilySerif)
+  (dict "role" "mono"     "family" $fontFamilyMono)
 ) }}
 {{- $hostedFontPath := default (absURL "fonts") ($page.Param "hostedFontPath") }}
 $hostedFontPath: '{{ $hostedFontPath }}'
 {{- range $fontFamilies }}
-  {{- $fontFamilyKey := .key }}
-  {{- $fontFamilyUrlized :=  (urlize .family) }}
-@import 'claris/fonts/{{ $fontFamilyUrlized }}'
-  {{- $fontStack := slice .family }}
-  {{- $fallbankFontFamilyStylesheet := printf `/styles/claris/fonts/fallback/%s.*` $fontFamilyUrlized }}
+  {{- $roleKey := .role }}
+  {{- $roleSuffix := strings.FirstUpper $roleKey }}
+  {{- $familyName :=  .family }}
+  {{- $familyID :=  (urlize .family) }}
+
+$fontFamilyID: '{{ $familyID }}'
+{{ printf `$fontFamily%vID: '%v'` $roleSuffix $familyID }}
+
+$fontFamily: (name: '{{ $familyName }}')
+$fontStack: ('{{ $familyName }}')
+
+@import 'claris/fonts/{{ $familyID }}'
+  {{- $fallbankFontFamilyStylesheet := printf `/styles/claris/fonts/fallback/%s.*` $familyID }}
   {{- if resources.GetMatch $fallbankFontFamilyStylesheet }}
-    {{- $fontStack = append (slice
-        (printf `%s-fallback` $fontFamilyUrlized)
-        (printf `%s-fallback-android` $fontFamilyUrlized)
-      ) $fontStack }}
-@import 'claris/fonts/fallback/{{ $fontFamilyUrlized }}'
+
+$fontStack: join($fontStack, ({{ printf `%s-fallback, %s-fallback-android` $familyID $familyID }}) )
+$fontFamily: map-merge($fontFamily, (stack: $fontStack) )
+@import 'claris/fonts/fallback/{{ $familyID }}'
   {{- else }}
 /* No fallback stylesheet found for font family {{ .family }} at {{ $fallbankFontFamilyStylesheet }} */
+@import 'claris/fonts/fallback/{{ $roleKey }}'
   {{- end }}
-{{ printf `$%vStack: '"%v"'` $fontFamilyKey (delimit $fontStack `", "` ) }}
+
+
+$fontFamilyBase: map-get($fontFamilyMap, {{ $familyID }})
+@if $fontFamilyBase
+  $fontFamily: map-merge($fontFamily, $fontFamilyBase)
+
+$fontFamilyMap: map-merge($fontFamilyMap, ({{ $roleKey }}: $fontFamily) )
+$fontFamilyMap: map-merge($fontFamilyMap, ({{ $familyID }}: $fontFamily) )
+
 {{- end }}
 {{- end }}
 
