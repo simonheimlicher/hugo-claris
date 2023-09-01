@@ -346,11 +346,11 @@
     &_links {
       display: flex;
       justify-content: center;
-      align-items: baseline;
+      align-items: flex-start;
       flex-wrap: wrap;
       border-top: 1px var(--xxhaze) solid;
       column-gap: 1em;
-      ul > li {
+      ul > li, ul > li + li {
         padding: var(--inner_padding-y-3) var(--inner_padding-x-2);
       }
       &_social,
