@@ -1,7 +1,7 @@
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $imagesMeta := $meta.Single.Data.Images }}
 {{- $template := "partials/hero-image" }}
-{{- $fetchPriority := false }}
+{{- $fetchPriority := "low" }}
 {{- if reflect.IsMap . }}
   {{- with .FetchPriority }}
     {{- $fetchPriority = . }}
@@ -19,7 +19,6 @@
       "figureclass" (printf "hero-image_%s_figure" $imagesMeta.hero.style)
       "imgclass" (printf "hero-image_%s_img" $imagesMeta.hero.style)
       "fetchpriority" $fetchPriority
-      "lazy" false
     ) -}}
   {{/* {{- warnf "%s[%s]: Calling responsive-image with .style=%v and .resource=%v'"
       page $template .style .variant }} */}}

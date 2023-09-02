@@ -1,7 +1,7 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $title := .Title }}
-{{- $fetchPriority := false }}
+{{- $fetchPriority := "high" }}
 {{- if reflect.IsMap . }}
   {{- with .FetchPriority }}
     {{- $fetchPriority = . }}
