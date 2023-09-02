@@ -70,7 +70,30 @@
 
 {{- $lightbox := default false .lightbox -}}
 
-{{- $fetchPriority := default "auto" .fetchpriority -}}
+{{- /* To achieve a '100' score on Lighthouse, it's key to determine which images to prioritize
+  and let all others be loaded lazily */ -}}
+{{- $fetchPriority := "low" }}
+{{- with or .FetchPriority .fetchpriority }}
+  {{- $fetchPriority = . -}}
+{{- else }}
+  {{- if lt ($page.Scratch.Get "claris.image.prioritized") 1 }}
+    {{- $fetchPriority = "high" }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: claris.image.prioritized incremented to %d. Prioritizing excerpt image for %v"
+          $page $template ($page.Scratch.Get "claris.image.prioritized") $page }}
+    {{- end }}
+  {{- else }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: claris.image.prioritized already at %d. Not prioritizing excerpt image for %v"
+          $page $template ($page.Scratch.Get "claris.image.prioritized") $page }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- if in (slice "high") $fetchPriority }}
+  {{- $page.Scratch.Add "claris.image.prioritized" 1 }}
+{{- end }}
+{{- partial "html-comment" (printf "[%v]: claris.image.prioritized=%v"
+    $template ($page.Scratch.Get "claris.image.prioritized")) -}}
 
 {{- $lazy := default (eq $fetchPriority "low") .lazy -}}
 

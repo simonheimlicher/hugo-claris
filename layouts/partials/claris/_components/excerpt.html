@@ -10,7 +10,6 @@
 {{- $excerptImageKey := default "excerpt.variant.default.version.default" .ExcerptImageKey }}
 
 {{- $subjectPage := .SubjectPage }}
-{{- $fetchPriority := default "auto" .fetchpriority }}
 {{- $showDate := default true .ShowDate }}
 {{- $relativeDates := default true .RelativeDates }}
 {{- $showTags := default false .ShowTags }}
@@ -22,6 +21,7 @@
 {{- $headingLevel := default 3 .HeadingLevel }}
 {{- $containerFloat := default false .ContainerFloat }}
 {{- $containerRelativeWidth := default false .ContainerRelativeWidth }}
+{{- $fetchPriority := default false .FetchPriority }}
 
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
@@ -119,18 +119,19 @@
         <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
         {{- with $excerptImage }}
 
-          {{- $fetchPriority := "low" }}
-          {{- if lt ($page.Scratch.Get "claris.image.prioritized") 1 }}
-            {{- $page.Scratch.Add "claris.image.prioritized" 1 }}
-            {{- $fetchPriority = "high" }}
-            {{- if $debug }}
-              {{- warnf "%s[%s]: claris.image.prioritized incremented to %d. Prioritizing excerpt image for %v"
-                  $page $template ($page.Scratch.Get "claris.image.prioritized") $subjectPage }}
-            {{- end }}
-          {{- else }}
-            {{- if $debug }}
-              {{- warnf "%s[%s]: claris.image.prioritized already at %d. Not prioritizing excerpt image for %v"
-                  $page $template ($page.Scratch.Get "claris.image.prioritized") $subjectPage }}
+          {{- if not $fetchPriority }}
+            {{- if lt ($page.Scratch.Get "claris.image.prioritized") 1 }}
+              {{- $page.Scratch.Add "claris.image.prioritized" 1 }}
+              {{- $fetchPriority = "high" }}
+              {{- if $debug }}
+                {{- warnf "%s[%s]: claris.image.prioritized incremented to %d. Prioritizing excerpt image for %v"
+                    $page $template ($page.Scratch.Get "claris.image.prioritized") $subjectPage }}
+              {{- end }}
+            {{- else }}
+              {{- if $debug }}
+                {{- warnf "%s[%s]: claris.image.prioritized already at %d. Not prioritizing excerpt image for %v"
+                    $page $template ($page.Scratch.Get "claris.image.prioritized") $subjectPage }}
+              {{- end }}
             {{- end }}
           {{- end }}
 

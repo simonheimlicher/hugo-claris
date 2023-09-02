@@ -7,6 +7,7 @@
 {{- $headingLevel := default 2 .HeadingLevel }}
 {{- $containerClass := default "panel_container" .ContainerClass }}
 {{- $nested := default true .Nested }}
+{{- $fetchPriority := default false .FetchPriority }}
 {{- if $containerClass }}
   {{- $containerClass = printf "%s layout-%s" $containerClass (cond $nested "flex" "grid") }}
 {{- end }}
@@ -40,7 +41,6 @@ See https://github.com/gohugoio/hugo/issues/7297
   {{- with $containerClass }}
     <div class="{{ . }}">
   {{- end }}
-  {{- $imageCount := 0 }}
   {{- range $panelIndex, $panelItem := $panelCardsData }}
     {{- $panelID := add $panelIndex 1 }}
     {{- $panelStyle := false }}
@@ -104,24 +104,31 @@ See https://github.com/gohugoio/hugo/issues/7297
                 {{- $cardImageFloat := true }}
                 <div class="card_inner">
                   {{- with .image.resource }}
+                    {{- if not $fetchPriority }}
+                      {{- if lt (page.Scratch.Get "claris.image.prioritized") 1 }}
+                        {{- page.Scratch.Add "claris.image.prioritized" 1 }}
+                        {{- $fetchPriority = "high" }}
+                      {{- end }}
+                    {{- end }}
+                    {{- $imgSizesAttr := partial "claris/_functions/resources/images/img-sizes-attr" 20 }}
                     {{- if $cardImageFloat }}
                       {{- partial "responsive-image" (dict
                       "Page" page
                       "resource" .
                       "figureclass" "card_figure"
                       "containerclass" "card_figure"
-                      "fetchpriority" (cond (eq $imageCount 0) "high" "low")
+                      "fetchpriority" $fetchPriority
+                      "sizes" $imgSizesAttr
                       "width" 512) -}}
-                      {{- $imageCount = add $imageCount 1 }}
                     {{- else }}
                       {{- partial "responsive-image" (dict
                       "Page" page
                       "resource" .
                       "figureclass" "card_figure"
                       "containerclass" "card_figure"
-                      "fetchpriority" (cond (eq $imageCount 0) "high" "low")
+                      "fetchpriority" $fetchPriority
+                      "sizes" $imgSizesAttr
                       "width" 512) -}}
-                      {{- $imageCount = add $imageCount 1 }}
                     {{- end }}
                   {{- end }}
                   {{- with .content }}

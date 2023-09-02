@@ -1,6 +1,13 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $title := .Title }}
+{{- $fetchPriority := false }}
+{{- if reflect.IsMap . }}
+  {{- with .FetchPriority }}
+    {{- $fetchPriority = . }}
+  {{- end }}
+{{- end }}
+
 {{- $featureImageStyle := default "wide" ($page.Param "image.feature.style") }}
 {{- $template := "claris/_components/feature-image" }}
 
@@ -12,6 +19,12 @@
 {{- $featureImage := false }}
 {{- with $meta.Single.Data.Images }}
   {{- with $featureImage = .feature.variant.default }}
+    {{- if not $fetchPriority }}
+      {{- if lt (page.Scratch.Get "claris.image.prioritized") 1 }}
+        {{- page.Scratch.Add "claris.image.prioritized" 1 }}
+        {{- $fetchPriority = "high" }}
+      {{- end }}
+    {{- end }}
     {{- $classPrefix := printf "feature-image" }}
     {{- $featureImageArgs := (dict
       "resource" (default .version.default.resource (index .version $featureImageStyle).resource)
@@ -22,7 +35,7 @@
       "fullbleedhorizontal" true
       "figureclass" (printf "%s_figure" $classPrefix)
       "imgclass" (printf "%s_img" $classPrefix)
-      "fetchpriority" "high"
+      "fetchpriority" $fetchPriority
     ) }}
     {{- if $debug }}
       {{- warnf "%s[%s]: Found feature image resource $featureImage.version.default.resource=%v in \nfeatureImage=%v\nNow calling responsive-image with .resource=%v in featureImageArgs=%v"

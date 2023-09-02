@@ -3,7 +3,7 @@
 {{- $itemType := .ItemType }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `leadership` page.RelPermalink) ) ) }} */}}
+{{- /* {{- $debug = or $debug (not (not (findRE `leadership` page.RelPermalink) ) ) }} */ -}}
 
 {{- $listPartialParams := (dict
   "ItemType" $itemType
@@ -14,7 +14,7 @@
     "ListParams" (dict
       "SectionsToShow" .
     )
-  ) }}
+  ) -}}
 {{- end }}
 
 {{- if $debug }}
