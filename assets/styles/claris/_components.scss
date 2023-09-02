@@ -184,9 +184,16 @@
       background: var(--bg);
       @include drop-shadow(3rem, 0.1, 0.1);
       @include color-scheme_transition;
-      border-radius: 0.25em;
       @include inner-padding;
       min-width: calc(min(100%, ($screenViewBreakpointWidthWide - 1 * var(--inner_margin)) / 2));
+      @media screen and (min-width: $screenViewBreakpointWidthWide) {
+        &:nth-child(odd) {
+          border-radius: 0 0.5em 0.5em 0;
+        }
+        &:nth-child(even) {
+          border-radius: 0.5em 0 0 0.5em;
+        }
+      }
     }
     .layout-grid & {
       &-1 {
@@ -207,18 +214,20 @@
     }
   }
   &_figure {
-    float: left;
-    margin: calc(1em * (0.92 * var(--line-height) - 1)) var(--inner_margin) var(--inner_margin) 0;
+    margin: var(--inner_margin) auto;
+    max-width: 80%;
     img {
-      max-width: unset;
-      max-height: unset;
-      width: clamp(8rem, 4rem + 20vw, 16rem);
-      height: auto;
-      // max-height: var(--max-dimension);
+      display: block;
       object-fit: cover;
-      overflow: hidden;
     }
-  }
+    @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
+      float: left;
+      margin: calc(1em * (0.92 * var(--line-height) - 1)) var(--inner_margin) var(--inner_margin) 0;
+      img {
+        width: clamp(8rem, 4rem + 20vw, 16rem);
+      }
+    }
+}
 }
 
 /*
