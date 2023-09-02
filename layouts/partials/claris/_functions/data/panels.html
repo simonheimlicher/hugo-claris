@@ -66,6 +66,11 @@
     {{- with .Content }}
       {{- $panelData = merge $panelData (dict "content" .) }}
     {{- end }}
+    {{- with .Params }}
+      {{- with .link }}
+        {{- $panelData = merge $panelData (dict "link" .) }}
+      {{- end }}
+    {{- end }}
     {{- $panelPageName := .Name }}
     {{- $cardResourceGlob := printf "%v/*.md" (path.Dir $panelPageName) }}
     {{- $cardPages := $panelRootPage.Resources.Match $cardResourceGlob }}
@@ -86,6 +91,11 @@
         {{- end }}
         {{- with .Content }}
           {{- $cardData = merge $cardData (dict "content" .) }}
+        {{- end }}
+        {{- with .Params }}
+          {{- with .link }}
+            {{- $cardData = merge $cardData (dict "link" .) }}
+          {{- end }}
         {{- end }}
         {{- $cards = append $cardData $cards }}
       {{- end }}

@@ -180,6 +180,7 @@
       margin-top: 0;
     }
     .layout-flex & {
+      display: block;
       flex: 1 1 10%;
       background: var(--bg);
       @include drop-shadow(3rem, 0.1, 0.1);

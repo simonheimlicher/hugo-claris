@@ -9,7 +9,7 @@
   "HeadingLevel" $headingLevel) }}
 
 {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
-<div class="panel_content content_full-bleed content">
+<div class="panel_content content_full-bleed">
 
 {{- if $debug }}
   {{- warnf "%s[%s]: Calling 'claris/_components/panels' with panelsPartialParams=%v" page $template $panelsPartialParams }}

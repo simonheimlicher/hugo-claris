@@ -89,18 +89,31 @@ See https://github.com/gohugoio/hugo/issues/7297
                 {{- with .style }}
                   {{- $cardStyle = printf ` style="%v"` . | safeHTMLAttr }}
                 {{- end }}
-                {{- with .link }}
+                {{- with and (not $panelLink) .link }}
                   {{- $cardLink = . }}
                 {{- end }}
               {{- end }}
-              {{- if and (not $panelLink) $cardLink }}
-                <a href="{{ $cardLink | absLangURL }}">
+              {{- if $cardLink }}
+              <a class="card_item panel_item-{{ $panelID }} card_item-{{ $cardID }} excerpt_container"{{ with $cardStyle }}{{ . }}{{ end }} href="{{ $cardLink | absLangURL }}">
+              {{- else }}
+              <div class="card_item panel_item-{{ $panelID }} card_item-{{ $cardID }} content"{{ with $cardStyle }}{{ . }}{{ end }}>
               {{- end }}
-              <div class="card_item panel_item-{{ $panelID }} card_item-{{ $cardID }}"{{ with $cardStyle }}{{ . }}{{ end }}>
               {{- if reflect.IsMap . }}
                 {{- with .title }}
                   <h{{ add $headingLevel 1 }} class="card_title panel_item-{{ $panelID }} card_item-{{ $cardID }}">{{ page.RenderString . }}</h{{ add $headingLevel 1 }}>
                 {{- end }}
+                {{- $cardContent := "" }}
+                {{- with .content }}
+                  {{- if strings.HasPrefix (printf "%T" . ) "template" }}
+                    {{ $cardContent = . }}
+                  {{- else }}
+                    {{ $cardContent = page.RenderString $renderOptCard . }}
+                  {{- end }}
+                  {{- if $cardLink }}
+                    {{ $cardContent = $cardContent | replaceRE `</?[a\s]*[^>]*>` `` | safeHTML }}
+                  {{- end }}
+                {{- end }}
+
                 {{- $cardImageFloat := true }}
                 <div class="card_inner">
                   {{- with .image.resource }}
@@ -131,13 +144,9 @@ See https://github.com/gohugoio/hugo/issues/7297
                       "width" 512) -}}
                     {{- end }}
                   {{- end }}
-                  {{- with .content }}
+                  {{- with $cardContent }}
                     <div class="card_content">
-                    {{- if strings.HasPrefix (printf "%T" . ) "template" }}
                       {{ . }}
-                    {{- else }}
-                      {{ page.RenderString $renderOptCard . }}
-                    {{- end }}
                     </div>
                   {{- end }}
                 </div>
@@ -152,9 +161,10 @@ See https://github.com/gohugoio/hugo/issues/7297
                   </div>
                 {{- end }}
               {{- end }}
+              {{- if $cardLink }}
+              </a>
+              {{- else }}
               </div>
-              {{- if and (not $panelLink) $cardLink }}
-                </a>
               {{- end }}
             {{- end }}
             {{- if $nested }}
