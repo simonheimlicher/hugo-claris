@@ -10,7 +10,7 @@
 
 {{- $preloadFontFamilies := (slice ($page.Param "fontFamilySans")) }}
 {{- with $page.Scratch.Get "claris.assets.font.main" }}
-  {{- $preloadFontFamilies = (slice .) }}
+  {{- $preloadFontFamilies = append . $preloadFontFamilies }}
 {{- end }}
 {{- if $debug }}
   {{- warnf "%s[%s]: .Kind=%v: preloadFontFamilies=%v" $page $template $page.Kind $preloadFontFamilies }}
