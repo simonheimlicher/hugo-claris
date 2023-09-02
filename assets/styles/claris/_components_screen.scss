@@ -1092,7 +1092,7 @@ body:not(.modern-js) .article_aside .table_of_contents {
 }
 
 .article_content {
-  @include link-lvhfa;
+  // @include link-lvhfa;
 
   p a:not(.button):not(nav a):not(sup a),
   li a:not(.button):not(nav a):not(sup a) {
