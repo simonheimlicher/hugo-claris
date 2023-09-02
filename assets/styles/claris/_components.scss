@@ -557,9 +557,6 @@
   &_content {
     @include list-style_indented;
     @include color-scheme_transition;
-    // FIXME: Is background for article_content required?
-    // background: var(--choice-bg)
-    @include useFontFamily(article);
     margin-top: calc( (1 - var(--line-height-heading) ) * 1em);
   }
   &_body {
