@@ -25,10 +25,10 @@ $text-faint-lit: lighten(desaturate($text-lit, 0%), 25%);
 $text-faint-dim: darken(desaturate($text-dim, 0%), 15%);
 
 $bg-lit: $colorBackgroundLit;
-$bg-hover-lit: lighten(desaturate($bg-lit, 10%), 5%);
+$bg-hover-lit: lighten(saturate($bg-lit, 50%), 10%);
 
 $bg-dim: $colorBackgroundDim;
-$bg-hover-dim: lighten(saturate($bg-dim, 10%), 5%);
+$bg-hover-dim: lighten(desaturate($bg-dim, 10%), 2%);
 
 $bg-light-lit: darken($bg-lit, 5%);
 $bg-light-hover-lit: lighten($bg-light-lit, 20%);
