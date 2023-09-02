@@ -1742,10 +1742,13 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
 // {{ </responsive-code> }}
   }
 }
-.content .responsive-image_container,
 .shortcode_responsive-figure,
 .excerpt_container {
   margin: var(--inner_margin-y) auto;
+}
+.content .responsive-image_container,
+.shortcode_responsive-figure,
+.excerpt_container {
   // padding: var(--inner_padding-y) var(--inner_padding-x)
   border-radius: 0.125rem;
   // Remove any surrounding margins and padding from elements
