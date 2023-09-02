@@ -19,7 +19,8 @@
 {{- $defaultPosition := "center center" }}
 {{- $imgPosition := default $defaultPosition .position -}}
 
-{{- $defaultSizes := "" }}
+{{- /* The attribute 'sizes' is mandatory when specifying a 'srcset' attribute */ -}}
+{{- $defaultSizes := "100vw" }}
 
 {{- $figureClass := cond (ne "" $caption) "caption" "" -}}
 {{- with .figureclass -}}
