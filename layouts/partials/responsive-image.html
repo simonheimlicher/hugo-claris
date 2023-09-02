@@ -19,7 +19,7 @@
 {{- $defaultPosition := "center center" }}
 {{- $imgPosition := default $defaultPosition .position -}}
 
-{{- $defaultSizes := "100vw" }}
+{{- $defaultSizes := "" }}
 
 {{- $figureClass := cond (ne "" $caption) "caption" "" -}}
 {{- with .figureclass -}}
@@ -42,7 +42,7 @@
 
 {{- with .relativewidth -}}
   {{- $containerClass = printf "%s relative-width-%d" $containerClass (int .) -}}
-  {{- $defaultSizes = printf "%vvw" (math.Max 30 (int .) ) }}
+  {{- $defaultSizes = partial "claris/_functions/resources/images/img-sizes-attr" . }}
 {{- end -}}
 
 {{- $imgSizes := default $defaultSizes .sizes -}}
@@ -292,13 +292,17 @@
       {{- range .formatsrcsets.formats }}
           {{- $imgWidth := default .resource.Width $imageResourceArgs.Width }}
           {{- $imgHeight := default .resource.Height $imageResourceArgs.Height }}
-          <source type="{{ .resource.MediaType }}" data-media="{{ $media }}" {{ printf "data-style=%q" $variantInlineStyleAttr | safeHTMLAttr }} sizes="{{ $imgSizes | safeHTMLAttr }}"
+          <source type="{{ .resource.MediaType }}"
+            data-media="{{ $media }}" {{ printf "data-style=%q" $variantInlineStyleAttr | safeHTMLAttr }}
           {{- if $includePlaceholder }}
-            {{ printf "srcset=%q" (printf  "%s %dw" $placeholderInlineImg $imgWidth) | safeHTMLAttr }}
-            data-srcset="{{ .srcset }}"
+                {{ printf "srcset=%q" (printf  "%s %dw" $placeholderInlineImg $imgWidth) | safeHTMLAttr }}
+           data-srcset="{{ .srcset }}"
           {{- else }}
-            srcset="{{ .srcset }}"
+                srcset="{{ .srcset }}"
           {{- end -}}
+          {{- with $imgSizes }}
+                 sizes="{{ . | safeHTMLAttr }}"
+          {{- end }}
           >
       {{- end }}
     {{- end }}
@@ -317,13 +321,20 @@
         {{- range $nonDefaultFormats }}
           {{- $imgWidth := default .resource.Width $imageResourceArgs.Width }}
           {{- $imgHeight := default .resource.Height $imageResourceArgs.Height }}
-          <source type="{{ .resource.MediaType }}" {{ with $multiVariant }} data-media="all"{{ end }} {{ printf "data-style=%q" $variantInlineStyleAttr | safeHTMLAttr }} sizes="{{ $imgSizes | safeHTMLAttr }}"
-          {{- if $includePlaceholder }}
-            {{ printf "srcset=%q" (printf  "%s %dw" $placeholderInlineImg $imgWidth) | safeHTMLAttr }}
-            data-srcset="{{ .srcset }}"
-          {{- else }}
-            srcset="{{ .srcset }}"
-          {{- end -}}
+          <source type="{{ .resource.MediaType }}"
+            {{ with $multiVariant }}
+            data-media="all"
+            {{ end }}
+            {{ printf "data-style=%q" $variantInlineStyleAttr | safeHTMLAttr }}
+            {{- if $includePlaceholder }}
+              {{ printf "srcset=%q" (printf  "%s %dw" $placeholderInlineImg $imgWidth) | safeHTMLAttr }}
+              data-srcset="{{ .srcset }}"
+            {{- else }}
+                srcset="{{ .srcset }}"
+            {{- end -}}
+            {{- with $imgSizes }}
+                 sizes="{{ . | safeHTMLAttr }}"
+            {{- end }}
           >
         {{- end }}
       {{- end }}
@@ -361,7 +372,9 @@
             {{- with $lightbox }}
         data-zoomable="{{ . | safeHTMLAttr }}"
             {{- end }}
-                sizes="{{ $imgSizes | safeHTMLAttr }}"
+            {{- with $imgSizes }}
+                sizes="{{ . | safeHTMLAttr }}"
+            {{- end }}
             {{- with $variant.title }}
                 title="{{ . | safeHTMLAttr }}"
             {{- end }}
@@ -391,7 +404,9 @@
               {{- with $fetchPriority }}
           fetchpriority="{{ . | safeHTMLAttr }}"
               {{- end }}
-                  sizes="{{ $imgSizes | safeHTMLAttr }}"
+              {{- with $imgSizes }}
+                  sizes="{{ . | safeHTMLAttr }}"
+              {{- end }}
               {{- with $variant.title }}
                   title="{{ . | safeHTMLAttr }}"
               {{- end }}

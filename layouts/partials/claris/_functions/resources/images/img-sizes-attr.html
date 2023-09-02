@@ -1,0 +1,55 @@
+{{- $imgSizesAttr := "" }}
+{{- $page := page }}
+{{- $targetRelativeWidth := default 100 . }}
+{{- if reflect.IsMap . }}
+  {{- with .Page }}
+    {{- $page = . }}
+  {{- end }}
+  {{- with .relativewidth }}
+    {{- $targetRelativeWidth = . }}
+  {{- end }}
+{{- end }}
+{{- $debug := false }}
+{{/* {{- $debug = or $debug (not (not (findRE `never-match` $page.RelPermalink) ) ) }} */}}
+{{- $template := "claris/_functions/resources" }}
+
+{{- $breakpointRelativeWidthToWidth := (dict
+  "mobile" (dict
+    "20" 80
+    "60" 100
+  )
+  "narrow" (dict
+    "20" 30
+    "40" 40
+  )
+  "oneColumn" 1
+) -}}
+
+{{- $targetRelativeWidth = int $targetRelativeWidth }}
+{{- with $targetRelativeWidth }}
+  {{- $imgSizesAttrList := slice }}
+  {{- range $breakpointID, $relativeWidthToWidth := $breakpointRelativeWidthToWidth }}
+    {{- $sizesAttr := false }}
+    {{- with $breakpointWidth := $page.Param (printf "responsive.breakpoints.width.%s" $breakpointID) }}
+      {{- if reflect.IsMap $relativeWidthToWidth }}
+        {{- range $relativeWidth, $width := $relativeWidthToWidth }}
+          {{- if and (not $sizesAttr) (ge $relativeWidth $targetRelativeWidth) }}
+            {{- $sizesAttr = printf `(min-width: %v) %vvw` $breakpointWidth $width }}
+          {{- end }}
+        {{- end }}
+      {{- else }}
+        {{- with (int $relativeWidthToWidth) }}
+          {{- $sizesAttr = printf `(min-width: %v) %vvw` $breakpointWidth (mul . $targetRelativeWidth) }}
+        {{- else }}
+          {{- errorf "%v[%v]: invalid parameter for relative width: %v" $page $template $targetRelativeWidth }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- $imgSizesAttrList = append $sizesAttr $imgSizesAttrList }}
+  {{- end }}
+  {{- $imgSizesAttr = delimit $imgSizesAttrList ", " }}
+{{- else }}
+  {{- errorf "%v[%v]: invalid parameter for relative width: %v" $page $template $targetRelativeWidth }}
+{{- end }}
+
+{{- return $imgSizesAttr }}

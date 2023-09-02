@@ -96,6 +96,33 @@ supportIE11 = true
 
 sidebarTaxonomies = ["tags"]
 
+[responsive]
+  [responsive.breakpoints]
+    [responsive.breakpoints.width]
+      # From this width upward, the mobile menu is hidden
+      # and the full menu bar is shown
+      mobileMenu = "28rem"
+
+      # From this width upward, more than one content item is shown horizontally -
+      # e.g., a floating image surrounded by text
+      mobile = "20rem"
+
+      # From this width upward, font size is set to regular size
+      narrow = "36rem"
+
+      # Fit content to iPad in portrait orientation: 768px = 48rem
+      oneColumn = "48rem"
+
+      # Layout with one aside
+      twoColumn = "60rem"
+
+      # Layout with two asides
+      wide = "76rem"
+
+      # Layout with two asides and wider sections in main column, e.g., for code or figures
+      ultraWide = "96rem"
+
+
 [colors]
   colorPrimaryLit = "hsl(200, 100%, 50%)"
   colorPrimaryDim = "hsl(200, 100%, 50%)"
