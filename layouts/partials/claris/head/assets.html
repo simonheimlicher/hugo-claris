@@ -18,7 +18,7 @@
 {{- range $styleBundleID := (slice "main_all") }}
   {{- $styleSheet := (index $styleBundles $styleBundleID) }}
   {{- with $styleSheet }}
-    {{- if and ($page.Param "fontsSelfHosted") (not ($page.Param "customFonts")) -}}
+    {{- if ($page.Param "fontsSelfHosted") -}}
       {{- $preloadFonts := partialCached "claris/_functions/resources/fonts/preload" (dict "Page" $page "StyleSheet" .) $assetVariant }}
       {{- if $debug }}
         {{- warnf "%s[%s]: .Kind=%v: Pre-loading font .Scratch claris.assets.font.main=%v %v"

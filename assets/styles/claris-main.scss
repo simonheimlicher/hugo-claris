@@ -34,11 +34,11 @@ $fontFamilyID: '{{ $familyID }}';
 $fontFamily: (name: '{{ $familyName }}');
 
 {{- $fontsSelfHosted := default false ($page.Param "fontsSelfHosted") }}
-{{- $customFonts := default false ($page.Param "customFonts") }}
-{{- if and $fontsSelfHosted (not $customFonts) -}}
-{{- $hostedFontPath := default (absURL "fonts") ($page.Param "hostedFontPath") }}
-$hostedFontPath: '{{ $hostedFontPath }}';
-@import 'claris/fonts/{{ $familyID }}';
+
+{{- if $fontsSelfHosted -}}
+  {{- $hostedFontPath := default (absURL "fonts") ($page.Param "hostedFontPath") }}
+  $hostedFontPath: '{{ $hostedFontPath }}';
+  @import 'claris/fonts/{{ $familyID }}';
 {{- end }}
 
 {{- $fallbankFontFamilyStylesheet := printf `/styles/claris/fonts/fallback/%s.*` $familyID }}
