@@ -1,18 +1,19 @@
-{{- $page := .Page }}
-{{- $mediaType := .MediaType }}
-/* File='styles/claris-main.sass': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .ContentTypeList='{{ printf "%v" .ContentTypeList }}' .ContentTypeListID='{{ .ContentTypeListID }}' .ContentType='{{ .ContentType }}' .MediaType='{{ .MediaType }}' */
+/* {{- $page := .Page }} {{- $mediaType := .MediaType }} */
+/* File='styles/claris-main.scss': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .ContentTypeList='{{ printf "%v" .ContentTypeList }}' .ContentTypeListID='{{ .ContentTypeListID }}' .ContentType='{{ .ContentType }}' .MediaType='{{ .MediaType }}' */
 
 // Core stylesheets that are included for all media types
-@import 'claris/functions'
+@import 'claris/functions';
 
-@import 'claris/colors'
+@import 'claris/colors';
+
 {{- $themeColorSchemePath := default "colors" ($page.Param "themeColorSchemePath") }}
 {{- with (default false ($page.Param "themeColorScheme") ) }}
 {{- $themeColorSchemeFile := printf "%s/%s" }}
-@import 'claris/{{ $themeColorSchemeFile }}'
+@import 'claris/{{ $themeColorSchemeFile }}';
 {{- end }}
 
-$fontFamilyMap: ()
+$fontFamilyMap: ();
+
 {{- $fontsSelfHosted := default false ($page.Param "fontsSelfHosted") }}
 {{- $customFonts := default false ($page.Param "customFonts") }}
 {{- if and $fontsSelfHosted (not $customFonts) -}}
@@ -24,58 +25,59 @@ $fontFamilyMap: ()
   (dict "role" "sans"     "family" $fontFamilySans)
   (dict "role" "serif"    "family" $fontFamilySerif)
   (dict "role" "mono"     "family" $fontFamilyMono)
-) }}
+) -}}
 {{- $hostedFontPath := default (absURL "fonts") ($page.Param "hostedFontPath") }}
-$hostedFontPath: '{{ $hostedFontPath }}'
+$hostedFontPath: '{{ $hostedFontPath }}';
 {{- range $fontFamilies }}
   {{- $roleKey := .role }}
   {{- $roleSuffix := strings.FirstUpper $roleKey }}
   {{- $familyName :=  .family }}
   {{- $familyID :=  (urlize .family) }}
 
-$fontFamilyID: '{{ $familyID }}'
-{{ printf `$fontFamily%vID: '%v'` $roleSuffix $familyID }}
+$fontFamilyID: '{{ $familyID }}';
+{{ printf `$fontFamily%vID: '%v'` $roleSuffix $familyID | safeCSS }};
 
-$fontFamily: (name: '{{ $familyName }}')
-$fontStack: ('{{ $familyName }}')
+$fontFamily: (name: '{{ $familyName }}');
 
-@import 'claris/fonts/{{ $familyID }}'
+@import 'claris/fonts/{{ $familyID }}';
   {{- $fallbankFontFamilyStylesheet := printf `/styles/claris/fonts/fallback/%s.*` $familyID }}
   {{- if resources.GetMatch $fallbankFontFamilyStylesheet }}
 
-$fontStack: join($fontStack, ({{ printf `%s-fallback, %s-fallback-android` $familyID $familyID }}) )
-$fontFamily: map-merge($fontFamily, (stack: $fontStack) )
-@import 'claris/fonts/fallback/{{ $familyID }}'
+{{- $familyStack := (slice $familyName (printf `%s-fallback` $familyID) (printf `%s-fallback-android` $familyID)) }}
+$fontStack: ({{ printf `'%s'` (delimit $familyStack "', '") }});
+$fontFamily: map-merge($fontFamily, (stack: $fontStack) );
+@import 'claris/fonts/fallback/{{ $familyID }}';
   {{- else }}
 /* No fallback stylesheet found for font family {{ .family }} at {{ $fallbankFontFamilyStylesheet }} */
-@import 'claris/fonts/fallback/{{ $roleKey }}'
+@import 'claris/fonts/fallback/{{ $roleKey }}';
   {{- end }}
 
 
-$fontFamilyBase: map-get($fontFamilyMap, {{ $familyID }})
-@if $fontFamilyBase
+$fontFamilyBase: map-get($fontFamilyMap, {{ $familyID }});
+@if $fontFamilyBase {
   $fontFamily: map-merge($fontFamily, $fontFamilyBase)
+}
 
-$fontFamilyMap: map-merge($fontFamilyMap, ({{ $roleKey }}: $fontFamily) )
-$fontFamilyMap: map-merge($fontFamilyMap, ({{ $familyID }}: $fontFamily) )
+$fontFamilyMap: map-merge($fontFamilyMap, ({{ $roleKey }}: $fontFamily) );
+$fontFamilyMap: map-merge($fontFamilyMap, ({{ $familyID }}: $fontFamily) );
 
 {{- end }}
 {{- end }}
 
-@import 'claris/variables'
-@import 'claris/override'
+@import 'claris/variables';
+@import 'claris/override';
 
 // Additional stylesheets
-@import 'claris/base'
-@import 'claris/components'
+@import 'claris/base';
+@import 'claris/components';
 {{- if (in (slice "all" "screen") $mediaType) }}
-@import 'claris/components_screen'
+@import 'claris/components_screen';
 {{- end }}
 {{- if (in (slice "all" "print") $mediaType) }}
-@import 'claris/components_print'
+@import 'claris/components_print';
 {{- end }}
-@import 'claris/utils'
+@import 'claris/utils';
 
 /*! purgecss start ignore */
-@import 'claris/syntax'
+@import 'claris/syntax';
 /*! purgecss end ignore */

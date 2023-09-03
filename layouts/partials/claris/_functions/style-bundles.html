@@ -49,7 +49,7 @@ appears to be broken, as mentioned above.
 
 <!-- https://www.hackification.io/software-development/hugo/html/asset-bundling/ */ -->
 {{- $resourcePathBase := "styles" -}}
-{{- $sourceExt := "sass" }}
+{{- $sourceExt := "scss" }}
 {{- $executedSourceSuffix := "_executed" }}
 {{- $targetExt := "css" -}}
 {{- $fingerprintOptions := default "sha256" site.Params.resourceFingerprintOptions }}
@@ -198,7 +198,7 @@ that contains the `postcss.config.js` file - not the file itself. -->
 
     {{- if (and (eq $mediaType $legacyMediaType) (and $supportIE11 $params.supportIE11) ) }}
       {{- $legacyResourceID := printf "%s%s" $resourceID $legacySuffix }}
-      {{- $legacyExecutedFile := printf "%s.sass" $legacyResourceID }}
+      {{- $legacyExecutedFile := printf "%s.%s" $legacyResourceID $sourceExt }}
       {{- $legacyToCSSoptions := merge $toCSSoptionsBase (dict "targetPath" (printf "%s/%s.%s" $targetPathPrefix $legacyResourceID $targetExt) ) -}}
       {{- $legacyBundle := $concatResource | resources.ToCSS $legacyToCSSoptions -}}
       {{- $legacyBundleFull := $legacyBundle | resources.PostCSS $postCSSLegacyOptions | resources.Fingerprint $fingerprintOptions -}}

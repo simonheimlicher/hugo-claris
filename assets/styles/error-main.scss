@@ -1,0 +1,9 @@
+{{- $page := .Page }}
+{{- $mediaType := .MediaType }}
+/* File='styles/error-main.scss': .Page='{{ .Page }}' $contentType='#{$contentType}' $mediaType='#{$mediaType}' */
+
+// Core stylesheets that are included for all media types
+// @import 'claris/main';
+
+// Additional stylesheets
+@import 'error/components';
