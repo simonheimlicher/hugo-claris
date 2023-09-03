@@ -69,7 +69,7 @@ $surfaceSecondaryLit: {{ default "lighten(desaturate($colorSecondaryLit, 50%), 4
 $surfaceSecondaryDim: {{ default "darken(desaturate($colorSecondaryDim, 60%), 35%)" ($page.Param "surfaceSecondaryDim") }};
 
 $fontFamilySans: '{{ default "Source Sans 3" ($page.Param "fontFamilySans") }}';
-$fontFamilySerif: '{{ default "Merriweather" ($page.Param "fontFamilySerif") }}';
+$fontFamilySerif: '{{ default "Alegreya" ($page.Param "fontFamilySerif") }}';
 $fontFamilyMono: '{{ default "DM Mono" ($page.Param "fontFamilyMono") }}';
 
 $geometricScaleFactor: {{ default "math.pow(2.0, math.div(1, 4) )" ($page.Param "geometricScaleFactor") }};

@@ -70,6 +70,7 @@ outdatedAfterYears = 5
 #   "articles"
 # ]
 
+fontFamilySans = "Source Sans 3"
 # fontFamilySans = "IBM Plex Sans"
 # fontFamilySans = "Public Sans"
 # fontFamilySans = "Cabin"
@@ -77,13 +78,17 @@ outdatedAfterYears = 5
 # fontFamilySans = "Nunito"
 # fontFamilySans = "Nunito Sans"
 # fontFamilySans = "Mulish"
-fontFamilySans = "Source Sans 3"
+# fontFamilySans = "Inter"
 
+fontFamilySerif = "Alegreya"
+# fontFamilySerif = "Andada Pro"
 # fontFamilySerif = "IBM Plex Serif"
-fontFamilySerif = "Merriweather"
-# fontFamilySerif = "Crimson Pro"
+# fontFamilySerif = "Merriweather"
 # fontFamilySerif = "Crimson Text"
+# fontFamilySerif = "Crimson Pro"
 # fontFamilySerif = "Literata"
+# fontFamilySerif = "Spectral"
+# fontFamilySerif = "Vollkorn"
 
 fontFamilyMono = "DM Mono"
 # fontFamilyMono = "Menlo"
