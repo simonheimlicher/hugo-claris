@@ -12,11 +12,6 @@
 @import 'claris/{{ $themeColorSchemeFile }}';
 {{- end }}
 
-$fontFamilyMap: ();
-
-{{- $fontsSelfHosted := default false ($page.Param "fontsSelfHosted") }}
-{{- $customFonts := default false ($page.Param "customFonts") }}
-{{- if and $fontsSelfHosted (not $customFonts) -}}
 {{- $fontFamilySans := default "Source Sans 3" ($page.Param "fontFamilySans") }}
 {{- $fontFamilySerif := default "Alegreya" ($page.Param "fontFamilySerif") }}
 {{- $fontFamilyMono := default "DM Mono" ($page.Param "fontFamilyMono") }}
@@ -26,8 +21,7 @@ $fontFamilyMap: ();
   (dict "role" "serif"    "family" $fontFamilySerif)
   (dict "role" "mono"     "family" $fontFamilyMono)
 ) -}}
-{{- $hostedFontPath := default (absURL "fonts") ($page.Param "hostedFontPath") }}
-$hostedFontPath: '{{ $hostedFontPath }}';
+$fontFamilyMap: ();
 {{- range $fontFamilies }}
   {{- $roleKey := .role }}
   {{- $roleSuffix := strings.FirstUpper $roleKey }}
@@ -39,9 +33,16 @@ $fontFamilyID: '{{ $familyID }}';
 
 $fontFamily: (name: '{{ $familyName }}');
 
+{{- $fontsSelfHosted := default false ($page.Param "fontsSelfHosted") }}
+{{- $customFonts := default false ($page.Param "customFonts") }}
+{{- if and $fontsSelfHosted (not $customFonts) -}}
+{{- $hostedFontPath := default (absURL "fonts") ($page.Param "hostedFontPath") }}
+$hostedFontPath: '{{ $hostedFontPath }}';
 @import 'claris/fonts/{{ $familyID }}';
-  {{- $fallbankFontFamilyStylesheet := printf `/styles/claris/fonts/fallback/%s.*` $familyID }}
-  {{- if resources.GetMatch $fallbankFontFamilyStylesheet }}
+{{- end }}
+
+{{- $fallbankFontFamilyStylesheet := printf `/styles/claris/fonts/fallback/%s.*` $familyID }}
+{{- if resources.GetMatch $fallbankFontFamilyStylesheet }}
 
 {{- $familyStack := (slice $familyName (printf `%s-fallback` $familyID) (printf `%s-fallback-android` $familyID)) }}
 $fontStack: ({{ printf `'%s'` (delimit $familyStack "', '") }});
@@ -61,7 +62,6 @@ $fontFamilyBase: map-get($fontFamilyMap, {{ $familyID }});
 $fontFamilyMap: map-merge($fontFamilyMap, ({{ $roleKey }}: $fontFamily) );
 $fontFamilyMap: map-merge($fontFamilyMap, ({{ $familyID }}: $fontFamily) );
 
-{{- end }}
 {{- end }}
 
 @import 'claris/variables';
