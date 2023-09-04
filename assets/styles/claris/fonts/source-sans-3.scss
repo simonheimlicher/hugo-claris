@@ -163,4 +163,4 @@ $fontSpec: (
     )
   )
 );
-$fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: (spec: $fontSpec)));
+$fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: (default: (spec: $fontSpec))));

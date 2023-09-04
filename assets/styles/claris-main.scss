@@ -31,7 +31,7 @@ $fontFamilyMap: ();
 $fontFamilyID: '{{ $familyID }}';
 {{ printf `$fontFamily%vID: '%v'` $roleSuffix $familyID | safeCSS }};
 
-$fontFamily: (name: '{{ $familyName }}');
+$fontFamilyDefault: (name: '{{ $familyName }}');
 
 {{- $fontsSelfHosted := default false ($page.Param "fontsSelfHosted") }}
 
@@ -43,24 +43,29 @@ $fontFamily: (name: '{{ $familyName }}');
 
 {{- $fallbankFontFamilyStylesheet := printf `/styles/claris/fonts/fallback/%s.*` $familyID }}
 {{- if resources.GetMatch $fallbankFontFamilyStylesheet }}
+  {{- $familyStack := (slice (printf `%s-fallback` $familyID) (printf `%s-fallback-android` $familyID)) }}
+  $fontStack: ({{ printf `'%s'` (delimit $familyStack "', '") }});
+  $fontFamilyDefault: map-merge($fontFamilyDefault, (fallback: $fontStack) );
+  @import 'claris/fonts/fallback/{{ $familyID }}';
+{{- else }}
+  /* No fallback stylesheet found for font family {{ .family }} at {{ $fallbankFontFamilyStylesheet }} */
+  @import 'claris/fonts/fallback/{{ $roleKey }}';
+{{- end }}
 
-{{- $familyStack := (slice $familyName (printf `%s-fallback` $familyID) (printf `%s-fallback-android` $familyID)) }}
-$fontStack: ({{ printf `'%s'` (delimit $familyStack "', '") }});
-$fontFamily: map-merge($fontFamily, (stack: $fontStack) );
-@import 'claris/fonts/fallback/{{ $familyID }}';
-  {{- else }}
-/* No fallback stylesheet found for font family {{ .family }} at {{ $fallbankFontFamilyStylesheet }} */
-@import 'claris/fonts/fallback/{{ $roleKey }}';
-  {{- end }}
+$fontFamilySpec: (default: $fontFamilyDefault);
 
-
-$fontFamilyBase: map-get($fontFamilyMap, {{ $familyID }});
-@if $fontFamilyBase {
-  $fontFamily: map-merge($fontFamily, $fontFamilyBase)
+@each $customName in (default, small-caps, oldstyle-nums) {
+  $fontFamilyCustom: map-get($fontFamilyMap, {{ $familyID }}, $customName);
+  @if $fontFamilyCustom {
+    @if ($customName == default) {
+      $fontFamilyCustom: map-merge($fontFamilyDefault, $fontFamilyCustom);
+    }
+    $fontFamilySpec: map-merge($fontFamilySpec, ($customName: $fontFamilyCustom));
+  }
 }
 
-$fontFamilyMap: map-merge($fontFamilyMap, ({{ $roleKey }}: $fontFamily) );
-$fontFamilyMap: map-merge($fontFamilyMap, ({{ $familyID }}: $fontFamily) );
+$fontFamilyMap: map-merge($fontFamilyMap, ({{ $roleKey }}: $fontFamilySpec) );
+$fontFamilyMap: map-merge($fontFamilyMap, ({{ $familyID }}: $fontFamilySpec) );
 
 {{- end }}
 

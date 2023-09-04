@@ -1,3 +1,14 @@
 // Humanist from https://github.com/system-fonts/modern-font-stacks#humanist
-$fontStack: map-get($fontFamily, 'name'), Seravek, 'Gill Sans Nova', Ubuntu, Calibri, 'DejaVu Sans', source-sans-pro, sans-serif;
-$fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: (stack: $fontStack)));
+$fallbackStack: Seravek, 'Gill Sans Nova', Ubuntu, Calibri, 'DejaVu Sans', source-sans-pro, sans-serif;
+
+$fontFamilySpecDefault: (fallback: $fallbackStack);
+$fontFamilySpec: (default: $fontFamilySpecDefault);
+$fontFamilySpecOriginal: map-get($fontFamilyMap, $fontFamilyID);
+@if ($fontFamilySpecOriginal) {
+  $fontFamilySpecOriginalDefault: map-get($fontFamilySpecOriginal, default);
+  @if ($fontFamilySpecOriginalDefault) {
+    $fontFamilySpecDefault: map-merge($fontFamilySpecOriginalDefault, $fontFamilySpecDefault);
+  }
+  $fontFamilySpec: map-merge($fontFamilySpecOriginal, (default: $fontFamilySpecDefault));
+}
+$fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: $fontFamilySpec));

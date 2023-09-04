@@ -679,7 +679,8 @@
   }
   .initial-words {
     // text-transform: uppercase;
-    font-variant: all-small-caps;
+    // font-variant: all-small-caps;
+    @include useFontFamily(article, text, default, small-caps);
   }
 }
 .main_header .feature-image {

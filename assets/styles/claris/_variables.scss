@@ -609,59 +609,69 @@ $fontSpecDefault: (
 
 @mixin defineFontFamily($fontFamilyID, $key: null, $role: text, $weight: default) {
   $prefix: if($key, 'font_#{$key}_', 'font_');
-  // --font-family-ID: #{$fontFamilyID};
-  $fontFamily: map-get($fontFamilyMap, $fontFamilyID);
+  $fallbackStackDefault: map-get($fontFamilyMap, $fontFamilyID, default, fallback);
+  $fallbackStackFamily: $fallbackStackDefault;
 
-  @if ($fontFamily) {
-    $fontFamilyName: map-get($fontFamily, 'name');
+  $fontFamilySpec: map-get($fontFamilyMap, $fontFamilyID);
 
-    --#{$prefix}name: #{$fontFamilyName};
-    $fontStack: map-get($fontFamily, stack);
-    --#{$prefix}font-family: #{inspect($fontStack)};
+  @each $customName, $fontFamily in $fontFamilySpec {
+    @if ($fontFamily) {
+      $fontFamilyName: map-get($fontFamily, name);
 
-    $fontSpec: map-get($fontSpecDefault, $role, $weight);
-    $fontSpecCustom: map-get($fontFamily, spec, $role, $weight);
-    @if ($fontSpecCustom) {
-      $fontSpec: map-merge($fontSpec, $fontSpecCustom);
-    }
-    @if ($fontSpec) {
-      @each $key, $value in $fontSpec {
-        --#{$prefix}#{$key}: #{$value};
+      @if ($customName != default) {
+        $prefix: '#{$prefix}#{$customName}_';
+      }
+      --#{$prefix}name: #{$fontFamilyName};
+
+      $fallbackStack: $fallbackStackFamily;
+      $fallbackStackCustom: map-get($fontFamily, fallback);
+      @if ($fallbackStackCustom) {
+        $fallbackStack: $fallbackStackCustom;
+        // Use the first fallback stack for all variants
+        @if ($fallbackStackFamily == $fallbackStackDefault) {
+          $fallbackStackFamily: $fallbackStackCustom;
+        }
+      }
+
+      $fontStack: join( ($fontFamilyName), $fallbackStack);
+      --#{$prefix}font-family: #{inspect($fontStack)};
+
+      $fontSpec: map-get($fontSpecDefault, $role, $weight);
+      $fontSpecCustom: map-get($fontFamily, spec, $role, $weight);
+      @if ($fontSpecCustom) {
+        $fontSpec: map-merge($fontSpec, $fontSpecCustom);
+      }
+      @if ($fontSpec) {
+        @each $key, $value in $fontSpec {
+          --#{$prefix}#{$key}: #{$value};
+        }
+      }
+      @else {
+        --#{$prefix}#{$fontFamilyID}_defineFontFamily_spec_missing: #{$fontFamilyID};
       }
     }
     @else {
-      --#{$prefix}#{$fontFamilyID}_defineFontFamily_spec_missing: #{$fontFamilyID};
+      --#{$prefix}#{$fontFamilyID}_defineFontFamily_family_missing: #{$fontFamilyID};
     }
-  }
-  @else {
-    --#{$prefix}#{$fontFamilyID}_defineFontFamily_family_missing: #{$fontFamilyID};
   }
 }
 
-@mixin useFontFamily($key: null, $role: text, $weight: default) {
+@mixin useFontFamily($key: null, $role: text, $weight: default, $variant: null) {
   $prefix: if($key, 'font_#{$key}_', 'font_');
+  $prefix: if($variant, '#{$prefix}#{$variant}_', $prefix);
 
-  $fontFamilyID: default;
+  --font-family: var(--#{$prefix}font-family);
+  font-family: var(--font-family);
 
-  $fontFamily: map-get($fontFamilyMap, $fontFamilyID);
-
-  @if ($fontFamily) {
-    --font-family: var(--#{$prefix}font-family);
-    font-family: var(--font-family);
-
-    $fontSpec: map-get($fontSpecDefault, $role, $weight);
-    @if ($fontSpec) {
-        @each $key, $value in $fontSpec {
-        --#{$key}: var(--#{$prefix}#{$key});
-        #{$key}: var(--#{$prefix}#{$key});
-      }
-    }
-    @else {
-      --#{$prefix}#{$fontFamilyID}_useFontFamily_spec_missing: #{$fontFamilyID};
+  $fontSpec: map-get($fontSpecDefault, $role, $weight);
+  @if ($fontSpec) {
+      @each $key, $value in $fontSpec {
+      --#{$key}: var(--#{$prefix}#{$key});
+      #{$key}: var(--#{$prefix}#{$key});
     }
   }
   @else {
-    --#{$prefix}#{$fontFamilyID}_useFontFamily_family_missing: #{$fontFamilyID};
+    --#{$prefix}#{$key}_useFontFamily_spec_missing: #{$key};
   }
 }
 
