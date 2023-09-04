@@ -667,18 +667,19 @@
 .drop-cap {
   --initial_font-size: 7em;
   --initial_line-height: 1.5;
+  --initial_padding: calc(var(--initial_font-size) / 76);
+  --initial_margin-negative: calc(var(--initial_font-size) / 52);
   margin-top: 2em;
   .initial-letter {
     color: var(--initial);
     float: left;
     font-size: var(--initial_font-size);
-    --initial_padding: 0.125em;
     line-height: var(--initial_line-height);
     padding: 0 var(--initial_padding) 0 0;
-    margin: calc(0px - 4 * var(--initial_padding))
+    margin: calc(0px - 4 * var(--initial_margin-negative))
     0
-    calc(0px - 3 * var(--initial_padding))
-    calc(0px - 0.25 * var(--initial_padding));
+    calc(0px - 3 * var(--initial_margin-negative))
+    calc(0px - 0.25 * var(--initial_margin-negative));
   }
   .initial-words {
     // text-transform: uppercase;
