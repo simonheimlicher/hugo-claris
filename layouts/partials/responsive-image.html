@@ -74,18 +74,23 @@
   and let all others be loaded lazily */ -}}
 {{- $fetchPriority := "low" }}
 {{- with or .FetchPriority .fetchpriority }}
-  {{- $fetchPriority = . -}}
+  {{- if (in (slice "auto" "low" "high") .) }}
+    {{- $fetchPriority = . -}}
+  {{- else }}
+      {{- errorf "%s[%s]: Invalid param for fetchpriority=%v [type %T]"
+          $page $template $fetchPriority $fetchPriority -}}
+  {{- end }}
 {{- else }}
   {{- if lt ($page.Scratch.Get "claris.image.prioritized") 1 }}
     {{- $fetchPriority = "high" }}
     {{- if $debug }}
       {{- warnf "%s[%s]: claris.image.prioritized incremented to %d. Prioritizing excerpt image for %v"
-          $page $template ($page.Scratch.Get "claris.image.prioritized") $page }}
+          $page $template ($page.Scratch.Get "claris.image.prioritized") $page -}}
     {{- end }}
   {{- else }}
     {{- if $debug }}
       {{- warnf "%s[%s]: claris.image.prioritized already at %d. Not prioritizing excerpt image for %v"
-          $page $template ($page.Scratch.Get "claris.image.prioritized") $page }}
+          $page $template ($page.Scratch.Get "claris.image.prioritized") $page -}}
     {{- end }}
   {{- end }}
 {{- end }}

@@ -7,7 +7,7 @@
 {{- $headingLevel := default 2 .HeadingLevel }}
 {{- $containerClass := default "panel_container" .ContainerClass }}
 {{- $nested := default true .Nested }}
-{{- $fetchPriority := default false .FetchPriority }}
+{{- $defaultFetchPriority := default "low" .FetchPriority }}
 {{- if $containerClass }}
   {{- $containerClass = printf "%s layout-%s" $containerClass (cond $nested "flex" "grid") }}
 {{- end }}
@@ -117,10 +117,13 @@ See https://github.com/gohugoio/hugo/issues/7297
                 {{- $cardImageFloat := true }}
                 <div class="card_inner">
                   {{- with .image.resource }}
-                    {{- if not $fetchPriority }}
+                    {{- $cardImageFetchPriority := $defaultFetchPriority }}
+                    {{- if not (eq $defaultFetchPriority "high") }}
                       {{- if lt (page.Scratch.Get "claris.image.prioritized") 1 }}
                         {{- page.Scratch.Add "claris.image.prioritized" 1 }}
-                        {{- $fetchPriority = "high" }}
+                        {{- $cardImageFetchPriority = "auto" }}
+                        {{- partial "html-comment" (printf "[%v]: claris.image.prioritized=%v"
+                            $template (page.Scratch.Get "claris.image.prioritized")) -}}
                       {{- end }}
                     {{- end }}
                     {{- $imgSizesAttr := partial "claris/_functions/resources/images/img-sizes-attr" 20 }}
@@ -130,7 +133,7 @@ See https://github.com/gohugoio/hugo/issues/7297
                       "resource" .
                       "figureclass" "card_figure"
                       "containerclass" "card_figure"
-                      "fetchpriority" $fetchPriority
+                      "fetchpriority" $cardImageFetchPriority
                       "sizes" $imgSizesAttr
                       "width" 512) -}}
                     {{- else }}
@@ -139,7 +142,7 @@ See https://github.com/gohugoio/hugo/issues/7297
                       "resource" .
                       "figureclass" "card_figure"
                       "containerclass" "card_figure"
-                      "fetchpriority" $fetchPriority
+                      "fetchpriority" $cardImageFetchPriority
                       "sizes" $imgSizesAttr
                       "width" 512) -}}
                     {{- end }}
