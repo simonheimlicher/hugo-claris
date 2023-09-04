@@ -46,44 +46,47 @@
     {{- if (gt $numRelationshipTypes 0) }}
     <aside class="sidebar{{ with $containerClass }} {{ . }}{{ end }}">
       <div class="sidebar_inner">
-        {{- if (gt $numRelationshipTypes 1) }}
-        <h{{ $headingLevel }}>{{ T "read_on" }}</h{{ $headingLevel }}>
-        {{- $headingLevel = (add $headingLevel 1) }}
-        {{- end }}
+        <div class="sidebar_item">
+          {{- if (gt $numRelationshipTypes 1) }}
+            <h{{ $headingLevel }}>{{ T "read_on" }}</h{{ $headingLevel }}>
+            {{- $headingLevel = (add $headingLevel 1) }}
+            {{- end }}
 
-        {{- with $relatedArticles }}
-        <h{{ $headingLevel }}>{{ T "related_articles" (len $relatedArticles) | strings.FirstUpper }}</h{{ $headingLevel }}>
-        <ul class="flex-column">
-          {{- range . }}
-          <li>
-            <a href="{{ .Permalink }}" class="nav-link" title="{{ .Title }}">{{ .Title }}</a>
-          </li>
-          {{- end }}
-        </ul>
-        {{- end }}
+            {{- with $relatedArticles }}
+            <h{{ $headingLevel }}>{{ T "related_articles" (len $relatedArticles) | strings.FirstUpper }}</h{{ $headingLevel }}>
+            <ul class="flex-column">
+              {{- range . }}
+              <li>
+                <a href="{{ .Permalink }}" class="nav-link" title="{{ .Title }}">{{ .Title }}</a>
+              </li>
+              {{- end }}
+            </ul>
+            {{- end }}
 
-        {{- with $featuredArticles }}
-        <h{{ $headingLevel }}>{{ T "featured_articles" (len $featuredArticles) | strings.FirstUpper }}</h{{ $headingLevel }}>
-        <ul>
-          {{- range . }}
-          <li>
-            <a href="{{ .Permalink }}" class="nav-link" title="{{ .Title }}">{{ .Title }}</a>
-          </li>
-          {{- end }}
-        </ul>
-        {{- end }}
+            {{- with $featuredArticles }}
+            <h{{ $headingLevel }}>{{ T "featured_articles" (len $featuredArticles) | strings.FirstUpper }}</h{{ $headingLevel }}>
+            <ul>
+              {{- range . }}
+              <li>
+                <a href="{{ .Permalink }}" class="nav-link" title="{{ .Title }}">{{ .Title }}</a>
+              </li>
+              {{- end }}
+            </ul>
+            {{- end }}
 
-        {{- with $recentArticles }}
-        <h{{ $headingLevel }}>{{ T "recent_articles" (len $recentArticles) | strings.FirstUpper }}</h{{ $headingLevel }}>
-        <ul class="flex-column">
-          {{- range . }}
-          <li>
-            <a href="{{ .Permalink }}" class="nav-link" title="{{ .Title }}">{{ .Title }}</a>
-          </li>
-          {{- end }}
-        </ul>
-        {{- end }}
-        {{- $taxonomyParams := (dict "HeadingLevel" $headingLevel) }}
+            {{- with $recentArticles }}
+            <h{{ $headingLevel }}>{{ T "recent_articles" (len $recentArticles) | strings.FirstUpper }}</h{{ $headingLevel }}>
+            <ul class="flex-column">
+              {{- range . }}
+              <li>
+                <a href="{{ .Permalink }}" class="nav-link" title="{{ .Title }}">{{ .Title }}</a>
+              </li>
+              {{- end }}
+            </ul>
+            {{- end }}
+            {{- $taxonomyParams := (dict "HeadingLevel" $headingLevel) }}
+          </div>
+        </div>
         {{- partialCached "claris/_components/taxonomy" (merge $taxonomyParams (dict "Page" .)) $taxonomyParams }}
       </div>
     </aside>

@@ -38,8 +38,8 @@
     {{- end }}
     {{- $recentTagsInfo := $recentTagsScratch.Get "tagsInfo" }}
     {{- if gt $recentTagsInfo 0 }}
-      <div>
-        {{ printf "<h%v class=\"taxonomy\" id=\"%s-section\">" $headingLevel $key | safeHTML }}{{ T $key }}{{ printf "</h%v>" $headingLevel | safeHTML }}
+      <div class="sidebar_item">
+        {{ printf "<h%v class=\"taxonomy\" id=\"%s-section\">" $headingLevel $key | safeHTML }}{{ T $key | default $key | strings.FirstUpper }}{{ printf "</h%v>" $headingLevel | safeHTML }}
         <nav class="tags_nav">
           {{- $slicedTags := sort (sort $recentTagsInfo "lastArticleDate" "desc") "recentCount" "desc" | first $tagsLimit }}
           {{- $taxonomyPageURL := absLangURL $key -}}

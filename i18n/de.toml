@@ -57,7 +57,15 @@ other = "Diese Seite gibt es auch in anderen Sprachen"
 one = "Kategorie"
 other = "Kategorien"
 
+[categories]
+one = "Kategorie"
+other = "Kategorien"
+
 [tag]
+one = "Tag"
+other = "Tags"
+
+[tags]
 one = "Tag"
 other = "Tags"
 

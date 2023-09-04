@@ -1413,8 +1413,11 @@ svg.qrcode-svg {
   @include aside;
   &_inner {
     position: relative;
-    // margin-top: calc(3 * var(--inner_margin-y));
-    padding-top: var(--inner_padding-y);
+    margin-top: calc(3 * var(--inner_margin));
+    padding-top: var(--inner_padding);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     h2 {
       &:first-of-type {
         margin-top: calc(1em * (1 - var(--line-height-heading)));
@@ -1432,6 +1435,9 @@ svg.qrcode-svg {
       background: linear-gradient(to right, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze));
       @include color-scheme_transition;
     }
+  }
+  &_item + .sidebar_item {
+    margin: var(--inner_margin_4-2) 0;
   }
   @media screen and (min-width: $screenViewBreakpointWidthWide) {
     display: flex;
