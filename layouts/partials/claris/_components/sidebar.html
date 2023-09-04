@@ -50,45 +50,44 @@
           {{- if (gt $numRelationshipTypes 1) }}
             <h{{ $headingLevel }}>{{ T "read_on" }}</h{{ $headingLevel }}>
             {{- $headingLevel = (add $headingLevel 1) }}
-            {{- end }}
+          {{- end }}
 
-            {{- with $relatedArticles }}
+          {{- with $relatedArticles }}
             <h{{ $headingLevel }}>{{ T "related_articles" (len $relatedArticles) | strings.FirstUpper }}</h{{ $headingLevel }}>
             <ul class="flex-column">
               {{- range . }}
               <li>
-                <a href="{{ .Permalink }}" class="nav-link" title="{{ .Title }}">{{ .Title }}</a>
+                <a href="{{ .Permalink }}" class="nav-link" title="{{ .Title }}">{{ page.RenderString .Title }}</a>
               </li>
               {{- end }}
             </ul>
-            {{- end }}
+          {{- end }}
 
-            {{- with $featuredArticles }}
+          {{- with $featuredArticles }}
             <h{{ $headingLevel }}>{{ T "featured_articles" (len $featuredArticles) | strings.FirstUpper }}</h{{ $headingLevel }}>
             <ul>
               {{- range . }}
               <li>
-                <a href="{{ .Permalink }}" class="nav-link" title="{{ .Title }}">{{ .Title }}</a>
+                <a href="{{ .Permalink }}" class="nav-link" title="{{ .Title }}">{{ page.RenderString .Title }}</a>
               </li>
               {{- end }}
             </ul>
-            {{- end }}
+          {{- end }}
 
-            {{- with $recentArticles }}
+          {{- with $recentArticles }}
             <h{{ $headingLevel }}>{{ T "recent_articles" (len $recentArticles) | strings.FirstUpper }}</h{{ $headingLevel }}>
             <ul class="flex-column">
               {{- range . }}
               <li>
-                <a href="{{ .Permalink }}" class="nav-link" title="{{ .Title }}">{{ .Title }}</a>
+                <a href="{{ .Permalink }}" class="nav-link" title="{{ .Title }}">{{ page.RenderString .Title }}</a>
               </li>
               {{- end }}
             </ul>
-            {{- end }}
-            {{- $taxonomyParams := (dict "HeadingLevel" $headingLevel) }}
+          {{- end }}
           </div>
         </div>
+        {{- $taxonomyParams := (dict "HeadingLevel" $headingLevel) }}
         {{- partialCached "claris/_components/taxonomy" (merge $taxonomyParams (dict "Page" .)) $taxonomyParams }}
-      </div>
     </aside>
     {{- end }}
   {{- end }}

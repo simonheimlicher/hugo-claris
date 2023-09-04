@@ -979,6 +979,7 @@
     }
     &_nav {
       position: relative;
+      margin: 0 -0.5rem;
     }
     &_hide {
       position: absolute;
@@ -1414,7 +1415,7 @@ svg.qrcode-svg {
   @include aside;
   &_inner {
     position: relative;
-    margin-top: calc(3 * var(--inner_margin));
+    margin-top: calc(var(--inner_margin_4-6));
     padding-top: var(--inner_padding);
     display: flex;
     flex-direction: row;
