@@ -39,7 +39,7 @@
     {{- $recentTagsInfo := $recentTagsScratch.Get "tagsInfo" }}
     {{- if gt $recentTagsInfo 0 }}
       <div>
-        {{ printf "<h%s class=\"mt-4 taxonomy\" id=\"%s-section\">" $headingLevel $key | safeHTML }}{{ T $key }}{{ printf "</h%s>" $headingLevel | safeHTML }}
+        {{ printf "<h%v class=\"taxonomy\" id=\"%s-section\">" $headingLevel $key | safeHTML }}{{ T $key }}{{ printf "</h%v>" $headingLevel | safeHTML }}
         <nav class="tags_nav">
           {{- $slicedTags := sort (sort $recentTagsInfo "lastArticleDate" "desc") "recentCount" "desc" | first $tagsLimit }}
           {{- $taxonomyPageURL := absLangURL $key -}}
