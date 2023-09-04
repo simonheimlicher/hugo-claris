@@ -586,8 +586,8 @@ html {
   --dim-image-filter: brightness(75%);
 }
 
-$fontSpecDefault: (
-  text: (
+$fontSpecDefaultMap: (
+  default: (
     default: (
       font-weight: 400,
       line-height: 1.5
@@ -607,77 +607,209 @@ $fontSpecDefault: (
   )
 );
 
-@mixin defineFontFamily($fontFamilyID, $key: null, $role: text, $weight: default) {
-  $prefix: if($key, 'font_#{$key}_', 'font_');
+@mixin defineFontDefinition($definitionID: default, $fontFamilyID: default, $roles: (default, display)) {
+  $prefix: font-definition_;
+  // @if ($definitionID != default) {
+    $prefix: '#{$prefix}#{$definitionID}_';
+  // }
+  // --#{$prefix}key: #{$definitionID};
+
+  // Get the specification of this font family
+  $fontFamilySpec: map-get($fontFamilyMap, $fontFamilyID);
+  // Create a new font definition accessible via $definitionID
+  // NOTE: the `!global` keyword ensures that we work with the global
+  // variable defined in `claris-main.scss`
+  $fontDefinitionMap: map-merge($fontDefinitionMap, ($definitionID: $fontFamilySpec)) !global;
+
   $fallbackStackDefault: map-get($fontFamilyMap, $fontFamilyID, default, fallback);
   $fallbackStackFamily: $fallbackStackDefault;
 
-  $fontFamilySpec: map-get($fontFamilyMap, $fontFamilyID);
+  @each $role in $roles {
+    $prefixRole: $prefix;
+    @if ($role != default) {
+      $prefixRole: '#{$prefix}#{$role}_';
+    }
+    --#{$prefixRole}font-family_ID: #{$fontFamilyID};
 
-  @each $customName, $fontFamily in $fontFamilySpec {
-    @if ($fontFamily) {
-      $fontFamilyName: map-get($fontFamily, name);
+    $fontSpecDefault: map-get($fontSpecDefaultMap, $role);
+    $fontSpecFamily: $fontSpecDefault;
 
-      @if ($customName != default) {
-        $prefix: '#{$prefix}#{$customName}_';
-      }
-      --#{$prefix}name: #{$fontFamilyName};
+    @each $variant, $fontFamily in $fontFamilySpec {
+      $prefixVariant: $prefixRole;
+      @if ($fontFamily) {
+        $fontFamilyName: map-get($fontFamily, name);
 
-      $fallbackStack: $fallbackStackFamily;
-      $fallbackStackCustom: map-get($fontFamily, fallback);
-      @if ($fallbackStackCustom) {
-        $fallbackStack: $fallbackStackCustom;
-        // Use the first fallback stack for all variants
-        @if ($fallbackStackFamily == $fallbackStackDefault) {
-          $fallbackStackFamily: $fallbackStackCustom;
+        @if ($variant != default) {
+          $prefixVariant: '#{$prefixVariant}#{$variant}_';
         }
-      }
+        // --#{$prefixVariant}font-family_name: #{$fontFamilyName};
 
-      $fontStack: join( ($fontFamilyName), $fallbackStack);
-      --#{$prefix}font-family: #{inspect($fontStack)};
+        $fallbackStack: $fallbackStackFamily;
+        $fallbackStackCustom: map-get($fontFamily, fallback);
+        @if ($fallbackStackCustom) {
+          $fallbackStack: $fallbackStackCustom;
+          // Use the first fallback stack as default for all subsequent variants
+          @if ($fallbackStackFamily == $fallbackStackDefault) {
+            $fallbackStackFamily: $fallbackStackCustom;
+          }
+        }
 
-      $fontSpec: map-get($fontSpecDefault, $role, $weight);
-      $fontSpecCustom: map-get($fontFamily, spec, $role, $weight);
-      @if ($fontSpecCustom) {
-        $fontSpec: map-merge($fontSpec, $fontSpecCustom);
-      }
-      @if ($fontSpec) {
-        @each $key, $value in $fontSpec {
-          --#{$prefix}#{$key}: #{$value};
+        $fontStack: join( ($fontFamilyName), $fallbackStack);
+        --#{$prefixVariant}font-family: #{inspect($fontStack)};
+
+        $fontSpecVariant: map-merge($fontSpecDefault, $fontSpecFamily);
+        $fontSpecRole: map-get($fontFamily, spec, $role);
+        @if ($fontSpecRole) {
+          $fontSpecRole: map-merge($fontSpecVariant, $fontSpecRole);
+          // Use the first font spec as default for all subsequent variants
+          // @include mapToCSSProperties($fontSpecRole, fontSpecRole);
+          @if ($fontSpecVariant == $fontSpecDefault) {
+            $fontSpecFamily: $fontSpecRole;
+            // @include mapToCSSProperties($fontSpecFamily, fontSpecFamily);
+          }
+          $fontSpecVariant: $fontSpecRole;
+        }
+        @if ($fontSpecVariant) {
+          // --#{$prefixVariant}defineFontFamily_spec: #{$fontFamilyID};
+          // @include mapToCSSProperties($fontSpecVariant, fontSpecVariant-#{$variant});
+          $fontSpecWeightDefault: map-get($fontSpecVariant, default);
+          @each $weight, $fontSpecWeight in $fontSpecVariant {
+            $fontSpec: map-merge($fontSpecWeightDefault, $fontSpecWeight);
+            @each $key, $value in $fontSpec {
+              @if ($weight == default) {
+                --#{$prefixVariant}#{$key}: #{$value};
+              }
+              @else {
+                --#{$prefixVariant}#{$weight}_#{$key}: #{$value};
+              }
+            }
+          }
+        }
+        @else {
+          --#{$prefixVariant}defineFontFamily_spec_undefined: #{$fontFamilyID};
+          // @include mapToCSSProperties($fontFamily, #{$fontFamilyID});
         }
       }
       @else {
-        --#{$prefix}#{$fontFamilyID}_defineFontFamily_spec_missing: #{$fontFamilyID};
+        --#{$prefixRole}defineFontFamily_undefined: #{$fontFamilyID};
+      }
+    }
+  }
+
+  // FIXME: Output updated $fontDefinitionMap
+  // @include mapToCSSProperties($fontDefinitionMap, fontDefinitionMap);
+}
+
+@mixin useFontDefinition($definitionID: default, $roles: all, $weights: all, $variant: default) {
+
+  $prefix: font-definition_;
+  $originPrefix: '#{$prefix}#{$definitionID}_';
+  $targetPrefix: $prefix;
+
+  $fontDefinition: map-get($fontDefinitionMap, $definitionID);
+
+  @if ($roles == all) {
+    $rolesSpec: map-get($fontDefinition, $variant, spec);
+    @if ($rolesSpec) {
+      $roles: map-keys($rolesSpec);
+    }
+    @else {
+      // @include mapToCSSProperties($roles, useFontDefinition_rolesSpec_undefined_currentFontDefinition-#{$definitionID}_variant-#{$variant}_);
+      $roles: (default, display);
+    }
+  }
+  @each $role in $roles {
+    $originPrefixRole: $originPrefix;
+    $targetPrefixRole: $targetPrefix;
+    @if ($role != default) {
+      $originPrefixRole: '#{$originPrefix}#{$role}_';
+      $targetPrefixRole: '#{$targetPrefix}#{$role}_';
+    }
+
+    @if ($variant != default) {
+      $originPrefixRole: '#{$originPrefixRole}#{$variant}_';
+      $targetPrefixRole: '#{$targetPrefixRole}#{$variant}_';
+    }
+
+    --useFontDefinition_definitionID-#{$definitionID}_role-#{$role}_weights-#{$weights}_variant-#{$variant}_originPrefixRole: #{$originPrefixRole};
+    --useFontDefinition_definitionID-#{$definitionID}_role-#{$role}_weights-#{$weights}_variant-#{$variant}_targetPrefixRole: #{$targetPrefixRole};
+
+    @if ($definitionID != inherit) {
+      --#{$targetPrefixRole}font-family: var(--#{$originPrefixRole}font-family);
+      @if ($role == default) {
+        --font-family: var(--#{$targetPrefixRole}font-family);
+        font-family: var(--font-family);
+      }
+    }
+
+    // FIXME: Validate if we got the definition
+    // @include mapToCSSProperties(map-get($fontFamilyMap, $fontFamilyID), useFontDefinition_fontFamilyMap_#{$fontFamilyID});
+
+    // @include mapToCSSProperties($fontDefinition, useFontDefinition_fontDefinition_#{$definitionID});
+    // @include mapToCSSProperties(map-get($fontDefinition, $variant, spec), useFontDefinition_fontDefinition_#{$definitionID}_#{$variant}_spec);
+    @if ($fontDefinition) {
+      $fontSpec: map-get($fontDefinition, $variant, spec, $role);
+      // @include mapToCSSProperties($fontSpec, useFontDefinition_fontSpec_#{$definitionID}_#{$variant}_spec_#{$role});
+      @if ($fontSpec) {
+        $originPrefixRoleWeight: #{$originPrefixRole};
+        $targetPrefixRoleWeight: #{$targetPrefixRole};
+        @if ($weights == all) {
+          @each $weight, $fontSpecWeight in $fontSpec {
+            @each $key, $value in $fontSpecWeight {
+              @if ($role == default) {
+                @if ($weight == default) {
+                  --#{$targetPrefixRoleWeight}#{$key}: var(--#{$originPrefixRoleWeight}#{$key});
+                  --#{$key}: var(--#{$targetPrefixRoleWeight}#{$key});
+                  #{$key}: var(--#{$key});
+                }
+                @else {
+                  $originPrefixRoleWeight: #{$originPrefixRole}#{$weight}_;
+                  $targetPrefixRoleWeight: #{$targetPrefixRole}#{$weight}_;
+                  --#{$targetPrefixRoleWeight}#{$key}: var(--#{$originPrefixRoleWeight}#{$key});
+                  @if ($weight == bold) {
+                    bold, strong {
+                      --#{$targetPrefixRoleWeight}#{$key}: var(--#{$originPrefixRoleWeight}#{$key});
+                      #{$key}: var(--#{$targetPrefixRoleWeight}#{$key});
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        @else {
+          // Apply fontSpec for the specified weight indiscriminately to all text
+          $weight: $weights;
+          @if ($weight != default) {
+            $originPrefixRoleWeight: #{$originPrefixRole}#{$weight}_;
+            $targetPrefixRoleWeight: #{$targetPrefixRole}#{$weight}_;
+          }
+          // @include mapToCSSProperties($fontSpec, useFontDefinition_fontSpec);
+          $fontSpecWeight: map-get($fontSpec, $weight);
+          @if (not $fontSpecWeight) {
+            $fontSpecWeight: map-get($fontSpec, default);
+          }
+          // @include mapToCSSProperties($fontSpecWeight, useFontDefinition_weightSpec-#{$weight});
+          @each $key, $value in $fontSpecWeight {
+            --#{$targetPrefixRoleWeight}#{$key}: var(--#{$originPrefixRoleWeight}#{$key});
+            --#{$key}: var(--#{$targetPrefixRoleWeight}#{$key});
+            #{$key}: var(--#{$key});
+          }
+        }
+      }
+      @else {
+        --#{$originPrefix}useFontDefinition_spec_undefined: #{$definitionID};
       }
     }
     @else {
-      --#{$prefix}#{$fontFamilyID}_defineFontFamily_family_missing: #{$fontFamilyID};
+      --#{$originPrefix}useFontDefinition_undefined: #{$definitionID};
     }
   }
 }
 
-@mixin useFontFamily($key: null, $role: text, $weight: default, $variant: null) {
-  $prefix: if($key, 'font_#{$key}_', 'font_');
-  $prefix: if($variant, '#{$prefix}#{$variant}_', $prefix);
-
-  --font-family: var(--#{$prefix}font-family);
-  font-family: var(--font-family);
-
-  $fontSpec: map-get($fontSpecDefault, $role, $weight);
-  @if ($fontSpec) {
-      @each $key, $value in $fontSpec {
-      --#{$key}: var(--#{$prefix}#{$key});
-      #{$key}: var(--#{$prefix}#{$key});
-    }
-  }
-  @else {
-    --#{$prefix}#{$key}_useFontFamily_spec_missing: #{$key};
-  }
-}
-
-@mixin defineAndUseFontFamily($fontFamilyID: default, $role: text, $weight: default, $key: null) {
-  @include defineFontFamily($fontFamilyID, $key, $role, $weight);
-  @include useFontFamily($key);
+@mixin defineAndUseFontFamily($definitionID: default, $fontFamilyID: default, $role: default) {
+  @include defineFontDefinition($definitionID, $fontFamilyID, $role);
+  @include useFontDefinition($definitionID);
 }
 
 // Generating fluid font scales for copy-paste: https://www.fluid-type-scale.com/calculate https://utopia.fyi/type/calculator/
@@ -751,7 +883,9 @@ $fontSpecDefault: (
   }
 }
 
-:root {
+html {
+  --to-be-eliminated-by-csspurge: black;
+
   @include fluid-geometric-scale('font-size_root', 1rem, 1.25rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
   @include fluid-geometric-scale('font-size', 1rem, 1.25rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
   @include fluid-geometric-scale('font-size_heading', 1rem, 1.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
@@ -763,21 +897,16 @@ $fontSpecDefault: (
   @include fluid-fractional-scale('inner_margin-y', 0.75rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
   @include fluid-fractional-scale('inner_padding-y', 0.75rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
 
-}
+  // --font-sans: #{$fontFamilySansID};
+  // --font-serif: #{$fontFamilySerifID};
+  // --font-mono: #{$fontFamilyMonoID};
 
-html {
-  --to-be-eliminated-by-csspurge: black;
-
-  --font-sans: #{$fontFamilySansID};
-
-  --font-serif: #{$fontFamilySerifID};
-
-  --font-mono: #{$fontFamilyMonoID};
-
-  @include defineFontFamily(default, default, text, default);
-  @include defineFontFamily(serif, article, text, default);
-  @include defineFontFamily(mono, code, text, default);
-  @include defineFontFamily(sans, meta, text, default);
+  @each $style in (default, sans, serif, mono) {
+    @include defineFontDefinition($style, $style);
+  }
+  @include defineFontDefinition(article, serif);
+  @include defineFontDefinition(code, mono);
+  @include defineFontDefinition(meta, sans);
 
   --font-size: var(--font-size-normal);
   --font-size-aside: var(--font-size_root-normal);
@@ -795,7 +924,7 @@ html {
 
   --font-size-nav: var(--font-size-normal);
 
-  --font-weight-strong: 600;
+  --font-weight-bold: 600;
   --font-weight-light: 400;
   --font-weight-heading: 600;
   --font-weight-supertitle: 600;

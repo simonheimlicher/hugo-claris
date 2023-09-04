@@ -44,7 +44,7 @@ body {
   background: var(--choice-bg);
   color: var(--text);
   font-size: var(--font-size);
-  @include defineAndUseFontFamily(sans);
+  @include useFontDefinition(default);
 
   font-kerning: normal;
   -webkit-font-smoothing: antialiased;
@@ -119,11 +119,12 @@ h3,
 h4,
 h5,
 h6 {
-  font-weight: var(--font-weight-heading);
   padding: $heading-padding-top 0 calc(#{$heading-padding-top} * 0.25) 0;
   margin: $heading-margin-top 0 calc(#{$heading-margin-top} * 0.25) 0;
   color: var(--header-text);
-  line-height: var(--line-height-heading);
+  // font-weight: var(--font-weight-heading);
+  // line-height: var(--line-height-heading);
+  @include useFontDefinition(default, display, bold);
   hyphens: manual;
   .icon,
   .icon svg {
@@ -304,7 +305,7 @@ blockquote {
   // Only render the below if the browser supports CSS properties
   @supports (color: var(--text)) {
     &:before {
-      @include useFontFamily(serif);
+      @include useFontDefinition(serif);
       content: "“";
       position: absolute;
       top: calc(var(--box-padding-top) + var(--quotation-mark-open-height));
@@ -315,7 +316,7 @@ blockquote {
       font-weight: normal;
     }
     &:after {
-      @include useFontFamily(serif);
+      @include useFontDefinition(serif);
       content: "”";
       position: absolute;
       bottom: calc(0px - 0.5 * var(--quotation-mark-close-height));

@@ -22,6 +22,8 @@
   (dict "role" "mono"     "family" $fontFamilyMono)
 ) -}}
 $fontFamilyMap: ();
+$fontDefinitionMap: () !default;
+$currentFontDefinition: default !default;
 {{- range $fontFamilies }}
   {{- $roleKey := .role }}
   {{- $roleSuffix := strings.FirstUpper $roleKey }}
@@ -44,8 +46,8 @@ $fontFamilyDefault: (name: '{{ $familyName }}');
 {{- $fallbankFontFamilyStylesheet := printf `/styles/claris/fonts/fallback/%s.*` $familyID }}
 {{- if resources.GetMatch $fallbankFontFamilyStylesheet }}
   {{- $familyStack := (slice (printf `%s-fallback` $familyID) (printf `%s-fallback-android` $familyID)) }}
-  $fontStack: ({{ printf `'%s'` (delimit $familyStack "', '") }});
-  $fontFamilyDefault: map-merge($fontFamilyDefault, (fallback: $fontStack) );
+  $fallbackStack: ({{ printf `'%s'` (delimit $familyStack "', '") }});
+  $fontFamilyDefault: map-merge($fontFamilyDefault, (fallback: $fallbackStack) );
   @import 'claris/fonts/fallback/{{ $familyID }}';
 {{- else }}
   /* No fallback stylesheet found for font family {{ .family }} at {{ $fallbankFontFamilyStylesheet }} */
@@ -53,6 +55,8 @@ $fontFamilyDefault: (name: '{{ $familyName }}');
 {{- end }}
 
 $fontFamilySpec: (default: $fontFamilyDefault);
+$fallbackStackDefault: map-get($fontFamilyMap, $fontFamilyID, default, fallback);
+$fallbackStackFamily: $fallbackStackDefault;
 
 @each $customName in (default, small-caps, oldstyle-nums) {
   $fontFamilyCustom: map-get($fontFamilyMap, {{ $familyID }}, $customName);
@@ -60,6 +64,18 @@ $fontFamilySpec: (default: $fontFamilyDefault);
     @if ($customName == default) {
       $fontFamilyCustom: map-merge($fontFamilyDefault, $fontFamilyCustom);
     }
+    $fallbackStack: $fallbackStackFamily;
+    $fallbackStackCustom: map-get($fontFamilyCustom, fallback);
+    @if ($fallbackStackCustom) {
+      $fallbackStack: $fallbackStackCustom;
+      // Use the first fallback stack for all variants
+      @if ($fallbackStackFamily == $fallbackStackDefault) {
+        $fallbackStackFamily: $fallbackStackCustom;
+      }
+    }
+
+    $fontStack: map-get($fontFamilyCustom, name), inspect($fallbackStack);
+    $fontFamilyCustom: map-merge($fontFamilyCustom, (stack: $fontStack) );
     $fontFamilySpec: map-merge($fontFamilySpec, ($customName: $fontFamilyCustom));
   }
 }

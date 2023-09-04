@@ -39,7 +39,10 @@
 .main-kind_page {
   .main_header,
   .content {
-    @include useFontFamily(article);
+    @include useFontDefinition(article);
+    h1, h2, h3, h4, h5, h6, .excerpt-title {
+      @include useFontDefinition(article, display, bold);
+    }
   }
 }
 
@@ -519,7 +522,7 @@
     align-items: center;
     margin: 0 calc(-1 * var(--inner_padding-x-1));
     color: var(--text-faint);
-    @include useFontFamily(meta);
+    @include useFontDefinition(meta);
     @include link-lvhfa;
     span {
       align-items: center;
@@ -585,7 +588,7 @@
   align-self: start;
   border-radius: 0.25rem;
   // padding: 0.5rem 1rem 0 1rem
-  @include useFontFamily(meta);
+  @include useFontDefinition(meta);
   // background: rgba(var(--RGB_bg), 0.9)
   // https://stackoverflow.com/a/66962139/617559
   // width: fit-content
@@ -618,7 +621,7 @@
     padding: 2em 0 0 0;
     position: relative;
     z-index: 1;
-    @include useFontFamily(meta);
+    @include useFontDefinition(meta);
 
     h2 {
       font-size: 150%;
@@ -680,7 +683,9 @@
   .initial-words {
     // text-transform: uppercase;
     // font-variant: all-small-caps;
-    @include useFontFamily(article, text, default, small-caps);
+    // @include useFontDefinition(article, default, default, small-caps);
+    @include useFontDefinition(article, default, bold, small-caps);
+    // @include useFontDefinition(article, display, bold, small-caps);
   }
 }
 .main_header .feature-image {
@@ -950,7 +955,7 @@
 }
 
 .inline-separator-list {
-  @include useFontFamily;
+  @include useFontDefinition;
   p {
     color: var(--text-faint);
   }
@@ -1145,7 +1150,7 @@ svg.qrcode-svg {
       top: -2rem;
       background-color: var(--theme-hover);
       color: var(--theme-text-hover);
-      @include useFontFamily(meta);
+      @include useFontDefinition(meta);
       width: 7rem;
       padding: 0.25rem 0.5rem;
       font-size: var(--font-size-meta);
@@ -1542,7 +1547,7 @@ kbd {
   display: inline-block;
   margin: 0 0.1rem;
   padding: 0.1rem 0.6rem;
-  @include useFontFamily(meta);
+  @include useFontDefinition(meta);
   background-clip: padding-box;
   border: 1px solid rgba(var(--RGB_text), 0.2);
   border-radius: 0.25rem;
@@ -1584,7 +1589,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
   background: var(--neutral-haze);
   @include color-scheme_transition;
   color: var(--text);
-  @include useFontFamily(default);
+  @include useFontDefinition(default);
   position: relative;
   display: inline-block;
   background: transparent;
@@ -1773,7 +1778,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
     @include color-scheme_transition;
     padding: var(--inner_padding-y)  var(--inner_padding-x);
     color: var(--text);
-    @include useFontFamily(meta);
+    @include useFontDefinition(meta);
     & > figcaption {
       width: 100%;
       padding: var(--inner_padding-y) 0 0 0;

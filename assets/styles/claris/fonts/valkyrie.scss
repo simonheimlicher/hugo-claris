@@ -62,24 +62,52 @@
 //   src: url('#{$hostedFontPath}/valkyrie-ot/valkyrie_ot_a_bold_italic.woff2') format('woff2');
 // }
 
-$fontSpec: (
-  text: (
-    default: (
-      font-weight: 400,
-      line-height: 1.5
+$fontFamilySpec: (
+  default: (
+    name: 'Valkyrie',
+    spec: (
+      default: (
+        default: (
+          font-weight: 400,
+          line-height: 1.45
+        ),
+        bold: (
+          font-weight: 600,
+        )
+      ),
+      display: (
+        default: (
+          font-weight: 400,
+          line-height: 1.2
+        ),
+        bold: (
+          font-weight: 600,
+        )
+      )
     ),
-    bold: (
-      font-weight: 600,
-    )
   ),
-  display: (
-    default: (
-      font-weight: 400,
-      line-height: 1.2
-    ),
-    bold: (
-      font-weight: 600,
+  small-caps: (
+    name: 'Valkyrie',
+    spec: (
+      default: (
+        default: (
+          font-variant: all-small-caps
+        ),
+        bold: (
+          font-weight: 600,
+          font-variant: all-small-caps
+        )
+      ),
+      display: (
+        default: (
+          font-variant: all-small-caps
+        ),
+        bold: (
+          font-weight: 600,
+          font-variant: all-small-caps
+        )
+      )
     )
   )
 );
-$fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: (spec: $fontSpec)));
+$fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: $fontFamilySpec) );

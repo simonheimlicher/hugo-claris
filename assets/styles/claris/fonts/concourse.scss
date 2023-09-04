@@ -93,3 +93,40 @@
   font-weight: 800;
   src: url('#{$hostedFontPath}/concourse-ot/concourse_ot_8_black_italic.woff2') format('woff2');
 }
+
+$fontFamilySpec: (
+  default: (
+    name: 'Concourse',
+    spec: (
+      default: (
+        default: (
+          font-weight: 400,
+          line-height: 1.55
+        ),
+        bold: (
+          font-weight: 600,
+        )
+      ),
+      display: (
+        default: (
+          font-weight: 400,
+          line-height: 1.2
+        ),
+        bold: (
+          font-weight: 600,
+        )
+      )
+    ),
+  ),
+  small-caps: (
+    name: 'Concourse',
+    spec: (
+      default: (
+        default: (
+          font-variant: all-small-caps
+        )
+      )
+    )
+  )
+);
+$fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: $fontFamilySpec) );

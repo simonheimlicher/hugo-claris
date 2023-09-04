@@ -1,3 +1,6 @@
+@use "sass:meta";
+@use "sass:math";
+
 // Replace substring with another string
 // Credits: https://css-tricks.com/snippets/sass/str-replace-function/
 @function str-replace($string, $search, $replace: '') {
@@ -88,3 +91,23 @@
   @return math.div(math.round($power * $value), $power);
 }
 
+  // create mixin
+  @mixin mapToCSSProperties($map, $prefix, $key: "") {
+      @each $name, $value in $map {
+
+          // copy the map key
+          $key-copy: $key;
+          // create name for CSS custom property that contains:
+          // current key + child key from nested map
+          $key: #{$key}_#{$name};
+
+          @if meta.type-of($value) == "map" {
+              // if value is a map, invoke it once more
+              @include mapToCSSProperties($value, $prefix, $key);
+          } @else {
+              --#{$prefix}#{$key}: #{$value};
+          }
+          // next iteration of loop should go with unchanged key
+          $key: $key-copy;
+      }
+  }

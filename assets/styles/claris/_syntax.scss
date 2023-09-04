@@ -11,7 +11,7 @@
 }
 
 pre, code {
-  @include useFontFamily(code);
+  @include useFontDefinition(code);
   word-break: break-word;
 }
 code {
@@ -52,7 +52,7 @@ pre {
   border-radius: 0.2rem;
   margin: 1.5rem auto 0 auto;
   width: 100%;
-  @include useFontFamily(meta);
+  @include useFontDefinition(meta);
   & + & {
     margin-top: 2.25rem;
   }
