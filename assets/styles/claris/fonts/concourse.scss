@@ -97,7 +97,7 @@
 $fontFamilySpec: (
   default: (
     name: 'Concourse',
-    spec: (
+    settings: (
       default: (
         default: (
           font-weight: 400,
@@ -120,7 +120,7 @@ $fontFamilySpec: (
   ),
   small-caps: (
     name: 'Concourse',
-    spec: (
+    settings: (
       default: (
         default: (
           font-variant: all-small-caps

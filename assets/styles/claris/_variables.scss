@@ -586,7 +586,7 @@ html {
   --dim-image-filter: brightness(75%);
 }
 
-$fontSpecDefaultMap: (
+$fontSettingsDefaultMap: (
   default: (
     default: (
       font-weight: 400,
@@ -607,7 +607,9 @@ $fontSpecDefaultMap: (
   )
 );
 
-@mixin defineFontDefinition($definitionID: default, $fontFamilyID: default, $roles: (default, display)) {
+@mixin defineFontDefinition($definitionID: default, $fontFamilyID: default, $additionalRoles: (display)) {
+  $roles: join( (default), $additionalRoles);
+
   $prefix: font-definition_;
   // @if ($definitionID != default) {
     $prefix: '#{$prefix}#{$definitionID}_';
@@ -616,13 +618,15 @@ $fontSpecDefaultMap: (
 
   // Get the specification of this font family
   $fontFamilySpec: map-get($fontFamilyMap, $fontFamilyID);
-  // Create a new font definition accessible via $definitionID
-  // NOTE: the `!global` keyword ensures that we work with the global
-  // variable defined in `claris-main.scss`
-  $fontDefinitionMap: map-merge($fontDefinitionMap, ($definitionID: $fontFamilySpec)) !global;
+  // Create a new font definition
+  $fontDefinition: $fontFamilySpec;
 
-  $fallbackStackDefault: map-get($fontFamilyMap, $fontFamilyID, default, fallback);
-  $fallbackStackFamily: $fallbackStackDefault;
+  $specFamily: map-get($fontFamilySpec, default);
+  $fallbackStackFamily: map-get($specFamily, fallback);
+  $fontSettingsDefault: map-get($fontSettingsDefaultMap, default);
+
+  // FIXME: Experiment inheriting settings from variant `default` to variant `small-caps`
+  $settings: ();
 
   @each $role in $roles {
     $prefixRole: $prefix;
@@ -631,70 +635,94 @@ $fontSpecDefaultMap: (
     }
     --#{$prefixRole}font-family_ID: #{$fontFamilyID};
 
-    $fontSpecDefault: map-get($fontSpecDefaultMap, $role);
-    $fontSpecFamily: $fontSpecDefault;
+    $specRole: $specFamily;
+    $fontSettingsRole: $fontSettingsDefault;
+    $fallbackStackRole: $fallbackStackFamily;
+    @if (role != default) {
+      $fontSettingsDefault_: map-get($fontSettingsDefaultMap, $role);
+      @if ($fontSettingsDefault_) {
+        $fontSettingsRole: map-merge($fontSettingsRole, $fontSettingsDefault_);
+      }
 
-    @each $variant, $fontFamily in $fontFamilySpec {
-      $prefixVariant: $prefixRole;
-      @if ($fontFamily) {
-        $fontFamilyName: map-get($fontFamily, name);
-
-        @if ($variant != default) {
-          $prefixVariant: '#{$prefixVariant}#{$variant}_';
-        }
-        // --#{$prefixVariant}font-family_name: #{$fontFamilyName};
-
-        $fallbackStack: $fallbackStackFamily;
-        $fallbackStackCustom: map-get($fontFamily, fallback);
-        @if ($fallbackStackCustom) {
-          $fallbackStack: $fallbackStackCustom;
-          // Use the first fallback stack as default for all subsequent variants
-          @if ($fallbackStackFamily == $fallbackStackDefault) {
-            $fallbackStackFamily: $fallbackStackCustom;
-          }
-        }
-
-        $fontStack: join( ($fontFamilyName), $fallbackStack);
-        --#{$prefixVariant}font-family: #{inspect($fontStack)};
-
-        $fontSpecVariant: map-merge($fontSpecDefault, $fontSpecFamily);
-        $fontSpecRole: map-get($fontFamily, spec, $role);
-        @if ($fontSpecRole) {
-          $fontSpecRole: map-merge($fontSpecVariant, $fontSpecRole);
-          // Use the first font spec as default for all subsequent variants
-          // @include mapToCSSProperties($fontSpecRole, fontSpecRole);
-          @if ($fontSpecVariant == $fontSpecDefault) {
-            $fontSpecFamily: $fontSpecRole;
-            // @include mapToCSSProperties($fontSpecFamily, fontSpecFamily);
-          }
-          $fontSpecVariant: $fontSpecRole;
-        }
-        @if ($fontSpecVariant) {
-          // --#{$prefixVariant}defineFontFamily_spec: #{$fontFamilyID};
-          // @include mapToCSSProperties($fontSpecVariant, fontSpecVariant-#{$variant});
-          $fontSpecWeightDefault: map-get($fontSpecVariant, default);
-          @each $weight, $fontSpecWeight in $fontSpecVariant {
-            $fontSpec: map-merge($fontSpecWeightDefault, $fontSpecWeight);
-            @each $key, $value in $fontSpec {
-              @if ($weight == default) {
-                --#{$prefixVariant}#{$key}: #{$value};
-              }
-              @else {
-                --#{$prefixVariant}#{$weight}_#{$key}: #{$value};
-              }
-            }
-          }
-        }
-        @else {
-          --#{$prefixVariant}defineFontFamily_spec_undefined: #{$fontFamilyID};
-          // @include mapToCSSProperties($fontFamily, #{$fontFamilyID});
+      $specRole_: map-get($fontFamilySpec, $role);
+      @if ($specRole_) {
+        $specRole: map-merge($specRole, $specRole_);
+        $fontSettingsRole_: map-get($specRole, $role);
+        @if ($fontSettingsRole_) {
+          $fontSettingsRole: map-merge($fontSettingsRole, $fontSettingsRole_);
         }
       }
-      @else {
-        --#{$prefixRole}defineFontFamily_undefined: #{$fontFamilyID};
+      $fallbackStackRole_: map-get($specRole, fallback);
+      @if ($fallbackStackRole_) {
+        $fallbackStackRole: $fallbackStackRole_;
       }
     }
+
+    // FIXME: Experiment inheriting settings from variant `default` to variant `small-caps`
+    $settingsRole: ();
+
+    // Go through all variants (default, small-caps, oldstyle-nums etc.)
+    // that are defined for this font family's specification
+    @each $variant, $specVariant in $fontFamilySpec {
+
+      // Prefix to use for this variant if it is not default
+      $prefixVariant: $prefixRole;
+      @if ($variant != default) {
+        $prefixVariant: '#{$prefixVariant}#{$variant}_';
+      }
+
+      // Variants may have different `font-family`
+      $fontNameVariant: map-get($specVariant, name);
+
+      // Variants may have different fallback fonts
+      $fallbackStackVariant: $fallbackStackRole;
+      $fallbackStackVariant_: map-get($specVariant, fallback);
+      @if ($fallbackStackVariant_) {
+        $fallbackStackVariant: $fallbackStackVariant_;
+      }
+      $fontStackVariant: join( ($fontNameVariant), $fallbackStackVariant);
+      --#{$prefixVariant}font-family: #{inspect($fontStackVariant)};
+
+      // Font variants may have role-specific settings
+      $fontSettingsVariant: $fontSettingsRole;
+      $fontSettingsVariant_: map-get($specVariant, settings, $role);
+      @if ($fontSettingsVariant_) {
+        $fontSettingsVariant: map-merge($fontSettingsVariant, $fontSettingsVariant_);
+      }
+      @include mapToCSSProperties($fontSettingsVariant, fontSettingsVariant_variant-#{$variant});
+      // --#{$prefixVariant}defineFontFamily_settings: #{$fontFamilyID};
+
+      // FIXME: Experiment inheriting settings from variant `default` to variant `small-caps`
+      $settingsRoleVariant: ();
+
+      $fontSettingsWeightDefault: map-get($fontSettingsVariant, default);
+      @each $weight, $settingsWeight in $fontSettingsVariant {
+        $fontSettingsWeight: map-merge($fontSettingsWeightDefault, $settingsWeight);
+        // Store role-variant-weight settings for later use
+        $settingsRoleVariant: map-merge($settingsRoleVariant, ($weight: $fontSettingsWeight) );
+        @each $key, $value in $fontSettingsWeight {
+          @if ($weight == default) {
+            --#{$prefixVariant}#{$key}: #{$value};
+          }
+          @else {
+            --#{$prefixVariant}#{$weight}_#{$key}: #{$value};
+          }
+        }
+      }
+      // @include mapToCSSProperties($settingsRoleVariant, defRoleVariantWeight_role-#{$role}_variant-#{$variant}_weight);
+      $settingsRole: map-merge($settingsRole, ($variant: $settingsRoleVariant));
+    }
+    // @include mapToCSSProperties($settingsRole, defRoleVariant_role-#{$role}_variant);
+    $settings: map-merge($settings, ($role: $settingsRole));
+    @include mapToCSSProperties(map-get($settings, $role),                 settings________________role-#{$role});
+    @include mapToCSSProperties(map-get($fontDefinition, $role, settings), fontDefinition_role-#{$role}_settings);
+    // $fontDefinition: map-merge($fontDefinition, ($role: $settingsRole));
   }
+
+    // Store the created font definition as $definitionID
+  // NOTE: the `!global` keyword ensures that we work with the global
+  // variable defined in `claris-main.scss`
+  $fontDefinitionMap: map-merge($fontDefinitionMap, ($definitionID: $fontDefinition)) !global;
 
   // FIXME: Output updated $fontDefinitionMap
   // @include mapToCSSProperties($fontDefinitionMap, fontDefinitionMap);
@@ -709,7 +737,7 @@ $fontSpecDefaultMap: (
   $fontDefinition: map-get($fontDefinitionMap, $definitionID);
   @if ($fontDefinition) {
     @if ($roles == all) {
-      $rolesSpec: map-get($fontDefinition, $variant, spec);
+      $rolesSpec: map-get($fontDefinition, $variant, settings);
       @if ($rolesSpec) {
         $roles: map-keys($rolesSpec);
       }
@@ -746,15 +774,15 @@ $fontSpecDefaultMap: (
       // @include mapToCSSProperties(map-get($fontFamilyMap, $fontFamilyID), useFontDefinition_fontFamilyMap_#{$fontFamilyID});
 
       // @include mapToCSSProperties($fontDefinition, useFontDefinition_fontDefinition_#{$definitionID});
-      // @include mapToCSSProperties(map-get($fontDefinition, $variant, spec), useFontDefinition_fontDefinition_#{$definitionID}_#{$variant}_spec);
-      $fontSpec: map-get($fontDefinition, $variant, spec, $role);
-      // @include mapToCSSProperties($fontSpec, useFontDefinition_fontSpec_#{$definitionID}_#{$variant}_spec_#{$role});
-      @if ($fontSpec) {
+      // @include mapToCSSProperties(map-get($fontDefinition, $variant, settings), useFontDefinition_fontDefinition_#{$definitionID}_#{$variant}_settings);
+      $fontSettings: map-get($fontDefinition, $variant, settings, $role);
+      // @include mapToCSSProperties($fontSettings, useFontDefinition_fontSpec_#{$definitionID}_#{$variant}_settings_#{$role});
+      @if ($fontSettings) {
         $originPrefixRoleWeight: #{$originPrefixRole};
         $targetPrefixRoleWeight: #{$targetPrefixRole};
         @if ($weights == all) {
-          @each $weight, $fontSpecWeight in $fontSpec {
-            @each $key, $value in $fontSpecWeight {
+          @each $weight, $fontSettingsWeight in $fontSettings {
+            @each $key, $value in $fontSettingsWeight {
               @if ($role == default) {
                 @if ($weight == default) {
                   --#{$targetPrefixRoleWeight}#{$key}: var(--#{$originPrefixRoleWeight}#{$key});
@@ -783,13 +811,13 @@ $fontSpecDefaultMap: (
             $originPrefixRoleWeight: #{$originPrefixRole}#{$weight}_;
             $targetPrefixRoleWeight: #{$targetPrefixRole}#{$weight}_;
           }
-          // @include mapToCSSProperties($fontSpec, useFontDefinition_fontSpec);
-          $fontSpecWeight: map-get($fontSpec, $weight);
-          @if (not $fontSpecWeight) {
-            $fontSpecWeight: map-get($fontSpec, default);
+          // @include mapToCSSProperties($fontSettings, useFontDefinition_fontSpec);
+          $fontSettingsWeight: map-get($fontSettings, $weight);
+          @if (not $fontSettingsWeight) {
+            $fontSettingsWeight: map-get($fontSettings, default);
           }
-          // @include mapToCSSProperties($fontSpecWeight, useFontDefinition_weightSpec-#{$weight});
-          @each $key, $value in $fontSpecWeight {
+          // @include mapToCSSProperties($fontSettingsWeight, useFontDefinition_weightSpec-#{$weight});
+          @each $key, $value in $fontSettingsWeight {
             --#{$targetPrefixRoleWeight}#{$key}: var(--#{$originPrefixRoleWeight}#{$key});
             --#{$key}: var(--#{$targetPrefixRoleWeight}#{$key});
             #{$key}: var(--#{$key});
@@ -797,7 +825,7 @@ $fontSpecDefaultMap: (
         }
       }
       @else {
-        --#{$originPrefix}useFontDefinition_spec_undefined: #{$definitionID};
+        --#{$originPrefix}useFontDefinition_settings_undefined: #{$definitionID};
       }
     }
   }

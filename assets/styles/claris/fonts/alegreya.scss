@@ -218,5 +218,5 @@ $fontSpec: (
     )
   )
 );
-$fontFamilySpec: (default: (name: 'Alegreya', spec: $fontSpec), small-caps: (name: 'Alegreya SC') );
+$fontFamilySpec: (default: (name: 'Alegreya', settings: $fontSpec), small-caps: (name: 'Alegreya SC') );
 $fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: $fontFamilySpec));
