@@ -707,47 +707,46 @@ $fontSpecDefaultMap: (
   $targetPrefix: $prefix;
 
   $fontDefinition: map-get($fontDefinitionMap, $definitionID);
-
-  @if ($roles == all) {
-    $rolesSpec: map-get($fontDefinition, $variant, spec);
-    @if ($rolesSpec) {
-      $roles: map-keys($rolesSpec);
-    }
-    @else {
-      // @include mapToCSSProperties($roles, useFontDefinition_rolesSpec_undefined_currentFontDefinition-#{$definitionID}_variant-#{$variant}_);
-      $roles: (default, display);
-    }
-  }
-  @each $role in $roles {
-    $originPrefixRole: $originPrefix;
-    $targetPrefixRole: $targetPrefix;
-    @if ($role != default) {
-      $originPrefixRole: '#{$originPrefix}#{$role}_';
-      $targetPrefixRole: '#{$targetPrefix}#{$role}_';
-    }
-
-    @if ($variant != default) {
-      $originPrefixRole: '#{$originPrefixRole}#{$variant}_';
-      $targetPrefixRole: '#{$targetPrefixRole}#{$variant}_';
-    }
-
-    --useFontDefinition_definitionID-#{$definitionID}_role-#{$role}_weights-#{$weights}_variant-#{$variant}_originPrefixRole: #{$originPrefixRole};
-    --useFontDefinition_definitionID-#{$definitionID}_role-#{$role}_weights-#{$weights}_variant-#{$variant}_targetPrefixRole: #{$targetPrefixRole};
-
-    @if ($definitionID != inherit) {
-      --#{$targetPrefixRole}font-family: var(--#{$originPrefixRole}font-family);
-      @if ($role == default) {
-        --font-family: var(--#{$targetPrefixRole}font-family);
-        font-family: var(--font-family);
+  @if ($fontDefinition) {
+    @if ($roles == all) {
+      $rolesSpec: map-get($fontDefinition, $variant, spec);
+      @if ($rolesSpec) {
+        $roles: map-keys($rolesSpec);
+      }
+      @else {
+        // @include mapToCSSProperties($roles, useFontDefinition_rolesSpec_undefined_currentFontDefinition-#{$definitionID}_variant-#{$variant}_);
+        $roles: (default, display);
       }
     }
+    @each $role in $roles {
+      $originPrefixRole: $originPrefix;
+      $targetPrefixRole: $targetPrefix;
+      @if ($role != default) {
+        $originPrefixRole: '#{$originPrefix}#{$role}_';
+        $targetPrefixRole: '#{$targetPrefix}#{$role}_';
+      }
 
-    // FIXME: Validate if we got the definition
-    // @include mapToCSSProperties(map-get($fontFamilyMap, $fontFamilyID), useFontDefinition_fontFamilyMap_#{$fontFamilyID});
+      @if ($variant != default) {
+        $originPrefixRole: '#{$originPrefixRole}#{$variant}_';
+        $targetPrefixRole: '#{$targetPrefixRole}#{$variant}_';
+      }
 
-    // @include mapToCSSProperties($fontDefinition, useFontDefinition_fontDefinition_#{$definitionID});
-    // @include mapToCSSProperties(map-get($fontDefinition, $variant, spec), useFontDefinition_fontDefinition_#{$definitionID}_#{$variant}_spec);
-    @if ($fontDefinition) {
+      --useFontDefinition_definitionID-#{$definitionID}_role-#{$role}_weights-#{$weights}_variant-#{$variant}_originPrefixRole: #{$originPrefixRole};
+      --useFontDefinition_definitionID-#{$definitionID}_role-#{$role}_weights-#{$weights}_variant-#{$variant}_targetPrefixRole: #{$targetPrefixRole};
+
+      @if ($definitionID != inherit) {
+        --#{$targetPrefixRole}font-family: var(--#{$originPrefixRole}font-family);
+        @if ($role == default) {
+          --font-family: var(--#{$targetPrefixRole}font-family);
+          font-family: var(--font-family);
+        }
+      }
+
+      // FIXME: Validate if we got the definition
+      // @include mapToCSSProperties(map-get($fontFamilyMap, $fontFamilyID), useFontDefinition_fontFamilyMap_#{$fontFamilyID});
+
+      // @include mapToCSSProperties($fontDefinition, useFontDefinition_fontDefinition_#{$definitionID});
+      // @include mapToCSSProperties(map-get($fontDefinition, $variant, spec), useFontDefinition_fontDefinition_#{$definitionID}_#{$variant}_spec);
       $fontSpec: map-get($fontDefinition, $variant, spec, $role);
       // @include mapToCSSProperties($fontSpec, useFontDefinition_fontSpec_#{$definitionID}_#{$variant}_spec_#{$role});
       @if ($fontSpec) {
@@ -801,9 +800,9 @@ $fontSpecDefaultMap: (
         --#{$originPrefix}useFontDefinition_spec_undefined: #{$definitionID};
       }
     }
-    @else {
-      --#{$originPrefix}useFontDefinition_undefined: #{$definitionID};
-    }
+  }
+  @else {
+    --#{$originPrefix}useFontDefinition_undefined: #{$definitionID};
   }
 }
 
