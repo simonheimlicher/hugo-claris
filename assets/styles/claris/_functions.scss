@@ -104,8 +104,12 @@
           @if meta.type-of($value) == "map" {
               // if value is a map, invoke it once more
               @include mapToCSSProperties($value, $prefix, $key);
-          } @else {
-              --#{$prefix}#{$key}: #{$value};
+          }
+          @else {
+            @if (meta.type-of($value) == meta.type-of(())) {
+              $value: '()';
+            }
+            --#{$prefix}#{$key}: #{$value};
           }
           // next iteration of loop should go with unchanged key
           $key: $key-copy;
