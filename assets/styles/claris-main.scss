@@ -54,29 +54,75 @@ $fontFamilyDefault: (name: '{{ $familyName }}');
   @import 'claris/fonts/fallback/{{ $roleKey }}';
 {{- end }}
 
-$fontFamilySpec: (default: $fontFamilyDefault);
-$fallbackStackDefault: map-get($fontFamilyMap, $fontFamilyID, default, fallback);
-$fallbackStackFamily: $fallbackStackDefault;
+// The font family map may have different structures:
+// Simple:
+// name: Alegreya; // font-family
+// fallback: serif;
+//
+// Include additional settings such as font-weight for default, bold and italic
+// styles: (
+//   default: (
+//     font-weight: 400
+//   )
+//   bold: (
+//     font-weight: 700
+//   )
+// );
+//
+// Include font names and styles for alternative roles:
+// roles: (
+//   display: (
+//     name: Alegreya Sans, // font-family for display type
+//       styles: (
+//         default: (
+//           font-weight: 400
+//         )
+//         bold: (
+//           font-weight: 700
+//         )
+//       )
+//     )
+//   )
+// );
+//
+// Include font names and styles for alternative roles:
+// variants: (
+//   small-caps: (
+//     name: Alegreya SC
+//     styles: (
+//       default: (
+//         font-weight: 400
+//       )
+//       bold: (
+//         font-weight: 700
+//       )
+//     );
+//   )
+// );
 
-@each $customName in (default, small-caps, oldstyle-nums) {
-  $fontFamilyCustom: map-get($fontFamilyMap, {{ $familyID }}, $customName);
-  @if $fontFamilyCustom {
-    @if ($customName == default) {
-      $fontFamilyCustom: map-merge($fontFamilyDefault, $fontFamilyCustom);
-    }
-    $fallbackStack: $fallbackStackFamily;
-    $fallbackStackCustom: map-get($fontFamilyCustom, fallback);
-    @if ($fallbackStackCustom) {
-      $fallbackStack: $fallbackStackCustom;
-      // Use the first fallback stack for all variants
-      @if ($fallbackStackFamily == $fallbackStackDefault) {
-        $fallbackStackFamily: $fallbackStackCustom;
+$fontFamilySpec: $fontFamilyDefault;
+
+@if map-has-key($fontFamilyMap, $fontFamilyID) {
+  $fontFamilySpec: updateMap($fontFamilySpec, map-get($fontFamilyMap, $fontFamilyID));
+
+  $fallbackStackFamily: map-get($fontFamilySpec, fallback);
+  // @if not map-has-key($fontFamilySpec, stack) {
+  //   $fontStackFamily: map-get($fontFamilySpec, name), inspect($fallbackStackFamily);
+  //   $fontFamilySpec: map-merge($fontFamilySpec, (stack: $fontStackFamily))
+  // }
+  @if map-has-key($fontFamilySpec, variants) {
+    $fontFamilyVariants: ();
+    $variants: map-get($fontFamilySpec, variants);
+    @each $variant, $variantSpec in $variants {
+      @if map-has-key($variantSpec, name) {
+        $fallbackStack: defaultTo($fallbackStackFamily, map-get($variantSpec, fallback));
+        // $fontStack: map-get($variantSpec, name), inspect($fallbackStack);
+        // $variantSpec: map-merge($variantSpec, (stack: $fontStack) );
+        $variantSpec: map-merge($variantSpec, (fallback: $fallbackStack) );
       }
+      $fontFamilyVariants: map-merge($fontFamilyVariants, ($variant: $variantSpec));
     }
-
-    $fontStack: map-get($fontFamilyCustom, name), inspect($fallbackStack);
-    $fontFamilyCustom: map-merge($fontFamilyCustom, (stack: $fontStack) );
-    $fontFamilySpec: map-merge($fontFamilySpec, ($customName: $fontFamilyCustom));
+    $fontFamilySpec: map-merge($fontFamilySpec, (variants: $fontFamilyVariants));
   }
 }
 

@@ -1,14 +1,3 @@
 // Antique from https://github.com/system-fonts/modern-font-stacks#antique
 $fallbackStack: Georgia, 'URW Bookman', 'URW Bookman L', serif;
-
-$fontFamilySpecDefault: (fallback: $fallbackStack);
-$fontFamilySpec: (default: $fontFamilySpecDefault);
-$fontFamilySpecOriginal: map-get($fontFamilyMap, $fontFamilyID);
-@if ($fontFamilySpecOriginal) {
-  $fontFamilySpecOriginalDefault: map-get($fontFamilySpecOriginal, default);
-  @if ($fontFamilySpecOriginalDefault) {
-    $fontFamilySpecDefault: map-merge($fontFamilySpecOriginalDefault, $fontFamilySpecDefault);
-  }
-  $fontFamilySpec: map-merge($fontFamilySpecOriginal, (default: $fontFamilySpecDefault));
-}
-$fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: $fontFamilySpec));
+$fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: map-merge((fallback: $fallbackStack), map-get($fontFamilyMap, $fontFamilyID))));

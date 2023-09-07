@@ -198,8 +198,12 @@
        url('#{$hostedFontPath}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-900italic.woff') format('woff'); /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
-$fontSpec: (
-  default: (
+$fontFamilySpec: (
+  // Default font-family
+  name: 'Alegreya',
+  // Default styles
+  styles: (
+    // Style: `default`, i.e., body text
     default: (
       font-weight: 400,
       line-height: 1.4
@@ -208,15 +212,27 @@ $fontSpec: (
       font-weight: 600,
     )
   ),
-  display: (
-    default: (
-      font-weight: 400,
-      line-height: 1.2
-    ),
-    bold: (
-      font-weight: 900,
+  // Alternative roles
+  roles: (
+    // Role: `display`, i.e., short pieces of text such as headings, labels, navigation
+    display: (
+      styles: (
+        default: (
+          font-weight: 400,
+          line-height: 1.2
+        ),
+        bold: (
+          font-weight: 900
+        )
+      )
     )
-  )
+  ),
+  // Font variants such as small-caps, oldstyle-nums
+  variants: (
+    // Font variant: `small-caps`
+    small-caps: (
+      name: 'Alegreya SC'
+    )
+  ),
 );
-$fontFamilySpec: (default: (name: 'Alegreya', settings: $fontSpec), small-caps: (name: 'Alegreya SC') );
 $fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: $fontFamilySpec));

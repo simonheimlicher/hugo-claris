@@ -91,27 +91,82 @@
   @return math.div(math.round($power * $value), $power);
 }
 
-  // create mixin
-  @mixin mapToCSSProperties($map, $prefix, $key: "") {
-      @each $name, $value in $map {
+// A function for filling in a map variable with default values
+// https://stackoverflow.com/a/33536471/617559
+@function updateMap($defaultMap, $updateMap: ()) {
+  $mergedMap: ();
+  @if (type-of($defaultMap) == 'map') {
+    $mergedMap: $defaultMap;
+    @if (type-of($updateMap) == 'map') {
+      // We iterate over each property of the defaultMap
+      @each $key, $value in $updateMap {
+          // Add the default value to mergedMap
+          $mergedMap: map-merge($mergedMap, ($key : $value));
+      }
+    }
+  }
+  @return $mergedMap;
+}
 
-          // copy the map key
-          $key-copy: $key;
-          // create name for CSS custom property that contains:
-          // current key + child key from nested map
-          $key: #{$key}_#{$name};
+// Take the default unless update is non-null
+@function defaultTo($defaultValue, $updateValue: null) {
+  $finalValue: $defaultValue;
+  @if (type-of($updateValue) != 'null') {
+    $finalValue: $updateValue;
+  }
+  @return $finalValue;
+}
 
-          @if meta.type-of($value) == "map" {
-              // if value is a map, invoke it once more
-              @include mapToCSSProperties($value, $prefix, $key);
+@mixin mapToCSSProperties($map, $prefix, $key: "") {
+  @each $name, $value in $map {
+
+      // copy the map key
+      $key-copy: $key;
+      // create name for CSS custom property that contains:
+      // current key + child key from nested map
+      $key: #{$key}_#{$name};
+
+      @if meta.type-of($value) == "map" {
+          // if value is a map, invoke it once more
+          @include mapToCSSProperties($value, $prefix, $key);
+      }
+      @else {
+        @if (meta.type-of($value) == 'list') {
+          $value: inspect($value);
+        }
+        --#{$prefix}#{$key}: #{$value};
+      }
+      // next iteration of loop should go with unchanged key
+      $key: $key-copy;
+  }
+}
+
+// https://www.sitepoint.com/debugging-sass-maps/
+@mixin debug-map($map) {
+  @at-root {
+      @debug-map {
+          __toString__: inspect($map);
+          __length__: length($map);
+          __depth__: depth($map);
+          __keys__: map-keys($map);
+          __properties__ {
+              @each $key, $value in $map {
+                  #{'(' + type-of($value) + ') ' + $key}: inspect($value);
+              }
           }
-          @else {
-            @if (meta.type-of($value) == meta.type-of(())) {
-              $value: '()';
-            }
-            --#{$prefix}#{$key}: #{$value};
-          }
-          // next iteration of loop should go with unchanged key
-          $key: $key-copy;
       }
   }
+}
+
+
+@function print-map ( $map, $str: "" ) {
+  @each $k, $v in $map {
+    @if type-of($v) == map {
+      $str: "#{$str} \000D\000A #{$k}: ( #{print-map($v)} \000D\000A ), ";
+    }
+    @else {
+      $str: "#{$str} \000D\000A \0009 #{$k}: #{$v}, ";
+    }
+  } // each
+  @return $str;
+} // @function print-map

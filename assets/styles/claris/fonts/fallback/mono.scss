@@ -1,14 +1,3 @@
 // Monospace Code from https://github.com/system-fonts/modern-font-stacks#monospace-code
 $fallbackStack: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
-
-$fontFamilySpecDefault: (fallback: $fallbackStack);
-$fontFamilySpec: (default: $fontFamilySpecDefault);
-$fontFamilySpecOriginal: map-get($fontFamilyMap, $fontFamilyID);
-@if ($fontFamilySpecOriginal) {
-  $fontFamilySpecOriginalDefault: map-get($fontFamilySpecOriginal, default);
-  @if ($fontFamilySpecOriginalDefault) {
-    $fontFamilySpecDefault: map-merge($fontFamilySpecOriginalDefault, $fontFamilySpecDefault);
-  }
-  $fontFamilySpec: map-merge($fontFamilySpecOriginal, (default: $fontFamilySpecDefault));
-}
-$fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: $fontFamilySpec));
+$fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: updateMap((fallback: $fallbackStack), map-get($fontFamilyMap, $fontFamilyID))));

@@ -41,7 +41,7 @@
   .content {
     @include useFontDefinition(article);
     h1, h2, h3, h4, h5, h6, .excerpt-title {
-      @include useFontDefinition(article, display, bold);
+      @include useFontDefinition(article, display, default, bold);
     }
   }
 }
@@ -684,9 +684,7 @@
   .initial-words {
     // text-transform: uppercase;
     // font-variant: all-small-caps;
-    // @include useFontDefinition(article, default, default, small-caps);
-    @include useFontDefinition(article, default, bold, small-caps);
-    // @include useFontDefinition(article, display, bold, small-caps);
+    @include useFontDefinition(article, default, small-caps, bold);
   }
 }
 .main_header .feature-image {
