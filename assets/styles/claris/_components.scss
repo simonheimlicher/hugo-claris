@@ -534,25 +534,26 @@
       width: var(--icon-height-meta);
       height: var(--icon-height-meta);
       margin: calc( (var(--line-height) * 1em - var(--icon-height-meta)) / 4 * 1)
-      0.5em
+      0.5ch
       calc( (var(--line-height) * 1em - var(--icon-height-meta)) / 4 * 3)
-      0.5em;
+      0;
     }
     &_tag-list {
       column-gap: var(--inner_padding_4-1);
       font-size: var(--font-size-meta);
     }
+    &_tag {
+      margin: var(--inner_padding_4-1) var(--inner_padding_4-1);
+    }
     &_date,
     &_reading-time {
-      display: flex;
-      align-items: center;
       font-size: var(--font-size-meta);
     }
     &_date + &_date {
-      margin-left: 0.5em;
+      margin-left: 1ch;
     }
     &_author {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       img {
         width: 3rem;
@@ -561,7 +562,7 @@
       }
     }
     &_taxonomy {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       flex-wrap: wrap;
       gap: var(--inner_padding_4-2) var(--inner_padding_4-2);

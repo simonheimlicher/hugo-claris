@@ -90,9 +90,9 @@
                     <div class="{{ $containerClass }}">
                     {{- $article_meta = true }}
                     {{- end }}
-                      <div class="article_meta_taxonomy article_meta_item">
+                      {{/* <div class="article_meta_taxonomy article_meta_item"> */}}
                         {{- partial "claris/_components/taxonomy-inline" (dict "Page" $page "SubjectPage" $subjectPage "Taxonomy" "tags" "RelativeDates" $relativeDates) }}
-                      </div>
+                      {{/* </div> */}}
                   {{- end }}
                   {{ end }}
                   {{- if default true ($page.Param "showShare") }}
@@ -100,7 +100,7 @@
                     <div class="{{ $containerClass }}">
                     {{- $article_meta = true }}
                     {{- end }}
-                      <div class="article_meta_taxonomy article_meta_item"> · {{- partial "claris/_components/share" . }}</div>
+                      <div class="article_meta_share article_meta_item"> · {{- partial "claris/_components/share" . }}</div>
                     {{- end }}
                   {{- if $article_meta }}
                   </div>
