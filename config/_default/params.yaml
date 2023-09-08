@@ -1,184 +1,178 @@
 # FIXME: canonicalBaseURL can be set in Site but not retrieved from site.CanonicalBaseURL
-# canonicalBaseURL = "https://simon.heimlicher.com/"  # Include trailing slash
+# canonicalBaseURL: "https://simon.heimlicher.com/"  # Include trailing slash
 
-showShare = false # Uncomment to not show share buttons on each post. Also available in each post's front matter.
+showShare: false # Uncomment to not show share buttons on each post. Also available in each post's front matter.
 
 # Top-level directories where your articles are located
 # See config details here https://gohugo.io/functions/where/#mainsections
 # Note: articles in these sections are styled differently:
 # - The first paragraph is automatically treated as the lede
 # - A drop cap is added to the second paragraph
-mainSections = [
-  "article",
-  "articles",
-]
+mainSections:
+  - "article"
+  - "articles"
 
-# logo = "images/logo.png"
+# logo: "images/logo.png"
 
-logoURL = "/"
+logoURL: /
 
 # center logo on navbar
-centerLogo = false # Set to "true" for centering or "false" for left aligned.
+centerLogo: false # Set to "true" for centering or "false" for left aligned.
 
 # Set the collapsed mobile navigation to either appear from the left or the right
-mobileNavigation = "right" # if you prefer left change to 'left'
+mobileNavigation: right # if you prefer left change to 'left'
 
 # Enforce dark or light scheme irrespective of system settings of user
 # You cannot enforce both schemes at the same time. i.e by enforcing one scheme,
 # you priotise it over the other (by setting it to true).
 # The color scheme toggle UI will remain in place. That way, if a user prefers
 # darkscheme, they can have their way.
-# enforceLightMode = false
-# enforceDarkMode = false
-
-# Break point to hide mobile menu and show narrow version of full navigation
-# screenViewBreakpointWidthMobileMenu = "36rem"
-
-# Break point to reset font size to regular size
-# screenViewBreakpointWidthNarrow = "40rem"
+# enforceLightMode: false
+# enforceDarkMode: false
 
 # Maximum number of recent articles.
-numberOfRecentArticles = 3
+numberOfRecentArticles: 3
 
 # Maximum number of featured articles.
-numberOfFeaturedArticles = 3
+numberOfFeaturedArticles: 3
 
 # Maximum number of related articles.
-numberOfRelatedArticles = 5
+numberOfRelatedArticles: 5
 
 # Date format. Checkout https://gohugo.io/functions/format/#hugo-date-and-time-templating-reference for details.
-# dateFormat = "2006-01-02" # Default to "Jan 2, 2006".
+# dateFormat: "2006-01-02" # Default to "Jan 2, 2006".
 
 # tell hugo where you store your icons e.g favicons. This is useful if you're using an apache server and there are conflicts >> see issue https://github.com/chipzoller/hugo-clarity/issues/74. If this is applicable to you, be sure to copy the contents of https://github.com/chipzoller/hugo-clarity/tree/master/static/icons to your preferred icons directory
-iconsDir = "/"
+iconsDir: "/"
 
-# colorPrimaryLit = "hsl(42, 20%, 97%)"
-# colorPrimaryDim = "hsl(207, 20%, 25%)"
+# colorPrimaryLit: "hsl(42, 20%, 97%)"
+# colorPrimaryDim: "hsl(207, 20%, 25%)"
 
 # Limit tags and categories to only include articles from the last x years
-taxonomyMaxYears = 5
+taxonomyMaxYears: 5
 
 # Limit recent articles to only include articles from the last x years
-recentMaxYears = 5
+recentMaxYears: 5
 
 # Show a note indicating that an article is outdated after x years
-outdatedAfterYears = 5
+outdatedAfterYears: 5
 # Define sections whose content expires and should be flagged with a note
 # after .Params.outdatedAfterYears
 # ephemeralSections = [
 #   "articles"
 # ]
 
-fontFamilySans = "Source Sans 3"
-# fontFamilySans = "IBM Plex Sans"
-# fontFamilySans = "Public Sans"
-# fontFamilySans = "Cabin"
-# fontFamilySans = "Merriweather Sans"
-# fontFamilySans = "Nunito"
-# fontFamilySans = "Nunito Sans"
-# fontFamilySans = "Mulish"
-# fontFamilySans = "Inter"
+fontFamilySans: "Source Sans 3"
+# fontFamilySans: "IBM Plex Sans"
+# fontFamilySans: "Public Sans"
+# fontFamilySans: Cabin
+# fontFamilySans: "Merriweather Sans"
+# fontFamilySans: Nunito
+# fontFamilySans: "Nunito Sans"
+# fontFamilySans: Mulish
+# fontFamilySans: Inter
 
-fontFamilySerif = "Alegreya"
-# fontFamilySerif = "Andada Pro"
-# fontFamilySerif = "IBM Plex Serif"
-# fontFamilySerif = "Merriweather"
-# fontFamilySerif = "Crimson Text"
-# fontFamilySerif = "Crimson Pro"
-# fontFamilySerif = "Literata"
-# fontFamilySerif = "Spectral"
-# fontFamilySerif = "Vollkorn"
+fontFamilySerif: Alegreya
+# fontFamilySerif: "Andada Pro"
+# fontFamilySerif: "IBM Plex Serif"
+# fontFamilySerif: Merriweather
+# fontFamilySerif: "Crimson Text"
+# fontFamilySerif: "Crimson Pro"
+# fontFamilySerif: Literata
+# fontFamilySerif: Spectral
+# fontFamilySerif: Vollkorn
 
-fontFamilyMono = "DM Mono"
-# fontFamilyMono = "Menlo"
+fontFamilyMono: "DM Mono"
+# fontFamilyMono: Menlo
 
 # Serve font files from static instead of relying on Google Fonts servers
-fontsSelfHosted = true
+fontsSelfHosted: true
 
 # Support IE 11 with JS polyfills / ponyfills
-supportIE11 = true
+supportIE11: true
 
-sidebarTaxonomies = ["tags"]
+sidebarTaxonomies:
+  - tags
 
-[responsive]
-  [responsive.breakpoints]
-    [responsive.breakpoints.width]
+responsive:
+  breakpoints:
+    width:
       # From this width upward, the mobile menu is hidden
       # and the full menu bar is shown
-      mobileMenu = "28rem"
+      mobileMenu: 28rem
 
       # From this width upward, more than one content item is shown horizontally -
       # e.g., a floating image surrounded by text
-      mobile = "20rem"
+      mobile: 20rem
 
       # From this width upward, font size is set to regular size
-      narrow = "36rem"
+      narrow: 36rem
 
-      # Fit content to iPad in portrait orientation: 768px = 48rem
-      oneColumn = "48rem"
+      # Fit content to iPad in portrait orientation: 768px: 48rem
+      oneColumn: 48rem
 
       # Layout with one aside
-      twoColumn = "60rem"
+      twoColumn: 60rem
 
       # Layout with two asides
-      wide = "76rem"
+      wide: 76rem
 
       # Layout with two asides and wider sections in main column, e.g., for code or figures
-      ultraWide = "96rem"
+      ultraWide: 96rem
 
 
-[colors]
-  colorPrimaryLit = "hsl(200, 100%, 50%)"
-  colorPrimaryDim = "hsl(200, 100%, 50%)"
-  onPrimaryLit = "hsl(200, 50%, 25%)"
-  onPrimaryDim = "hsl(200, 75%, 90%)"
-  surfacePrimaryLit = "hsl(200, 50%, 95%)"
-  surfacePrimaryDim = "hsl(200, 30%, 10%)"
-  colorSurfaceLit = "hsl(200, 80%, 98%)"
-  colorSurfaceDim = "hsl(200, 90%, 10%)"
-  onSurfaceLit = "hsl(200, 100%, 13%)"
-  onSurfaceDim = "hsl(200, 100%, 95%)"
-  colorBackgroundLit = "hsl(200, 10%, 95%)"
-  colorBackgroundDim = "hsl(200, 10%, 10%)"
-  onBackgroundLit = "hsl(200, 10%, 13%)"
-  onBackgroundDim = "hsl(200, 10%, 95%)"
+colors:
+  colorPrimaryLit: "hsl(200, 100%, 50%)"
+  colorPrimaryDim: "hsl(200, 100%, 50%)"
+  onPrimaryLit: "hsl(200, 50%, 25%)"
+  onPrimaryDim: "hsl(200, 75%, 90%)"
+  surfacePrimaryLit: "hsl(200, 50%, 95%)"
+  surfacePrimaryDim: "hsl(200, 30%, 10%)"
+  colorSurfaceLit: "hsl(200, 80%, 98%)"
+  colorSurfaceDim: "hsl(200, 90%, 10%)"
+  onSurfaceLit: "hsl(200, 100%, 13%)"
+  onSurfaceDim: "hsl(200, 100%, 95%)"
+  colorBackgroundLit: "hsl(200, 10%, 95%)"
+  colorBackgroundDim: "hsl(200, 10%, 10%)"
+  onBackgroundLit: "hsl(200, 10%, 13%)"
+  onBackgroundDim: "hsl(200, 10%, 95%)"
 
 
-[meta]
-  [meta.title]
+meta:
+  title:
     targetlength = [10, 60]
 
-[home]
-  section = "_home"
+home:
+  section: _home
 
-[footer]
-  section = "_footer"
-  recentarticles = 3
+footer:
+  section: _footer
+  recentarticles: 3
 
 # Invisible pages:
 # Add robots = noindex, nofollow to meta
 # No OpenGraph meta
 # No Schema.org (JSON+LD) meta
-[hidden]
+hidden:
   # Sections within which all pages will be hidden
   sections = ["_error", "_home", "_footer"]
   pathelements = ['hidden', 'confidential']
 
-[website]
-  name = "simon.heimlicher.com"
+website:
+  name: simon.heimlicher.com
 
   # The year when this website was created, this value is used in the copyright
   # notice of the footer.
-  established = 1999
+  established: 1999
 
-  # [website.license]
-  #   text = "simon.heimlicher.com © 1999 by Simon Heimlicher is licensed under CC BY-NC-ND 4.0"
+  # license:
+  #   text: "simon.heimlicher.com © 1999 by Simon Heimlicher is licensed under CC BY-NC-ND 4.0"
 
 # configuration of robots tag in head
-[robots]
-  index = true
-  indeximages = true
-  follow = true
+robots:
+  index: true
+  indeximages: true
+  follow: true
   # Sections to be listed in robots.txt as being excluded from indexing
   # CAUTION: This will cause attackers to look at these sections in particular, so do not use this parameter to hide a section
   # robotsTxtDisallowSections = ["_error", "_home", "_footer"]
