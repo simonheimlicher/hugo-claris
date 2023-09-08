@@ -56,13 +56,13 @@
       // a min width of 0 via minmax
       // grid-template-columns: minmax(#{$screenViewWidthAsideMin}, 1fr) minmax(#{$screenViewColumnWidthMin}, 10fr)
       // grid-template-columns: minmax(#{$screenViewWidthAsideMin}, 1fr) minmax(1px, 10fr)
-      // grid-template-columns: minmax(calc(max(env(safe-area-inset-left, 0px), var(--inner_padding-x))), 1fr) minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax}) minmax(#{$screenViewColumnWidthWideMin}, #{$screenViewColumnWidthWideMax}) 0px 0px;
+      // grid-template-columns: minmax(calc(max(env(safe-area-inset-left, 0px), var(--inner_padding))), 1fr) minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax}) minmax(#{$screenViewColumnWidthWideMin}, #{$screenViewColumnWidthWideMax}) 0px 0px;
       grid-template-columns:
         0px
         0px
         minmax(#{$screenViewColumnWidthWideMin}, #{$screenViewColumnWidthWideMax})
         minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax})
-        minmax(calc(max(env(safe-area-inset-right, 0px), var(--inner_padding-x))), 1fr);
+        minmax(calc(max(env(safe-area-inset-right, 0px), var(--inner_padding))), 1fr);
 
       // grid-column-gap: var(--column-gap)
       grid-template-rows: minmax(min-content, min-content) minmax(min-content, min-content);
@@ -89,11 +89,11 @@
       // grid-template-columns: minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax}) minmax(#{$screenViewColumnWidthWideMin}, #{$screenViewColumnWidthWideMax}) minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax})
       // grid-template-columns: minmax(#{$screenViewWidthWideAsideMin}, 1fr) minmax(#{$screenViewColumnWidthWideMin}, 4fr) minmax(#{$screenViewWidthWideAsideMin}, 1fr)
         grid-template-columns:
-          minmax(calc(max(env(safe-area-inset-left, 0px), var(--inner_padding-x))), 1fr)
+          minmax(calc(max(env(safe-area-inset-left, 0px), var(--inner_padding))), 1fr)
           minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax})
           minmax(#{$screenViewColumnWidthWideMin}, #{$screenViewColumnWidthWideMax})
           minmax(#{$screenViewWidthWideAsideMin}, #{$screenViewWidthWideAsideMax})
-          minmax(calc(max(env(safe-area-inset-right, 0px), var(--inner_padding-x))), 1fr);
+          minmax(calc(max(env(safe-area-inset-right, 0px), var(--inner_padding))), 1fr);
 
         .content {
           grid-column: 3;

@@ -86,7 +86,7 @@ $main-z-index: 1;
         @else {
           // FIXME: Use a single padding value for browsers that don't support CSS properties
           $valueFix: ($value * $screenViewInnerPaddingNarrow);
-          $valueVar: calc( max(#{$value} * var(--#{$where}_padding-#{$direction}), env(safe-area-inset-#{$key}, 0px) ) )
+          $valueVar: calc( max(#{$value} * var(--#{$where}_padding), env(safe-area-inset-#{$key}, 0px) ) )
         }
         $pFix: map-merge($pFix, (#{$key}: $valueFix));
         $pVar: map-merge($pVar, (#{$key}: $valueVar));
@@ -902,11 +902,6 @@ html {
   @include fluid-geometric-scale('font-size_heading', 1rem, 1.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
   @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
   @include fluid-fractional-scale('inner_padding', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
-
-  @include fluid-fractional-scale('inner_margin-x', 0.75rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
-  @include fluid-fractional-scale('inner_padding-x', 0.75rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
-  @include fluid-fractional-scale('inner_margin-y', 0.75rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
-  @include fluid-fractional-scale('inner_padding-y', 0.75rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
 
   --font-size: var(--font-size-normal);
   --font-size-aside: var(--font-size_root-normal);

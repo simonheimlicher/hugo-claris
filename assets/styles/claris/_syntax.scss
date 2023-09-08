@@ -20,14 +20,13 @@ code {
   overflow-y: hidden;
   &.noClass,
   &:not(pre > &) {
-    // color: var(--text)
     display: inline;
-    // line-break: anywhere
-    padding: 0.0625rem 0.25rem;
-    vertical-align: 7%;
-    border: 0.05rem solid rgba(var(--RGB_text), 80%);
-    border-radius: 0.125rem;
-    background-color: rgba(var(--RGB_text), 20%);
+    padding: calc(1em * (var(--line-height) - 1) / 4) 0.5ch;
+    /* vertical-align: 7%; */
+    border: 0.05em solid var(--xxxhaze);
+    border-radius: 0.125em;
+    background-color: var(--haze);
+    margin: 0 1ch;
   }
 }
 pre {

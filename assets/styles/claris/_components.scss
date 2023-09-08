@@ -13,12 +13,12 @@
       margin-top: 0;
       padding-top: 0;
     }
-    padding: 0 0 var(--inner_padding-x) 0;
+    padding: 0 0 var(--inner_padding) 0;
   }
 }
 
 .content + .content {
-  padding-top: var(--inner_padding-y);
+  padding-top: var(--inner_padding);
 }
 .content {
   @include content;
@@ -305,8 +305,8 @@
     }
     &_copyright {
       @include footer;
-      padding-top: var(--inner_padding-y);
-      padding-bottom: var(--inner_padding-y);
+      padding-top: var(--inner_padding);
+      padding-bottom: var(--inner_padding);
       font-size: var(--font-size-meta);
     }
 
@@ -321,7 +321,7 @@
       }
 
       &-item {
-        padding-bottom: var(--inner_padding-y-3);
+        padding-bottom: var(--inner_padding_4-3);
         // FIXME: IE 11 bug
         // https://github.com/philipwalton/flexbugs/issues/75
         // Setting a min-height on the container (body does not work)
@@ -364,7 +364,7 @@
       border-top: 1px var(--xxhaze) solid;
       column-gap: 1em;
       ul > li, ul > li + li {
-        padding: var(--inner_padding-y-3) var(--inner_padding-x-2);
+        padding: var(--inner_padding_4-3) var(--inner_padding_4-2);
       }
       &_social,
       &_generator {
@@ -520,7 +520,7 @@
     display: inline-flex;
     flex-flow: row wrap;
     align-items: center;
-    margin: 0 calc(-1 * var(--inner_padding-x-1));
+    margin: calc(-1 * var(--inner_padding_4-1));
     color: var(--text-faint);
     @include useFontDefinition(meta);
     @include link-lvhfa;
@@ -528,7 +528,7 @@
       align-items: center;
     }
     &_item {
-      padding: var(--inner_padding-y-1) var(--inner_padding-x-1);
+      padding: var(--inner_padding_4-1) var(--inner_padding_4-1);
     }
     .icon {
       width: var(--icon-height-meta);
@@ -539,7 +539,7 @@
       0.5em;
     }
     &_tag-list {
-      column-gap: var(--inner_padding-x-1);
+      column-gap: var(--inner_padding_4-1);
       font-size: var(--font-size-meta);
     }
     &_date,
@@ -557,14 +557,14 @@
       img {
         width: 3rem;
         height: auto;
-        padding: var(--inner_padding-y-1) var(--inner_padding-x-1);
+        padding: var(--inner_padding_4-1) var(--inner_padding_4-1);
       }
     }
     &_taxonomy {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      gap: var(--inner_padding-y-2) var(--inner_padding-x-2);
+      gap: var(--inner_padding_4-2) var(--inner_padding_4-2);
     }
   }
   &_content {
@@ -935,7 +935,7 @@
     top: 0;
     z-index: ($main-z-index - 1);
     width: 100%;
-    margin-bottom: calc(0px - var(--inner_padding-x));
+    margin-bottom: calc(0px - var(--inner_padding));
   }
   &_img {
     margin: 0;
@@ -1206,10 +1206,10 @@ svg.qrcode-svg {
   }
   &_title,
   &_meta {
-    padding: 0 var(--inner_padding-x);
+    padding: 0 var(--inner_padding);
   }
   &_title {
-    padding-top: var(--inner_padding-y);
+    padding-top: var(--inner_padding);
     @extend h3;
     margin: 0;
   }
@@ -1219,7 +1219,7 @@ svg.qrcode-svg {
       &.image.content {
         .excerpt_thumbnail {
           float: left;
-          padding: var(--inner_padding-y-3) var(--inner_padding-x-2) var(--inner_padding-y-2) var(--inner_padding-x);
+          padding: var(--inner_padding_4-3) var(--inner_padding_4-2) var(--inner_padding_4-2) var(--inner_padding);
           max-width: 60%;
         }
       }
@@ -1233,7 +1233,7 @@ svg.qrcode-svg {
     }
   }
   &_thumbnail {
-    padding: var(--inner_padding-y-3) var(--inner_padding-x) var(--inner_padding-y-2) var(--inner_padding-x);
+    padding: var(--inner_padding_4-3) var(--inner_padding) var(--inner_padding_4-2) var(--inner_padding);
     img {
       margin: 0;
       min-height: 4rem;
@@ -1252,13 +1252,13 @@ svg.qrcode-svg {
   &_content {
     // Avoid overflow at bottom
     height: auto;
-    padding: var(--inner_padding-y-2) var(--inner_padding-x) var(--inner_padding-y) var(--inner_padding-x);
+    padding: var(--inner_padding_4-2) var(--inner_padding) var(--inner_padding) var(--inner_padding);
   }
   &_footer {
     clear: both;
     &_read-on,
     &_page-count {
-      padding: var(--inner_padding-y-2) var(--inner_padding-x) var(--inner_padding-y) var(--inner_padding-x);
+      padding: var(--inner_padding_4-2) var(--inner_padding) var(--inner_padding) var(--inner_padding);
       margin: 0;
       width: 100%;
     }
@@ -1306,7 +1306,7 @@ svg.qrcode-svg {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(#{$list-excerpt-width}, 1fr));
         grid-auto-flow: dense;
-        grid-gap: var(--inner_padding-y)  var(--inner_padding-x);
+        grid-gap: var(--inner_padding)  var(--inner_padding);
         margin: 0;
         .excerpt_container {
           margin: 0;
@@ -1317,7 +1317,7 @@ svg.qrcode-svg {
           &.image.content {
             .excerpt_thumbnail {
               float: none;
-              padding-right: var(--inner_padding-x);
+              padding-right: var(--inner_padding);
               max-width: 100%;
             }
             .excerpt_content {
@@ -1334,7 +1334,7 @@ svg.qrcode-svg {
             &.image.content {
               .excerpt_thumbnail {
                 float: left;
-                padding: var(--inner_padding-y-3) var(--inner_padding-x-2) var(--inner_padding-y-2) var(--inner_padding-x);
+                padding: var(--inner_padding_4-3) var(--inner_padding_4-2) var(--inner_padding_4-2) var(--inner_padding);
                 max-width: 50%;
               }
             }
@@ -1357,7 +1357,7 @@ svg.qrcode-svg {
             &.image.content {
               .excerpt_thumbnail {
                 float: none;
-                padding-right: var(--inner_padding-x);
+                padding-right: var(--inner_padding);
                 max-width: 100%;
               }
             }
@@ -1382,7 +1382,7 @@ svg.qrcode-svg {
             &.image.content {
               .excerpt_thumbnail {
                 float: left;
-                padding: var(--inner_padding-y-3) var(--inner_padding-x-2) var(--inner_padding-y-2) var(--inner_padding-x);
+                padding: var(--inner_padding_4-3) var(--inner_padding_4-2) var(--inner_padding_4-2) var(--inner_padding);
                 max-width: 50%;
               }
             }
@@ -1395,7 +1395,7 @@ svg.qrcode-svg {
             &.image.content {
               .excerpt_thumbnail {
                 float: none;
-                padding-right: var(--inner_padding-x);
+                padding-right: var(--inner_padding);
                 max-width: 100%;
               }
             }
@@ -1762,7 +1762,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
 .content .responsive-image_container,
 .shortcode_responsive-figure,
 .excerpt_container {
-  // padding: var(--inner_padding-y) var(--inner_padding-x)
+  // padding: var(--inner_padding) var(--inner_padding)
   border-radius: 0.125rem;
   // Remove any surrounding margins and padding from elements
   // within the figure
@@ -1782,12 +1782,12 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
   &.caption {
     background: var(--figure-bg);
     @include color-scheme_transition;
-    padding: var(--inner_padding-y)  var(--inner_padding-x);
+    padding: var(--inner_padding)  var(--inner_padding);
     color: var(--text);
     @include useFontDefinition(meta);
     & > figcaption {
       width: 100%;
-      padding: var(--inner_padding-y) 0 0 0;
+      padding: var(--inner_padding) 0 0 0;
     }
   }
   &.background-light {
@@ -1809,7 +1809,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
   &.float-right {
     float: none;
     max-width: 80%;
-    // max-width: calc(0.8 * (#{$screenViewBreakpointWidthMobile} - 2 * var(--inner_padding-x) ) )
+    // max-width: calc(0.8 * (#{$screenViewBreakpointWidthMobile} - 2 * var(--inner_padding) ) )
     margin: var(--inner_margin-y) auto;
   }
   *:not(figure) + & {

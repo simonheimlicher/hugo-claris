@@ -436,9 +436,9 @@
   }
   &_brand {
     position: relative;
-    margin-left: (0 - $screenViewInnerPaddingMobile);
+    margin-left: calc(0px - var(--inner_padding));
     margin-right: 0rem;
-    padding: 0 0.5rem 0 $screenViewInnerPaddingMobile;
+    padding: 0 var(--inner_padding_4-1) 0 var(--inner_padding);
     z-index: 999;
     width: min-content;
     // Setting min-height is required to avoid nav bar incl. burger menu icon from collapsing
@@ -477,7 +477,7 @@
   &_color-scheme_choice {
     position: relative;
     height: 100%;
-    padding: 0 var(--inner_padding-x);
+    padding: 0 var(--inner_padding);
     cursor: pointer;
     z-index: 1000;
     .icon {
@@ -781,6 +781,7 @@
     }
     &_item {
       padding: 0.25rem 0.25rem;
+      padding: calc( ($screenViewNavHeightNarrow - 2rem) / 2) var(--inner_padding_4-1);
     }
     &_sub {
       position: absolute;
@@ -822,17 +823,18 @@
   .nav {
     &_item,
     &_follow {
-      padding: 0.5rem 0.5rem;
+      // padding: 0.5rem 0.5rem;
+      padding: calc( ($screenViewNavHeight - 2rem) / 2) var(--inner_padding_4-1);
     }
     &_brand {
       height: $screenViewNavHeight;
-      margin-left: (-1 * $screenViewInnerPaddingOneColumn);
-      margin-right: 0rem;
-      padding-left: $screenViewInnerPaddingOneColumn;
+      // margin-left: (-1 * $screenViewInnerPaddingOneColumn);
+      margin-right: 0;
+      // padding-left: $screenViewInnerPaddingOneColumn;
     }
-    &_mobile_toggle {
-      padding-right: $screenViewInnerPaddingOneColumn;
-    }
+    // &_mobile_toggle {
+    //   padding-right: $screenViewInnerPaddingOneColumn;
+    // }
     &_color-scheme_choice {
       &_mask,
       &_icon {
