@@ -163,7 +163,7 @@
       // Setting a min-height on the container (body does not work)
       // avoids scaled images taking up as much space as they would if not scaled
       // FIXME: Does not work. responsive-figure images still blow up
-      @media only screen and (min-width: $screenViewBreakpointWidthNarrow) {
+      @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
         & {
           justify-content: space-evenly;
         }
@@ -314,7 +314,7 @@
     &_main {
       display: flex;
       flex-wrap: wrap;
-      @media only screen and (min-width: $screenViewBreakpointWidthNarrow) {
+      @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
         & {
           justify-content: space-evenly;
         }

@@ -589,7 +589,7 @@
   }
 }
 .main_claris {
-  @media only screen {
+  @media screen {
     // Ensure .main_claris is under header_claris when header_claris is position: relative
     padding-top: #{$screenViewNavHeightNarrow};
     margin-top: - #{$screenViewNavHeightNarrow};
@@ -1049,7 +1049,7 @@ body:not(.modern-js) .article_aside .table_of_contents {
   visibility: visible;
 }
 
-@media only screen {
+@media screen {
   .outdated:before {
     content: '';
     display: block;
