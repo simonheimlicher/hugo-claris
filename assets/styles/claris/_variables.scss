@@ -357,7 +357,9 @@ $main-z-index: 1;
     padding-left: 0.2em;
     // Ensure the link provide a touch target of more than 32px
     & > a {
-      display: inline-flex;
+      // FIXME: Avoid `display: inline-flex` as this leads to inadvertent line breaks
+      // and lack of spacing around elments contained inside, such as <em> or <strong>
+      // display: inline-flex;
       padding: calc(max(0px, 2.125rem - $padding-between - 1em * var(--line-height)) / 2) 0;
     }
     & > ul li {
