@@ -576,6 +576,8 @@
       font-size: var(--font-size-larger-1);
     }
   }
+
+  // FIXME: Experiment with displaying h3 and lower headings inline
   &_content, &_body {
     & > h3, & > h4, & > h5, & > h6 {
       display: inline;
@@ -588,6 +590,12 @@
       &::after {
         content: ". ";
         display: inline;
+      }
+      &.heading_link {
+        margin-right: 0;
+        .link.icon {
+          display: none;
+        }
       }
       & + p {
         display: inline;
