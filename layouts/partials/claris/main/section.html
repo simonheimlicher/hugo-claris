@@ -15,8 +15,8 @@
 
 {{- if $page.Content }}
   {{ partial "claris/main/content/index" . }}
+{{- else }}
+  {{- partial "claris/main/list/index" (merge . (dict "HeadingLevel" (sub .HeadingLevel 1))) }}
 {{- end }}
-
-{{- partial "claris/main/list/index" (merge . (dict "HeadingLevel" (sub .HeadingLevel 1))) }}
 
 {{ partial "html-comment" (printf "[%s]:   END" $template) }}
