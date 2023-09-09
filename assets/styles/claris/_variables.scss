@@ -1002,35 +1002,35 @@ html {
     ),
   );
 
-  @mixin screen-margin-padding($breakpoint) {
-    @each $where in ('outer', 'inner') {
-      $marginBase: map-get(map-get($screenViewMargin, $where), $breakpoint);
-      $paddingBase: map-get(map-get($screenViewPadding, $where), $breakpoint);
-      @if $paddingBase {
-        @each $sizeDesc, $numQuarters in ('-1': 1, '-2': 2, '-3': 3, '': 4) {
-          @each $direction in ('x', 'y') {
-            --#{$where}_margin-#{$direction}#{$sizeDesc}: #{math.div( $marginBase * $numQuarters, 4)};
-            --#{$where}_padding-#{$direction}#{$sizeDesc}: #{math.div($paddingBase * $numQuarters, 4)};
-          }
-        }
-      }
-    }
-  }
+  // @mixin screen-margin-padding($breakpoint) {
+  //   @each $where in ('outer', 'inner') {
+  //     $marginBase: map-get(map-get($screenViewMargin, $where), $breakpoint);
+  //     $paddingBase: map-get(map-get($screenViewPadding, $where), $breakpoint);
+  //     @if $paddingBase {
+  //       @each $sizeDesc, $numQuarters in ('-1': 1, '-2': 2, '-3': 3, '': 4) {
+  //         @each $direction in ('x', 'y') {
+  //           --#{$where}_margin-#{$direction}#{$sizeDesc}: #{math.div( $marginBase * $numQuarters, 4)};
+  //           --#{$where}_padding-#{$direction}#{$sizeDesc}: #{math.div($paddingBase * $numQuarters, 4)};
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
-  $breakpointsWidth: map-get($screenViewBreakpoints, 'width');
-  @for $i from 1 through length($breakpointsWidth) {
-    $breakpointKeys: map-keys($breakpointsWidth);
-    $breakpoint: nth($breakpointKeys, $i);
-    $breakpointWidth: map-get(map-get($screenViewBreakpoints, 'width'), $breakpoint);
-    @if $i == 1 {
-      @include screen-margin-padding($breakpoint);
-    }
-    @else {
-      @media screen and (min-width: $breakpointWidth) {
-        @include screen-margin-padding($breakpoint);
-      }
-    }
-  }
+  // $breakpointsWidth: map-get($screenViewBreakpoints, 'width');
+  // @for $i from 1 through length($breakpointsWidth) {
+  //   $breakpointKeys: map-keys($breakpointsWidth);
+  //   $breakpoint: nth($breakpointKeys, $i);
+  //   $breakpointWidth: map-get(map-get($screenViewBreakpoints, 'width'), $breakpoint);
+  //   @if $i == 1 {
+  //     @include screen-margin-padding($breakpoint);
+  //   }
+  //   @else {
+  //     @media screen and (min-width: $breakpointWidth) {
+  //       @include screen-margin-padding($breakpoint);
+  //     }
+  //   }
+  // }
 
   --navigation-header-height: 0;
 

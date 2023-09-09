@@ -6,7 +6,7 @@
     // @include link-lvhfa;
   }
   &_inner {
-    // margin-top: var(--inner_margin-y)
+    // margin-top: var(--inner_margin)
     @include element-padding('inner', 0, unset, unset, unset);
     clear: both;
     h1:first-child {
@@ -280,7 +280,7 @@
   .footer {
     &_inner {
       h2 + p, h2 + ul {
-        margin-top: var(--inner_margin-y-2);
+        margin-top: var(--inner_margin_4-2);
       }
       @include footer;
       // ul {
@@ -583,7 +583,7 @@
   display: none;
   position: sticky;
   // margin: 0.8rem 0 1rem auto
-  margin: 0 0 var(--inner_margin-y) auto;
+  margin: 0 0 var(--inner_margin) auto;
   // top: calc(#{$screenViewNavHeight} + 5vh)
   top: calc(#{$screenViewNavHeight} + #{$screenViewInnerPaddingOneColumn});
   align-self: start;
@@ -764,7 +764,7 @@
           padding: 0;
           margin: 1em auto;
           @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
-            min-width: calc(var(--content_max-width) - var(--inner_margin-x) * 2);
+            min-width: calc(var(--content_max-width) - var(--inner_margin) * 2);
           }
         }
         .feature-image {
@@ -1186,7 +1186,7 @@ svg.qrcode-svg {
     border-radius: 0.25rem;
     background: var(--bg);
     @include color-scheme_transition;
-    margin-bottom: var(--inner_margin-y);
+    margin-bottom: var(--inner_margin);
     &:last-child {
       margin-bottom: 0;
     }
@@ -1487,7 +1487,7 @@ svg.qrcode-svg {
 }
 .pagination {
   display: flex;
-  margin: var(--inner_margin-y) 0;
+  margin: var(--inner_margin) 0;
 }
 .page {
   &-item {
@@ -1767,7 +1767,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
 }
 .shortcode_responsive-figure,
 .excerpt_container {
-  margin: var(--inner_margin-y) auto;
+  margin: var(--inner_margin) auto;
 }
 .content .responsive-image_container,
 .shortcode_responsive-figure,
@@ -1792,12 +1792,12 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
   &.caption {
     background: var(--figure-bg);
     @include color-scheme_transition;
-    padding: var(--inner_padding)  var(--inner_padding);
+    padding: var(--inner_padding_4-2)  var(--inner_padding_4-2);
     color: var(--text);
     @include useFontDefinition(meta);
     & > figcaption {
       width: 100%;
-      padding: var(--inner_padding) 0 0 0;
+      padding: var(--inner_padding_4-2) 0 0 0;
     }
   }
   &.background-light {
@@ -1820,7 +1820,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
     float: none;
     max-width: 80%;
     // max-width: calc(0.8 * (#{$screenViewBreakpointWidthMobile} - 2 * var(--inner_padding) ) )
-    margin: var(--inner_margin-y) auto;
+    margin: var(--inner_margin) auto;
   }
   *:not(figure) + & {
     clear: both;
@@ -1841,13 +1841,13 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
     &.relative-width-20 {
       &.float-left {
         float: left;
-        margin: var(--inner_margin-y) var(--inner_margin-x) var(--inner_margin-y) 0;
+        margin: var(--inner_margin_4-2) var(--inner_margin_4-2) var(--inner_margin_4-2) 0;
       }
     }
     &.relative-width-20 {
       &.float-right {
         float: right;
-        margin: var(--inner_margin-y) 0 var(--inner_margin-y) var(--inner_margin-x);
+        margin: var(--inner_margin_4-2) 0 var(--inner_margin_4-2) var(--inner_margin_4-2);
       }
     }
     &.relative-width-20 {
@@ -1865,13 +1865,13 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
     &.relative-width-30 {
       &.float-left {
         float: left;
-        margin: var(--inner_margin-y) var(--inner_margin-x) var(--inner_margin-y) 0;
+        margin: var(--inner_margin_4-2) var(--inner_margin_4-2) var(--inner_margin_4-2) 0;
       }
     }
     &.relative-width-30 {
       &.float-right {
         float: right;
-        margin: var(--inner_margin-y) 0 var(--inner_margin-y) var(--inner_margin-x);
+        margin: var(--inner_margin_4-2) 0 var(--inner_margin_4-2) var(--inner_margin_4-2);
       }
     }
     &.relative-width-20 {
@@ -1895,11 +1895,11 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
     }
     &.float-left {
       float: left;
-      margin: var(--inner_margin-y) var(--inner_margin-x) var(--inner_margin-y) 0;
+      margin: var(--inner_margin) var(--inner_margin) var(--inner_margin) 0;
     }
     &.float-right {
       float: right;
-      margin: var(--inner_margin-y) 0 var(--inner_margin-y) var(--inner_margin-x);
+      margin: var(--inner_margin) 0 var(--inner_margin) var(--inner_margin);
     }
     &.relative-width-20 {
       max-width: 20%;
