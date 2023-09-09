@@ -119,7 +119,7 @@
         "Title" $titleVariant.title
         "Subtitle" $titleVariant.subtitle
         "Supertitle" $titleVariant.supertitle
-        "Fulltitle" $titleVariant.fulltitle
+        "Headline" $titleVariant.headline
         "Tagline" $tagline
         "Description" $description
         "ItemType" $itemType
@@ -151,7 +151,7 @@
   {{/* {{- warnf "%s[%s]: returning %v" $page $template
       $singleMeta }} */}}
 {{- end }}
-{{/* {{- if not $singleMeta.Single.Data.Fulltitle }}
-  {{- errorf "%s[%s]: invalid $singleMeta.Single.Data.Fulltitle='%v'" $page $template $singleMeta.Single.Data.Fulltitle }}
+{{/* {{- if not $singleMeta.Single.Data.Headline }}
+  {{- errorf "%s[%s]: invalid $singleMeta.Single.Data.Headline='%v'" $page $template $singleMeta.Single.Data.Headline }}
 {{- end }} */}}
 {{- return $singleMeta }}

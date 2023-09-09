@@ -19,9 +19,9 @@
 {{- $name := default site.Title site.Params.website.name }}
 {{- $title := site.Title }}
 {{- $tagline := site.Params.website.tagline | $page.RenderString | plainify }}
-{{- $fulltitle := $title }}
+{{- $headline := $title }}
 {{- with $tagline }}
-  {{- $fulltitle = printf "%s: %s" $title $tagline }}
+  {{- $headline = printf "%s: %s" $title $tagline }}
 {{- end }}
 
 {{- $description := site.Params.website.description | $page.RenderString | plainify }}
@@ -99,7 +99,7 @@
       "EntityID" (printf "%s#%s" $canonicalURL $websiteID)
       "Name" $name
       "Title" $title
-      "Fulltitle" $fulltitle
+      "Headline" $headline
       "Tagline" $tagline
       "Description" $description
       "Author" $authorMeta

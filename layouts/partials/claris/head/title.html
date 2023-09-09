@@ -10,10 +10,10 @@
 
   {{- $subtitle := default "" (.Params.subtitle | $page.RenderString | plainify) }}
   {{- $supertitle := default "" (.Params.supertitle | $page.RenderString | plainify) }}
-  {{- $fulltitle := $title }}
+  {{- $headline := $title }}
   {{- if or $supertitle $subtitle }}
-    {{- $min := default 10 (index (page.Param "meta.title.targetlength") 0) }}
-    {{- $max := default 60 (index (page.Param "meta.title.targetlength") 1) }}
+    {{- $min := default 10 (index (page.Param "meta.headline.targetlength") 0) }}
+    {{- $max := default 60 (index (page.Param "meta.headline.targetlength") 1) }}
     {{- if le (len $title) $max }}
       {{- if $debug }}
         {{- warnf "%s[%s]: Title='%v'[%d] targetlength=[%d,%d] supertitle='%v'[%d], subtitle='%v'[%d]"
@@ -22,17 +22,17 @@
       {{- if $supertitle }}
         {{- if (le (add (len $title) (len $supertitle) 2) $max) }}
           {{- if and $subtitle (le (add (len $title) (len $supertitle) (len $subtitle) 5) $max) }}
-            {{- $fulltitle = printf "%s: %s – %s" $supertitle $title $subtitle }}
+            {{- $headline = printf "%s: %s – %s" $supertitle $title $subtitle }}
           {{- else }}
-            {{- $fulltitle = printf "%s: %s" $supertitle $title }}
+            {{- $headline = printf "%s: %s" $supertitle $title }}
           {{- end }}
         {{- end }}
       {{- else }}
         {{- if $subtitle }}
           {{- if le (add (len $title) (len $subtitle) 2) $max }}
-            {{- $fulltitle = printf "%s: %s" $title $subtitle }}
+            {{- $headline = printf "%s: %s" $title $subtitle }}
           {{- else }}
-            {{- if lt (len $fulltitle) $min }}
+            {{- if lt (len $headline) $min }}
               {{- warnf "%s[%s]: Title=%v [%d characters] < min=%d: adding separator and subtitle would yield %d characters [supertitle=%d, subtitle=%d]"
                   $page $template $title (len $title) $min (add (len $title) (len $subtitle) 2) (len $supertitle) (len $subtitle) }}
             {{- end }}
@@ -47,34 +47,34 @@
     {{- $title = default .Data.Plural (T (printf "all_%s" .Data.Plural) ) | strings.FirstUpper }}
 
     {{- if $debug }}
-      {{- warnf "%s[%s]: .Kind=%s: title=%s fulltitle=%s [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
-          $page $template .Kind $title $fulltitle
+      {{- warnf "%s[%s]: .Kind=%s: title=%s headline=%s [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
+          $page $template .Kind $title $headline
           .Data.Singular .Data.Plural .Section .Title }}
     {{- end }}
 
   {{- else if in (slice "term") .Kind }}
 
     {{- $title = (default $title (T $title 1) ) }}
-    {{- $fulltitle = default .Data.Singular $title }}
+    {{- $headline = default .Data.Singular $title }}
     {{ if in (slice "tag") .Data.Singular }}
       {{ $supertitle = printf "%s %s" (T "articles_with_taxonomy") (T .Data.Singular 1) | strings.FirstUpper }}
     {{- else }}
       {{- $supertitle = printf "%s %s" (T "articles_in_taxonomy") (T .Data.Singular 1) | strings.FirstUpper }}
     {{- end }}
-    {{/* {{- $fulltitle = printf "%s %s %s" (humanize $supertitle) (T .Data.Plural 1) ($page.RenderString (printf "*%s*" (default $title (T (lower $title) ) ) ) ) | safeHTML }} */}}
-    {{- $fulltitle = printf "%s: %s" $supertitle $title | strings.FirstUpper }}
+    {{/* {{- $headline = printf "%s %s %s" (humanize $supertitle) (T .Data.Plural 1) ($page.RenderString (printf "*%s*" (default $title (T (lower $title) ) ) ) ) | safeHTML }} */}}
+    {{- $headline = printf "%s: %s" $supertitle $title | strings.FirstUpper }}
 
     {{- if $debug }}
-      {{- warnf "%s[%s]: .Kind=%s: title=%s supertitle=%v fulltitle=%s [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
-          $page $template .Kind $title $supertitle $fulltitle
+      {{- warnf "%s[%s]: .Kind=%s: title=%s supertitle=%v headline=%s [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
+          $page $template .Kind $title $supertitle $headline
           .Data.Singular .Data.Plural .Section .Title }}
     {{- end }}
   {{- end }}
 
-  {{- with .Params.fulltitle }}
-    {{- $fulltitle = . }}
+  {{- with .Params.headline }}
+    {{- $headline = . }}
   {{- end }}
-  {{ $fulltitle = (default $title $fulltitle) }}
+  {{ $headline = (default $title $headline) }}
   {{- if $title }}
     {{- with .Page.Param "titleSeparator" }}
       {{ $title = printf "%s %s %s" $title (safeHTML .) site.Title }}
@@ -86,15 +86,15 @@
     "title" $title
     "subtitle" $subtitle
     "supertitle" $supertitle
-    "fulltitle" $fulltitle
+    "headline" $headline
     ) }}
   {{- if $debug }}
-    {{- warnf "%s[%s]: .Kind=%s title=%s supertitle='%v' subtitle='%v' fulltitle='%s' [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
-        $page $template .Kind $titleVariant.title $titleVariant.supertitle $titleVariant.subtitle $titleVariant.fulltitle
+    {{- warnf "%s[%s]: .Kind=%s title=%s supertitle='%v' subtitle='%v' headline='%s' [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
+        $page $template .Kind $titleVariant.title $titleVariant.supertitle $titleVariant.subtitle $titleVariant.headline
         .Data.Singular .Data.Plural .Section .Title }}
   {{- end }}
-  {{- if not $titleVariant.fulltitle }}
-    {{- errorf "%s[%s]: invalid $titleVariant.fulltitle='%v'" $page $template $titleVariant.fulltitle }}
+  {{- if not $titleVariant.headline }}
+    {{- errorf "%s[%s]: invalid $titleVariant.headline='%v'" $page $template $titleVariant.headline }}
   {{- end }}
 {{- end }}
 {{- return $titleVariant }}

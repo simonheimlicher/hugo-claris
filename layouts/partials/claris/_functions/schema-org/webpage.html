@@ -29,7 +29,7 @@
       "@type" "WebPage"
       "@id" .EntityID
       "name" .Title
-      "headline" .Fulltitle
+      "headline" .Headline
       "description" (default $meta.Site.Data.Description .Description)
       "inLanguage" .Language
       "isFamilyFriendly" "true"
@@ -49,7 +49,7 @@
     )
   ) }}
       {{/* "headline" .Title
-      "alternativeHeadline" .Fulltitle */}}
+      "alternativeHeadline" .Headline */}}
 
   {{- $specificEntityType := false }}
   {{- with $page.Params.schemaorg.entitytype }}

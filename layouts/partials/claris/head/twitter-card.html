@@ -44,7 +44,7 @@
             $meta.Single.Data.Images.share.variant.default.version }}
       {{- end }}
     {{- end }}
-    <meta name="twitter:title" content="{{ .Fulltitle }}">
+    <meta name="twitter:title" content="{{ .Headline }}">
     {{- with (default $meta.Site.Data.Description .Description) }}
     <meta name="twitter:description" content="{{ . }}">
     {{- end }}

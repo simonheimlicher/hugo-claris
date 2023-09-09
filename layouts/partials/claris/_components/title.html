@@ -28,8 +28,8 @@
 {{- $subtitleInside := "" }}
 
 {{- if or $supertitlePlain $subtitlePlain }}
-  {{- $min := default 10 (index (page.Param "meta.title.targetlength") 0) }}
-  {{- $max := default 60 (index (page.Param "meta.title.targetlength") 1) }}
+  {{- $min := default 10 (index (page.Param "meta.headline.targetlength") 0) }}
+  {{- $max := default 60 (index (page.Param "meta.headline.targetlength") 1) }}
   {{- if le (len $title) $max }}
     {{- if and $supertitlePlain (le (add (len $title) (len $supertitlePlain) 2) $max) }}
       {{- $supertitleInside = $supertitleOutside }}
