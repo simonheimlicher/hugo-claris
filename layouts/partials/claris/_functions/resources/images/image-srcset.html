@@ -35,9 +35,9 @@
   {{- $img = partial "claris/_functions/resources/images/image-resource" $imageResourceArgs }}
 {{- else if strings.Contains $resType "resources.resourceAdapter" }}
   {{- $img = $resourceSpec }}
-{{- else }}
+{{- /* else }}
   {{- errorf "%s[%s]: invalid resourceSpec=%v[%v]"
-      $page $template $resourceSpec $resourceSpec }}
+      $page $template $resourceSpec $resourceSpec */ -}}
 {{- end }}
 
 {{- with $img }}
@@ -182,7 +182,7 @@
     {{- warnf "%s[%s]: Returning imageFormatSrcsets=%v"
         $page $template (jsonify (dict "indent" "  ") $imageFormatSrcsets) }}
   {{- end }}
-{{- else }}
-  {{- errorf "%s[%s]: No image matching parameter .resource='%s'" $page $template $resourceSpec }}
+{{- /* else }}
+  {{- errorf "%s[%s]: No image matching parameter .resource='%s'" $page $template $resourceSpec */ -}}
 {{- end }}
 {{- return $imageFormatSrcsets }}

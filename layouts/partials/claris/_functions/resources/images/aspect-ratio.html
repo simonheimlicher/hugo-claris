@@ -3,6 +3,8 @@
 {{/* {{- $debug = or $debug (not (not (findRE `never-match` $page.RelPermalink) ) ) }} */}}
 {{- $template := "claris/_functions/resources" }}
 
+{{- $aspectRatio := slice 0 0}}
+
 {{- $aspectRatios := (slice
   (slice 1 1)
   (slice 3 4)
@@ -23,38 +25,47 @@
 
 {{- $resShort := mul 1.0 (math.Min $res.Width $res.Height) }}
 {{- $resLong := mul 1.0 (math.Max $res.Width $res.Height) }}
-{{- $resAspect  := div $resShort $resLong }}
 
-{{- $bestMatch := (dict
-  "Deviation" 100.0
-  "AspectRatio" false
-) }}
+{{- if and (gt $resLong 0) (gt $resShort 0) }}
 
-{{- range $aspectRatios }}
-  {{- $candAspect := div (mul 1.0 (index . 0)) (index . 1) }}
-  {{- $deviation := math.Pow (sub (div $candAspect $resAspect ) 1) 2  }}
+  {{- $resAspect := div $resShort $resLong }}
+
+  {{- $bestMatch := (dict
+    "Deviation" 100.0
+    "AspectRatio" false
+  ) }}
+
+  {{- range $aspectRatios }}
+    {{- $candAspect := div (mul 1.0 (index . 0)) (index . 1) }}
+    {{- $deviation := math.Pow (sub (div $candAspect $resAspect ) 1) 2  }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: candAspect=%0.4f deviation=%0.4f bestMatch=%v" $res $template $candAspect $deviation $bestMatch }}
+    {{- end }}
+    {{- if (lt $deviation $bestMatch.Deviation) }}
+      {{- $bestMatch = (dict
+        "Deviation" $deviation
+        "AspectRatio" .
+      ) }}
+    {{- end }}
+  {{- end }}
+
+  {{- $aspectRatio = $bestMatch.AspectRatio }}
+
+  {{- if (gt $res.Width $resShort) }}
+    {{- $aspectRatio = slice (index $aspectRatio 1) (index $aspectRatio 0) }}
+  {{- end }}
+
   {{- if $debug }}
-    {{- warnf "%s[%s]: candAspect=%0.4f deviation=%0.4f bestMatch=%v" $res $template $candAspect $deviation $bestMatch }}
+    {{- warnf "%s[%s]: dimensions=%vx%v: aspectRatio=%0.4f: returning %v"
+        $res $template $res.Width $res.Height $resAspect $aspectRatio }}
   {{- end }}
-  {{- if (lt $deviation $bestMatch.Deviation) }}
-    {{- $bestMatch = (dict
-      "Deviation" $deviation
-      "AspectRatio" .
-    ) }}
-  {{- end }}
+
+{{- else }}
+
+  {{- warnf "%s[%s]: dimensions=%vx%v: returning default aspectRatio %v"
+      $res $template $res.Width $res.Height $aspectRatio }}
+
 {{- end }}
 
-{{- $aspectRatio := $bestMatch.AspectRatio }}
-
-{{- if (gt $res.Width $resShort) }}
-  {{- $aspectRatio = slice (index $aspectRatio 1) (index $aspectRatio 0) }}
-{{- end }}
-{{- $aspectRatioString := printf "%dx%d" (index $aspectRatio 0) (index $aspectRatio 1) }}
-
-{{- if $debug }}
-  {{- warnf "%s[%s]: dimensions=%vx%v: aspectRatio=%0.4f: returning %s"
-      $res $template $res.Width $res.Height $resAspect $aspectRatioString }}
-{{- end }}
-
-{{- return $aspectRatioString }}
+{{- return $aspectRatio }}
 

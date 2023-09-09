@@ -151,11 +151,11 @@
   "min-width" $imageResourceArgs.minwidth
   "min-height" $imageResourceArgs.minheight
   "max-height" $imageResourceArgs.maxheight
-  "max-width" (cond (not (not $imageResourceArgs.maxwidth)) (printf "min(100%%, %s)" $imageResourceArgs.maxwidth) false)
-  "max-height" (cond (not (not $imageResourceArgs.maxheight)) (printf "min(100%%, %s)" $imageResourceArgs.maxheight) false)
+  "max-width" (cond (not (not $imageResourceArgs.maxwidth)) (printf "min(100%%, %v)" $imageResourceArgs.maxwidth) false)
+  "max-height" (cond (not (not $imageResourceArgs.maxheight)) (printf "min(100%%, %v)" $imageResourceArgs.maxheight) false)
   ) -}}
   {{- if $value -}}
-    {{- $imgInlineStyleSlice = append $imgInlineStyleSlice (slice (printf "%s: %v" $attr $value) ) -}}
+    {{- $imgInlineStyleSlice = append $imgInlineStyleSlice (slice (printf "%v: %v" $attr $value) ) -}}
   {{- end -}}
 {{- end }}
 {{- $imgInlineStyle := "" }}
@@ -210,8 +210,8 @@
           "alt" $imgAlt
           "credit" $imgCredit
         ) ) }}
-      {{- else }}
-        {{- warnf "%s[%s]: failed to get srcSet with %s" $page $template $imageResourceArgs -}}
+      {{- /* else }}
+        {{- warnf "%s[%s]: failed to get srcSet with %v" $page $template $imageResourceArgs */ -}}
       {{- end }}
     {{- end }}
     {{- /* If none of the .media values match $defaultVariantName, take the first image as the default */ -}}
@@ -241,9 +241,9 @@
             "alt" $imgAlt
             "credit" $imgCredit
           ) ) }}
-        {{- else }}
-          {{- warnf "%s[%s]: failed to get srcSet with %s" $page $template $imageResourceArgs -}}
-        {{- end }}
+        {{- /* else }}
+          {{- warnf "%s[%s]: failed to get srcSet with %v" $page $template $imageResourceArgs */ -}}
+        {{- end -}}
       {{- end }}
     {{- end }}
   {{- else }}
@@ -261,9 +261,9 @@
           "alt" $imgAlt
           "credit" $imgCredit
         ) ) }}
-    {{- else }}
-      {{- warnf "%s[%s]: .resource: %v failed to get srcSet with %s" $page $template $resourceSpec $imageResourceArgs -}}
-    {{- end }}
+    {{- /* else }}
+      {{- warnf "%s[%s]: .resource: %v failed to get srcSet with %v" $page $template $resourceSpec $imageResourceArgs */ -}}
+    {{- end -}}
   {{- end }}
   {{- /* {{- warnf "%s[%s]: .resource=%q[%T] with imageResourceVariant=%v with imageResourceArgs=%v: pictureResources:\n%v\n"
       $page $template $imageResourceArgs.resource $imageResourceArgs.resource $imageResourceVariant
@@ -465,7 +465,7 @@
 
   {{- else }}
 
-    {{- warnf "%s[%s]: failed to get srcSet with param .resource=%s" $page $template $resourceSpec -}}
+    {{- warnf "%s[%s]: failed to get srcSet with param .resource=%v" $page $template $resourceSpec -}}
 
   {{- end }}
 

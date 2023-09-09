@@ -148,7 +148,7 @@ $imageKindMeta = (dict
                 "resource" $imgResource
               ) }}
             {{- else }}
-              {{- errorf "%s[%s]: kind=%v: got invalid image resource='%v'[%T] from .resource=%q in imageResourceArgs=%v"
+              {{- warnf "%s[%s]: kind=%v: got invalid image resource='%v'[%T] from .resource=%q in imageResourceArgs=%v"
                   $page $template $imageKind $imgResource $imgResource
                   $imageResourceArgs.resource $imageResourceArgs }}
             {{- end }}
@@ -156,31 +156,38 @@ $imageKindMeta = (dict
         {{- end }}
 
         {{- with $imgMeta }}
-          {{- $aspectRatio := partial "claris/_functions/resources/images/aspect-ratio" .resource }}
-          {{- $imgVersionMeta := dict }}
-          {{- $versionName := printf "aspect_%s" $aspectRatio }}
           {{- $versionResource := $imgMeta.resource }}
-          {{- range $k, $v := $imgMeta }}
-            {{- if (ne $k "resource") }}
-              {{- $imgVersionMeta = merge $imgVersionMeta (dict $k $v) }}
+          {{- $aspectRatio := partial "claris/_functions/resources/images/aspect-ratio" $versionResource }}
+          {{- if and (gt (index $aspectRatio 0) 0) (gt (index $aspectRatio 1) 0) }}
+            {{- $imgVersionMeta := dict }}
+            {{- $aspectRatioString := printf "%dx%d" (index $aspectRatio 0) (index $aspectRatio 1) }}
+            {{- $versionName := printf "aspect_%s" $aspectRatioString }}
+            {{- range $k, $v := $imgMeta }}
+              {{- if (ne $k "resource") }}
+                {{- $imgVersionMeta = merge $imgVersionMeta (dict $k $v) }}
+              {{- end }}
             {{- end }}
-          {{- end }}
-          {{- $imgVersionMeta = merge $imgVersionMeta (dict "version" (dict
-              $versionName $versionResource
-            )
-          ) }}
-          {{- $imageKindVariantMeta = merge $imageKindVariantMeta (dict $variantName $imgVersionMeta) }}
-          <!-- We add the first variant that has valid image
-          resources as a duplicate under the $defaultVariantName
-          key until it is potentially overwritten by the meta data
-          from the variant named $defaultVariantName -->
-          {{- if not (isset $imageKindVariantMeta $defaultVariantName) }}
-            {{- $imageKindVariantMeta = merge $imageKindVariantMeta (dict $defaultVariantName $imgVersionMeta) }}
-          {{- end }}
-          {{- if $debug }}
-            {{- warnf "%s[%s]: kind=%v Added image version=%v with resource='%v'[%T] in imgVersionMeta=\n%v\nto imageKindVariantMeta=\n%v"
-                $page $template $imageKind $versionName $versionResource $versionResource
-                (jsonify (dict "indent" "  ") $imgVersionMeta)
+            {{- $imgVersionMeta = merge $imgVersionMeta (dict "version" (dict
+                $versionName $versionResource
+              )
+            ) }}
+            {{- $imageKindVariantMeta = merge $imageKindVariantMeta (dict $variantName $imgVersionMeta) }}
+            <!-- We add the first variant that has valid image
+            resources as a duplicate under the $defaultVariantName
+            key until it is potentially overwritten by the meta data
+            from the variant named $defaultVariantName -->
+            {{- if not (isset $imageKindVariantMeta $defaultVariantName) }}
+              {{- $imageKindVariantMeta = merge $imageKindVariantMeta (dict $defaultVariantName $imgVersionMeta) }}
+            {{- end }}
+            {{- if $debug }}
+              {{- warnf "%s[%s]: kind=%v Added image version=%v with resource='%v'[%T] in imgVersionMeta=\n%v\nto imageKindVariantMeta=\n%v"
+                  $page $template $imageKind $versionName $versionResource $versionResource
+                  (jsonify (dict "indent" "  ") $imgVersionMeta)
+                  (jsonify (dict "indent" "  ") $imageKindVariantMeta) }}
+            {{- end }}
+          {{- else }}
+            {{- warnf "%s[%s]: kind=%v Invalid image meta with resource='%v'[%T] not added to imageKindVariantMeta=\n%v"
+                $page $template $imageKind $versionResource $versionResource
                 (jsonify (dict "indent" "  ") $imageKindVariantMeta) }}
           {{- end }}
         {{- end }}
