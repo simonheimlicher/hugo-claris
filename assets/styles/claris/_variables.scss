@@ -659,9 +659,7 @@ $familyDefaultMap: (
       $defRole: updateMap(map-get($specRoles, default), $specRole);
       // @include mapToCSSProperties($defRole, defRoleInitial_role-#{$role});
       $prefixRole: $prefix;
-      @if ($role != default) {
-        $prefixRole: #{$prefix}#{$role}_;
-      }
+      $prefixRole: #{$prefix}#{$role}_;
       --#{$prefixRole}font-family_ID: #{$fontFamilyID};
       // @include mapToCSSProperties($specRole, specRole_role-#{$role});
 
@@ -682,9 +680,8 @@ $familyDefaultMap: (
         // @include mapToCSSProperties($defVariant, defVariantInitial_variant-#{$variant});
         // Prefix to use for this variant if it is not default
         $prefixVariant: $prefixRole;
-        @if ($variant != default) {
-          $prefixVariant: #{$prefixVariant}#{$variant}_;
-        }
+        $prefixVariant: #{$prefixVariant}#{$variant}_;
+
         // Variants may have different `font-family`
         $fontNameVariant: defaultTo($fontNameRole, map-get($specVariant, name));
         // Variants may have different fallback fonts
@@ -705,9 +702,8 @@ $familyDefaultMap: (
           // @include mapToCSSProperties($defStyle, defStyleInitial_style-#{$style});
 
           $prefixStyle: #{$prefixVariant};
-          @if ($style != default) {
-            $prefixStyle: #{$prefixStyle}#{$style}_;
-          }
+          $prefixStyle: #{$prefixStyle}#{$style}_;
+
           --#{$prefixStyle}font-family: #{inspect($fontStackVariant)};
           @each $key, $value in $defStyle {
             --#{$prefixStyle}#{$key}: #{$value};
@@ -740,56 +736,89 @@ $familyDefaultMap: (
   // @warn(print-map($fontDefinitionMap));
 }
 
-@mixin useFontDefinition($definitionID: default, $role: default, $variant: default, $useStyle: all) {
+@mixin useFontDefinition($definitionID: default, $useRole: default, $useVariant: default, $useStyle: all) {
 
-  $prefixRole: if($role == default, '', #{$role}_);
-  $prefixVariant: if($variant == default, '', #{$variant}_);
+  $originDefinitionID: $definitionID;
 
-  $originPrefix: font-definition_#{$definitionID}_#{$prefixRole}#{$prefixVariant};
-  $targetPrefix: #{$prefixRole}#{$prefixVariant};
+  $prefix: font-definition_;
+  $originPrefix: #{$prefix}#{$definitionID}_;
+  $targetPrefix: #{$prefix};
 
-  $defFamily: map-get($fontDefinitionMap, $definitionID);
+  @if ($definitionID == inherit) {
+    $originDefinitionID: default;
+    $originPrefix: #{$prefix}#{$originDefinitionID}_;
+  }
+
+
+  $defFamily: map-get($fontDefinitionMap, $originDefinitionID);
+
   @if ($defFamily) {
     // FIXME: Validate if we got the definition
-    // @include mapToCSSProperties($defFamily, useFontDefinition_definitionID-#{$definitionID});
+    @include mapToCSSProperties($defFamily, useFontDefinition_definitionID-#{$definitionID});
 
-    // --useFontDefinition_definitionID-#{$definitionID}_role-#{$role}_styles-#{$useStyle}_variant-#{$variant}__originPrefix: #{$originPrefix};
-    // --useFontDefinition_definitionID-#{$definitionID}_role-#{$role}_variant-#{$variant}_useStyle-#{$useStyle}__targetPrefix: #{$targetPrefix};
-    --#{$targetPrefix}font-family: var(--#{$originPrefix}font-family);
+    // --useFontDefinition_definitionID-#{$definitionID}_role-#{$useRole}_styles-#{$useStyle}_variant-#{$variant}__originPrefix: #{$originPrefix};
+    // --useFontDefinition_definitionID-#{$definitionID}_role-#{$useRole}_variant-#{$variant}_useStyle-#{$useStyle}__targetPrefix: #{$targetPrefix};
+    // --#{$targetPrefix}font-family: var(--#{$originPrefix}font-family);
 
-    @if (map-get($defFamily, roles, $role, variants, $variant)) {
-      @each $key in (font-family) {
-        // --#{$targetPrefix}#{$key}: var(--#{$originPrefix}#{$key});
-        #{$key}: var(--#{$targetPrefix}#{$key});
-      }
+    @each $role, $defRole in map-get($defFamily, roles) {
+      $prefixRole: #{$role}_;
 
-      $defStyleMap: map-get($defFamily, roles, $role, variants, $variant, styles);
-      @if ($defStyleMap) {
-        // @include mapToCSSProperties($defStyleMap, useFontDefinition_definitionID-#{$definitionID}__defStyleMap);
-        @each $style, $defStyle in $defStyleMap {
-          $stylePrefix: if($style == default, '', #{$style}_);
-          $originPrefixStyle: #{$originPrefix}#{$stylePrefix};
-          $targetPrefixStyle: #{$targetPrefix}#{$stylePrefix};
+      @each $variant, $defVariant in map-get($defRole, variants) {
+        $prefixVariant: #{$variant}_;
 
-          // --useFontDefinition_definitionID-#{$definitionID}_role-#{$role}_variant-#{$variant}_style-#{$style}__originPrefixStyle: #{$originPrefixStyle};
-          // --useFontDefinition_definitionID-#{$definitionID}_role-#{$role}_variant-#{$variant}_style-#{$style}__targetPrefixStyle: #{$targetPrefixStyle};
-          @each $key, $value in $defStyle {
-            --#{$targetPrefixStyle}#{$key}: var(--#{$originPrefixStyle}#{$key});
-          }
-          @if (($style == $useStyle) or ($style == all) or ($style == default)) {
-            @each $key, $value in $defStyle {
-              #{$key}: var(--#{$targetPrefixStyle}#{$key});
-            }
-          }
-          @else if ($useStyle == all) and ($style == bold) {
-            bold, strong {
-              @each $key, $value in $defStyle {
-                #{$key}: var(--#{$targetPrefixStyle}#{$key});
+        $defStyleMap: map-get($defVariant, styles);
+        @if ($defStyleMap) {
+        //   @include mapToCSSProperties($defStyleMap, useFontDefinition_definitionID-#{$definitionID}__defStyleMap);
+          $originPrefixRoleVariant: #{$originPrefix}#{$prefixRole}#{$prefixVariant};
+          $targetPrefixRoleVariant: #{$targetPrefix}#{$prefixRole}#{$prefixVariant};
+          $defaultPrefixRoleVariant: #{$prefix}default_#{$prefixRole}#{$prefixVariant};
+
+          @each $style, $defStyle in $defStyleMap {
+            $stylePrefix: #{$style}_;
+
+            $originPrefixStyle: #{$originPrefixRoleVariant}#{$stylePrefix};
+            $targetPrefixStyle: #{$targetPrefixRoleVariant}#{$stylePrefix};
+            $defaultPrefixStyle: #{$defaultPrefixRoleVariant}#{$stylePrefix};
+
+            @if (($style == $useStyle) or ($style == all) or ($style == default)) {
+              @each $key in (font-family) {
+                @if ($role == $useRole) and ($variant == $useVariant) {
+                  --#{$targetPrefixStyle}#{$key}: var(--#{$originPrefixStyle}#{$key});
+                  #{$key}: var(--#{$targetPrefixStyle}#{$key});
+                }
+                @if ($originDefinitionID != default) {
+                  --#{$defaultPrefixStyle}#{$key}: var(--#{$originPrefixStyle}#{$key});
+                }
               }
             }
-          }
-          @else {
-          --useFontDefinition_definitionID-#{$definitionID}_role-#{$role}_variant-#{$variant}_style-#{$style}_unused: #{$style};
+
+            // --useFontDefinition_definitionID-#{$definitionID}_role-#{$useRole}_variant-#{$variant}_style-#{$style}__originPrefixStyle: #{$originPrefixStyle};
+            // --useFontDefinition_definitionID-#{$definitionID}_role-#{$useRole}_variant-#{$variant}_style-#{$style}__targetPrefixStyle: #{$targetPrefixStyle};
+            @each $key, $value in $defStyle {
+              @if ( ($role == $useRole) and ($variant == $useVariant)) {
+                --#{$targetPrefixStyle}#{$key}: var(--#{$originPrefixStyle}#{$key});
+              }
+              @if ($originDefinitionID != default) {
+                --#{$defaultPrefixStyle}#{$key}: var(--#{$originPrefixStyle}#{$key});
+              }
+            }
+            @if ( ($role == $useRole) and ($variant == $useVariant)) {
+              @if (($style == $useStyle) or ($style == all) or ($style == default)) {
+                @each $key, $value in $defStyle {
+                  #{$key}: var(--#{$targetPrefixStyle}#{$key});
+                }
+              }
+              @else if ($useStyle == all) and ($style == bold) {
+                bold, strong {
+                  @each $key, $value in $defStyle {
+                    #{$key}: var(--#{$targetPrefixStyle}#{$key});
+                  }
+                }
+              }
+              @else {
+              --useFontDefinition_definitionID-#{$definitionID}_role-#{$role}_variant-#{$variant}_style-#{$style}_unused: #{$style};
+              }
+            }
           }
         }
       }
