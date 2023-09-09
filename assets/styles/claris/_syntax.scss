@@ -27,6 +27,8 @@ code {
     border-radius: 0.125em;
     background-color: var(--haze);
     margin: 0 1ch;
+    // Don't add hyphens when breaking a word
+    hyphens: manual;
   }
 }
 pre {
