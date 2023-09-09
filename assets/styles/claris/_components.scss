@@ -575,6 +575,8 @@
     h2 {
       font-size: var(--font-size-larger-1);
     }
+  }
+  &_content, &_body {
     & > h3, & > h4, & > h5, & > h6 {
       display: inline;
       font-size: var(--font-size-normal);
