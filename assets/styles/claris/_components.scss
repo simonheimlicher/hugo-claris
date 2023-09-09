@@ -740,16 +740,15 @@
     .supertitle {
       display: block;
       font-size: var(--font-size-supertitle);
-      padding: 1.5rem 0 0.25rem 0;
+      // padding: 1.5rem 0 0.25rem 0;
       text-align: start;
-      // font-variant: small-caps
-      text-transform: uppercase;
-      font-weight: var(--font-weight-supertitle);
+      // @include useFontDefinition(inherit, display, small-caps);
+      @include useFontDefinition(inherit, display, small-caps, bold);
     }
     .subtitle {
       display: block;
       font-size: var(--font-size-subtitle);
-      padding: 0.5rem 0;
+      // padding: 0.5rem 0;
       text-align: end;
       font-weight: var(--font-weight-subtitle);
     }
@@ -780,6 +779,8 @@
           width: fit-content;
           padding: 0;
           margin: 1em auto;
+          --title_line-height: calc(var(--font-size-title) * var(--line-height-heading));
+          margin: calc(0.75 * var(--title_line-height)) auto;
           @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
             min-width: calc(var(--content_max-width) - var(--inner_margin) * 2);
           }
