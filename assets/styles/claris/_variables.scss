@@ -901,7 +901,7 @@ html {
 
   @include fluid-geometric-scale('font-size_root', 1rem, 1.25rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
   @include fluid-geometric-scale('font-size', 1rem, 1.25rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
-  @include fluid-geometric-scale('font-size_heading', 1rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
+  @include fluid-geometric-scale('font-size_heading', 1.25rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
   @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
   @include fluid-fractional-scale('inner_padding', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
 
@@ -916,7 +916,7 @@ html {
   --font-size-button: var(--font-size-smaller-1);
 
   --font-size-title: var(--font-size_heading-larger-4);
-  --font-size-supertitle: var(--font-size_heading-smaller-2);
+  --font-size-supertitle: var(--font-size_heading-smaller-1);
   --font-size-subtitle: var(--font-size_heading-normal);
 
   --font-size-nav: var(--font-size-normal);
