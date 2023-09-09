@@ -605,6 +605,14 @@
   &_body {
     // For IE 11, otherwise responsive images exceed the width of .article_body
     width: 100%;
+    & > * + * {
+      margin-top: calc(2em * (var(--line-height) - 1));
+      // outline: 1px solid green;
+    }
+
+    p + p {
+      margin-top: calc(2em * (var(--line-height) - 1));
+    }
   }
 }
 

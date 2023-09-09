@@ -373,34 +373,6 @@ blockquote {
   }
 }
 
-div, figure, pre, hr, blockquote {
-  & + p {
-    margin-top: calc(2em * (var(--line-height) - 1));
-  }
-  p + & {
-    margin-top: calc(1em * (var(--line-height) - 1));
-  }
-}
-ul, ol, dl, address {
-  & + p {
-    margin-top: calc(1em * (var(--line-height) - 1));
-  }
-  p + & {
-    margin-top: calc(1.5em * (var(--line-height) - 1));
-  }
-}
-p + p {
-  margin-top: calc(2em * (var(--line-height) - 1));
-}
-// blockquote + p {
-//   margin-top: 0.25em;
-//   margin-bottom: 0.75em;
-// }
-// ul + p,
-// ol + p {
-//   margin-top: 0.5em;
-//   margin-bottom: 0.25em;
-// }
 dl {
   --column-gap: 1em;
   --dt-width: calc( (100% - var(--column-gap)) / 2);
