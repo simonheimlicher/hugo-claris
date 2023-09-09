@@ -3,7 +3,7 @@
 {{- $template := "claris/_functions/meta/list" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/$` $page.RelPermalink) ) ) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?(/de)?/$` $page.RelPermalink) ) ) }} */}}
 
 {{- if $debug }}
   {{- warnf "%s[%s]: .ListItems=%v .ListParams=%v" $page $template .ListItems .ListParams }}
@@ -84,9 +84,11 @@
       {{- warnf "%s[%s]: Found items to list: validListItems=%v" $page $template $validListItems }}
     {{- end }}
     {{- range $validListItems }}
-      {{- $itemMeta := partial "claris/_functions/meta/single" (dict "Page" . "Debug" $debug) }}
+      {{- $singleMeta := partial "claris/_functions/meta/single" (dict "Page" . "Debug" $debug) .Permalink }}
+      {{- $classificationMeta := partialCached "claris/_functions/meta/classification" (dict "Page" . "Debug" $debug) .Permalink }}
+      {{- $itemMeta := merge $singleMeta $classificationMeta}}
       {{- if $debug }}
-        {{- warnf "%s[%s]: Page=%v .Kind=%v: itemMeta for page=%v" $page $template . .Kind $itemMeta.Single.Page }}
+        {{- warnf "%s[%s]: Page=%v .Kind=%v: itemMeta for page=%v:\n%v" $page $template . .Kind $itemMeta.Single.Page $itemMeta.Classification }}
       {{- end }}
       {{- if (eq .Kind "page") }}
       {{- else }}
