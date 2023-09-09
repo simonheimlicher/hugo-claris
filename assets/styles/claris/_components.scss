@@ -916,6 +916,10 @@
     &_figure {
       display: none;
     }
+    .article_content {
+      padding-top: var(--inner_padding);
+      background: var(--choice-bg);
+    }
     & ~ .footer_claris {
       position: relative;
       z-index: ($main-z-index + 1);
@@ -1257,14 +1261,19 @@ svg.qrcode-svg {
   }
   &_footer {
     clear: both;
+    &_link {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: space-between;
+      align-items: baseline;
+    }
     &_read-on,
     &_page-count {
       padding: var(--inner_padding_4-2) var(--inner_padding) var(--inner_padding) var(--inner_padding);
       margin: 0;
-      width: 100%;
     }
     &_read-on {
-      display: none;
+      // display: none;
       .read-on {
         // Note: The content below contains UTF-8-encoded &nbsp;
         // Do not use &nbsp; because Dart SASS does not support mixing
@@ -1275,14 +1284,14 @@ svg.qrcode-svg {
       }
       text-align: right;
     }
-    @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
-      & {
-        padding-bottom: 0;
-      }
-      &_read-on {
-        display: block;
-      }
-    }
+    // @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
+    //   & {
+    //     padding-bottom: 0;
+    //   }
+    //   &_read-on {
+    //     display: block;
+    //   }
+    // }
   }
   &_container {
     display: flex;

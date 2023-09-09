@@ -116,7 +116,7 @@
         {{- end }}
       </div>
       <div class="excerpt_main{{ if $excerptImage }} image{{ end }}{{ if $excerptContent }} content{{ end }}">
-        <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
+        <a class="excerpt_main_link" href="{{ .Permalink }}" title="{{ $plainTitle }}">
         {{- with $excerptImage }}
 
           {{- if not $fetchPriority }}
@@ -153,7 +153,7 @@
         </a>
       </div>
       <div class="excerpt_footer">
-        <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
+        <a class="excerpt_footer_link" href="{{ .Permalink }}" title="{{ $plainTitle }}">
           {{- $pageCount := 0 }}
           {{- /* {{- if $debug }}
             {{- warnf "%s[%s]: Items in excerpt: %v" $subjectPage $template $excerptMeta.List }}
@@ -161,13 +161,12 @@
           {{- with $excerptMeta.List }}
             {{- $pageCount = len .Data.Items }}
           {{- end }}
-          {{- if (gt $pageCount 0) }}
-          <p class="excerpt_footer_page-count">
-          {{ $pageCount }} {{ T "articles" $pageCount }}
-          </p>
-          {{- else }}
           <div class="excerpt_footer_read-on">
             <span class="read-on">{{- T "read_on" }}</span>
+          </div>
+          {{- if (gt $pageCount 0) }}
+          <div class="excerpt_footer_page-count">
+          {{ $pageCount }} {{ T "articles" $pageCount }}
           </div>
           {{- end }}
         </a>
