@@ -572,6 +572,25 @@
     @include list-style_indented;
     @include color-scheme_transition;
     margin-top: calc( (1 - var(--line-height-heading) ) * 1em);
+    h2 {
+      font-size: var(--font-size-larger-1);
+    }
+    & > h3, & > h4, & > h5, & > h6 {
+      display: inline;
+      font-size: var(--font-size-normal);
+      &::before {
+        content: "";
+        display: block;
+        margin-top: calc(2em * (var(--line-height) - 1));
+      }
+      &::after {
+        content: ". ";
+        display: inline;
+      }
+      & + p {
+        display: inline;
+      }
+    }
   }
   &_body {
     // For IE 11, otherwise responsive images exceed the width of .article_body
