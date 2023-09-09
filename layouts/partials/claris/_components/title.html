@@ -66,14 +66,14 @@
            <span class="supertitle">{{. | page.RenderString }}<span class="visually-hidden">: </span></span>
     {{- end -}}
 
-    {{- $title | page.RenderString -}}
+    <span class="title">{{- $title | page.RenderString -}}</title>
 
     {{- with $subtitleInside -}}
-            <span class="subtitle"><span class="visually-hidden"> –&nbsp;</span>{{. | page.RenderString }}</span>
+            <span class="subtitle"><span class="visually-hidden"> – </span>{{. | page.RenderString }}</span>
     {{- end -}}
          </h{{ $headingLevel }}>
     {{- with $subtitleOutside -}}
-            <span class="subtitle"><span class="visually-hidden"> –&nbsp;</span>{{. | page.RenderString }}</span>
+            <span class="subtitle"><span class="visually-hidden"> – </span>{{. | page.RenderString }}</span>
     {{- end -}}
         </div>
   {{- end }}
