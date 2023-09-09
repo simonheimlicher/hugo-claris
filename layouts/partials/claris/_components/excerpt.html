@@ -25,8 +25,8 @@
 
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo/)?/leadership/` $page.RelPermalink) ) ) -}} */}}
-{{/* {{- $debug = or $debug (eq $page.Kind "home") -}} */}}
+{{- /* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo/)?/leadership/` $page.RelPermalink) ) ) -}} */ -}}
+{{- /* {{- $debug = or $debug (eq $page.Kind "home") -}} */ -}}
 
 {{- if not $excerptMeta }}
   {{- $excerptMeta = partial "claris/_functions/meta/single" (dict "Page" $subjectPage) }}
@@ -66,21 +66,21 @@
         {{- $imageMeta = .Data.Images }}
       {{- end }}
     {{- end }}
-    {{/* {{- if $debug }}
+    {{- /* {{- if $debug }}
       {{- warnf "%s[%s]: imageMeta=%v"
           $subjectPage $template
           (jsonify (dict "indent" "  ") $imageMeta) }}
-    {{- end }} */}}
+    {{- end }} */ -}}
     {{- with $imageMeta }}
       {{- with (index . (split $excerptImageKey ".")) }}
         {{- $excerptImage = .resource }}
         {{- if $debug }}
           {{- with $excerptImage }}
             {{- warnf "%s[%s]: %s has excerptImage=%v"
-                $page $template $subjectPage $excerptImage }}
+                $page $template $subjectPage $excerptImage -}}
           {{- else }}
             {{- warnf "%s[%s]: %s: no key '%s' in imageResources=%v"
-                $page $template $subjectPage $excerptImageKey (jsonify (dict "indent" "  ") .) }}
+                $page $template $subjectPage $excerptImageKey (jsonify (dict "indent" "  ") .) -}}
           {{- end }}
         {{- end }}
       {{- end }}
@@ -103,7 +103,7 @@
           </h{{ $headingLevel }}>
         </a>
         {{- with $headerPartial }}
-          {{- partial $headerPartial (dict
+          {{ partial $headerPartial (dict
             "Page" $page
             "SubjectPage" $subjectPage
             "ContainerClass" "excerpt_meta"
@@ -125,18 +125,17 @@
               {{- $fetchPriority = "high" }}
               {{- if $debug }}
                 {{- warnf "%s[%s]: claris.image.prioritized incremented to %d. Prioritizing excerpt image for %v"
-                    $page $template ($page.Scratch.Get "claris.image.prioritized") $subjectPage }}
+                    $page $template ($page.Scratch.Get "claris.image.prioritized") $subjectPage -}}
               {{- end }}
             {{- else }}
               {{- if $debug }}
                 {{- warnf "%s[%s]: claris.image.prioritized already at %d. Not prioritizing excerpt image for %v"
-                    $page $template ($page.Scratch.Get "claris.image.prioritized") $subjectPage }}
+                    $page $template ($page.Scratch.Get "claris.image.prioritized") $subjectPage -}}
               {{- end }}
             {{- end }}
           {{- end }}
-
           <div class="excerpt_thumbnail">
-              {{- partial "responsive-image" (dict
+              {{ partial "responsive-image" (dict
                 "Page" $page
                 "resource" .
                 "title" $title
@@ -156,9 +155,9 @@
       <div class="excerpt_footer">
         <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
           {{- $pageCount := 0 }}
-          {{/* {{- if $debug }}
+          {{- /* {{- if $debug }}
             {{- warnf "%s[%s]: Items in excerpt: %v" $subjectPage $template $excerptMeta.List }}
-          {{- end }} */}}
+          {{- end }} */ -}}
           {{- with $excerptMeta.List }}
             {{- $pageCount = len .Data.Items }}
           {{- end }}
@@ -176,4 +175,4 @@
     </div>
     {{ $page.Scratch.Add $scratchExcerptRenderedKey $subjectPage }}
   {{- end }}
-{{- end }}
+{{- end -}}
