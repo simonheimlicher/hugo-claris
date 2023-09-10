@@ -113,16 +113,20 @@ $main-z-index: 1;
   }
 }
 
-@mixin inner-padding() {
-  @include element-padding('inner', 1, 1);
+@mixin inner_padding($padding-factor: 1) {
+  @include element-padding('inner', $padding-factor, $padding-factor);
 }
 
-@mixin inner_horizontal-padding() {
-  @include element-padding('inner', unset, 1);
+@mixin inner_horizontal-padding($padding-factor: 1) {
+  @include element-padding('inner', unset, $padding-factor);
 }
 
-@mixin full-bleed_horizontal-padding() {
-  @include element-padding('inner', unset, 0);
+@mixin inner_full-bleed_horizontal-padding($padding-factor: 0) {
+  @include element-padding('inner', unset, $padding-factor);
+}
+
+@mixin inner_full-bleed_left-padding($padding-factor: 1) {
+  @include element-padding('inner', unset, unset, unset, $padding-factor);
 }
 
 @mixin background_dark() {
@@ -284,6 +288,46 @@ $main-z-index: 1;
 // Content that has multiple panels that span the entire width
 @mixin content_full-bleed() {
   @include content_base();
+  padding: 0;
+  margin: 0;
+}
+
+@mixin container() {
+  // Do nothing
+}
+
+@mixin container_base() {
+  // Do nothing
+}
+
+@mixin container_base_centered() {
+  @include container_base();
+  // FIXME: Must not use width: 100% as otherwise
+  // the grid track is exceeded when column-gap is > 0px
+  // width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@mixin container_singlecolumn() {
+  @include inner_padding();
+  @include container_base_centered();
+  max-width: var(--content_max-width);
+}
+
+// Container that has multiple columns
+@mixin container_multicolumn() {
+  @include inner_padding();
+  @include container_base_centered();
+  max-width: var(--content_max-width); // For IE 11
+  @supports (display: grid) {
+    max-width: var(--content_multicolumn_max-width);
+  }
+}
+
+// Container that has multiple panels that span the entire width
+@mixin container_full-bleed() {
+  @include container_base();
   padding: 0;
   margin: 0;
 }
@@ -914,9 +958,9 @@ $familyDefaultMap: (
 
   $numerator-max: 4 * $denominator;
   --#{$prop}-base: #{fluid($min-size, $max-size, $min-breakpoint, $max-breakpoint, $unit)};
-  --#{$prop}: #{fractional-scaled-prop($prop, $base-shift + $denominator)};
+  --#{$prop}: #{fractional-scaled-prop($prop, $base-shift + $denominator, $denominator)};
   @for $i from 0 through $numerator-max {
-    --#{$prop}_#{$denominator}-#{$i}: #{fractional-scaled-prop($prop, $base-shift + $i)};
+    --#{$prop}_#{$denominator}-#{$i}: #{fractional-scaled-prop($prop, $base-shift + $i, $denominator)};
   }
 }
 
@@ -947,6 +991,7 @@ html {
   @include fluid-geometric-scale('font-size', 1rem, 1.25rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
   @include fluid-geometric-scale('font-size_heading', 1.25rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
   @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
+  @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide, vw, 8);
   @include fluid-fractional-scale('inner_padding', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
 
   --font-size: var(--font-size-normal);

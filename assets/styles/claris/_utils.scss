@@ -23,27 +23,39 @@
   box-shadow: 0 0 60px rgba(0, 0, 0, 0.17);
 }
 
-.outer_horizontal {
-  @include element-padding('outer', unset, 1);
-}
-.inner_horizontal {
-  @include element-padding('inner', unset, 1);
+.inner {
+  @include element-padding('inner', 1, 1);
+  &_4-2 {
+    @include element-padding('inner', 0.5, 0.5);
+  }
+  &_top {
+    @include element-padding('inner', 1, unset, unset, unset);
+  }
+  &_bottom {
+    @include element-padding('inner', unset, unset, 1, unset);
+  }
+  &_full-bleed_left {
+    @include element-padding('inner', unset, unset, unset, 0);
+  }
+  &_horizontal {
+    @include element-padding('inner', unset, 1);
 
-  .inner_top, &.inner_top {
-    @include element-padding('inner', 1, 1, unset, 1);
+    .inner_top, &.inner_top {
+      @include element-padding('inner', 1, 1, unset, 1);
+    }
+    .inner_bottom, &.inner_bottom {
+      @include element-padding('inner', unset, 1, 1, 1);
+    }
   }
-  .inner_bottom, &.inner_bottom {
-    @include element-padding('inner', unset, 1, 1, 1);
+  &_full-bleed_horizontal {
+    @include element-padding('inner', unset, 0);
   }
 }
-.full-bleed_horizontal {
-  @include element-padding('inner', unset, 0);
-}
-.inner_top {
-  @include element-padding('inner', 1, unset, unset, unset);
-}
-.inner_bottom {
-  @include element-padding('inner', unset, unset, 1, unset);
+
+.outer {
+  &_horizontal {
+    @include element-padding('outer', unset, 1);
+  }
 }
 
 @supports (display: grid) {
@@ -102,8 +114,8 @@
         .sidebar {
           grid-row: 1;
           grid-column: 2;
-          margin: 0;
-          padding: 0;
+          // margin: 0;
+          // padding: 0;
         }
         // @media screen and (min-width: $screenViewBreakpointWidthUltrawide)
         //   .grid-main-single

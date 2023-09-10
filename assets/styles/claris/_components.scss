@@ -24,15 +24,35 @@
   @include content;
   @include link-lvhfa;
   &_singlecolumn {
-    // padding-top: inherit
     @include content_singlecolumn;
+    &:first-child:last-child {
+      @include container_singlecolumn;
+    }
   }
   &_multicolumn {
-    // padding-top: inherit
     @include content_multicolumn;
+    &:first-child:last-child {
+      @include container_multicolumn;
+    }
   }
   &_full-bleed {
     @include content_full-bleed;
+    &:first-child:last-child {
+      @include container_full-bleed;
+    }
+  }
+}
+
+.container {
+  @include container;
+  &_singlecolumn {
+    @include container_singlecolumn;
+  }
+  &_multicolumn {
+    @include container_multicolumn;
+  }
+  &_full-bleed {
+    @include container_full-bleed;
   }
 }
 
@@ -571,14 +591,33 @@
   &_content {
     @include list-style_indented;
     @include color-scheme_transition;
-    margin-top: calc( (1 - var(--line-height-heading) ) * 1em);
-    h2 {
-      font-size: var(--font-size-larger-1);
+    // h2 {
+    //   font-size: var(--font-size-larger-1);
+    // }
+  }
+  &_body {
+    // For IE 11, otherwise responsive images exceed the width of .article_body
+    width: 100%;
+    & > * + * {
+      margin-top: calc(2em * (var(--line-height) - 1));
+      // outline: 1px solid green;
+    }
+
+    p + p {
+      margin-top: calc(2em * (var(--line-height) - 1));
     }
   }
-
   // FIXME: Experiment with displaying h3 and lower headings inline
   &_content, &_body {
+    & > h2 {
+      margin: var(--inner_margin_4-2) 0 var(--inner_margin_8-1) 0;
+      &:first-child {
+        margin-top: calc( (1 - var(--line-height-heading) ) * 1em);
+      }
+      & + * {
+        margin-top: 0;
+      }
+    }
     & > h3, & > h4, & > h5, & > h6 {
       display: inline;
       font-size: var(--font-size-normal);
@@ -600,18 +639,6 @@
       & + p {
         display: inline;
       }
-    }
-  }
-  &_body {
-    // For IE 11, otherwise responsive images exceed the width of .article_body
-    width: 100%;
-    & > * + * {
-      margin-top: calc(2em * (var(--line-height) - 1));
-      // outline: 1px solid green;
-    }
-
-    p + p {
-      margin-top: calc(2em * (var(--line-height) - 1));
     }
   }
 }
@@ -1487,23 +1514,31 @@ svg.qrcode-svg {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    // &_inner {
+    //   padding-top: 0;
+    //   padding-bottom: 0;
+    //   &:after {
+    //     position: absolute;
+    //     content: "";
+    //     top: 0;
+    //     bottom: 0;
+    //     left: auto;
+    //     right: calc(-0.5 * var(--column-gap));
+    //     padding: 0.5px;
+    //     background: var(--xhaze);
+    //     // background: linear-gradient(to bottom, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze));
+    //     @include color-scheme_transition;
+    //     // right: 1px
+    //     right: calc(-0.5 * var(--column-gap));
+    //   }
+    // }
     &_inner {
-      padding-top: 0;
-      padding-bottom: 0;
       &:after {
-        position: absolute;
-        content: "";
-        top: 0;
-        bottom: 0;
-        left: auto;
-        right: calc(-0.5 * var(--column-gap));
-        padding: 0.5px;
-        background: var(--xhaze);
-        // background: linear-gradient(to bottom, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze));
-        @include color-scheme_transition;
-        // right: 1px
-        right: calc(-0.5 * var(--column-gap));
+        content: none;
       }
+      background: linear-gradient(90deg, var(--theme-haze) 50%, var(--theme-xhaze) 99%);
+      margin-left: calc(-1 * var(--inner_padding));
+      margin-right: calc(-1 * var(--inner_padding_4-2));
     }
   }
 }

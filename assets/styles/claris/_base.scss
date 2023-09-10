@@ -119,11 +119,9 @@ h3,
 h4,
 h5,
 h6 {
-  padding: $heading-padding-top 0 calc(#{$heading-padding-top} * 0.25) 0;
+  // padding: $heading-padding-top 0 calc(#{$heading-padding-top} * 0.25) 0;
   margin: $heading-margin-top 0 calc(#{$heading-margin-top} * 0.25) 0;
   color: var(--header-text);
-  // font-weight: var(--font-weight-heading);
-  // line-height: var(--line-height-heading);
   @include useFontDefinition(default, display, default, bold);
   hyphens: manual;
   .icon,
