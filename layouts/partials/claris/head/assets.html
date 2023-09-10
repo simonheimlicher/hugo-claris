@@ -24,7 +24,7 @@
         {{- warnf "%s[%s]: .Kind=%v: Pre-loading font .Scratch claris.assets.font.main=%v %v"
             $page $template $page.Kind ($page.Scratch.Get "claris.assets.font.main") $preloadFonts }}
       {{- end }}
-      {{- range first 2 $preloadFonts }}
+      {{- range first 1 $preloadFonts }}
       <link rel="preload" href="{{ .URL | safeHTMLAttr }}" as="font" type="font/{{ .Type | safeHTMLAttr }}" crossorigin="anonymous">
       {{- end }}
     {{- end }}
