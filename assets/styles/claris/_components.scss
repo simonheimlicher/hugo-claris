@@ -775,6 +775,7 @@
   .content-title {
     color: var(--header-text);
     z-index: ($main-z-index + 5);
+    hyphens: manual;
     h1 {
       font-size: var(--font-size-title);
       margin: 0;
@@ -791,7 +792,6 @@
     .subtitle {
       display: block;
       font-size: var(--font-size-subtitle);
-      // padding: 0.5rem 0;
       text-align: end;
       font-weight: var(--font-weight-subtitle);
     }
