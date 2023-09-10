@@ -70,7 +70,9 @@ partial "claris/_functions/resources" no longer works -->
       {{- end }}
     {{- end }}
   {{- else -}}
-    {{- warnf "%s[%s]: no resource matching %s[%T]" $page $template $resourceSpec $resourceSpec -}}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: no resource matching %s[%T]" $page $template $resourceSpec $resourceSpec -}}
+    {{- end -}}
   {{- end -}}
 {{- else -}}
   {{- errorf "%s[%s]: invalid resourceSpec=%v" $page $template $resourceSpec -}}
