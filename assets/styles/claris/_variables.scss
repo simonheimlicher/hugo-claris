@@ -460,9 +460,10 @@ $main-z-index: 1;
 // Inline list with separators
 // https://www.jankollars.com/posts/multi-line-horizontal-list-with-separators/
 @mixin inline-separator-list($list-item-separation: 2ch, $list-separator: '•') {
-  $list-sep-width: math.div($list-item-separation, 3.0) + 0.5ch;
+  $shift-left: math.div($list-item-separation, 3.0);
+  $list-sep-width: $shift-left + 0.5ch;
   ul {
-    display: flex;
+    display: inline-flex;
     flex-wrap: wrap;
     padding-left: 0;
     list-style: none;
@@ -473,21 +474,19 @@ $main-z-index: 1;
     & > * {
       padding-left: $list-item-separation;
     }
-    li {
+    & > li, & > li + li {
       // padding-left: 1ch;
       list-style: none;
-      padding-left: $list-item-separation;
-      margin-left: math.div(-$list-item-separation, 3.0) - $list-sep-width;
-    }
-    li::before {
-      content: '•';
-      display: inline-block;
-      // margin-right: 0.5ch;
-      // margin-right: 0.5ch;
-      margin-right: math.div($list-item-separation, 3.0) - 0.5ch;
-      // width: 1ch;
-      width: $list-sep-width;
-      text-align: center;
+      // margin: 0 0 0 math.div(-$list-item-separation, 3.0) - $list-sep-width;
+      margin: 0 0 0 -1 * ($shift-left + $list-sep-width);
+      padding: 0 0 0 ($shift-left + $list-sep-width);
+      &::before {
+        content: '•';
+        display: inline-block;
+        margin: 0 $shift-left - 0.5ch 0 0;
+        width: $list-sep-width;
+        text-align: center;
+      }
     }
   }
 }
