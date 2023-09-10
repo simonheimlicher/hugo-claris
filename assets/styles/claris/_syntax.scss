@@ -21,12 +21,12 @@ code {
   &.noClass,
   &:not(pre > &) {
     display: inline;
-    padding: calc(1em * (var(--line-height) - 1) / 4) 0.5ch;
+    padding: calc(1em * (var(--line-height) - 1) / 8) 0.25ch calc(1em * (var(--line-height) - 1) / 4) 0.25ch;
     /* vertical-align: 7%; */
     border: 0.05em solid var(--xxxhaze);
     border-radius: 0.125em;
     background-color: var(--haze);
-    margin: 0 1ch;
+    margin: 0 0.25ch;
     // Don't add hyphens when breaking a word
     hyphens: manual;
   }
