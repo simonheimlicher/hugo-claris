@@ -990,7 +990,7 @@ html {
   @include fluid-geometric-scale('font-size', 1rem, 1.25rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
   @include fluid-geometric-scale('font-size_heading', 1.25rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
   @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
-  @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide, vw, 8);
+  // @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide, vw, 8);
   @include fluid-fractional-scale('inner_padding', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
 
   --font-size: var(--font-size-normal);
