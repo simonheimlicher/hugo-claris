@@ -92,7 +92,7 @@
         {{- $excerptContent = . }}
       {{- end }}
     {{- end }}
-    {{- $excerptContent = $excerptContent | $page.RenderString | plainify }}
+    {{- $excerptContent = $excerptContent | partial "claris/_functions/sanitize" }}
     {{- $title := default .Title $excerptMeta.Single.Data.Title }}
     {{- $plainTitle := $title | plainify }}
     <div class="{{ delimit $containerClassList " " }}">

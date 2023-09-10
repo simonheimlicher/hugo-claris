@@ -121,7 +121,7 @@
   <!-- HTML 'id' attribute of the DOM container of the list -->
   {{- $listID := default "contentContainer" $page.Params.ListID }}
 
-  {{- $pageTitle := .Title | $page.RenderString | plainify }}
+  {{- $pageTitle := .Title | partial "claris/_functions/sanitize" }}
   {{- $listName := default $pageTitle $page.Params.ListTitle }}
   {{- $listOrder := default "Most recent first" }}
 

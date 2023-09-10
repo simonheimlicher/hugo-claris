@@ -19,8 +19,8 @@
   {{- $headingLevel = default $headingLevel .HeadingLevel }}
 {{- end }}
 
-{{- $supertitlePlain := default "" ($supertitle | page.RenderString | plainify) }}
-{{- $subtitlePlain := default "" ($subtitle | page.RenderString | plainify) }}
+{{- $supertitlePlain := default "" ($supertitle | partial "claris/_functions/sanitize") }}
+{{- $subtitlePlain := default "" ($subtitle | partial "claris/_functions/sanitize") }}
 
 {{- $supertitleOutside := $supertitle }}
 {{- $subtitleOutside := $subtitle }}

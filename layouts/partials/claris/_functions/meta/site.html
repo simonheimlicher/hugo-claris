@@ -18,13 +18,13 @@
 
 {{- $name := default site.Title site.Params.website.name }}
 {{- $title := site.Title }}
-{{- $tagline := site.Params.website.tagline | $page.RenderString | plainify }}
+{{- $tagline := site.Params.website.tagline | partial "claris/_functions/sanitize" }}
 {{- $headline := $title }}
 {{- with $tagline }}
   {{- $headline = printf "%s: %s" $title $tagline }}
 {{- end }}
 
-{{- $description := site.Params.website.description | $page.RenderString | plainify }}
+{{- $description := site.Params.website.description | partial "claris/_functions/sanitize" }}
 {{- if not $description }}
   {{- warnf "%s[%s]: invalid parameter site.Params.website.description=%v" $page $template $description }}
 {{- end }}

@@ -1,0 +1,9 @@
+{{- /* partial sanitize
+Returns the sanitized version of the argument.
+Inspired by https://overhead.neocities.org/blog/hugo-extras/
+USAGE: use as a function in the context of a page, as follows:
+  {{- outputFormat := partial "claris/_functions/output-format" . }}
+*/ -}}
+{{- $sanitized := false }}
+{{- $sanitized = (replace . "&shy;" "" | page.RenderString | plainify | safeHTML) }}
+{{- return $sanitized }}
