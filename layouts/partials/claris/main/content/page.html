@@ -98,7 +98,7 @@
             {{- $modifiedTokens = append . $modifiedTokens }}
           {{- end }}
         {{- end }}
-        {{- $modifiedInitialPara := printf `<p class="drop-cap"><span class="initial-letter">%s</span><span class="initial-words">%s</span> %s` $initialLetter $initialWords (delimit $modifiedTokens " ") }}
+        {{- $modifiedInitialPara := printf `<p class="drop-cap"><span class="initial-letter">%s</span><span class="initial-words">%s</span> %s</p>` $initialLetter $initialWords (delimit $modifiedTokens " ") }}
         {{- $content = replaceRE $initialParaRE $modifiedInitialPara $content 1 }}
       {{- end }}
     {{- end }}
