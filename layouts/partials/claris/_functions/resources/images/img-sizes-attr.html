@@ -45,7 +45,9 @@
         {{- end }}
       {{- end }}
     {{- end }}
-    {{- $imgSizesAttrList = append $sizesAttr $imgSizesAttrList }}
+    {{- if $sizesAttr }}
+      {{- $imgSizesAttrList = append $sizesAttr $imgSizesAttrList }}
+    {{- end }}
   {{- end }}
   {{- $imgSizesAttr = delimit $imgSizesAttrList ", " }}
 {{- else }}
