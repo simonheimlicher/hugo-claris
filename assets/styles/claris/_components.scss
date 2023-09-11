@@ -503,7 +503,7 @@
   }
   &_tag,
   &_meta_tag {
-    padding: 0 0.5rem;
+    padding: 0 0.75em;
     font-size: var(--font-size-meta);
     &s {
       display: none;
@@ -530,7 +530,7 @@
   }
   &_tag,
   &_share {
-    margin: 0.5rem;
+    margin: 0.5em;
   }
   &_share {
     display: inline-flex;
@@ -1545,7 +1545,7 @@ svg.qrcode-svg {
       @include inner_full-bleed_left-padding;
       @include inner_padding_4-2;
       // background: linear-gradient(90deg, var(--theme-haze) 50%, var(--theme-xhaze) 99%);
-      background: linear-gradient(90deg, transparent 0%, var(--theme-haze) calc(100% - 2px), var(--theme-xxhaze) calc(100% - 2px));
+      background: linear-gradient(90deg, transparent 0%, var(--haze) calc(100% - 2px), var(--xhaze) calc(100% - 2px));
       margin-left: calc(-1 * var(--inner_padding_4-2));
       margin-right: calc(-1 * var(--inner_padding_4-2));
     }

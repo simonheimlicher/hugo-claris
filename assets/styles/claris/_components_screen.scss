@@ -928,7 +928,7 @@ $indicator-width: var(--toc_indicator_width)) {
     }
   }
 }
-@mixin table-of-contents-current($color: var(--text), $icon-color: var(--theme-bg-hover)) {
+@mixin table-of-contents-current($color: var(--text), $icon-color: var(--xxxhaze)) {
   a {
     color: $color;
   }
@@ -944,10 +944,10 @@ $indicator-width: var(--toc_indicator_width)) {
   // --triangle_top: 0.33em;
   --toc_indent: calc(1.5 * var(--font-size-normal));
   --toc_item_between: calc(0.5 * var(--font-size-normal));
-  --toc_indicator_line_color: var(--theme);
+  --toc_indicator_line_color: var(--xhaze);
   --toc_indicator_line_width: 1px;
   --toc_indicator_width: calc(var(--toc_indent) / 2);
-  --toc_indicator_icon_color: var(--theme-bg-hover);
+  --toc_indicator_icon_color: var(--xhaze);
   --toc_indicator_icon_width: calc(var(--toc_indicator_width) / 3);
 
   h2 {
