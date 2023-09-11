@@ -40,10 +40,13 @@
     "replace" `<p class="lede">$1</p>`
   ) -}}
   {{- if and true (findRE $ledeRE.match $content 1) }}
-    {{- $content = replaceRE $ledeRE.match $ledeRE.replace $content 1 }}
+    {{/* {{- $content = replaceRE $ledeRE.match $ledeRE.replace $content 1 }} */}}
 
-    {{- $initialParaRE := `(?s)<p>(.*?)</p\s*>` }}
-    {{- $initialPara := findRE $initialParaRE $content 1 }}
+    {{- $contentLede := replaceRE `(?s)^\s*<p>(.*?)</p\s*>.*` `<p class="lede">$1</p>` $content 1 }}
+    {{- $contentWithoutLede := replaceRE `(?s)^\s*<p>.*?</p\s*>\s*(.*)` `$1` $content 1 }}
+
+    {{- $initialParaRE := `(?s)^\s*<p>(.*?)</p\s*>` }}
+    {{- $initialPara := findRE $initialParaRE $contentWithoutLede 1 }}
     {{- with $initialPara = index $initialPara 0 }}
       {{- if gt (len .) 200 }}
         {{- /*
@@ -99,10 +102,11 @@
           {{- end }}
         {{- end }}
         {{- $modifiedInitialPara := printf `<p class="drop-cap"><span class="initial-letter">%s</span><span class="initial-words">%s</span> %s</p>` $initialLetter $initialWords (delimit $modifiedTokens " ") }}
-        {{- $content = replaceRE $initialParaRE $modifiedInitialPara $content 1 }}
+        {{- $contentWithoutLede = replaceRE $initialParaRE $modifiedInitialPara $contentWithoutLede 1 }}
       {{- end }}
     {{- end }}
-  {{- end }}
+    {{- $content = printf "%s\n%s" $contentLede $contentWithoutLede }}
+  {{- end -}}
 
   {{- $content | safeHTML }}
   </div>
