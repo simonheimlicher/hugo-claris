@@ -25,7 +25,7 @@ $main-z-index: 1;
     // --RGB_#{$color}: #{mapColorVarToRGB($colors, $value)};
   }
   // Only define RGB values for select colors
-  @each $color in (text bg theme theme-bg choice-bg xhaze highlight-bg-yellow) {
+  @each $color in (text bg theme theme-bg choice-bg xhaze link link-visited link-hover link-focus link-active  highlight-bg-yellow) {
     $value: map-get($colors, $color);
     --RGB_#{$color}: #{mapColorVarToRGB($colors, $value)};
   }
@@ -174,124 +174,70 @@ $main-z-index: 1;
   }
 }
 
-@mixin link-lvhfa_underline($link: var(--text), $visited: var(--link-visited), $hover: var(--link-hover), $focus: var(--link-hover), $active: var(--link-active)) {
+@mixin link-lvhfa($underline: false, $text: text, $link: link, $visited: link-visited, $hover: link-hover, $focus: link-hover, $active: link-active) {
   @media screen {
-    a:not(.button):not(sup a) {
-      text-decoration: underline;
-      text-underline-position: under;
-      text-underline-offset: 0.1em;
-      &:link {
-        color: $link;
-        text-decoration-color: $hover;
-      }
-      &:visited {
-        color: $visited;
-        text-decoration-color: $hover;
-      }
-      &:hover {
-        @media (any-hover: hover) {
-          color: $hover;
-          text-decoration: underline;
+    a {
+      $color-attribute_primary: color;
+      $color-attribute_secondary: color;
+      $color-opacity_primary: 1.0;
+      $color-opacity_secondary: 1.0;
+      @if ($underline) {
+        &, &:link, &:hover, &:visited, &:focus, &:active {
+          color: var(--#{$text});
+          $color-attribute_secondary: text-decoration-color;
+          $color-opacity_secondary: 0.5;
+          text-decoration: #{$underline};
           text-underline-position: under;
           text-underline-offset: 0.1em;
         }
       }
+      @else {
+        text-decoration: none;
+      }
+      #{$color-attribute_secondary}: rgba(var(--RGB_#{$link}), $color-opacity_secondary);
+
+      &:link {
+        #{$color-attribute_secondary}: rgba(var(--RGB_#{$link}), $color-opacity_secondary);
+      }
+      &:visited {
+        #{$color-attribute_secondary}: rgba(var(--RGB_#{$visited}), $color-opacity_secondary);
+      }
+      @media (any-hover: hover) {
+        &:hover {
+          #{$color-attribute_primary}: rgba(var(--RGB_#{$hover}), $color-opacity_primary);
+          #{$color-attribute_secondary}: rgba(var(--RGB_#{$hover}), $color-opacity_secondary);
+        }
+      }
       &:focus {
-        color: $focus;
-        text-decoration: underline;
-        text-underline-position: under;
-        text-underline-offset: 0.1em;
+        #{$color-attribute_secondary}: rgba(var(--RGB_#{$focus}), $color-opacity_secondary);
       }
       &:active {
-        color: $active;
-        text-decoration: underline;
-        text-underline-position: under;
-        text-underline-offset: 0.1em;
+        #{$color-attribute_secondary}: rgba(var(--RGB_#{$active}), $color-opacity_secondary);
       }
     }
   }
-}
-
-
-@mixin link-lvhfa($link: var(--link), $visited: var(--link-visited), $hover: var(--link-hover), $focus: var(--link-hover), $active: var(--link-active)) {
-  @media screen {
-    a:not(.button):not(sup a) {
-      color: $link;
+  sub a, sup a, a.no-link, a.button, a.footnote-backref {
+    text-decoration: none;
+    &, &:link, &:hover, &:visited, &:focus, &:active {
       text-decoration: none;
-      &:link {
-        color: $link;
-      }
-      &:visited {
-        color: $link;
-      }
-      &:hover {
-        @media (any-hover: hover) {
-          color: $hover;
-          text-decoration: underline;
-          text-underline-position: under;
-          text-underline-offset: 0.1em;
-        }
-      }
-      &:focus {
-        color: $focus;
-        text-decoration: underline;
-        text-underline-position: under;
-        text-underline-offset: 0.1em;
-      }
-      &:active {
-        color: $active;
-        text-decoration: underline;
-        text-underline-position: under;
-        text-underline-offset: 0.1em;
-      }
     }
   }
 }
 
 @mixin link-lvhfa-dark() {
-  @include link-lvhfa($link: var(--link-dark), $visited: var(--link-dark), $hover: var(--link-dark-hover), $focus: var(--link-dark-hover), $active: var(--link-dark-active));
-}
-
-@mixin link-lvhfa-reset($link: unset, $visited: $link, $hover: unset, $focus: unset, $active: unset) {
-  @media screen {
-    a:not(.button):not(sup a) {
-      color: $link;
-      text-decoration: none;
-      &:link {
-        color: $link;
-      }
-      &:visited {
-        color: $link;
-      }
-      &:hover {
-        @media (any-hover: hover) {
-          color: $hover;
-          text-decoration: none;
-          text-underline-position: auto;
-          text-underline-offset: auto;
-        }
-      }
-      &:focus {
-        color: $focus;
-        text-decoration: none;
-        text-underline-position: auto;
-        text-underline-offset: auto;
-      }
-      &:active {
-        color: $active;
-        text-decoration: none;
-        text-underline-position: auto;
-        text-underline-offset: auto;
-      }
-    }
-  }
+  @include link-lvhfa($underline: false, $link: var(--link-dark), $visited: var(--link-dark-visited), $hover: var(--link-dark-hover), $focus: var(--link-dark-hover), $active: var(--link-dark-active));
 }
 
 @mixin link-lvhfa-inherit() {
-  a:not(.button):not(nav a):not(sup a) {
-    &, &:link, &:visited, &:hover, &:focus, &:active {
+  @media screen {
+    a {
+      &, &:link, &:visited, &:hover, &:focus, &:active {
+        color: inherit;
+        text-decoration: none;
+      }
+    }
+    sub, sup, .no-link, .button, .footnote-backref {
       color: inherit;
-      text-decoration: none;
     }
   }
 }

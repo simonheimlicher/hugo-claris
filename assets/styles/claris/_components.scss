@@ -1255,12 +1255,16 @@ svg.qrcode-svg {
       margin-bottom: 0;
     }
     @include drop-shadow(3rem, 0.1, 0.3);
-    @include link-lvhfa-inherit;
     @media (any-hover: hover) {
       &:hover,
       &:focus {
         color: var(--text-hover);
         background: var(--bg-hover);
+      }
+    }
+    .excerpt {
+      &_header, &_main, &_footer {
+        @include link-lvhfa-inherit;
       }
     }
   }

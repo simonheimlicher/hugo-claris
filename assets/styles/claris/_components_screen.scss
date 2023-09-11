@@ -1095,7 +1095,7 @@ body:not(.modern-js) .article_aside .table_of_contents {
 
 .article_body {
   // @include link-lvhfa;
-  @include link-lvhfa_underline
+  @include link-lvhfa(underline);
   // p a:not(.button):not(nav a):not(sup a),
   // li a:not(.button):not(nav a):not(sup a) {
   //   // Same as surrounding text should be ok for background contrast
