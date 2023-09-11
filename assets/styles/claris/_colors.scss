@@ -57,12 +57,12 @@ $theme-text-active-dim: darken($theme-text-dim, 100%);
 $theme-text-hover-dim: darken($theme-text-dim, 100%);
 
 $link-lit: darken($colorPrimaryLit, 20%);
-$link-visited-lit: darken($colorPrimaryLit, 10%);
+$link-visited-lit: darken(desaturate(adjust-hue($colorPrimaryLit, 50), 20%), 20%);
 $link-hover-lit: darken($colorPrimaryLit, 10%);
 $link-active-lit: darken($colorPrimaryLit, 0%);
 
 $link-dim: hsl($primary-hue-dim, 100%, 85%);
-$link-visited-dim: hsl($primary-hue-dim, 100%, 90%);
+$link-visited-dim: lighten(desaturate(adjust-hue($colorPrimaryDim, 50), 30%), 25%);
 $link-hover-dim: hsl($primary-hue-dim, 100%, 90%);
 $link-active-dim: hsl($primary-hue-dim, 100%, 70%);
 

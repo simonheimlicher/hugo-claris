@@ -186,6 +186,7 @@ $main-z-index: 1;
       }
       &:visited {
         color: $visited;
+        text-decoration-color: $hover;
       }
       &:hover {
         @media (any-hover: hover) {
