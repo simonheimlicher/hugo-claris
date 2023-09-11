@@ -1488,7 +1488,7 @@ svg.qrcode-svg {
   &_inner {
     position: relative;
     margin-top: calc(var(--inner_margin_4-6));
-    padding-top: var(--inner_padding);
+    @include inner_padding;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -1503,10 +1503,10 @@ svg.qrcode-svg {
       content: "";
       padding: 2px;
       top: 0;
-      left: 0;
-      right: 0;
+      left: var(--inner_padding);
+      right: var(--inner_padding);
       background: var(--xhaze);
-      background: linear-gradient(to right, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze));
+      // background: linear-gradient(to right, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze));
       @include color-scheme_transition;
     }
   }
@@ -1539,8 +1539,11 @@ svg.qrcode-svg {
       &:after {
         content: none;
       }
-      background: linear-gradient(90deg, var(--theme-haze) 50%, var(--theme-xhaze) 99%);
-      margin-left: calc(-1 * var(--inner_padding));
+      @include inner_full-bleed_left-padding;
+      @include inner_padding_4-2;
+      // background: linear-gradient(90deg, var(--theme-haze) 50%, var(--theme-xhaze) 99%);
+      background: linear-gradient(90deg, transparent 0%, var(--theme-haze) calc(100% - 2px), var(--theme-xxhaze) calc(100% - 2px));
+      margin-left: calc(-1 * var(--inner_padding_4-2));
       margin-right: calc(-1 * var(--inner_padding_4-2));
     }
   }

@@ -117,6 +117,21 @@ $main-z-index: 1;
   @include element-padding('inner', $padding-factor, $padding-factor);
 }
 
+@mixin inner_padding_4-1 {
+  $padding-factor: 0.25;
+  @include element-padding('inner', $padding-factor, $padding-factor);
+}
+
+@mixin inner_padding_4-2 {
+  $padding-factor: 0.5;
+  @include element-padding('inner', $padding-factor, $padding-factor);
+}
+
+@mixin inner_padding_4-3 {
+  $padding-factor: 0.75;
+  @include element-padding('inner', $padding-factor, $padding-factor);
+}
+
 @mixin inner_horizontal-padding($padding-factor: 1) {
   @include element-padding('inner', unset, $padding-factor);
 }
