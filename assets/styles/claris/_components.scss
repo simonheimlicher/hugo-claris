@@ -348,7 +348,7 @@
         // For IE 11
         min-height: 1px;
         flex: 1 1 10%;
-        min-width: max(50%, 16em);
+        min-width: min(80%, max(20%, 16em));
         @supports (display: flex) {
           flex: 1 1 min-content;
         }
