@@ -57,10 +57,12 @@ $theme-text-active-dim: darken($theme-text-dim, 100%);
 $theme-text-hover-dim: darken($theme-text-dim, 100%);
 
 $link-lit: darken($colorPrimaryLit, 20%);
+$link-visited-lit: darken($colorPrimaryLit, 10%);
 $link-hover-lit: darken($colorPrimaryLit, 10%);
 $link-active-lit: darken($colorPrimaryLit, 0%);
 
 $link-dim: hsl($primary-hue-dim, 100%, 85%);
+$link-visited-dim: hsl($primary-hue-dim, 100%, 90%);
 $link-hover-dim: hsl($primary-hue-dim, 100%, 90%);
 $link-active-dim: hsl($primary-hue-dim, 100%, 70%);
 
@@ -152,9 +154,11 @@ $colors-lit: (
   text-faint: $text-faint-lit,
 
   link: $link-lit,
+  link-visited: $link-visited-lit,
   link-active: $link-active-lit,
   link-hover: $link-hover-lit,
   link-dark: $link-dim,
+  link-dark-visited: $link-visited-dim,
   link-dark-active: $link-active-dim,
   link-dark-hover: $link-hover-dim,
 
@@ -233,10 +237,12 @@ $colors-dim: (
   text-faint: $text-faint-dim,
 
   link: $link-dim,
+  link-visited: $link-visited-dim,
   link-active: $link-active-dim,
   link-hover: $link-hover-dim,
 
   link-dark: $link-dim,
+  link-dark-visited: $link-visited-dim,
   link-dark-active: $link-active-dim,
   link-dark-hover: $link-hover-dim,
 

@@ -174,7 +174,45 @@ $main-z-index: 1;
   }
 }
 
-@mixin link-lvhfa($link: var(--link), $visited: var(--link), $hover: var(--link-hover), $focus: var(--link-hover), $active: var(--link-active)) {
+@mixin link-lvhfa_underline($link: var(--text), $visited: var(--link-visited), $hover: var(--link-hover), $focus: var(--link-hover), $active: var(--link-active)) {
+  @media screen {
+    a:not(.button):not(sup a) {
+      text-decoration: underline;
+      text-underline-position: under;
+      text-underline-offset: 0.1em;
+      &:link {
+        color: $link;
+        text-decoration-color: $hover;
+      }
+      &:visited {
+        color: $visited;
+      }
+      &:hover {
+        @media (any-hover: hover) {
+          color: $hover;
+          text-decoration: underline;
+          text-underline-position: under;
+          text-underline-offset: 0.1em;
+        }
+      }
+      &:focus {
+        color: $focus;
+        text-decoration: underline;
+        text-underline-position: under;
+        text-underline-offset: 0.1em;
+      }
+      &:active {
+        color: $active;
+        text-decoration: underline;
+        text-underline-position: under;
+        text-underline-offset: 0.1em;
+      }
+    }
+  }
+}
+
+
+@mixin link-lvhfa($link: var(--link), $visited: var(--link-visited), $hover: var(--link-hover), $focus: var(--link-hover), $active: var(--link-active)) {
   @media screen {
     a:not(.button):not(sup a) {
       color: $link;

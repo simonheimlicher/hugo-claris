@@ -200,9 +200,9 @@ sub {
 hr {
   border: none;
   padding: 1px;
-  background: var(--xhaze);
-  opacity: 0.5;
-  margin: 1rem 0;
+  background: var(--xxxhaze);
+  // opacity: 0.5;
+  margin: var(--inner_margin) 0;
 }
 aside {
   h3 {
