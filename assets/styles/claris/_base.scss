@@ -86,7 +86,7 @@ a {
   }
   &:hover {
     @media (any-hover: hover) {
-      // text-decoration: underline
+      // text-decoration-line: underline
       // text-underline-position: under
       // text-underline-offset: 0.1em
       color: var(--text-hover);

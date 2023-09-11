@@ -197,7 +197,7 @@ $main-z-index: 1;
         ),
         secondary: (
           name: text-decoration-color,
-          opacity: 0.25
+          opacity: 0.5
         )
       );
 
@@ -205,7 +205,7 @@ $main-z-index: 1;
         $attrs: (
           primary: (
             name: text-decoration-color,
-            opacity: 0.3
+            opacity: 0.5
           ),
           secondary: (
             name: color,
@@ -214,7 +214,7 @@ $main-z-index: 1;
         );
         &, &:link, &:hover, &:visited, &:focus, &:active {
           color: var(--#{$text});
-          text-decoration: underline;
+          text-decoration-line: underline;
           text-underline-position: under;
           text-underline-offset: 0.1em;
         }
@@ -224,7 +224,7 @@ $main-z-index: 1;
           text-decoration: none;
         }
         &:hover, &:visited, &:focus, &:active {
-          text-decoration: underline;
+          text-decoration-line: underline;
           text-underline-position: under;
           text-underline-offset: 0.1em;
         }
@@ -241,10 +241,10 @@ $main-z-index: 1;
         }
       }
       &:focus {
-        @include link-lvhfa_color($attrs, $focus);
+        @include link-lvhfa_color($attrs, $focus, 1.0);
       }
       &:active {
-        @include link-lvhfa_color($attrs, $active);
+        @include link-lvhfa_color($attrs, $active, 1.0);
       }
     }
   }
