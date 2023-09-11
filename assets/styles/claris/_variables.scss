@@ -25,7 +25,7 @@ $main-z-index: 1;
     // --RGB_#{$color}: #{mapColorVarToRGB($colors, $value)};
   }
   // Only define RGB values for select colors
-  @each $color in (text bg theme theme-bg choice-bg xhaze link link-visited link-hover link-focus link-active  highlight-bg-yellow) {
+  @each $color in (text bg theme theme-bg choice-bg xhaze link link-visited link-hover link-focus link-active link-dark link-dark-visited link-dark-hover link-dark-focus link-dark-active highlight-bg-yellow) {
     $value: map-get($colors, $color);
     --RGB_#{$color}: #{mapColorVarToRGB($colors, $value)};
   }
@@ -174,45 +174,77 @@ $main-z-index: 1;
   }
 }
 
-@mixin link-lvhfa($underline: false, $text: text, $link: link, $visited: link-visited, $hover: link-hover, $focus: link-hover, $active: link-active) {
+@mixin link-lvhfa_color($attrs, $color-id, $override: null) {
+  @each $key, $attr in $attrs {
+    $name: map-get($attr, name);
+    $opacity: map-get($attr, opacity);
+    @if ($override != null) {
+      $opacity: $override;
+    }
+    @if ($opacity != null) {
+      #{$name}: rgba(var(--RGB_#{$color-id}), $opacity);
+    }
+  }
+}
+
+@mixin link-lvhfa($underline: false, $text: text, $link: link, $visited: link-visited, $hover: link-hover, $focus: link-focus, $active: link-active) {
   @media screen {
     a {
-      $color-attribute_primary: color;
-      $color-attribute_secondary: color;
-      $color-opacity_primary: 1.0;
-      $color-opacity_secondary: 1.0;
+      $attrs: (
+        primary: (
+          name: color,
+          opacity: 1.0
+        ),
+        secondary: (
+          name: text-decoration-color,
+          opacity: 0.25
+        )
+      );
+
       @if ($underline) {
+        $attrs: (
+          primary: (
+            name: text-decoration-color,
+            opacity: 0.3
+          ),
+          secondary: (
+            name: color,
+            opacity: null
+          )
+        );
         &, &:link, &:hover, &:visited, &:focus, &:active {
           color: var(--#{$text});
-          $color-attribute_secondary: text-decoration-color;
-          $color-opacity_secondary: 0.5;
-          text-decoration: #{$underline};
+          text-decoration: underline;
           text-underline-position: under;
           text-underline-offset: 0.1em;
         }
       }
       @else {
-        text-decoration: none;
+        &, &:link {
+          text-decoration: none;
+        }
+        &:hover, &:visited, &:focus, &:active {
+          text-decoration: underline;
+          text-underline-position: under;
+          text-underline-offset: 0.1em;
+        }
       }
-      #{$color-attribute_secondary}: rgba(var(--RGB_#{$link}), $color-opacity_secondary);
-
-      &:link {
-        #{$color-attribute_secondary}: rgba(var(--RGB_#{$link}), $color-opacity_secondary);
+      &, &:link {
+        @include link-lvhfa_color($attrs, $link);
       }
       &:visited {
-        #{$color-attribute_secondary}: rgba(var(--RGB_#{$visited}), $color-opacity_secondary);
+        @include link-lvhfa_color($attrs, $visited);
       }
       @media (any-hover: hover) {
         &:hover {
-          #{$color-attribute_primary}: rgba(var(--RGB_#{$hover}), $color-opacity_primary);
-          #{$color-attribute_secondary}: rgba(var(--RGB_#{$hover}), $color-opacity_secondary);
+          @include link-lvhfa_color($attrs, $hover, 1.0);
         }
       }
       &:focus {
-        #{$color-attribute_secondary}: rgba(var(--RGB_#{$focus}), $color-opacity_secondary);
+        @include link-lvhfa_color($attrs, $focus);
       }
       &:active {
-        #{$color-attribute_secondary}: rgba(var(--RGB_#{$active}), $color-opacity_secondary);
+        @include link-lvhfa_color($attrs, $active);
       }
     }
   }
@@ -225,7 +257,7 @@ $main-z-index: 1;
 }
 
 @mixin link-lvhfa-dark() {
-  @include link-lvhfa($underline: false, $link: var(--link-dark), $visited: var(--link-dark-visited), $hover: var(--link-dark-hover), $focus: var(--link-dark-hover), $active: var(--link-dark-active));
+  @include link-lvhfa($underline: false, $link: link-dark, $visited: link-dark-visited, $hover: link-dark-hover, $focus: link-dark-focus, $active: link-dark-active);
 }
 
 @mixin link-lvhfa-inherit() {
