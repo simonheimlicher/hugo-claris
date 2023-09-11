@@ -335,9 +335,7 @@
       display: flex;
       flex-wrap: wrap;
       @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
-        & {
-          justify-content: space-evenly;
-        }
+        justify-content: space-evenly;
       }
 
       &-item {
@@ -350,8 +348,9 @@
         // For IE 11
         min-height: 1px;
         flex: 1 1 10%;
+        min-width: max(50%, 16em);
         @supports (display: flex) {
-          flex: 1 1 auto;
+          flex: 1 1 min-content;
         }
       }
       // Footer main | Newsletter form
