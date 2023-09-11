@@ -15,7 +15,8 @@
 
 {{- if $page.Content }}
   {{ partial "claris/main/content/index" . }}
-{{- else }}
+{{- end }}
+{{- if (default (not $page.Content) ($page.Param "list")) }}
   {{- partial "claris/main/list/index" (merge . (dict "HeadingLevel" (sub .HeadingLevel 1))) }}
 {{- end }}
 
