@@ -1926,13 +1926,13 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
     &.relative-width-20 {
       &.float-left {
         float: left;
-        margin: var(--inner_margin_4-2) var(--inner_margin_4-2) var(--inner_margin_4-2) 0;
+        margin: var(--float_margin) var(--float_margin) var(--float_margin) 0;
       }
     }
     &.relative-width-20 {
       &.float-right {
         float: right;
-        margin: var(--inner_margin_4-2) 0 var(--inner_margin_4-2) var(--inner_margin_4-2);
+        margin: var(--float_margin) 0 var(--float_margin) var(--float_margin);
       }
     }
     &.relative-width-20 {
@@ -1950,13 +1950,13 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
     &.relative-width-30 {
       &.float-left {
         float: left;
-        margin: var(--inner_margin_4-2) var(--inner_margin_4-2) var(--inner_margin_4-2) 0;
+        margin: var(--float_margin) var(--float_margin) var(--float_margin) 0;
       }
     }
     &.relative-width-30 {
       &.float-right {
         float: right;
-        margin: var(--inner_margin_4-2) 0 var(--inner_margin_4-2) var(--inner_margin_4-2);
+        margin: var(--float_margin) 0 var(--float_margin) var(--float_margin);
       }
     }
     &.relative-width-20 {
@@ -1980,11 +1980,11 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
     }
     &.float-left {
       float: left;
-      margin: var(--inner_margin) var(--inner_margin) var(--inner_margin) 0;
+      margin: var(--float_margin) var(--float_margin) var(--float_margin) 0;
     }
     &.float-right {
       float: right;
-      margin: var(--inner_margin) 0 var(--inner_margin) var(--inner_margin);
+      margin: var(--float_margin) 0 var(--float_margin) var(--float_margin);
     }
     &.relative-width-20 {
       max-width: 20%;
