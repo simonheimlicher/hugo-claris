@@ -1127,7 +1127,7 @@ body:not(.modern-js) .article_aside .table_of_contents {
   @include link-lvhfa;
 }
 .footer_claris {
-  @include link-lvhfa-dark;
+  @include link-lvhfa(false, dark);
 }
 @media screen and (min-height: $screenViewBreakpointHeightShallow) {
   html {

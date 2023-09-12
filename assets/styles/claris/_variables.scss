@@ -175,34 +175,41 @@ $main-z-index: 1;
 }
 
 @mixin link-lvhfa_color($attrs, $color-id, $override: null) {
-  @each $key, $attr in $attrs {
+  $variant: map-get($attrs, variant);
+  $highlight: map-get($attrs, highlight);
+
+  $color: link#{if($variant != null and $variant != '', -#{$variant}, '')}#{if($color-id != null and $color-id != '', -#{$color-id}, '')};
+  @each $key, $attr in $highlight {
     $name: map-get($attr, name);
     $opacity: map-get($attr, opacity);
     @if ($override != null) {
       $opacity: $override;
     }
     @if ($opacity != null) {
-      #{$name}: rgba(var(--RGB_#{$color-id}), $opacity);
+      #{$name}: rgba(var(--RGB_#{$color}), $opacity);
     }
   }
 }
 
-@mixin link-lvhfa($underline: false, $text: text, $link: link, $visited: link-visited, $hover: link-hover, $focus: link-focus, $active: link-active) {
+@mixin link-lvhfa($underline: false, $variant: null, $text: text, $link: '', $visited: visited, $hover: hover, $focus: focus, $active: active) {
   @media screen {
     a {
       $attrs: (
-        primary: (
-          name: color,
-          opacity: 1.0
-        ),
-        secondary: (
-          name: text-decoration-color,
-          opacity: 0.5
+        variant: #{$variant},
+        highlight: (
+          primary: (
+            name: color,
+            opacity: 1.0
+          ),
+          secondary: (
+            name: text-decoration-color,
+            opacity: 0.5
+          )
         )
       );
 
       @if ($underline) {
-        $attrs: (
+        $attrs: map-merge($attrs, (
           primary: (
             name: text-decoration-color,
             opacity: 0.5
@@ -211,7 +218,7 @@ $main-z-index: 1;
             name: color,
             opacity: null
           )
-        );
+        ));
         &, &:link, &:hover, &:visited, &:focus, &:active {
           color: var(--#{$text});
           text-decoration-line: underline;
@@ -220,10 +227,10 @@ $main-z-index: 1;
         }
       }
       @else {
-        &, &:link, &:visited {
+        &, &:link, &:visited, &:focus {
           text-decoration: none;
         }
-        &:hover, &:focus, &:active {
+        &:hover, &:active {
           text-decoration-line: underline;
           text-underline-position: under;
           text-underline-offset: 0.1em;
@@ -241,7 +248,10 @@ $main-z-index: 1;
         }
       }
       &:focus {
-        @include link-lvhfa_color($attrs, $focus, 1.0);
+        @include link-lvhfa_color($attrs, $focus);
+        outline: 1px dashed var(--link#{if($variant != null and $variant != '', -#{$variant}, '')}#{$focus});
+        background: var(--bg#{if($variant != null and $variant != '', -#{$variant}, '')}-hover);
+        border-radius: 0.25em;
       }
       &:active {
         @include link-lvhfa_color($attrs, $active, 1.0);
@@ -256,10 +266,6 @@ $main-z-index: 1;
   }
 }
 
-@mixin link-lvhfa-dark() {
-  @include link-lvhfa($underline: false, $link: link-dark, $visited: link-dark-visited, $hover: link-dark-hover, $focus: link-dark-focus, $active: link-dark-active);
-}
-
 @mixin link-lvhfa-inherit() {
   @media screen {
     a {
@@ -268,7 +274,7 @@ $main-z-index: 1;
         text-decoration: none;
       }
     }
-    sub, sup, .no-link, .button, .footnote-backref {
+    sub a, sup a, a.no-link, a.button, a.footnote-backref {
       color: inherit;
     }
   }

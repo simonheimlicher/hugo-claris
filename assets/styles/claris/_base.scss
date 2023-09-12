@@ -82,7 +82,8 @@ a {
   color: inherit;
   &:focus,
   &:focus-within {
-    outline: none !important;
+    // FIXME: Allow overrriding outline for accessibility
+    outline: none; // !important;
   }
   &:hover {
     @media (any-hover: hover) {
@@ -96,7 +97,7 @@ a {
     color: var(--xaccent);
   }
   &:focus {
-    outline: var(--accent);
+    outline: 1px dashed var(--accent);
   }
   // Avoid adding a hyphen where the word breaks
   hyphens: none;
