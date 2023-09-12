@@ -97,7 +97,7 @@ a {
     color: var(--xaccent);
   }
   &:focus {
-    outline: 1px dashed var(--accent);
+    outline: 1px dashed var(--link-focus);
   }
   // Avoid adding a hyphen where the word breaks
   hyphens: none;
