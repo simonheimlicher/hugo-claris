@@ -1,7 +1,5 @@
-{{- $page := . }}
-{{- with .Page }}
-  {{- $page = . }}
-{{- end }}
+{{- $page := .Page }}
+{{- $template := "claris/_components/taxonomy" }}
 {{- $headingLevel := default 3 .HeadingLevel }}
 {{- with $page -}}<!-- Restore "." to refer to page context from which the partial was called -->
 {{- $tagsLimit := (default 100 site.Params.numberOfTagsShown) }}
@@ -14,9 +12,8 @@
   {{- if in $sidebarTaxonomies $key }}
     {{- $recentTagsScratch := newScratch }}
     {{- $taxonomyListComplete := true }}
-    {{- range $taxonomy.Alphabetical }}
+    {{- range $tag := $taxonomy.Alphabetical }}
       {{- $taxonomyListComplete := true }}
-      {{- $tag := . }}
       {{- $recentPages := where .Pages "Lastmod" "ge" (now.AddDate (int (sub 0 $taxonomyMaxYears)) 0 0) }}
       {{- $recentTagsScratch.Set "recentTagCounter" 0 }}
       {{- $recentTagsScratch.Set "lastArticleDate" ("2006-05-04" | time) }}
@@ -29,9 +26,7 @@
       {{- if gt ($recentTagsScratch.Get "recentTagCounter") 0 }}
         {{- $recentCount := ($recentTagsScratch.Get "recentTagCounter") }}
         {{- $lastArticleDate := ($recentTagsScratch.Get "lastArticleDate") }}
-        {{- $recentTagsScratch.SetInMap "tagsInfo" $tag.Name (dict "tag" $tag "recentCount" $recentCount) }}
-        <!-- {{- printf "%s: lastArticleDate %s" $tag.Name $lastArticleDate }} -->
-        {{- $recentTagsScratch.SetInMap "tagsInfo" $tag.Name (dict "tag" $tag "lastArticleDate" $lastArticleDate) }}
+        {{- $recentTagsScratch.SetInMap "tagsInfo" $tag.Name (dict "tagName" $tag.Name "lastArticleDate" $lastArticleDate "recentCount" $recentCount "tag" $tag) }}
       {{- else }}
         {{- $taxonomyListComplete = false }}
       {{- end }}
@@ -41,7 +36,7 @@
       <div class="sidebar_item">
         {{ printf "<h%v class=\"taxonomy\" id=\"%s-section\">" $headingLevel $key | safeHTML }}{{ T $key | default $key | strings.FirstUpper }}{{ printf "</h%v>" $headingLevel | safeHTML }}
         <nav class="tags_nav">
-          {{- $slicedTags := sort (sort $recentTagsInfo "lastArticleDate" "desc") "recentCount" "desc" | first $tagsLimit }}
+          {{- $slicedTags := sort (sort (sort $recentTagsInfo "lastArticleDate" "desc") "recentCount" "desc") "tagName" "desc" | first $tagsLimit }}
           {{- $taxonomyPageURL := absLangURL $key -}}
           {{- range $slicedTags }}
           {{- $tag := .tag }}
