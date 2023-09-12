@@ -423,11 +423,11 @@
   background-color: var(--theme-bg);
   color: var(--theme-text);
   display: inline-flex;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5em 1.5em 0.75em 1.5em;
   // text-transform: uppercase
   text-transform: none;
   border: 1px solid var(--theme-opa-20);
-  border-radius: 1.5rem;
+  border-radius: 1.5em;
   font-size: var(--font-size-button);
   align-items: center;
   user-select: none;
@@ -447,18 +447,19 @@
     border: 1px solid rgba(var(--RGB_theme), 0.1);
   }
   &_tally {
-    padding: 0 0.75rem;
-    border-radius: 0.5rem;
-    background-color: var(--choice-bg);
+    padding: 0 1em;
+    border-radius: 0.5em;
+    // background-color: var(--choice-bg);
+    background-color: rgba(var(--RGB_bg), 80%);
     display: inline-flex;
     justify-content: center;
     align-items: center;
       // Ensure constrast ratio requirements are met
       // color: var(--theme-text)
     color: var(--text);
-    margin: 0.1rem 0 0.1rem 0.2rem;
+    margin: 0.125em 0 0.125em 0.5em;
       // Minimal size for mobile users
-    font-size: 0.75rem;
+    font-size: var(--font-size-smaller-2);
   }
   &:hover,
   &:focus,
@@ -474,17 +475,21 @@
   &_translucent,
   .article_content &_translucent,
   .sidebar &_translucent {
-    background-color: rgba(var(--RGB_text), 10%);
-      // Ensure constrast ratio requirements are met
+    // background-color: rgba(var(--RGB_text), 10%);
+    background-color: rgba(var(--RGB_xhaze), 10%);
+    // Ensure constrast ratio requirements are met
     color: var(--text);
       // border: 1px solid transparent
-    border: 1px solid rgba(var(--RGB_text), 20%);
+    // border: 1px solid rgba(var(--RGB_text), 20%);
+    border: 1px solid rgba(var(--RGB_xhaze), 100%);
     &:hover,
     &:focus {
       @media (any-hover: hover) {
         color: var(--text-hover);
-        background-color: var(--bg-hover);
-        border: 1px solid var(--text-hover);
+        // background-color: var(--bg-hover);
+        background-color: rgba(var(--theme-bg-hover), 100%);
+        // border: 1px solid var(--text-hover);
+        border: 1px solid var(--xxxhaze);
       }
     }
   }
@@ -503,7 +508,8 @@
   }
   &_tag,
   &_meta_tag {
-    padding: 0 0.75em;
+    // padding: 0 0.75em;
+    padding: 0.0625em 0.5em 0.125em 0.5em;
     font-size: var(--font-size-meta);
     &s {
       display: none;
@@ -562,7 +568,7 @@
       font-size: var(--font-size-meta);
     }
     &_tag {
-      margin: var(--inner_padding_4-1) var(--inner_padding_4-1);
+      margin: 0.125em var(--inner_padding_4-1);
     }
     &_date,
     &_reading-time {
@@ -1850,6 +1856,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
 .content .responsive-image_container,
 .shortcode_responsive-figure,
 .excerpt_container {
+  --float_margin: var(--inner_margin_4-3);
   // padding: var(--inner_padding) var(--inner_padding)
   border-radius: 0.125rem;
   // Remove any surrounding margins and padding from elements
