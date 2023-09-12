@@ -442,6 +442,7 @@ $main-z-index: 1;
       // FIXME: Avoid `display: inline-flex` as this leads to inadvertent line breaks
       // and lack of spacing around elments contained inside, such as <em> or <strong>
       // display: inline-flex;
+      display: inline-block;
       padding: calc(max(0px, 2.125rem - $padding-between - 1em * var(--line-height)) / 2) 0;
     }
     & > ul li {
@@ -484,6 +485,7 @@ $main-z-index: 1;
       // FIXME: Avoid `display: inline-flex` as this leads to inadvertent line breaks
       // and lack of spacing around elments contained inside, such as <em> or <strong>
       // display: inline-flex;
+      display: inline-block;
       padding: calc(max(0px, 2.125rem - $padding-between - 1em * var(--line-height)) / 2) 0;
     }
     & > ul li {
@@ -503,7 +505,10 @@ $main-z-index: 1;
   $shift-left: math.div($list-item-separation, 3.0);
   $list-sep-width: $shift-left + 0.5ch;
   ul {
-    display: inline-flex;
+    // FIXME: Avoid `display: inline-flex` as this leads to inadvertent line breaks
+    // and lack of spacing around elments contained inside, such as <em> or <strong>
+    // display: inline-flex;
+    display: inline-block;
     flex-wrap: wrap;
     padding-left: 0;
     list-style: none;
