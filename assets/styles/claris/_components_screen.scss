@@ -887,7 +887,9 @@ $indicator-width: var(--toc_indicator_width)) {
       bottom: 0;
       left: calc($indicator-width / 2 - $icon-width / 2 - var(--toc_indent));
       background-color: $icon-color;
+      outline-color: $icon-color !important;
       opacity: 1;
+      z-index: 1;
     }
   }
 }
@@ -928,7 +930,7 @@ $indicator-width: var(--toc_indicator_width)) {
     }
   }
 }
-@mixin table-of-contents-current($color: var(--text), $icon-color: var(--xxxhaze)) {
+@mixin table-of-contents-current($color: var(--text), $icon-color: var(--toc_indicator_icon_color)) {
   a {
     color: $color;
   }
@@ -947,7 +949,7 @@ $indicator-width: var(--toc_indicator_width)) {
   --toc_indicator_line_color: var(--xhaze);
   --toc_indicator_line_width: 1px;
   --toc_indicator_width: calc(var(--toc_indent) / 2);
-  --toc_indicator_icon_color: var(--xhaze);
+  --toc_indicator_icon_color: var(--xxxhaze);
   --toc_indicator_icon_width: calc(var(--toc_indicator_width) / 3);
 
   h2 {
@@ -1020,7 +1022,7 @@ $indicator-width: var(--toc_indicator_width)) {
               width: var(--toc_indicator_width);
               height: var(--toc_indicator_width);
               border-radius: 50%;
-              outline: 2px solid var(--toc_indicator_icon_color);
+              outline: 2px solid var(--toc_indicator_line_color);
               opacity: 1;
             }
             &::after {
