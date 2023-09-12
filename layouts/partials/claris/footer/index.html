@@ -3,7 +3,7 @@
 {{- $template := "claris/footer/index" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- /* $debug = or $debug (not (not (findRE `^/$` $page.RelPermalink) ) ) */ -}}
+{{- /* $debug = or $debug (not (not (findRE `^(?:\S+-demo)?/$` $page.RelPermalink) ) ) */ -}}
 
 {{- $title := site.Title }}
 {{- $siteAuthor := $meta.Site.Data.Author.Name }}
@@ -16,7 +16,7 @@
       {{- $footerPages = sort . ".Params.weight" }}
     {{- else }}
       {{- if $debug }}
-        {{- warnf "%s[%s]: No page resources match '*.md'"
+        {{- warnf "%s[%s]: No page resources match '*.md' in '%v'"
             $page $template site.Params.footer.section }}
       {{- end }}
     {{- end }}
