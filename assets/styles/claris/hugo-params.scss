@@ -10,12 +10,12 @@ $mediaType: '{{ .MediaType }}';
 {{- $colorPrimaryLit := default "hsl(200, 100%, 50%)" site.Params.colors.colorPrimaryLit }}
 {{- $colorPrimaryDim := default "hsl(200, 100%, 50%)" site.Params.colors.colorPrimaryDim }}
 {{- $onPrimaryLit := default "hsl(200, 75%, 25%)" site.Params.colors.onPrimaryLit }}
-{{- $onPrimaryDim := default "hsl(200, 75%, 90%)" site.Params.colors.onPrimaryDim }}
+{{- $onPrimaryDim := default "hsl(200, 85%, 85%)" site.Params.colors.onPrimaryDim }}
 {{- $surfacePrimaryLit := default "hsl(200, 50%, 95%)" site.Params.colors.surfacePrimaryLit }}
 {{- $surfacePrimaryDim := default "hsl(200, 30%, 10%)" site.Params.colors.surfacePrimaryDim }}
 
-{{- $colorSurfaceLit := default "hsl(200, 80%, 98%)" site.Params.colors.colorSurfaceLit }}
-{{- $colorSurfaceDim := default "hsl(200, 90%, 10%)" site.Params.colors.colorSurfaceDim }}
+{{- $colorSurfaceLit := default "hsl(200, 20%, 98%)" site.Params.colors.colorSurfaceLit }}
+{{- $colorSurfaceDim := default "hsl(200, 20%, 10%)" site.Params.colors.colorSurfaceDim }}
 {{- $onSurfaceLit := default "hsl(200, 100%, 13%)" site.Params.colors.onSurfaceLit }}
 {{- $onSurfaceDim := default "hsl(200, 100%, 95%)" site.Params.colors.onSurfaceDim }}
 {{- $colorBackgroundLit := default "hsl(200, 10%, 95%)" site.Params.colors.colorBackgroundLit }}
