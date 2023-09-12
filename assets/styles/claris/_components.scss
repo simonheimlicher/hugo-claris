@@ -447,19 +447,20 @@
     border: 1px solid rgba(var(--RGB_theme), 0.1);
   }
   &_tally {
-    padding: 0 1em;
-    border-radius: 0.5em;
+    padding: 0 0.25em 0 0.5em;
+    // border-radius: 0.5em;
     // background-color: var(--choice-bg);
-    background-color: rgba(var(--RGB_bg), 80%);
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-      // Ensure constrast ratio requirements are met
-      // color: var(--theme-text)
+    // background-color: rgba(var(--RGB_bg), 80%);
+    // display: inline-flex;
+    // justify-content: center;
+    // align-items: center;
+    // Ensure constrast ratio requirements are met
+    // color: var(--theme-text)
     color: var(--text);
     margin: 0.125em 0 0.125em 0.5em;
-      // Minimal size for mobile users
+    // Minimal size for mobile users
     font-size: var(--font-size-smaller-2);
+    border-left: 1px solid var(--xxhaze);
   }
   &:hover,
   &:focus,

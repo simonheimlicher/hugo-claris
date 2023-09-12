@@ -85,7 +85,7 @@
             </ul>
           {{- end }}
         </div>
-        {{- $taxonomyParams := (dict "HeadingLevel" $headingLevel) }}
+        {{- $taxonomyParams := (dict "HeadingLevel" $headingLevel "Section" $page.Section) }}
         {{- partialCached "claris/_components/taxonomy" (merge $taxonomyParams (dict "Page" .)) $taxonomyParams }}
       </div>
     </aside>
