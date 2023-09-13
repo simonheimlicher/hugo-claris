@@ -4,7 +4,7 @@
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{- /* $debug = or $debug (not (not (findRE `.` $page.RelPermalink) ) ) */ -}}
-{{/* {{- $debug = or $debug (eq site.Language.Lang "en") }} */}}
+{{- /* $debug = or $debug (and (eq $page.Type "_error") (eq site.Language.Lang "en") ) */ -}}
 {{- $skeletonOnly := false }}
 
 {{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
@@ -143,18 +143,23 @@ file that is then published.
     {{- if $target.IncludeLegacy }}
       <!-- Get the main legacy JavaScript file resource and execute it as a Go Template -->
       {{- $legacyMainFileBaseName := printf "%s%s" $mainFileBaseName $legacySuffix }}
-      {{- $bundleVariants = append (slice (dict
-          "Variant" "Legacy"
-          "BaseName" $legacyMainFileBaseName)
-      ) $bundleVariants }}
+      {{- $bundleVariants = append (dict
+        "Variant" "Legacy"
+        "BaseName" $legacyMainFileBaseName)
+      $bundleVariants }}
     {{- end }}
+
+    {{/* {{- if $debug }}
+      {{- warnf "%s[%s]: bundleVariants:\n%v"
+          $page $template (jsonify (dict "indent" "  ") $bundleVariants) }}
+    {{- end }} */}}
 
     {{- range $variant := $bundleVariants }}
 
-      {{/* {{- if $debug }}
+      {{- if $debug }}
         {{- warnf "%s[%s]: .Target=%v .Variant=%v .BaseName=%v: Concatenating content types=%v to ID=%v"
           $page $template $target.Target .Variant .BaseName $contentTypeList $contentTypeListID }}
-      {{- end }} */}}
+      {{- end }}
 
       {{- $variantResources := slice }}
 
@@ -189,10 +194,12 @@ file that is then published.
           {{- end -}}
         {{- end -}}
 
-        {{- $testTargetPathPrefix := printf "%s/%s_TEST" $resourcePathBase $contentType -}}
+        {{/* {{- $testTargetPathPrefix := printf "%s/%s_TEST" $resourcePathBase $contentType -}} */}}
+        {{- /* Need to use a unique name for each testConcatFile */ -}}
+        {{- $testTargetPathPrefix := printf "%s/%s-%s_TEST" $resourcePathBase $variant.BaseName $contentType -}}
         {{- $testConcatFile := printf "%s/%s%s.%s" $testTargetPathPrefix $target.Target $concatSuffix $targetExt }}
 
-        {{/* {{- if and $debug (gt (len $variantContentTypeResources) 0) }}
+        {{- if and $debug (gt (len $variantContentTypeResources) 0) }}
           {{- $variantContentTypeResourcesContents := "" }}
           {{- range $idx, $resource := $variantContentTypeResources }}
             {{- $variantContentTypeResourcesContents = printf "%s    %d --> %v .Name=%v .MediaType=%v\n"
@@ -204,30 +211,31 @@ file that is then published.
                 $contentTypeList $contentTypeListID
                 (len $variantContentTypeResources) $variantContentTypeResourcesContents }}
             {{- end }}
-        {{- end }} */}}
+        {{- end }}
 
         {{- with $variantContentTypeResources }}
           {{- $testConcatResources := $variantContentTypeResources | resources.Concat $testConcatFile }}
           {{- $testVariantResource := js.Build $jsBuildOptionsTest $testConcatResources }}
+          {{- /* FIXME: The "true" in the logical expression below leads to superfluous scripts and needs to be eliminated */ -}}
           {{- if or (not $hugoParamsTestResource) (ne $hugoParamsTestResource.Content $testVariantResource.Content) }}
             {{- $variantResources = append $variantContentTypeResources $variantResources }}
-            {{/* {{- if $debug }}
+            {{- if $debug }}
               {{- warnf "%s[%s]: variant=%v contentType=%v: added variantContentTypeResources=%v to variantResources=%v"
                   $page $template $variant.Variant $contentType
                   $variantContentTypeResources $variantResources }}
-            {{- end -}} */}}
-          {{/* {{- else }}
+            {{- end -}}
+          {{- else }}
             {{- if $debug }}
-              {{- warnf "%s[%s]: variant=%v contentType=%v: bundling mainFile with hugoParams resulted in same bundle as hugoParams alone:\nhugoParams:\n%v\nhugoParams + mainFile:\n%v"
-                  $page $template $variant.Variant $contentType
+              {{- warnf "%s[%s]: variant=%v contentType=%v: bundling mainFile with hugoParams resulted in same bundle as hugoParams alone:\ntestConcatFile=%v\nhugoParams:\n%v\nhugoParams + mainFile=%v:\n%v"
+                  $page $template $variant.Variant $contentType $testConcatFile
                   $hugoParamsTestResource.Content
-                  $testVariantResource.Content }}
-            {{- end -}} */}}
+                  $variantMainFile $testVariantResource.Content }}
+            {{- end -}}
           {{- end -}}
         {{- end -}}
       {{- end -}}
 
-      {{/* {{- if and $debug (eq $page.RelPermalink "/") (gt (len $variantResources) 0) }}
+      {{- if and (eq $page.RelPermalink "/") (gt (len $variantResources) 0) }}
         {{- $variantResourcesContents := "" }}
         {{- range $idx, $resource := $variantResources }}
           {{- $variantResourcesContents = printf "%s    %d --> %v .Name=%v .MediaType=%v\n"
@@ -238,8 +246,8 @@ file that is then published.
               $page $template $target.Target $variant.Variant
               $contentTypeList $contentTypeListID
               (len $variantResources) $variantResourcesContents }}
-          {{- end }}
-      {{- end }} */}}
+        {{- end }}
+      {{- end }}
 
       {{- $targetPathPrefix := printf "%s/%s" $resourcePathBase $contentTypeListID -}}
 
@@ -327,5 +335,8 @@ file that is then published.
   {{- end }}
 {{- end }}
 
-{{/* {{- warnf "%s[%s]: returning $scriptBundles: %s" $page $template $scriptBundles }} */}}
+{{- if $debug }}
+  {{- warnf "%s[%s]: returning scriptBundles: %s" $page $template
+      (jsonify (dict "indent" "  ") $scriptBundles) }}
+{{- end }}
 {{- return $scriptBundles -}}
