@@ -104,7 +104,7 @@ $main-z-index: 1;
   @each $key, $value in $pFix {
     padding-#{$key}: #{$value};
   }
-  @supports (color: var(--CSS-property-support-validation)) {
+  @supports (color: var(--CSS-properties)) {
     @media screen {
       @each $key, $value in $pVar {
         padding-#{$key}: #{$value};
@@ -141,7 +141,7 @@ $main-z-index: 1;
 }
 
 @mixin inner_full-bleed_left-padding($padding-factor: 1) {
-  @include element-padding('inner', unset, unset, unset, $padding-factor);
+  @include element-padding('inner', unset, 0, unset, $padding-factor);
 }
 
 @mixin background_dark() {
@@ -291,12 +291,14 @@ $main-z-index: 1;
 }
 
 @mixin content_base_centered() {
-  @include content_base();
+  @include content_base;
   // FIXME: Must not use width: 100% as otherwise
   // the grid track is exceeded when column-gap is > 0px
   // width: 100%;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
+  @supports (display: grid) {
+    margin: 0;
+  }
 }
 
 @mixin content() {
@@ -304,16 +306,16 @@ $main-z-index: 1;
 }
 
 @mixin content_singlecolumn() {
-  @include inner_horizontal-padding();
-  @include content_base_centered();
+  @include inner_horizontal-padding;
+  @include content_base_centered;
   max-width: var(--content_max-width);
   // max-width: calc(min(100%, var(--content_max-width)));
 }
 
 // Content that has multiple columns
 @mixin content_multicolumn() {
-  @include inner_horizontal-padding();
-  @include content_base_centered();
+  @include inner_horizontal-padding;
+  @include content_base_centered;
   max-width: var(--content_max-width); // For IE 11
   @supports (display: grid) {
     max-width: var(--content_multicolumn_max-width);
@@ -325,7 +327,7 @@ $main-z-index: 1;
 
 // Content that has multiple panels that span the entire width
 @mixin content_full-bleed() {
-  @include content_base();
+  @include content_base;
   padding: 0;
   margin: 0;
 }
@@ -339,7 +341,7 @@ $main-z-index: 1;
 }
 
 @mixin container_base_centered() {
-  @include container_base();
+  @include container_base;
   // FIXME: Must not use width: 100% as otherwise
   // the grid track is exceeded when column-gap is > 0px
   // width: 100%;
@@ -348,15 +350,13 @@ $main-z-index: 1;
 }
 
 @mixin container_singlecolumn() {
-  @include inner_padding();
-  @include container_base_centered();
+  @include inner_padding;
   max-width: var(--content_max-width);
 }
 
 // Container that has multiple columns
 @mixin container_multicolumn() {
-  @include inner_padding();
-  @include container_base_centered();
+  @include inner_padding;
   max-width: var(--content_max-width); // For IE 11
   @supports (display: grid) {
     max-width: var(--content_multicolumn_max-width);
@@ -365,7 +365,7 @@ $main-z-index: 1;
 
 // Container that has multiple panels that span the entire width
 @mixin container_full-bleed() {
-  @include container_base();
+  @include container_base;
   padding: 0;
   margin: 0;
 }
@@ -378,32 +378,32 @@ $main-z-index: 1;
 }
 
 @mixin footer() {
-  @include content_base_centered();
+  @include content_base_centered;
   @include list-style_none;
   max-width: var(--screenViewWidthChrome);
 }
 
 @mixin content_wide() {
-  @include content_base();
+  @include content_base;
   max-width: var(--content_wide_max-width);
 }
 
 @mixin content_chrome-width() {
-  @include content_base();
+  @include content_base;
   max-width: var(--screenViewWidthChrome);
 }
 
 @mixin content_ultrawide() {
-  @include content_base();
+  @include content_base;
   max-width: var(--screenViewWidthUltrawide);
 }
 
 @mixin aside() {
+  @include content_base;
   @media screen and (min-width: $screenViewBreakpointWidthWide) {
     @include geometric-scale('font-size', var(--font-size-aside));
   }
   font-size: var(--font-size-normal);
-  @include content_base();
   h1, h2 {
     font-size: var(--font-size-larger-2);
   }
@@ -417,7 +417,7 @@ $main-z-index: 1;
 }
 
 @mixin aside-meta() {
-  @include content_base();
+  @include content_base;
   @include geometric-scale('font-size', var(--font-size-aside-meta));
   font-size: var(--font-size-normal);
 }
@@ -971,14 +971,15 @@ $familyDefaultMap: (
 
   $smaller-factor-idx-max: 3;
   $larger-factor-idx-max: 6;
-  --#{$prop}-base: #{fluid($min-size, $max-size, $min-breakpoint, $max-breakpoint, $unit)};
 
   /* Fallback variables for browsers that don't support clamp */
-  @supports not (font-size: clamp(1rem, 1vw, 1rem)) {
-    --#{$prop}-base: #{$min-size};
-    @media screen and (min-width: $max-breakpoint) {
-      --#{$prop}-base: #{$max-size};
-    }
+  --#{$prop}-base: #{$min-size};
+  @media screen and (min-width: $max-breakpoint) {
+    --#{$prop}-base: #{$max-size};
+  }
+
+  @supports (margin: clamp(1rem, 1vw, 1rem)) {
+    --#{$prop}-base: #{fluid($min-size, $max-size, $min-breakpoint, $max-breakpoint, $unit)};
   }
 
   --#{$prop}-normal: #{geometric-scaled-prop($prop, $scale-factor, $base-shift)};
@@ -1001,10 +1002,27 @@ $familyDefaultMap: (
     $denominator: $fractionalScaleDenominator, $base-shift: 0) {
 
   $numerator-max: 4 * $denominator;
-  --#{$prop}-base: #{fluid($min-size, $max-size, $min-breakpoint, $max-breakpoint, $unit)};
-  --#{$prop}: #{fractional-scaled-prop($prop, $base-shift + $denominator, $denominator)};
+
+  /* Fallback variables for browsers that don't support clamp */
+  --fallback-without-clamp: #{$prop};
+  --#{$prop}: #{$min-size};
   @for $i from 0 through $numerator-max {
-    --#{$prop}_#{$denominator}-#{$i}: #{fractional-scaled-prop($prop, $base-shift + $i, $denominator)};
+    --#{$prop}_#{$denominator}-#{$i}: #{roundDec(math.div($i, $denominator) * $min-size, $fluidScaleDigits)};
+  }
+  @media screen and (min-width: $max-breakpoint) {
+    --fallback-without-clamp: #{$prop};
+    --#{$prop}: #{$max-size};
+    @for $i from 0 through $numerator-max {
+      --#{$prop}_#{$denominator}-#{$i}: #{roundDec(math.div($i, $denominator) * $max-size, $fluidScaleDigits)};
+    }
+  }
+
+  @supports (margin: clamp(1rem, 1vw, 1rem)) {
+    --#{$prop}-base: #{fluid($min-size, $max-size, $min-breakpoint, $max-breakpoint, $unit)};
+    --#{$prop}: #{fractional-scaled-prop($prop, $base-shift + $denominator, $denominator)};
+    @for $i from 0 through $numerator-max {
+      --#{$prop}_#{$denominator}-#{$i}: #{fractional-scaled-prop($prop, $base-shift + $i, $denominator)};
+    }
   }
 }
 

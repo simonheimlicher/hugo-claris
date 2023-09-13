@@ -165,7 +165,7 @@
     // For IE 11
     font-size: 1.5rem;
   }
-  @supports (color: var(--color-test)) {
+  @supports (color: var(--CSS-properties)) {
     font-size: var(--font-size-nav);
   }
   .icon {
@@ -728,7 +728,7 @@
   .header_claris {
     // For IE 11
     font-size: 0.875rem;
-    @supports (color: var(--color-test)) {
+    @supports (color: var(--CSS-properties)) {
       font-size: var(--font-size-nav);
     }
   }

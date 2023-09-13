@@ -103,6 +103,7 @@
 {{- $lazy := default (eq $fetchPriority "low") .lazy -}}
 
 {{- $noscriptHideClass := "noscript-hide" }}
+{{- $lazyloadPolyfillClass := "lazyload" }}
 {{- $scriptBasedLoading := or $lazy $variantSpec -}}
 {{- $includePlaceholder := $scriptBasedLoading }}
 {{- $includeNoscriptFallback := $scriptBasedLoading }}
@@ -289,7 +290,7 @@
     {{- $backgroundRightInlineStyle := "" -}}
 
     {{- if $figureClass }}
-      <figure class="{{ $figureClass }}{{ if $lazy }} lazyload{{ end }}">
+      <figure class="{{ $figureClass }}">
       {{- /* <!-- Would prefer to use NPM module medium-zoom to zoom in on the figure including the caption
       but doing this by adding the following attribute appears not to work: --> */ -}}
       {{- /* with $lightbox }} data-zoomable="{{ . | safeHTMLAttr }}"{{- end -}} */ -}}
@@ -378,7 +379,7 @@
         {{- $imgWidth := default .resource.Width $imageResourceArgs.Width }}
         {{- $imgHeight := default .resource.Height $imageResourceArgs.Height }}
         {{- $imgInlineStyleSlice := slice }}
-          <img  class="{{ with $imgClass }}{{ . }}{{ end }}{{ if $includeNoscriptFallback }} {{ $noscriptHideClass }}{{ end }}"
+          <img  class="{{ with $imgClass }}{{ . }}{{ end }}{{ if $lazy }} {{ $lazyloadPolyfillClass }}{{ end }}{{ if $includeNoscriptFallback }} {{ $noscriptHideClass }}{{ end }}"
                 width="{{ $imgWidth }}" height="{{ $imgHeight }}"
             {{- if $includePlaceholder }}
                   {{ printf "src=%q" $placeholderInlineImg | safeHTMLAttr }}

@@ -302,7 +302,7 @@ blockquote {
   min-height: calc(1.25 * var(--quotation-mark-close-height));
 
   // Only render the below if the browser supports CSS properties
-  @supports (color: var(--text)) {
+  @supports (color: var(--CSS-properties)) {
     &:before {
       @include useFontDefinition(serif);
       content: "“";
