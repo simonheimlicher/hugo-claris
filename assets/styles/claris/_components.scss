@@ -681,7 +681,12 @@
   //   @include color-scheme_transition;
   // }
   @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
-    display: block;
+
+    // Don't show any article aside if the browser does not support grid
+    // as it cannot be placed next to the article without grid
+    @supports (display: grid) {
+      display: block;
+    }
   }
 }
 .table_of_contents {
@@ -809,10 +814,9 @@
         // For IE 11
         .content-title {
           @include content_multicolumn;
+          margin: 1em auto;
+          width: 100%; // For IE 11
           text-align: center;
-          width: auto;
-          margin-top: 1em;
-          margin-bottom: 1em;
         }
         .feature-image {
           &_figure {
@@ -856,15 +860,14 @@
           --background_gradient_end-position: calc( min(var(--border_overlap_fraction) * 100vw, var(--border_overlap_fraction) * var(--feature-image_max-width) / 2) );
           .content-title {
             @include content_multicolumn;
-            text-align: left;
-            width: fit-content;
-            padding: 0;
-            margin: 1em auto;
             --title_line-height: calc(var(--font-size-title) * var(--line-height-heading));
             margin: calc(0.75 * var(--title_line-height)) auto;
             @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
               min-width: calc(var(--content_max-width) - var(--inner_margin) * 2);
             }
+            padding: 0;
+            width: fit-content;
+            text-align: unset;
           }
           .feature-image {
             &_figure {
@@ -977,6 +980,12 @@
       &_color-white {
         color: white;
         --header-text: white;
+        // For IE 11 and other browsers that don't support CSS custom properties
+        h1#articleTop {
+          &, &.supertitle, .supertitle, &.subtitle, .subtitle {
+            color: white;
+          }
+        }
       }
       &_position-left {
         .content-title {
@@ -991,12 +1000,15 @@
     position: relative;
     padding-bottom: 0;
     .main_header {
-      min-height: math.div($screenViewBreakpointHeightTall, 4);
-      min-height: clamp(
-        math.div($screenViewBreakpointHeightTall, 4),
-        75vh - math.div($screenViewBreakpointHeightTall, 8),
-        100vh
-      );
+      height: 30vh;
+      @supports (margin: clamp(1px, 1vw, 1px)) {
+        height: unset;
+        min-height: clamp(
+          math.div($screenViewBreakpointHeightTall, 4),
+          75vh - math.div($screenViewBreakpointHeightTall, 8),
+          100vh
+        );
+      }
     }
     .main_inner {
       position: relative;
@@ -1013,6 +1025,12 @@
       --font-size-title: var(--font-size_heading-larger-5);
       --font-size-subtitle: var(--font-size_heading-larger-2);
       --header-text: white;
+      // For IE 11 and other browsers that don't support CSS custom properties
+      h1#articleTop {
+        &, &.supertitle, .supertitle, &.subtitle, .subtitle {
+          color: white;
+        }
+      }
       text-align: center;
       margin-bottom: 2rem;
     }
