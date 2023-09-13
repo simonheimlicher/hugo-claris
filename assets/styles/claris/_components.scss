@@ -208,7 +208,7 @@
       background: var(--bg);
       @include drop-shadow(3rem, 0.1, 0.1);
       @include color-scheme_transition;
-      @include inner-padding;
+      @include inner_padding;
       min-width: calc(min(100%, ($screenViewBreakpointWidthWide - 1 * var(--inner_margin)) / 2));
       @media screen and (min-width: $screenViewBreakpointWidthWide) {
         &:nth-child(odd) {
@@ -607,7 +607,6 @@
     width: 100%;
     & > * + * {
       margin-top: calc(2em * (var(--line-height) - 1));
-      // outline: 1px solid green;
     }
 
     p + p {
@@ -1308,6 +1307,9 @@ svg.qrcode-svg {
     background: var(--bg);
     @include color-scheme_transition;
     margin-bottom: var(--inner_margin);
+    .content &, .article_body & {
+      @include link-lvhfa-inherit;
+    }
     &:last-child {
       margin-bottom: 0;
     }
@@ -1317,11 +1319,6 @@ svg.qrcode-svg {
       &:focus {
         color: var(--text-hover);
         background: var(--bg-hover);
-      }
-    }
-    .excerpt {
-      &_header, &_main, &_footer {
-        @include link-lvhfa-inherit;
       }
     }
   }
@@ -1382,7 +1379,7 @@ svg.qrcode-svg {
   &_content {
     // Avoid overflow at bottom
     height: auto;
-    padding: var(--inner_padding_4-2) var(--inner_padding) var(--inner_padding) var(--inner_padding);
+    padding: 0 var(--inner_padding);
   }
   &_footer {
     clear: both;
@@ -1394,7 +1391,7 @@ svg.qrcode-svg {
     }
     &_read-on,
     &_page-count {
-      padding: var(--inner_padding_4-2) var(--inner_padding) var(--inner_padding) var(--inner_padding);
+      padding: var(--inner_padding_4-1) var(--inner_padding) var(--inner_padding) var(--inner_padding);
       margin: 0;
     }
     &_read-on {
@@ -1419,8 +1416,16 @@ svg.qrcode-svg {
     // }
   }
   &_container {
-    display: flex;
-    flex-direction: column;
+    &, & > a {
+      display: flex;
+      flex-direction: column;
+      // For IE 11
+      height: 100%;
+      @supports (display: flex) {
+        height: auto;
+        flex: 0 0 100%;
+      }
+    }
   }
   &_main {
     display: flex;
@@ -1434,7 +1439,7 @@ svg.qrcode-svg {
     }
     @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
       &_container {
-        margin: var(--inner-margin-y) 0 0 0;
+        margin: var(--inner_margin) 0 0 0;
       }
       &_grid {
         // Auto-fit as many items on a row as possible without going under $list-excerpt-width
@@ -1474,71 +1479,6 @@ svg.qrcode-svg {
               }
             }
           }
-        }
-      }
-    }
-  }
-}
-@supports (display: grid) {
-  .hero-image_background_main {
-    .excerpt {
-      @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
-        &_grid {
-          // Allow 1 column, not 2
-          grid-template-columns: 1fr;
-        }
-        &_container {
-          .excerpt_main {
-            &.image.content {
-              .excerpt_thumbnail {
-                float: none;
-                padding-right: var(--inner_padding);
-                max-width: 100%;
-              }
-            }
-          }
-        }
-      }
-      @media screen and (min-width: $screenViewBreakpointWidthOneColumn) {
-        &_grid {
-          // Allow 2 columns, not 3
-          grid-template-columns: repeat(2, minmax(#{$list-excerpt-width}, 1fr) );
-        }
-      }
-      @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
-        &_grid {
-          // Allow 2 columns, not 3
-          grid-template-columns: repeat(2, minmax(#{$list-excerpt-width}, 1fr) );
-        }
-      }
-      @media screen and (min-width: $screenViewBreakpointWidthWide) {
-        &_container {
-          .excerpt_main {
-            &.image.content {
-              .excerpt_thumbnail {
-                float: left;
-                padding: var(--inner_padding_4-3) var(--inner_padding_4-2) var(--inner_padding_4-2) var(--inner_padding);
-                max-width: 50%;
-              }
-            }
-          }
-        }
-      }
-      @media screen and (min-width: $screenViewBreakpointWidthUltrawide) {
-        &_container {
-          .excerpt_main {
-            &.image.content {
-              .excerpt_thumbnail {
-                float: none;
-                padding-right: var(--inner_padding);
-                max-width: 100%;
-              }
-            }
-          }
-        }
-        &_grid {
-          // Allow 4 columns only when 4 columns fit, not 3
-          grid-template-columns: repeat(4, 1fr);
         }
       }
     }
@@ -1962,34 +1902,27 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
   &.float-left,
   &.float-right {
     float: none;
-    max-width: 80%;
+    max-width: 100%;
     // max-width: calc(0.8 * (#{$screenViewBreakpointWidthMobile} - 2 * var(--inner_padding) ) )
     margin: var(--inner_margin) auto;
   }
   *:not(figure) + & {
     clear: both;
   }
-  &.relative-width-20 {
-    max-width: 30%;
-  }
-  &.relative-width-30 {
-    max-width: 40%;
-  }
-  &.relative-width-40 {
-    max-width: 60%;
-  }
-  &.relative-width-50 {
-    max-width: 70%;
+  &.relative-width-50, &.relative-width-60 {
+    max-width: 100%;
   }
   @media screen and (min-width: $screenViewBreakpointWidthMobile) {
+    &.float-left,
+    &.float-right {
+      max-width: 80%;
+    }
     &.relative-width-20 {
       &.float-left {
         float: left;
         margin: 0.75rem;
         margin: var(--float_margin) var(--float_margin) var(--float_margin) 0;
       }
-    }
-    &.relative-width-20 {
       &.float-right {
         float: right;
         margin: 0.75rem;
@@ -1999,31 +1932,23 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
     &.relative-width-20 {
       max-width: 40%;
     }
-    &.relative-width-30 {
-      max-width: 60%;
-    }
-    &.relative-width-40 {
-      max-width: 80%;
-    }
   }
 
   @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
+    &.relative-width-20 {
+      max-width: 30%;
+    }
     &.relative-width-30 {
       &.float-left {
         float: left;
         margin: 0.75rem;
         margin: var(--float_margin) var(--float_margin) var(--float_margin) 0;
       }
-    }
-    &.relative-width-30 {
       &.float-right {
         float: right;
         margin: 0.75rem;
         margin: var(--float_margin) 0 var(--float_margin) var(--float_margin);
       }
-    }
-    &.relative-width-20 {
-      max-width: 30%;
     }
     &.relative-width-30 {
       max-width: 40%;
@@ -2033,6 +1958,9 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
     }
     &.relative-width-50 {
       max-width: 60%;
+    }
+    &.relative-width-60 {
+      max-width: 70%;
     }
   }
 
@@ -2051,6 +1979,24 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
       margin: 0.75rem;
       margin: var(--float_margin) 0 var(--float_margin) var(--float_margin);
     }
+    &.relative-width-20 {
+      max-width: 30%;
+    }
+    &.relative-width-30 {
+      max-width: 40%;
+    }
+    &.relative-width-40 {
+      max-width: 50%;
+    }
+    &.relative-width-50 {
+      max-width: 50%;
+    }
+    &.relative-width-60 {
+      max-width: 60%;
+    }
+  }
+
+  @media screen and (min-width: $screenViewBreakpointWidthWide), print {
     &.relative-width-20 {
       max-width: 20%;
     }

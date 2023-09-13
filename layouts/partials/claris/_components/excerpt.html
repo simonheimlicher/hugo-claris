@@ -96,64 +96,59 @@
     {{- $title := default .Title $excerptMeta.Single.Data.Title }}
     {{- $plainTitle := $title | plainify }}
     <div class="{{ delimit $containerClassList " " }}">
-      <div class="excerpt_header">
-        <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
+      <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
+        <div class="excerpt_header">
           <h{{ $headingLevel }} class="excerpt_title">
           {{ $title | $page.RenderString }}
           </h{{ $headingLevel }}>
-        </a>
-        {{- with $headerPartial }}
-          {{ partial $headerPartial (dict
-            "Page" $page
-            "SubjectPage" $subjectPage
-            "ContainerClass" "excerpt_meta"
-            "ShowAuthor" $showAuthor
-            "AuthorAvatar" $showAuthorAvatar
-            "AuthorLink" $showAuthorLink
-            "ShowDate" $showDate
-            "RelativeDates" $relativeDates
-            "ShowTags" $showTags) }}
-        {{- end }}
-      </div>
-      <div class="excerpt_main{{ if $excerptImage }} image{{ end }}{{ if $excerptContent }} content{{ end }}">
-        <a class="excerpt_main_link" href="{{ .Permalink }}" title="{{ $plainTitle }}">
-        {{- with $excerptImage }}
-
-          {{- if not $fetchPriority }}
-            {{- if lt ($page.Scratch.Get "claris.image.prioritized") 1 }}
-              {{- $page.Scratch.Add "claris.image.prioritized" 1 }}
-              {{- $fetchPriority = "high" }}
-              {{- if $debug }}
-                {{- warnf "%s[%s]: claris.image.prioritized incremented to %d. Prioritizing excerpt image for %v"
-                    $page $template ($page.Scratch.Get "claris.image.prioritized") $subjectPage -}}
-              {{- end }}
-            {{- else }}
-              {{- if $debug }}
-                {{- warnf "%s[%s]: claris.image.prioritized already at %d. Not prioritizing excerpt image for %v"
-                    $page $template ($page.Scratch.Get "claris.image.prioritized") $subjectPage -}}
+          {{- with $headerPartial }}
+            {{ partial $headerPartial (dict
+              "Page" $page
+              "SubjectPage" $subjectPage
+              "ContainerClass" "excerpt_meta"
+              "ShowAuthor" $showAuthor
+              "AuthorAvatar" $showAuthorAvatar
+              "AuthorLink" $showAuthorLink
+              "ShowDate" $showDate
+              "RelativeDates" $relativeDates
+              "ShowTags" $showTags) }}
+          {{- end }}
+        </div>
+        <div class="excerpt_main{{ if $excerptImage }} image{{ end }}{{ if $excerptContent }} content{{ end }}">
+          {{- with $excerptImage }}
+            {{- if not $fetchPriority }}
+              {{- if lt ($page.Scratch.Get "claris.image.prioritized") 1 }}
+                {{- $page.Scratch.Add "claris.image.prioritized" 1 }}
+                {{- $fetchPriority = "high" }}
+                {{- if $debug }}
+                  {{- warnf "%s[%s]: claris.image.prioritized incremented to %d. Prioritizing excerpt image for %v"
+                      $page $template ($page.Scratch.Get "claris.image.prioritized") $subjectPage -}}
+                {{- end }}
+              {{- else }}
+                {{- if $debug }}
+                  {{- warnf "%s[%s]: claris.image.prioritized already at %d. Not prioritizing excerpt image for %v"
+                      $page $template ($page.Scratch.Get "claris.image.prioritized") $subjectPage -}}
+                {{- end }}
               {{- end }}
             {{- end }}
+            <div class="excerpt_thumbnail">
+                {{ partial "responsive-image" (dict
+                  "Page" $page
+                  "resource" .
+                  "title" $title
+                  "alt" (default $title $imageMeta.excerpt.variant.default.alt)
+                  "fetchpriority" $fetchPriority
+                  "quality" "low"
+                ) }}
+            </div>
           {{- end }}
-          <div class="excerpt_thumbnail">
-              {{ partial "responsive-image" (dict
-                "Page" $page
-                "resource" .
-                "title" $title
-                "alt" (default $title $imageMeta.excerpt.variant.default.alt)
-                "fetchpriority" $fetchPriority
-                "quality" "low"
-              ) }}
-          </div>
-        {{- end }}
           {{- with $excerptContent }}
           <div class="excerpt_content">
             {{- page.RenderString . -}}
           </div>
           {{- end }}
-        </a>
-      </div>
-      <div class="excerpt_footer">
-        <a class="excerpt_footer_link" href="{{ .Permalink }}" title="{{ $plainTitle }}">
+        </div>
+        <div class="excerpt_footer">
           {{- $pageCount := 0 }}
           {{- /* {{- if $debug }}
             {{- warnf "%s[%s]: Items in excerpt: %v" $subjectPage $template $excerptMeta.List }}
@@ -169,8 +164,8 @@
           {{ $pageCount }} {{ T "articles" $pageCount }}
           </div>
           {{- end }}
-        </a>
-      </div>
+        </div>
+      </a>
     </div>
     {{ $page.Scratch.Add $scratchExcerptRenderedKey $subjectPage }}
   {{- end }}

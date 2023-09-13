@@ -1099,32 +1099,6 @@ html:not(.modern-js) .article_aside .table_of_contents {
 .article_body {
   // @include link-lvhfa;
   @include link-lvhfa(true);
-  // p a:not(.button):not(nav a):not(sup a),
-  // li a:not(.button):not(nav a):not(sup a) {
-  //   // Same as surrounding text should be ok for background contrast
-  //   color: inherit;
-  //   padding: 0 0 0.125rem 0;
-  //   background-image: linear-gradient(to right, var(--xhaze) 0, var(--xxhaze) 50%, var(--xhaze)100%);
-  //   background-size: 50% 12%;
-  //   background-position-y: 1.1rem;
-  //   background-repeat: repeat-x;
-  //   background-position: bottom;
-  //   &:hover {
-  //     @media (any-hover: hover) {
-  //       // Same as surrounding text should be ok for background contrast
-  //       color: inherit;
-  //       text-decoration: none;
-  //       background-size: 50% 100%;
-  //       border-radius: 0.125rem;
-  //     }
-  //   }
-  //   &:active {
-  //     color: var(--xaccent);
-  //   }
-  //   &:focus {
-  //     outline: var(--accent);
-  //   }
-  // }
 }
 .sidebar {
   @include link-lvhfa;
