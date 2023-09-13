@@ -33,8 +33,10 @@
             {{- $headline = printf "%s: %s" $title $subtitle }}
           {{- else }}
             {{- if lt (len $headline) $min }}
-              {{- warnf "%s[%s]: Title=%v [%d characters] < min=%d: adding separator and subtitle would yield %d characters [supertitle=%d, subtitle=%d]"
-                  $page $template $title (len $title) $min (add (len $title) (len $subtitle) 2) (len $supertitle) (len $subtitle) }}
+              {{- if $debug }}
+                {{- warnf "%s[%s]: Title=%v [%d characters] < min=%d: adding separator and subtitle would yield %d characters [supertitle=%d, subtitle=%d]"
+                    $page $template $title (len $title) $min (add (len $title) (len $subtitle) 2) (len $supertitle) (len $subtitle) }}
+              {{- end }}
             {{- end }}
           {{- end }}
         {{- end }}
