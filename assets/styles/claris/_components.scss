@@ -875,11 +875,16 @@
                 minmax(0px, 1fr)
                 calc(min(100%, var(--feature-image_max-width) + min(var(--border_overlap_vw), var(--border_overlap_fraction) * var(--feature-image_max-width))))
                 minmax(0px, 1fr);
+              // Reset `height: 100%` from IE 11 above to ensure that the grid does not take up the entire height
+              height: unset;
               picture, noscript {
                 grid-column: 2;
               }
               .background {
                 z-index: ($main-z-index + 3);
+                &.left, &.right {
+                  display: block;
+                }
                 &.left {
                   grid-column: 1;
                   margin-right: calc( max(
