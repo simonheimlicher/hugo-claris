@@ -1034,7 +1034,7 @@ html {
   $fontDefinitions: (
     (article, serif),
     (code, mono),
-    (meta, sans)
+    (meta, inherit)
   );
   // FIXME: debug with only one font style
   // $fontStyles: (default);
