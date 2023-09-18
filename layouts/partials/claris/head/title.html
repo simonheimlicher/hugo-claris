@@ -3,7 +3,7 @@
 {{- $template := "claris/head/title" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- /* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/de/transformation/why-okr` $page.RelPermalink) ) ) }} */ -}}
+{{- /* $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?` $page.RelPermalink) ) ) */ -}}
 
 {{- with $page }}
   {{- $title := .Title | $page.RenderString }}
@@ -98,5 +98,7 @@
   {{- if not $titleVariant.headline }}
     {{- errorf "%s[%s]: invalid $titleVariant.headline='%v'" $page $template $titleVariant.headline }}
   {{- end }}
+{{- else }}
+  {{- errorf "%s[%s]: Missing argument .Page=%v" $page $template $page }}
 {{- end }}
 {{- return $titleVariant }}

@@ -814,7 +814,7 @@ $familyDefaultMap: (
     $fontDefinitionMap: map-merge($fontDefinitionMap, ($definitionID: $defFamily)) !global;
   }
   @else {
-    --#{$originPrefix}defineFontDefinition_undefined: #{$fontFamilyID};
+    --defineFontDefinition_fontFamilyId_undefined: #{$fontFamilyID};
   }
 
   // FIXME: Output updated $fontDefinitionMap

@@ -20,7 +20,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     {{- $title := default $meta.Site.Data.Headline $meta.Single.Data.Headline | safeHTML }}
     {{- if not $meta.Single.Data.Headline }}
-      {{- warnf "%s[%s]: Invalid meta.Single.Data.Headline='%s'; using default $title='%s' [.Title='%s' .Supertitle='%v' .Subtitle='%v']"
+      {{- warnf "%s[%s]: Invalid meta.Single.Data.Headline='%s'; using meta.Site.Data.Headline='%s' [.Title='%s' .Supertitle='%v' .Subtitle='%v']"
           $page $template $meta.Single.Data.Headline $title $meta.Single.Data.Title
           $meta.Single.Data.Supertitle $meta.Single.Data.Subtitle -}}
     {{- end }}

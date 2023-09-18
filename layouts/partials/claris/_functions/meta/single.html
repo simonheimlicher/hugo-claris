@@ -23,7 +23,7 @@
     {{- end }}
   {{- else }}
     {{/* {{- if $debug }} */}}
-      {{- warnf "%s[%s]: $assetVariant=%v"
+      {{- errorf "%s[%s]: invalid $assetVariant=%v: missing .ContentType"
           $page $template $assetVariant }}
     {{/* {{- end }} */}}
   {{- end }}
