@@ -37,6 +37,8 @@ document.addEventListener('DOMContentLoaded', mediumZoomInit);
 //   mediumZoom("[data-zoomable]", mediumZoomOptions);
 // });
 
+import './font-metrics';
+import './font-metrics-knobs';
 import './web-vitals-analytics';
 
 // console.log('END   theme/enhanced.js');

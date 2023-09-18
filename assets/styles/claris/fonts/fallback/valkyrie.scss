@@ -1,22 +1,48 @@
-/*
-Source: https://screenspan.net/fallback */
 
 @font-face {
   font-family: valkyrie-fallback;
   src: local("Georgia");
-  size-adjust: 100.1%;
-  ascent-override: 95.5%;
-  descent-override: 29.1%;
+  // From manual adjustment via https://screenspan.net/fallback
+  // size-adjust: 100.1%;
+  // ascent-override: 95.5%;
+  // descent-override: 29.1%;
+
+  // From capsize/core/createFontStack
+  // size-adjust: 99.6814%;
+  // ascent-override: 98.1126%;
+  // descent-override: 26.986%;
+  // line-gap-override: 0%;
+
+  // From capsize/core/createFontStack
+  // Manually corrected size-adjust
+  // size-adjust: 100.45%;
+  // ascent-override: 97.9852521931789%;
+  // descent-override: 26.9509728178147%;
+
+  // From capsize/core/createFontStack
+  // Manually corrected everything
+  size-adjust: 100.45%;
+  ascent-override: 98%;
+  descent-override: 26.7%;
+
   line-gap-override: 0%;
+
 }
 
 @font-face {
   font-family: valkyrie-fallback;
   font-weight: 600;
   src: local("Georgia");
-  size-adjust: 100.1%;
-  ascent-override: 95.4%;
-  descent-override: 28.4%;
+
+  // From manual adjustment via https://screenspan.net/fallback
+  // size-adjust: 100.1%;
+  // ascent-override: 95.4%;
+  // descent-override: 28.4%;
+
+  // From capsize/core/createFontStack
+  size-adjust: 99.6814%;
+  ascent-override: 98.1126%;
+  descent-override: 26.986%;
   line-gap-override: 0%;
 }
 

@@ -1,25 +1,46 @@
-/*
-Source: https://screenspan.net/fallback
-*/
-
 @font-face {
   font-family: concourse-fallback;
   font-style: normal;
   font-weight: 400;
 	src: local("Arial");
-  size-adjust: 86.5%;
-  ascent-override: 104%;
-  descent-override: 34%;
-  line-gap-override: normal;}
+
+  // From manual adjustment via https://screenspan.net/fallback
+  // size-adjust: 90%;
+  // ascent-override: 105.1%;
+  // descent-override: 28.4%;
+
+  // From capsize/core/createFontStack
+  // size-adjust: 86.7681%;
+  // ascent-override: 109.9482%;
+  // descent-override: 29.7344%;
+
+  size-adjust: 92%;
+  ascent-override: 103.72%;
+  descent-override: 22.51%;
+
+  line-gap-override: normal;
+}
 
 @font-face {
   font-family: concourse-fallback;
   font-style: normal;
   font-weight: 500;
   src: local("Arial");
-  size-adjust: 87%;
-  ascent-override: 108%;
-  descent-override: 28%;
+
+  // From manual adjustment via https://screenspan.net/fallback
+  // size-adjust: 87%;
+  // ascent-override: 108%;
+  // descent-override: 28%;
+
+  // From capsize/core/createFontStack
+  // size-adjust: 86.7681%;
+  // ascent-override: 109.9482%;
+  // descent-override: 29.7344%;
+
+  size-adjust: 92%;
+  ascent-override: 103.72%;
+  descent-override: 22.51%;
+
   line-gap-override: normal;
 }
 
@@ -28,9 +49,21 @@ Source: https://screenspan.net/fallback
   font-style: normal;
   font-weight: 600;
   src: local(Arial);
-  size-adjust: 89%;
-  ascent-override: 106%;
-  descent-override: 26%;
+
+  // From manual adjustment via https://screenspan.net/fallback
+  // size-adjust: 88.3%;
+  // ascent-override: 107.2%;
+  // descent-override: 30.5%;
+
+  // From capsize/core/createFontStack
+  // size-adjust: 86.7681%;
+  // ascent-override: 109.9482%;
+  // descent-override: 29.7344%;
+
+  size-adjust: 92%;
+  ascent-override: 103.72%;
+  descent-override: 22.51%;
+
   line-gap-override: normal;
 }
 
@@ -39,6 +72,8 @@ Source: https://screenspan.net/fallback
   font-style: normal;
   font-weight: 700;
   src: local(Arial Black);
+
+  // From manual adjustment via https://screenspan.net/fallback
   size-adjust: 87%;
   ascent-override: 129%;
   descent-override: 12%;
