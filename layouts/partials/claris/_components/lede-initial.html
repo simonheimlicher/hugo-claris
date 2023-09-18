@@ -1,0 +1,78 @@
+{{- $page := page }}
+{{- $content := . }}
+{{- $template := "claris/_components/lede-initial" }}
+
+{{- if reflect.IsMap . }}
+  {{- $page = default $page .Page }}
+  {{- $content = default $content .Content }}
+{{- end }}
+
+{{- with $content }}
+  {{- $initialParaMinLength := 200 }}
+  {{- $ledeRE := `(?s)^\s*<p>(.*?)</p\s*>` -}}
+  {{- if findRE $ledeRE $content 1 }}
+
+    {{- $contentLede := replaceRE `(?s)^\s*<p>(.*?)</p\s*>.*` `<p class="lede">$1</p>` $content 1 }}
+    {{- $contentWithoutLede := replaceRE `(?s)^\s*<p>.*?</p\s*>\s*(.*)` `$1` $content 1 }}
+
+    {{- $initialParaRE := `(?s)^\s*<p>(.*?)</p\s*>` }}
+    {{- $initialPara := findRE $initialParaRE $contentWithoutLede 1 }}
+    {{- with $initialPara = index $initialPara 0 }}
+      {{- if gt (len .) $initialParaMinLength }}
+        {{- $initialPara = replaceRE $initialParaRE `$1` $initialPara }}
+        {{- $tokens := findRE `(?s)(\S+)\s*` $initialPara }}
+        {{- $modifiedTokens := slice }}
+
+        {{- $initialLetterRE := `(.*?[\p{L}])\s*` }}
+        {{- $initialLetter := "" }}
+
+        {{- $initialWordList := slice }}
+        {{- $initialWords := "" }}
+
+        {{- range $tokens }}
+          {{- $token := (replaceRE `(?s)(\S+)\s*` `$1` .) }}
+          {{- if not $initialLetter }}
+            {{- with findRE $initialLetterRE $token 1 }}
+              {{- $initialLetter = index . 0 }}
+              {{- $initialWordList = slice (substr $token (len $initialLetter)) }}
+              {{- $token = false }}
+            {{- end }}
+          {{- else if not $initialWords }}
+            {{- if gt (len $initialWordList) 5 }}
+              {{- $initialWords = delimit $initialWordList " " }}
+            {{- else if findRE `^\P{L}` $token 1 }}
+              {{- $initialWords = delimit $initialWordList " " }}
+            {{- else if findRE `\P{L}` $token 1 }}
+              {{- $initialWordList = append $token $initialWordList }}
+              {{- $initialWords = delimit $initialWordList " " }}
+              {{- $token = false }}
+            {{- else if gt (len (delimit $initialWordList " ")) 10 }}
+              {{- if findRE `^(the|and|der|die|das|und)` $token 1 }}
+                {{- $initialWords = delimit $initialWordList " " }}
+              {{- else if lt (len $token) 3 }}
+                {{- $initialWords = delimit $initialWordList " " }}
+              {{- end }}
+            {{- else if gt (len (delimit $initialWordList " ")) 25 }}
+              {{- $initialWords = delimit $initialWordList " " }}
+            {{- else }}
+              {{- $initialWordList = append $token $initialWordList }}
+              {{- $token = false }}
+            {{- end }}
+          {{- end }}
+
+          {{- with $token }}
+            {{- $modifiedTokens = append . $modifiedTokens }}
+          {{- end }}
+        {{- end }}
+        {{- $modifiedInitialPara := printf `<p class="drop-cap"><span class="initial-letter">%s</span><span class="initial-words">%s</span> %s</p>` $initialLetter $initialWords (delimit $modifiedTokens " ") }}
+        {{- $contentWithoutLede = replaceRE $initialParaRE $modifiedInitialPara $contentWithoutLede 1 }}
+      {{- end }}
+    {{- end }}
+    {{- $content = printf "%s\n%s" $contentLede $contentWithoutLede }}
+  {{- end -}}
+
+  {{- $content = $content | safeHTML }}
+
+{{- end -}}
+
+{{- return $content }}
