@@ -223,7 +223,7 @@ $main-z-index: 1;
           color: var(--#{$text});
           text-decoration-line: underline;
           text-underline-position: under;
-          text-underline-offset: 0.1em;
+          text-underline-offset: 0.05em;
         }
       }
       @else {
@@ -233,7 +233,7 @@ $main-z-index: 1;
         &:hover, &:active {
           text-decoration-line: underline;
           text-underline-position: under;
-          text-underline-offset: 0.1em;
+          text-underline-offset: 0.05em;
         }
       }
       &, &:link {
