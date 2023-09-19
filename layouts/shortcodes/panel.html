@@ -1,0 +1,101 @@
+{{- $page := page }}
+{{- $template := "shortcodes/content-excerpt" }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
+{{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo/)?/leadership/` $page.RelPermalink) ) ) -}} */}}
+
+{{- $subjectRef := .Get "page" | default (.Get 0) -}}
+{{- $subjectPage := false -}}
+
+{{- if strings.HasPrefix "/" $subjectRef }}
+  {{- $subjectPage = site.GetPage $subjectRef -}}
+{{- else }}
+  {{- $subjectRef = strings.TrimLeft "./" $subjectRef }}
+  {{- $subjectPage = page.GetPage $subjectRef -}}
+{{- end }}
+
+{{- if $subjectPage }}
+  {{- $title := default "" (.Get "title") }}
+  {{- $inner := .Inner }}
+  {{- $fetchPriority := default "auto" (.Get "fetchpriority") }}
+  {{- $showLede := default false (.Get "lede") }}
+  {{- $showDate := default true (.Get "showdate") }}
+  {{- $relativeDates := default false (.Get "relativedates") }}
+  {{- $showTags := default false (.Get "showtags") }}
+  {{- $showAuthor := default false (.Get "showauthor") }}
+  {{- $showAuthorLink := default false (.Get "authorlink") }}
+  {{- $showAuthorAvatar := default false (.Get "authoravatar") }}
+  {{- $headerPartial := default "" (.Get "headerpartial") }}
+  {{- $itemType := default "page" (.Get "itemtype") }}
+  {{- $headingLevel := default 3 (.Get "headinglevel") }}
+
+  {{- $contentParams := (dict
+    "containerclass" (printf "shortcode_content-excerpt shortcode_content-excerpt_%s %s" $itemType (default "" (.Get "containerclass")) )
+    "ContainerFloat" (.Get "float")
+    "ContainerRelativeWidth" (.Get "relativewidth")
+    "SubjectPage" $subjectPage
+    "ItemType" $itemType
+    "HeadingLevel" $headingLevel
+    "ShowContent" false
+    "ShowDate" $showDate
+    "RelativeDates" $relativeDates
+    "ShowAuthor" $showAuthor
+    "ShowTags" $showTags
+  ) -}}
+
+  {{- if $debug }}
+    {{- warnf "%s[%s]: shortcode called with page=%v --> $subjectPage=%v. Calling claris/_components/excerpt with contentParams=%v"
+        $page $template $subjectRef $subjectPage $contentParams -}}
+  {{- end }}
+  <div class="panel_container">
+  {{- with $title }}
+    <h3>{{- page.RenderString . -}}</h3>
+  {{- end }}
+  {{- with $inner }}
+    {{- $content := page.RenderString . -}}
+    {{- $headingRE := `(?s)^(\s*<h[1-6][^>]*>.*?</h[1-6]\s*>\s*)` -}}
+    {{- $initialParaRE := `(?s)^\s*<p>(.*?)</p\s*>` -}}
+    {{- $contentHeading := replaceRE (printf "%s.*" $headingRE) `$1` $content 1 }}
+    {{- if ne $contentHeading $content }}
+      {{ safeHTML $contentHeading }}
+      {{- $contentWithoutHeading := replaceRE (printf "%s(.*)" $headingRE) `$2` $content 1 }}
+      {{- $initialPara := replaceRE (printf "%s.*" $initialParaRE) `$1` $contentWithoutHeading 1 }}
+      {{- if ne $initialPara $contentWithoutHeading }}
+        {{- if $showLede }}
+          {{- $initialPara = printf `<p class="lede">%s</p>` $initialPara }}
+        {{- else }}
+          {{- $initialPara = printf `<p>%s</p>` $initialPara }}
+        {{- end }}
+        {{- $contentWithoutLede := replaceRE (printf "%s(.*)" $initialParaRE) `$2` $contentWithoutHeading 1 }}
+        {{ safeHTML $initialPara }}
+        {{- partial "claris/_components/excerpt" (merge $contentParams (dict "Page" $page) ) }}
+        {{- safeHTML $contentWithoutLede }}
+      {{- else }}
+        {{- partial "claris/_components/excerpt" (merge $contentParams (dict "Page" $page) ) }}
+        {{- safeHTML $contentWithoutHeading }}
+      {{- end }}
+    {{- else }}
+      {{- $initialParaRE := `(?s)^\s*<p>(.*?)</p\s*>` -}}
+      {{- $initialPara := replaceRE (printf "%s.*" $initialParaRE) `$1` $content 1 }}
+      {{- $contentWithoutLede := replaceRE (printf "%s(.*)" $initialParaRE) `$2` $content 1 }}
+      {{- if ne $initialPara $content }}
+        {{- if $showLede }}
+          {{- $initialPara = printf `<p class="lede xxx">%s</p>` $initialPara }}
+        {{- else }}
+          {{- $initialPara = printf `<p>%s</p>` $initialPara }}
+        {{- end }}
+        {{- partial "claris/_components/excerpt" (merge $contentParams (dict "Page" $page) ) }}
+        {{- safeHTML $contentWithoutLede }}
+      {{- else }}
+        {{- safeHTML $content }}
+        {{- partial "claris/_components/excerpt" (merge $contentParams (dict "Page" $page) ) }}
+      {{- end }}
+    {{- end }}
+  {{- else }}
+    {{- partial "claris/_components/excerpt" (merge $contentParams (dict "Page" $page) ) }}
+  {{- end }}
+  </div>
+{{- else }}
+    {{- warnf "%s[%s]: shortcode called with page=%v --> $subjectPage=%v: subjectPage not found"
+        $page $template $subjectRef $subjectPage -}}
+{{- end }}

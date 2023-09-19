@@ -10,6 +10,8 @@
 {{- $excerptImageKey := default "excerpt.variant.default.version.default" .ExcerptImageKey }}
 
 {{- $subjectPage := .SubjectPage }}
+{{- $title := default "" .Title }}
+{{- $showContent := default true .ShowContent }}
 {{- $showDate := default true .ShowDate }}
 {{- $relativeDates := default true .RelativeDates }}
 {{- $showTags := default false .ShowTags }}
@@ -28,6 +30,7 @@
 {{- /* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo/)?/leadership/` $page.RelPermalink) ) ) -}} */ -}}
 {{- /* {{- $debug = or $debug (eq $page.Kind "home") -}} */ -}}
 
+{{- $excerptContent := false }}
 {{- if not $excerptMeta }}
   {{- $excerptMeta = partial "claris/_functions/meta/single" (dict "Page" $subjectPage) }}
 {{- end }}
@@ -86,20 +89,21 @@
       {{- end }}
     {{- end }}
 
-    {{- $excerptContent := "" }}
-    {{- range (slice .Params.excerpt .Summary .Params.description .Params.summary) }}
-      {{- with . }}
-        {{- $excerptContent = . }}
+    {{- if $showContent }}
+      {{- range (slice .Params.excerpt .Summary .Params.description .Params.summary) }}
+        {{- with . }}
+          {{- $excerptContent = . }}
+        {{- end }}
       {{- end }}
+      {{- $excerptContent = $excerptContent | partial "claris/_functions/sanitize" }}
     {{- end }}
-    {{- $excerptContent = $excerptContent | partial "claris/_functions/sanitize" }}
-    {{- $title := default .Title $excerptMeta.Single.Data.Title }}
-    {{- $plainTitle := $title | plainify }}
+    {{- $excerptTitle := default (default .Title $excerptMeta.Single.Data.Title) $title }}
+    {{- $plainTitle := $excerptTitle | plainify }}
     <div class="{{ delimit $containerClassList " " }}">
       <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
         <div class="excerpt_header">
           <h{{ $headingLevel }} class="excerpt_title">
-          {{ $title | $page.RenderString }}
+          {{ $excerptTitle | $page.RenderString }}
           </h{{ $headingLevel }}>
           {{- with $headerPartial }}
             {{ partial $headerPartial (dict
@@ -135,8 +139,8 @@
                 {{ partial "responsive-image" (dict
                   "Page" $page
                   "resource" .
-                  "title" $title
-                  "alt" (default $title $imageMeta.excerpt.variant.default.alt)
+                  "title" $plainTitle
+                  "alt" (default $plainTitle $imageMeta.excerpt.variant.default.alt)
                   "fetchpriority" $fetchPriority
                   "quality" "low"
                 ) }}
