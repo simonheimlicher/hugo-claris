@@ -95,10 +95,10 @@
           {{- $excerptContent = . }}
         {{- end }}
       {{- end }}
-      {{- $excerptContent = $excerptContent | partial "claris/_functions/sanitize" }}
+      {{- $excerptContent = $excerptContent | partial `claris/_functions/sanitize` }}
     {{- end }}
     {{- $excerptTitle := default (default .Title $excerptMeta.Single.Data.Title) $title }}
-    {{- $plainTitle := $excerptTitle | plainify }}
+    {{- $plainTitle := partial `claris/_functions/sanitize` $excerptTitle }}
     <div class="{{ delimit $containerClassList " " }}">
       <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
         <div class="excerpt_header">

@@ -8,8 +8,8 @@
 {{- with $page }}
   {{- $title := .Title | $page.RenderString }}
 
-  {{- $subtitle := default "" (.Params.subtitle | partial "claris/_functions/sanitize" ) }}
-  {{- $supertitle := default "" (.Params.supertitle | partial "claris/_functions/sanitize")  }}
+  {{- $subtitle := default "" (.Params.subtitle | partial `claris/_functions/sanitize` ) }}
+  {{- $supertitle := default "" (.Params.supertitle | partial `claris/_functions/sanitize`)  }}
   {{- $headline := $title }}
   {{- if or $supertitle $subtitle }}
     {{- $min := default 10 (index (page.Param "meta.headline.targetlength") 0) }}

@@ -52,7 +52,7 @@
           {{- if $page.Parent.Parent.IsMenuCurrent .Menu . }} nav_active_parent_parent_is_menu{{ end -}}
           {{- if $page.Parent.Parent.HasMenuCurrent .Menu . }} nav_active_parent_parent_has_menu{{ end -}}
         {{- end -}}
-      {{- end -}}" title="{{ $name }}">{{ $name }}{{ with $children }}<img src='{{ absURL "icons/caret-icon.svg" }}' alt="icon" class="nav_icon">{{ end }}</a>
+      {{- end -}}" title="{{ partial `claris/_functions/sanitize` $name }}">{{ $name }}{{ with $children }}<img src='{{ absURL "icons/caret-icon.svg" }}' alt="icon" class="nav_icon">{{ end }}</a>
       {{- with $children }}
               <div class="nav_sub">
                 <span class="nav_child"></span>
@@ -77,7 +77,7 @@
               {{- if $page.Parent.Parent.IsMenuCurrent .Menu . }} nav_active_parent_parent_is_menu{{ end -}}
               {{- if $page.Parent.Parent.HasMenuCurrent .Menu . }} nav_active_parent_parent_has_menu{{ end -}}
             {{- end -}}
-          {{- end -}}" title="{{ $name }}">{{ $name }}</a>
+          {{- end -}}" title="{{ partial `claris/_functions/sanitize` $name }}">{{ $name }}</a>
         {{- end }}
               </div>
             </div>
@@ -111,7 +111,7 @@
       {{- $menuTitle := default .Title .Params.MenuTitle }}
           <div class="nav_parent nav_parent_section currentsection">
             {{- $activeClass := cond (eq $page.Permalink .Permalink) " nav_active" "" }}
-            <a href="{{ .Permalink }}" class="nav_item{{ $activeClass }}" title="{{ .Title }}">{{ $menuTitle }}</a>
+            <a href="{{ .Permalink }}" class="nav_item{{ $activeClass }}" title="{{ partial `claris/_functions/sanitize` .Title }}">{{ $menuTitle }}</a>
           </div>
     {{- end }}
     {{- partial "html-comment" (printf "[%s]: .Section=%v $invisibleSections=%v .Pages=%v"
@@ -125,7 +125,7 @@
         {{- $menuTitle := default .Title .Params.MenuTitle }}
           <div class="nav_parent nav_parent_section pages">
             {{- $activeClass := cond (eq $page.Permalink .Permalink) " nav_active" "" }}
-            <a href="{{ .Permalink }}" class="nav_item{{ $activeClass }}" title="{{ .Title }}">{{ $menuTitle }}</a>
+            <a href="{{ .Permalink }}" class="nav_item{{ $activeClass }}" title="{{ partial `claris/_functions/sanitize` .Title }}">{{ $menuTitle }}</a>
           </div>
       {{- end }}
     {{- else }}
@@ -142,7 +142,7 @@
             {{- $menuTitle := default .Title .Params.MenuTitle }}
         <div class="nav_parent nav_parent_section parent_pages">
             {{- $activeClass := cond (eq $page.Permalink .Permalink) " nav_active" "" }}
-          <a href="{{ .Permalink }}" class="nav_item{{ $activeClass }}" title="{{ .Title }}">{{ $menuTitle }}</a>
+          <a href="{{ .Permalink }}" class="nav_item{{ $activeClass }}" title="{{ partial `claris/_functions/sanitize` .Title }}">{{ $menuTitle }}</a>
         </div>
             {{- end }}
           {{- end }}
@@ -186,7 +186,7 @@
               {{- $relatedNavEntries = true }}
             {{- end }}
           <div class="nav_parent nav_parent_download">
-            <a href="{{ .Permalink }}" class="nav_item" title="{{ T "download-pdf" }} {{ .Title }}">{{ partial "sprite" (dict "icon" "file-pdf") }}</a>
+            <a href="{{ .Permalink }}" class="nav_item" title="{{ T "download-pdf" }} {{ partial `claris/_functions/sanitize` .Title }}">{{ partial "sprite" (dict "icon" "file-pdf") }}</a>
           </div>
           {{- else }}
             {{- partial "html-comment" (printf "%s[%s]: fileGlob=%v" $page $template $fileGlob ) }}

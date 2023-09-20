@@ -38,7 +38,7 @@
       {{ $description = . }}
     {{- end }}
   {{- end }}
-  {{- $description = $description | partial "claris/_functions/sanitize" }}
+  {{- $description = $description | partial `claris/_functions/sanitize` }}
 
   {{- $mainSections := $page.Param "mainSections" }}
   {{- $itemType := "page" }}

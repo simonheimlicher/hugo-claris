@@ -11,9 +11,9 @@
       {{- with index $socialSiteMeta . }}
       <li class="icon-link">
         {{- if and false (eq $idx 0) }}
-        <a href="{{ .Profile.URL }}" title="{{ .Name }}">{{- partial "qrcode-svg" (dict "Page" $page "Content" .Profile.URL) -}}</a>
+        <a href="{{ .Profile.URL }}" title="{{ partial `claris/_functions/sanitize` .Name }}">{{- partial "qrcode-svg" (dict "Page" $page "Content" .Profile.URL) -}}</a>
         {{- end }}
-        <a href="{{ .Profile.URL }}" title="{{ .Name }}">{{- partial "sprite" (dict "icon" .Icon) }}{{ .Name }}</a>
+        <a href="{{ .Profile.URL }}" title="{{ partial `claris/_functions/sanitize` .Name }}">{{- partial "sprite" (dict "icon" .Icon) }}{{ .Name }}</a>
       </li>
       {{- end }}
     {{- end }}

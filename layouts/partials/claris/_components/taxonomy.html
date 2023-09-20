@@ -41,7 +41,7 @@
           {{- range $slicedTags }}
           {{- $tag := .tag }}
           {{- $recentCount := .recentCount }}
-          <a href='{{ $taxonomyPageURL }}/{{ (replace $tag.Name "#" "%23") | urlize }}/' class="article_tag button button_translucent" title="{{ $tag.Name }}">
+          <a href='{{ $taxonomyPageURL }}/{{ (replace $tag.Name "#" "%23") | urlize }}/' class="article_tag button button_translucent" title="{{ partial `claris/_functions/sanitize` $tag.Name }}">
             {{- $tag.Page.Title }}
             <span class="button_tally">{{ $tag.Count }}</span>
           </a>
@@ -54,7 +54,7 @@
             <div class="tags_list">
               {{- range $taxonomy.Alphabetical }}
               {{- $tagsInfo.Add "tagsInfo" (slice .Name .Count)}}
-              <a href='{{ $taxonomyPageURL }}/{{ (replace .Name "#" "%23") | urlize }}/' class=" article_tag button button_translucent" data-position={{ .Count }} title="{{ .Name }}">
+              <a href='{{ $taxonomyPageURL }}/{{ (replace .Name "#" "%23") | urlize }}/' class=" article_tag button button_translucent" data-position={{ .Count }} title="{{ partial `claris/_functions/sanitize` .Name }}">
                 {{- .Page.Title -}}
                 <span class="button_tally">{{ .Count }}</span>
               </a>

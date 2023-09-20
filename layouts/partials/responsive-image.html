@@ -403,10 +403,10 @@
                 sizes="{{ . | safeHTMLAttr }}"
             {{- end }}
             {{- with $variant.title }}
-                title="{{ . | safeHTMLAttr }}"
+                title="{{ partial `claris/_functions/sanitize` . | safeHTMLAttr }}"
             {{- end }}
             {{- with $variant.alt }}
-                  alt="{{ . | safeHTMLAttr }}"
+                  alt="{{ partial `claris/_functions/sanitize` . | safeHTMLAttr }}"
             {{- end }}
             {{- with $variantInlineStyleAttr }}
                 {{ printf `style="%s"` . | safeHTMLAttr }}

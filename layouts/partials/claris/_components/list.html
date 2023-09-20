@@ -75,7 +75,7 @@
           "FetchPriority" $fetchPriority
         ) -}}
       {{- else }}
-        <li><a href="{{ .Single.Page.RelPermalink }}" title="{{ .Single.Page.Title }}">{{ .Single.Page.Title }}</a></li>
+        <li><a href="{{ .Single.Page.RelPermalink }}" title="{{ partial `claris/_functions/sanitize` .Single.Page.Title }}">{{ .Single.Page.Title }}</a></li>
       {{- end }}
     {{- end }}
     {{- if (eq $listLayout "grid") }}
