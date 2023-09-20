@@ -56,39 +56,39 @@
     {{- $headingRE := `(?s)^(\s*<h[1-6][^>]*>.*?</h[1-6]\s*>\s*)` -}}
     {{- $initialParaRE := `(?s)^\s*<p>(.*?)</p\s*>` -}}
     {{- $contentHeading := replaceRE (printf "%s.*" $headingRE) `$1` $content 1 }}
-    {{- if ne $contentHeading $content }}
-      {{ safeHTML $contentHeading }}
-      {{- $contentWithoutHeading := replaceRE (printf "%s(.*)" $headingRE) `$2` $content 1 }}
-      {{- $initialPara := replaceRE (printf "%s.*" $initialParaRE) `$1` $contentWithoutHeading 1 }}
-      {{- if ne $initialPara $contentWithoutHeading }}
+    {{- if eq $contentHeading $content }}
+      {{- $initialPara := replaceRE (printf "%s.*" $initialParaRE) `$1` $content 1 }}
+      {{- $furtherParas := replaceRE (printf "%s(.*)" $initialParaRE) `$2` $content 1 }}
+      {{- if eq $initialPara $content }}
+        {{- safeHTML $content }}
+        {{- partial "claris/_components/excerpt" (merge $contentParams (dict "Page" $page) ) }}
+      {{- else }}
         {{- if $showLede }}
           {{- $initialPara = printf `<p class="lede">%s</p>` $initialPara }}
         {{- else }}
           {{- $initialPara = printf `<p>%s</p>` $initialPara }}
         {{- end }}
-        {{- $contentWithoutLede := replaceRE (printf "%s(.*)" $initialParaRE) `$2` $contentWithoutHeading 1 }}
         {{ safeHTML $initialPara }}
         {{- partial "claris/_components/excerpt" (merge $contentParams (dict "Page" $page) ) }}
-        {{- safeHTML $contentWithoutLede }}
-      {{- else }}
-        {{- partial "claris/_components/excerpt" (merge $contentParams (dict "Page" $page) ) }}
-        {{- safeHTML $contentWithoutHeading }}
+        {{- safeHTML $furtherParas }}
       {{- end }}
     {{- else }}
-      {{- $initialParaRE := `(?s)^\s*<p>(.*?)</p\s*>` -}}
-      {{- $initialPara := replaceRE (printf "%s.*" $initialParaRE) `$1` $content 1 }}
-      {{- $contentWithoutLede := replaceRE (printf "%s(.*)" $initialParaRE) `$2` $content 1 }}
-      {{- if ne $initialPara $content }}
+      {{ safeHTML $contentHeading }}
+      {{- $contentWithoutHeading := replaceRE (printf "%s(.*)" $headingRE) `$2` $content 1 }}
+      {{- $initialPara := replaceRE (printf "%s.*" $initialParaRE) `$1` $contentWithoutHeading 1 }}
+      {{- if eq $initialPara $contentWithoutHeading }}
+        {{- partial "claris/_components/excerpt" (merge $contentParams (dict "Page" $page) ) }}
+        {{- safeHTML $contentWithoutHeading }}
+      {{- else }}
         {{- if $showLede }}
-          {{- $initialPara = printf `<p class="lede xxx">%s</p>` $initialPara }}
+          {{- $initialPara = printf `<p class="lede">%s</p>` $initialPara }}
         {{- else }}
           {{- $initialPara = printf `<p>%s</p>` $initialPara }}
         {{- end }}
+        {{- $furtherParas := replaceRE (printf "%s(.*)" $initialParaRE) `$2` $contentWithoutHeading 1 }}
+        {{ safeHTML $initialPara }}
         {{- partial "claris/_components/excerpt" (merge $contentParams (dict "Page" $page) ) }}
-        {{- safeHTML $contentWithoutLede }}
-      {{- else }}
-        {{- safeHTML $content }}
-        {{- partial "claris/_components/excerpt" (merge $contentParams (dict "Page" $page) ) }}
+        {{- safeHTML $furtherParas }}
       {{- end }}
     {{- end }}
   {{- else }}

@@ -8,7 +8,11 @@
 {{- end }}
 
 {{- with $content }}
-  {{- $initialParaMinLength := 200 }}
+  {{- $initialParaMinLength := 350 }}
+  {{- $initialWordsMin := 10 }}
+  {{- $initialWordsMax := 25 }}
+  {{- $initialWordLengthMin := 3 }}
+  {{- $initialWordsIgnore := slice "the" "and" "der" "die" "das" "und" }}
   {{- $ledeRE := `(?s)^\s*<p>(.*?)</p\s*>` -}}
   {{- if findRE $ledeRE $content 1 }}
 
@@ -46,15 +50,16 @@
               {{- $initialWordList = append $token $initialWordList }}
               {{- $initialWords = delimit $initialWordList " " }}
               {{- $token = false }}
-            {{- else if gt (len (delimit $initialWordList " ")) 10 }}
-              {{- if findRE `^(the|and|der|die|das|und)` $token 1 }}
+            {{- else if gt (len (delimit $initialWordList " ")) $initialWordsMax }}
+              {{- $initialWords = delimit $initialWordList " " }}
+            {{- else if gt (len (delimit $initialWordList " ")) $initialWordsMin }}
+              {{- if findRE (printf `^(%s)` (delimit $initialWordsIgnore `|`) ) $token 1 }}
                 {{- $initialWords = delimit $initialWordList " " }}
-              {{- else if lt (len $token) 3 }}
+              {{- else if le (len $token) $initialWordLengthMin }}
                 {{- $initialWords = delimit $initialWordList " " }}
               {{- end }}
-            {{- else if gt (len (delimit $initialWordList " ")) 25 }}
-              {{- $initialWords = delimit $initialWordList " " }}
-            {{- else }}
+            {{- end }}
+            {{- if not $initialWords }}
               {{- $initialWordList = append $token $initialWordList }}
               {{- $token = false }}
             {{- end }}
