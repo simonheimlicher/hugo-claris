@@ -498,38 +498,73 @@ $main-z-index: 1;
 }
 
 // Inline list with separators
+// - Uses clip-path
+// - Works only if the ul is a block-level element
 // https://www.jankollars.com/posts/multi-line-horizontal-list-with-separators/
+@mixin block-separator-list($list-item-separation: 2ch, $list-separator: '•') {
+  $shift-left: math.div($list-item-separation, 3.0);
+  $list-sep-width: $shift-left + 0.5ch;
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    padding-left: 0;
+    @supports (-webkit-clip-path: inset(0)) or (clip-path: inset(0)) {
+      margin-left: 0.5ch - $list-item-separation - (0.5 * $list-sep-width);
+      clip-path: inset(0 0 0 $list-item-separation - 0.5ch);
+      & > * {
+        padding-left: $list-item-separation;
+      }
+    }
+    & > li, & > li + li {
+      list-style: none;
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+      &::before {
+        content: $list-separator;
+        display: inline-block;
+        margin: 0 ($shift-left - 0.5ch) 0 (0.5 * $list-sep-width);
+        width: $list-sep-width;
+        text-align: center;
+      }
+      @supports (-webkit-clip-path: inset(0)) or (clip-path: inset(0)) {
+        margin: 0 0 0 (-1 * ($shift-left + $list-sep-width));
+        padding: 0 0 0 ($shift-left + $list-sep-width);
+      }
+    }
+  }
+}
+
 @mixin inline-separator-list($list-item-separation: 2ch, $list-separator: '•') {
   $shift-left: math.div($list-item-separation, 3.0);
   $list-sep-width: $shift-left + 0.5ch;
   ul {
-    // FIXME: Avoid `display: inline-flex` as this leads to inadvertent line breaks
-    // and lack of spacing around elments contained inside, such as <em> or <strong>
-    // display: inline-flex;
-    display: inline-block;
-    flex-wrap: wrap;
-    padding-left: 0;
+    display: inline;
     list-style: none;
-    // margin-left: calc(-3ch);
     margin-left: -$list-item-separation + 0.5ch;
-    // clip-path: inset(0 0 0 3ch);
-    clip-path: inset(0 0 0 $list-item-separation - 0.5ch);
-    & > * {
-      padding-left: $list-item-separation;
-    }
-    & > li, & > li + li {
-      // padding-left: 1ch;
+    &, & > li {
+      margin-left: 0;
+      padding-left: 0;
       list-style: none;
-      // margin: 0 0 0 math.div(-$list-item-separation, 3.0) - $list-sep-width;
-      margin: 0 0 0 -1 * ($shift-left + $list-sep-width);
-      padding: 0 0 0 ($shift-left + $list-sep-width);
-      &::before {
-        content: '•';
+    }
+    // The `li + li` is to override potentially existing declarations for siblings
+    & > li, & > li + li {
+      list-style: none;
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+    }
+    & > li:not(:last-child) {
+      &::after {
+        content: $list-separator;
         display: inline-block;
-        margin: 0 $shift-left - 0.5ch 0 0;
+        margin: 0 0 0 ($shift-left - 0.5ch);
         width: $list-sep-width;
         text-align: center;
       }
+      margin: 0 (-1 * ($shift-left + $list-sep-width)) 0 0;
+      padding: 0 ($shift-left + $list-sep-width) 0 0;
     }
   }
 }

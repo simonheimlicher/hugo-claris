@@ -740,25 +740,26 @@
 // .drop-cap,
 // .section_main-section .article_body > p + p:nth-of-type(2) {
 .drop-cap {
-  --initial_font-size: 7em;
-  --initial_line-height: 1.5;
-  --initial_padding: calc(var(--initial_font-size) / 76);
-  --initial_margin-negative: calc(var(--initial_font-size) / 52);
   margin-top: 2em;
   .initial-letter {
+    --initial_font-size: 7em;
+    --initial_line-height: 1.5;
+    --initial_padding: 0.092em;
+    --initial_padding: calc(var(--initial_font-size) / 76);
+    --initial_margin-negative: 0.13em;
+    --initial_margin-negative: calc(var(--initial_font-size) / 52);
     color: var(--initial);
     float: left;
     font-size: var(--initial_font-size);
     line-height: var(--initial_line-height);
     padding: 0 var(--initial_padding) 0 0;
+    margin: -0.5em 0 -0.4em -0.03em;
     margin: calc(0px - 4 * var(--initial_margin-negative))
     0
     calc(0px - 3 * var(--initial_margin-negative))
     calc(0px - 0.25 * var(--initial_margin-negative));
   }
   .initial-words {
-    // text-transform: uppercase;
-    // font-variant: all-small-caps;
     @include useFontDefinition(inherit, default, small-caps, bold);
   }
 }
