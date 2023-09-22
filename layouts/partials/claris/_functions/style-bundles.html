@@ -3,7 +3,7 @@
 {{- $template := "claris/_functions/style-bundles" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)` $page.RelPermalink) ) ) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?` $page.RelPermalink) ) ) }} */}}
 {{/* {{- $debug = or $debug (eq site.Language.Lang "en") }} */}}
 
 {{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
@@ -219,6 +219,8 @@ that contains the `postcss.config.js` file - not the file itself. -->
         $page $template $mediaType $mediaTypeList }} */}}
   {{- end }}
 {{- end }}
-{{/* {{- warnf "%s[%s]: returning styleBundles: %v"
-    $page $template (jsonify (dict "indent" "  ") $styleBundles) }} */}}
+{{- if $debug }}
+  {{- warnf "%s[%s]: assetVariant:\n%v\nReturning styleBundles:\n%v"
+      $page $template (jsonify (dict "indent" "  ") $assetVariant) (jsonify (dict "indent" "  ") $styleBundles) }}
+{{- end }}
 {{- return $styleBundles -}}
