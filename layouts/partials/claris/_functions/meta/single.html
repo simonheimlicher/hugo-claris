@@ -2,7 +2,8 @@
 {{- $template := "claris/_functions/meta/single" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- /* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/(de/)?transformation/why-okr` $page.RelPermalink) ) ) }} */ -}}
+{{- /* $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/(de/)?transformation/why-okr` $page.RelPermalink) ) ) */ -}}
+{{- /* $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/_error` $page.RelPermalink) ) ) */ -}}
 
 {{/* {{- warnf "%s[%s]: .Page=%T page=%T" $page $template .Page page }} */}}
 {{- $singleMeta := dict -}}
@@ -11,12 +12,20 @@
 
 {{- with $page }}
 
+  {{- $defaultTitlePartial := "partials/claris/head/title.html" }}
   {{- $titleVariant := dict "title" (.Title | .RenderString | plainify) }}
   {{- with $assetVariant.ContentType }}
     {{- $titlePartial := printf "partials/%s/head/title.html" . }}
     {{- if templates.Exists $titlePartial }}
       {{- if $debug }}
         {{- warnf "%s[%s]: contentType=%v: Calling title partial %v"
+            $page $template . $titlePartial }}
+      {{- end }}
+      {{- $titleVariant = partial $titlePartial (dict "Page" $page) }}
+    {{- else }}
+      {{- $titlePartial = $defaultTitlePartial }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: contentType=%v: Calling default title partial %v"
             $page $template . $titlePartial }}
       {{- end }}
       {{- $titleVariant = partial $titlePartial (dict "Page" $page) }}
@@ -43,18 +52,18 @@
   {{- $mainSections := $page.Param "mainSections" }}
   {{- $itemType := "page" }}
   {{- with .Page }}
-    {{- if in (slice "page"  "term") .Kind }}
+    {{- if in (slice "page" "term") .Kind }}
       {{- if (in $mainSections .Section) }}
         {{- $itemType = "article" }}
         {{- if $debug }}
           {{- warnf "%s[%s]: .Kind=%v .Section=%v in mainSections=%v"
               $page $template .Kind .Section $mainSections }}
         {{- end }}
-      {{- else }}
+      {{- /* else }}
         {{- if $debug }}
           {{- warnf "%s[%s]: .Kind=%v .Section=%v not in mainSections=%v"
               $page $template .Kind .Section $mainSections }}
-        {{- end }}
+        {{- end */ -}}
       {{- end }}
     {{- else if in (slice "home" "section" "taxonomy") .Kind }}
       {{- $itemType = "section" }}
@@ -64,9 +73,7 @@
       {{- end }}
     {{- end }}
   {{- else }}
-    {{- if $debug }}
-      {{- warnf "%s[%s]: no .Page.Kind: .Page=%v" $page $template .Page }}
-    {{- end }}
+    {{- errorf "%s[%s]: no .Page: $page=%v [type=%T] .Page=%v [type=%T]" $page $template $page $page .Page .Page }}
   {{- end }}
 
   {{- $authorMeta := partialCached "claris/_functions/meta/author" (dict "Page" $page "Debug" $debug) $page.Permalink }}
@@ -151,7 +158,7 @@
   {{/* {{- warnf "%s[%s]: returning %v" $page $template
       $singleMeta }} */}}
 {{- end }}
-{{/* {{- if not $singleMeta.Single.Data.Headline }}
+{{- /* if not $singleMeta.Single.Data.Headline }}
   {{- errorf "%s[%s]: invalid $singleMeta.Single.Data.Headline='%v'" $page $template $singleMeta.Single.Data.Headline }}
-{{- end }} */}}
+{{- end */ -}}
 {{- return $singleMeta }}
