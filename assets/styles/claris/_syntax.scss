@@ -307,9 +307,6 @@ pre {
 .panel {
   &_box {
     display: inline-flex;
-    // grid-template-columns: repeat(3, 1fr)
-    // max-width: 10rem
-    perspective: 300px;
     grid-gap: 0.5rem;
     transition: opacity 0.3s var(--easing);
     background: var(--code-bg);
@@ -318,8 +315,7 @@ pre {
     align-items: center;
     position: absolute;
     right: 0rem;
-    // top: -2.1rem
-    top: -1.8rem;
+    top: -2.8rem;
     opacity: 0;
     border-radius: 0.2rem;
   }
