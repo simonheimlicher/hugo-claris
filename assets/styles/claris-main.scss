@@ -12,26 +12,33 @@
 @import 'claris/{{ $themeColorSchemeFile }}';
 {{- end }}
 
+$fontTypeDefault: '{{ $page.Param "fontTypeDefault" | default "sans" }}';
+$fontTypeContent: '{{ $page.Param "fontTypeContent" | default ($page.Param "fontTypeDefault") }}';
+$fontTypeArticle: '{{ $page.Param "fontTypeArticle" | default "serif" }}';
+$fontTypeCode:    '{{ $page.Param "fontTypeCode"    | default "mono" }}';
+$fontTypeHeading: '{{ $page.Param "fontTypeHeading" | default "inherit" }}';
+$fontTypeMeta:    '{{ $page.Param "fontTypeMeta"    | default "inherit" }}';
+
 {{- $fontFamilySans := default "Source Sans 3" ($page.Param "fontFamilySans") }}
 {{- $fontFamilySerif := default "Alegreya" ($page.Param "fontFamilySerif") }}
 {{- $fontFamilyMono := default "DM Mono" ($page.Param "fontFamilyMono") }}
 {{- $fontFamilies := (slice
-  (dict "role" "default"  "family" $fontFamilySans)
-  (dict "role" "sans"     "family" $fontFamilySans)
-  (dict "role" "serif"    "family" $fontFamilySerif)
-  (dict "role" "mono"     "family" $fontFamilyMono)
+  (dict "fontType" "default"  "family" $fontFamilySans)
+  (dict "fontType" "sans"     "family" $fontFamilySans)
+  (dict "fontType" "serif"    "family" $fontFamilySerif)
+  (dict "fontType" "mono"     "family" $fontFamilyMono)
 ) -}}
 $fontFamilyMap: ();
 $fontDefinitionMap: () !default;
 $currentFontDefinition: default !default;
 {{- range $fontFamilies }}
-  {{- $roleKey := .role }}
-  {{- $roleSuffix := strings.FirstUpper $roleKey }}
+  {{- $fontTypeKey := .fontType }}
+  {{- $fontTypeSuffix := strings.FirstUpper $fontTypeKey }}
   {{- $familyName :=  .family }}
   {{- $familyID :=  (urlize .family) }}
 
 $fontFamilyID: '{{ $familyID }}';
-{{ printf `$fontFamily%vID: '%v'` $roleSuffix $familyID | safeCSS }};
+{{ printf `$fontFamily%vID: '%v'` $fontTypeSuffix $familyID | safeCSS }};
 
 $fontFamilyDefault: (name: '{{ $familyName }}');
 
@@ -51,7 +58,7 @@ $fontFamilyDefault: (name: '{{ $familyName }}');
   @import 'claris/fonts/fallback/{{ $familyID }}';
 {{- else }}
   /* No fallback stylesheet found for font family {{ .family }} at {{ $fallbankFontFamilyStylesheet }} */
-  @import 'claris/fonts/fallback/{{ $roleKey }}';
+  @import 'claris/fonts/fallback/{{ $fontTypeKey }}';
 {{- end }}
 
 // The font family map may have different structures:
@@ -69,8 +76,8 @@ $fontFamilyDefault: (name: '{{ $familyName }}');
 //   )
 // );
 //
-// Include font names and styles for alternative roles:
-// roles: (
+// Include font names and styles for alternative fontTypes:
+// fontTypes: (
 //   display: (
 //     name: Alegreya Sans, // font-family for display type
 //       styles: (
@@ -85,7 +92,7 @@ $fontFamilyDefault: (name: '{{ $familyName }}');
 //   )
 // );
 //
-// Include font names and styles for alternative roles:
+// Include font names and styles for alternative variants:
 // variants: (
 //   small-caps: (
 //     name: Alegreya SC
@@ -126,7 +133,7 @@ $fontFamilySpec: $fontFamilyDefault;
   }
 }
 
-$fontFamilyMap: map-merge($fontFamilyMap, ({{ $roleKey }}: $fontFamilySpec) );
+$fontFamilyMap: map-merge($fontFamilyMap, ({{ $fontTypeKey }}: $fontFamilySpec) );
 $fontFamilyMap: map-merge($fontFamilyMap, ({{ $familyID }}: $fontFamilySpec) );
 
 {{- end }}

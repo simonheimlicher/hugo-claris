@@ -1061,15 +1061,15 @@ $familyDefaultMap: (
 
 html {
   --to-be-eliminated-by-csspurge: black;
-  // --font-sans: #{$fontFamilySansID};
-  // --font-serif: #{$fontFamilySerifID};
-  // --font-mono: #{$fontFamilyMonoID};
 
   $fontStyles: (default, sans, serif, mono);
   $fontDefinitions: (
-    (article, serif),
-    (code, mono),
-    (meta, inherit)
+    (default, $fontTypeDefault),
+    (content, $fontTypeContent),
+    (article, $fontTypeArticle),
+    (code, $fontTypeCode),
+    (heading, $fontTypeHeading)
+    (meta, $fontTypeMeta)
   );
   // FIXME: debug with only one font style
   // $fontStyles: (default);
