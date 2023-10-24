@@ -877,8 +877,8 @@ $familyDefaultMap: (
     // FIXME: Validate if we got the definition
     // @include mapToCSSProperties($defFamily, useFontDefinition_definitionID-#{$definitionID});
 
-    // --useFontDefinition_definitionID-#{$definitionID}_role-#{$useRole}_styles-#{$useStyle}_variant-#{$variant}__originPrefix: #{$originPrefix};
-    // --useFontDefinition_definitionID-#{$definitionID}_role-#{$useRole}_variant-#{$variant}_useStyle-#{$useStyle}__targetPrefix: #{$targetPrefix};
+    // --useFontDefinition_definitionID-#{$definitionID}_useRole-#{$useRole}_useVariant-#{$useVariant}__originPrefix: #{$originPrefix};
+    // --useFontDefinition_definitionID-#{$definitionID}_useRole-#{$useRole}_useVariant-#{$useVariant}__targetPrefix: #{$targetPrefix};
     // --#{$targetPrefix}font-family: var(--#{$originPrefix}font-family);
 
     @each $role, $defRole in map-get($defFamily, roles) {
