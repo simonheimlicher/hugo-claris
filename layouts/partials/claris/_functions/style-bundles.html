@@ -4,6 +4,7 @@
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?` $page.RelPermalink) ) ) }} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/(de/)?.*?/resume` $page.RelPermalink) ) ) -}} */}}
 {{/* {{- $debug = or $debug (eq site.Language.Lang "en") }} */}}
 
 {{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
@@ -11,6 +12,12 @@
 {{- $mediaTypeList := $assetVariant.MediaTypeList }}
 {{- $contentTypeList := $assetVariant.ContentTypeList }}
 {{- $contentTypeListID := $assetVariant.ContentTypeListID }}
+{{- $assetStyle := $assetVariant.AssetStyle }}
+{{- $assetStyleSuffix := "" }}
+{{- if not (eq $assetStyle "default") }}
+  {{- $assetStyleSuffix = printf "_style-%s" ($assetStyle | jsonify | sha256) }}
+  {{- $contentTypeListID = printf "%s%s" $contentTypeListID $assetStyleSuffix }}
+{{- end }}
 {{- $legacySuffix := $assetVariant.BundleParams.LegacySuffix }}
 {{- $legacyMediaType := $assetVariant.BundleParams.LegacyMediaType }}
 
@@ -99,7 +106,11 @@ that contains the `postcss.config.js` file - not the file itself. -->
   )
 ) -}}
 
-{{- $tplParams := (dict "Page" $page "ContentTypeList" $contentTypeList "ContentTypeListID" $contentTypeListID) }}
+{{/* {{- $tplParams := (dict "Page" $page "ContentTypeList" $contentTypeList "ContentTypeListID" $contentTypeListID) }} */}}
+{{- /* FIXME: Use key "AssetStyle instead of "Style" in the dict $tplParams. If the dict has a key named "Style", the following error occurs:
+error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main_all.scss" (text/x-scss): "styles/claris-vitae-main_all.scss:0:15": Expected expression.
+*/ -}}
+{{- $tplParams := (dict "Page" $page "AssetStyle" $assetStyle "ContentTypeList" $contentTypeList "ContentTypeListID" $contentTypeListID) }}
 
 {{- range $resourceID, $params := $styleResources }}
   {{- $mediaType := default "all" $params.media }}
@@ -133,6 +144,9 @@ that contains the `postcss.config.js` file - not the file itself. -->
       {{- range $resourceFile := $sourceTemplates }}
         {{- with resources.GetMatch (printf "%s.*" $resourceFile ) -}}
           {{- $executedFile := printf "%s_%s%s.%s" $resourceFile $resourceID $executedSourceSuffix $sourceExt }}
+          {{- with $assetStyleSuffix }}
+            {{- $executedFile = printf "%s_%s%s%s.%s" $resourceFile $resourceID . $executedSourceSuffix $sourceExt }}
+          {{- end }}
           {{- $executedResource := resources.ExecuteAsTemplate $executedFile $tplParams . }}
           {{- $executedResourceList = append (slice $executedResource) $executedResourceList }}
         {{- else -}}
@@ -153,6 +167,9 @@ that contains the `postcss.config.js` file - not the file itself. -->
 
     {{- $targetPathPrefix := printf "%s/%s" $resourcePathBase $contentTypeListID -}}
     {{- $targetFile := printf "%s/%s.%s" $targetPathPrefix $resourceID $targetExt }}
+    {{- with $assetStyleSuffix }}
+      {{- $targetFile = printf "%s/%s%s.%s" $targetPathPrefix $resourceID . $targetExt }}
+    {{- end }}
 
     {{- $importFile := printf "%s/%s-%s.%s" $resourcePathBase $contentTypeListID $resourceID $sourceExt }}
     {{- $concatResource := $executedResourceList | resources.Concat $importFile }}
@@ -220,7 +237,9 @@ that contains the `postcss.config.js` file - not the file itself. -->
   {{- end }}
 {{- end }}
 {{- if $debug }}
-  {{- warnf "%s[%s]: assetVariant:\n%v\nReturning styleBundles:\n%v"
-      $page $template (jsonify (dict "indent" "  ") $assetVariant) (jsonify (dict "indent" "  ") $styleBundles) }}
+  {{- warnf "%s[%s]: assetVariant:\n%v\n\ntplParams:\n%v\n\nReturning styleBundles:\n%v"
+      $page $template (jsonify (dict "indent" "  ") $assetVariant)
+      (jsonify (dict "indent" "  ") (merge $tplParams (dict "Page" "omitted")))
+      (jsonify (dict "indent" "  ") $styleBundles) }}
 {{- end }}
 {{- return $styleBundles -}}

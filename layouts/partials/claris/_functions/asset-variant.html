@@ -15,6 +15,7 @@
   {{- $contentTypeList := partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type }}
   {{- $contentType := index (last 1 $contentTypeList) 0 }}
   {{- $contentTypeListID := delimit $contentTypeList "-" }}
+  {{- $assetStyle := $page.Param "style" | default "default" }}
   {{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
   {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
   {{- $supportIE11 := default true (site.Params.supportIE11 | and (not $envDevel) ) }}
@@ -28,6 +29,7 @@
     "ContentType" $contentType
     "ContentTypeList" $contentTypeList
     "ContentTypeListID" $contentTypeListID
+    "AssetStyle" $assetStyle
     "BundleParams" (dict
       "MinifyBundles" $minifyBundles
       "SupportIE11" $supportIE11

@@ -1,5 +1,8 @@
 /* {{- $page := .Page }} {{- $mediaType := .MediaType }} */
 /* File='styles/claris-main.scss': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .ContentTypeList='{{ printf "%v" .ContentTypeList }}' .ContentTypeListID='{{ .ContentTypeListID }}' .ContentType='{{ .ContentType }}' .MediaType='{{ .MediaType }}' */
+/* AssetStyle:
+{{ jsonify (dict "indent" "  ") .AssetStyle }}
+*/
 
 // Core stylesheets that are included for all media types
 @import 'claris/functions';
@@ -7,21 +10,21 @@
 @import 'claris/colors';
 
 {{- $themeColorSchemePath := default "colors" ($page.Param "themeColorSchemePath") }}
-{{- with (default false ($page.Param "themeColorScheme") ) }}
-{{- $themeColorSchemeFile := printf "%s/%s" }}
+{{- with ($page.Param "themeColorScheme" | default false) }}
+{{ $themeColorSchemeFile := printf "%s/%s" }}
 @import 'claris/{{ $themeColorSchemeFile }}';
 {{- end }}
 
-$fontTypeDefault: '{{ $page.Param "fontTypeDefault" | default "sans" }}';
-$fontTypeContent: '{{ $page.Param "fontTypeContent" | default ($page.Param "fontTypeDefault") }}';
-$fontTypeArticle: '{{ $page.Param "fontTypeArticle" | default "serif" }}';
-$fontTypeCode:    '{{ $page.Param "fontTypeCode"    | default "mono" }}';
-$fontTypeHeading: '{{ $page.Param "fontTypeHeading" | default "inherit" }}';
-$fontTypeMeta:    '{{ $page.Param "fontTypeMeta"    | default "inherit" }}';
+$fontTypeDefault: '{{ $page.Param "style.fonts.type.default" | default ($page.Param "fontTypeDefault") | default "sans" }}';
+$fontTypeContent: '{{ $page.Param "style.fonts.type.content" | default ($page.Param "fontTypeContent") | default ($page.Param "style.fonts.type.default") | default ($page.Param "fontTypeDefault") }}';
+$fontTypeArticle: '{{ $page.Param "style.fonts.type.article" | default ($page.Param "fontTypeArticle") | default "serif" }}';
+$fontTypeCode:    '{{ $page.Param "style.fonts.type.code"    | default ($page.Param "fontTypeCode")    | default "mono" }}';
+$fontTypeHeading: '{{ $page.Param "style.fonts.type.heading" | default ($page.Param "fontTypeHeading") | default "inherit" }}';
+$fontTypeMeta:    '{{ $page.Param "style.fonts.type.meta"    | default ($page.Param "fontTypeMeta")    | default "inherit" }}';
 
-{{- $fontFamilySans := default "Source Sans 3" ($page.Param "fontFamilySans") }}
-{{- $fontFamilySerif := default "Alegreya" ($page.Param "fontFamilySerif") }}
-{{- $fontFamilyMono := default "DM Mono" ($page.Param "fontFamilyMono") }}
+{{- $fontFamilySans  := $page.Param "style.fonts.family.sans"  | default ($page.Param "fontFamilySans")  | default "Source Sans 3" }}
+{{- $fontFamilySerif := $page.Param "style.fonts.family.serif" | default ($page.Param "fontFamilySerif") | default "Alegreya" }}
+{{- $fontFamilyMono  := $page.Param "style.fonts.family.mono"  | default ($page.Param "fontFamilyMono")  | default "DM Mono"  }}
 {{- $fontFamilies := (slice
   (dict "fontType" "default"  "family" $fontFamilySans)
   (dict "fontType" "sans"     "family" $fontFamilySans)
@@ -42,12 +45,58 @@ $fontFamilyID: '{{ $familyID }}';
 
 $fontFamilyDefault: (name: '{{ $familyName }}');
 
-{{- $fontsSelfHosted := default false ($page.Param "fontsSelfHosted") }}
-
-{{- if $fontsSelfHosted -}}
+{{- $fontsSelfHosted := $page.Param "style.fonts.selfhosted" | default ($page.Param "fontsSelfHosted") | default false }}
+{{- $assetFontPath := printf "styles/claris/fonts" }}
+{{- if $fontsSelfHosted }}
   {{- $hostedFontPath := default (absURL "fonts") ($page.Param "hostedFontPath") }}
-  $hostedFontPath: '{{ $hostedFontPath }}';
-  @import 'claris/fonts/{{ $familyID }}';
+  {{- with resources.GetMatch (printf "%s/%s*" $assetFontPath $familyID) }}
+    /* Importing self-hosted font '{{ $familyID | title }}' from '{{ . }}' */
+    $hostedFontPath: '{{ $hostedFontPath }}';
+    @import 'claris/fonts/{{ $familyID }}';
+  {{- else }}
+    {{- $fontsSelfHosted = false }}
+  {{- end }}
+{{- end }}
+{{- if not $fontsSelfHosted -}}
+$fontFamilySpec: (
+  // Default font-family
+  name: '{{ $familyName }}',
+  // Default styles
+  styles: (
+    // Style: `default`, i.e., body text
+    default: (
+      font-weight: 400,
+      line-height: 1.4
+    ),
+    bold: (
+      font-weight: 600,
+    )
+  ),
+  // Alternative roles
+  roles: (
+    // Role: `display`, i.e., short pieces of text such as headings, labels, navigation
+    display: (
+      styles: (
+        default: (
+          font-weight: 400,
+          line-height: 1.2
+        ),
+        bold: (
+          font-weight: 900
+        )
+      )
+    )
+  ),
+  // // Font variants such as small-caps, oldstyle-nums
+  // variants: (
+  //   // Font variant: `small-caps`
+  //   small-caps: (
+  //     name: 'Alegreya SC'
+  //   )
+  // ),
+);
+
+  $fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: $fontFamilySpec));
 {{- end }}
 
 {{- $fallbankFontFamilyStylesheet := printf `/styles/claris/fonts/fallback/%s.*` $familyID }}
