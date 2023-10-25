@@ -19,25 +19,21 @@
   {{- $translationKey := printf "obfuscated-link_%s" $sanitizedScheme }}
 
   {{- if not $title }}
-    {{- with (T (printf "%s_title" $translationKey) ) }}
-      {{- if strings.Contains . $obfuscatedAddressPlaceholder }}
-        {{- $title = . }}
-      {{- else }}
-        {{- $title = printf "%s %s" . $obfuscatedAddressPlaceholder }}
-      {{- end }}
+    {{- with (T (printf "%s_title" $translationKey) (dict "Count" 1 "ObfuscatedAdress" $obfuscatedAddressPlaceholder) ) }}
+      {{- $title = . }}
     {{- else }}
       {{- $title = printf "open %s link %s" $sanitizedScheme $obfuscatedAddressPlaceholder }}
     {{- end }}
   {{- end }}
   {{- $title = strings.FirstUpper $title }}
 
-  {{/* {{- if not $text }}
-    {{- with (T (printf "%s_text" $translationKey) ) }}
+  {{- if not $text }}
+    {{- with (T (printf "%s_text" $translationKey) (dict "Count" 1 "ObfuscatedAdress" $obfuscatedAddressPlaceholder) ) }}
       {{- $text = . }}
     {{- else }}
-      {{- $text = printf "open %s link" $sanitizedScheme }}
+      {{- $text = $obfuscatedAddressPlaceholder }}
     {{- end }}
-  {{- end }} */}}
+  {{- end }}
 
   {{- if not $noScript }}
     {{- with (T (printf "%s_no-script" $translationKey) ) }}

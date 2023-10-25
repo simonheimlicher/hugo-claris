@@ -168,19 +168,19 @@ other = "[Persönliche Daten erfordern JavaScript]"
 other = "JavaScript ist erforderlich, um"
 
 [obfuscated-link_mailto_title]
-other = "E-Mail an OBFUSCATED schreiben"
+other = "E-Mail an {{ .ObfuscatedAdress }} schreiben"
 
 [obfuscated-link_mailto_no-script]
 other = "die E-Mail-Adresse zu sehen"
 
 [obfuscated-link_tel_title]
-other = "OBFUSCATED anrufen"
+other = "{{ .ObfuscatedAdress }} anrufen"
 
 [obfuscated-link_tel_no-script]
 other = "die Telefonnummer zu sehen"
 
 [obfuscated-link_https_title]
-other = "Link OBFUSCATED in neuem Fenster öffnen"
+other = "Link {{ .ObfuscatedAdress }} in neuem Fenster öffnen"
 
 [obfuscated-link_https_no-script]
 other = "die Web-Adresse zu sehen"

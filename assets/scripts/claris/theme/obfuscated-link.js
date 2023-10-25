@@ -164,7 +164,7 @@ window.addEventListener("DOMContentLoaded", () => {
     // console.log('encrypted: ', encrypted, ' oneTimePassword: ', oneTimePassword, ' decryptedEncoded: ', decryptedEncoded, ' address: ', address);
     let unobfuscatedNode = document.createElement(node.tagName)
     unobfuscatedNode.innerHTML = '<' + 'a hr' + 'ef="' + scheme + address
-      + '" title="' + title.replace('OBFUSCATED', address) + '">' + (text ? text : address) + '</a>';
+      + '" title="' + title.replace('OBFUSCATED', address) + '">' + (text ? text.replace('OBFUSCATED', address) : address) + '</a>';
     parentNode.replaceChild(unobfuscatedNode, node)
     parentNode.innerHTML = parentNode.innerHTML.replace(/^(.*[^ ])\n/, '$1').replace(/\n+(.)$/, '$1')
   }

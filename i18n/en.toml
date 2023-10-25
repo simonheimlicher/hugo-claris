@@ -168,19 +168,19 @@ other = "[Personal information, requires JavaScript]"
 other = "JavaScript required to"
 
 [obfuscated-link_mailto_title]
-other = "compose email to"
+other = "compose email to {{.ObfuscatedAdress }}"
 
 [obfuscated-link_mailto_no-script]
 other = "access email address"
 
 [obfuscated-link_tel_title]
-other = "call"
+other = "call {{.ObfuscatedAdress }}"
 
 [obfuscated-link_tel_no-script]
 other = "access phone number"
 
 [obfuscated-link_https_title]
-other = "open link in new window"
+other = "open link {{.ObfuscatedAdress }} in new window"
 
 [obfuscated-link_https_no-script]
 other = "access link address"
