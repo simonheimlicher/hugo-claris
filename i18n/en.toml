@@ -143,9 +143,6 @@ other = "update"
 [anchor_link_title]
 other = "copy direct link to section"
 
-[private-data-requires-javascript]
-other = "[Personal information, requires JavaScript]"
-
 [switch_language_page]
 other = "View page in another language"
 
@@ -164,11 +161,29 @@ one = "{{ .WebsiteName }} © {{ .Date.Established }}–{{ .Date.Current }} by {{
 [license_website_HTML]
 one = "{{ .WebsiteName }} © {{ .Date.Established }}–{{ .Date.Current }} by {{ .SiteAuthor }} is licensed under <a href=\"{{ .License.URL }}\" title=\"{{ .License.Identifier }}\">{{ .License.Identifier }}</a>"
 
-[obfuscated-link_mailto]
-other = "Send email to"
+[obfuscated-link_requires-javascript]
+other = "[Personal information, requires JavaScript]"
 
-[obfuscated-link_tel]
-other = "Call"
+[obfuscated-link_no-script_prefix]
+other = "JavaScript required to"
+
+[obfuscated-link_mailto_title]
+other = "compose email to"
+
+[obfuscated-link_mailto_no-script]
+other = "access email address"
+
+[obfuscated-link_tel_title]
+other = "call"
+
+[obfuscated-link_tel_no-script]
+other = "access phone number"
+
+[obfuscated-link_https_title]
+other = "open link in new window"
+
+[obfuscated-link_https_no-script]
+other = "access link address"
 
 [view_author_profile]
 other = "View profile of {{ .Name }}"

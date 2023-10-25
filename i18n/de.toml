@@ -115,7 +115,6 @@ other = "erstmals veröffentlicht"
 [meta_date_lastmonth]
 other = "letzten Monat"
 
-
 [meta_date_month]
 other = "Monat"
 
@@ -144,9 +143,6 @@ other = "Update"
 [anchor_link_title]
 other = "Link zu diesem Abschnitt kopieren"
 
-[private-data-requires-javascript]
-other = "[Persönliche Daten erfordern JavaScript]"
-
 [switch_language_page]
 other = "Sprache dieser Seite wählen"
 
@@ -162,11 +158,32 @@ one = "Website in {{ .Language }} lesen"
 [license_website]
 one = "{{ .WebsiteName }} © {{ .Date.Established }}–{{ .Date.Current }} {{ .SiteAuthor }} ist lizenziert unter {{ .License }}"
 
-[obfuscated-link_mailto]
-other = "E-Mail an"
+[license_website_HTML]
+one = "{{ .WebsiteName }} © {{ .Date.Established }}–{{ .Date.Current }} by {{ .SiteAuthor }} is licensed under <a href=\"{{ .License.URL }}\" title=\"{{ .License.Identifier }}\">{{ .License.Identifier }}</a>"
 
-[obfuscated-link_tel]
-other = "Erreichbar unter"
+[obfuscated-link_requires-javascript]
+other = "[Persönliche Daten erfordern JavaScript]"
+
+[obfuscated-link_no-script_prefix]
+other = "JavaScript ist erforderlich, um"
+
+[obfuscated-link_mailto_title]
+other = "E-Mail an OBFUSCATED schreiben"
+
+[obfuscated-link_mailto_no-script]
+other = "die E-Mail-Adresse zu sehen"
+
+[obfuscated-link_tel_title]
+other = "OBFUSCATED anrufen"
+
+[obfuscated-link_tel_no-script]
+other = "die Telefonnummer zu sehen"
+
+[obfuscated-link_https_title]
+other = "Link OBFUSCATED in neuem Fenster öffnen"
+
+[obfuscated-link_https_no-script]
+other = "die Web-Adresse zu sehen"
 
 [view_author_profile]
 other = "Profil von {{ .Name }} ansehen"

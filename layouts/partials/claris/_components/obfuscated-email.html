@@ -2,7 +2,7 @@
 {{- $template := "claris/_components/obfuscated-email" }}
 {{- $text := .Text }}
 {{- $plain := .Plain }}
-{{- $noScript := default (T "private-data-requires-javascript") .NoScript }}
+{{- $noScript := default (T "obfuscated-link_requires-javascript") .NoScript }}
 {{- if not $plain }}
   {{- $resource := partial "claris/_functions/resources" (dict "Page" $page "resource" "data/claris/private/authors" )}}
   {{- with $resource }}

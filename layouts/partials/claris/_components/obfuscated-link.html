@@ -1,18 +1,73 @@
 {{- $page := .Page }}
 {{- $template := "claris/_components/obfuscated-link" }}
-{{- $text := .Text }}
 {{- $plain := .Plain }}
-{{- $noScript := .NoScript }}
+{{- $title := default false .Title }}
+{{- $text := default false .Text }}
+{{- $noScript := default false .NoScript }}
+
+{{- $obfuscatedAddressPlaceholder := "OBFUSCATED" }}
 {{- $obfuscated := partial "claris/_functions/obfuscate-link" (dict "Page" $page "Plain" $plain "NoScript" $noScript) }}
 {{- with $obfuscated }}
   {{/* {{- partial "html-comment" (printf "[%s]: Plain: '%s'. Result:\n%s"
       $template $plain (jsonify (dict "indent" "  ") $obfuscated) ) }} */}}
-  {{- $noScript = default $noScript .NoScript }}
-  <span data-obfuscated-link-scheme="{{ .Scheme }}"
-    data-obfuscated-link-text="{{ $text }}"
-    data-obfuscated-link-title="{{ T (printf "obfuscated-link_%s" (anchorize .Scheme) ) }} OBFUSCATED"
-    data-obfuscated-link-encrypted="{{ .Encrypted }}"
-    data-obfuscated-link-one-time-password="{{ .OneTimePassword }}">{{- $noScript -}}</span>
+  {{- $scheme := .Scheme }}
+  {{- $encrypted := .Encrypted }}
+  {{- $oneTimePassword := .OneTimePassword }}
+  {{- $noScript = .NoScript }}
+
+  {{- $sanitizedScheme := anchorize $scheme }}
+  {{- $translationKey := printf "obfuscated-link_%s" $sanitizedScheme }}
+
+  {{- if not $title }}
+    {{- with (T (printf "%s_title" $translationKey) ) }}
+      {{- if strings.Contains . $obfuscatedAddressPlaceholder }}
+        {{- $title = . }}
+      {{- else }}
+        {{- $title = printf "%s %s" . $obfuscatedAddressPlaceholder }}
+      {{- end }}
+    {{- else }}
+      {{- $title = printf "open %s link %s" $sanitizedScheme $obfuscatedAddressPlaceholder }}
+    {{- end }}
+  {{- end }}
+  {{- $title = strings.FirstUpper $title }}
+
+  {{/* {{- if not $text }}
+    {{- with (T (printf "%s_text" $translationKey) ) }}
+      {{- $text = . }}
+    {{- else }}
+      {{- $text = printf "open %s link" $sanitizedScheme }}
+    {{- end }}
+  {{- end }} */}}
+
+  {{- if not $noScript }}
+    {{- with (T (printf "%s_no-script" $translationKey) ) }}
+      {{- $noScript = . }}
+    {{- else }}
+      {{- $noScript = printf "accessing %s link" $sanitizedScheme }}
+    {{- end }}
+    {{- $noScriptPrefix := T "obfuscated-link_no-script_prefix" }}
+    {{- $noScript = printf "%s %s" $noScriptPrefix $noScript }}
+  {{- end }}
+  {{- $noScript = strings.FirstUpper $noScript }}
+
+  {{- $data := (dict
+    "scheme" $scheme
+    "title" $title
+    "text" $text
+    "encrypted" $encrypted
+    "one-time-password" $oneTimePassword
+  ) -}}
+  {{- $dataAttributes := slice }}
+  {{- $dataAttrPrefix := "data-obfuscated-link-" }}
+  {{- range $k, $v := $data }}
+    {{- with $v }}
+      {{- $dataAttributes = append (printf `%s%s="%v"` $dataAttrPrefix $k $v) $dataAttributes }}
+    {{- else }}
+      {{- warnf "%s[%s]: invalid value for data attribute %v: %v" $page $template $k $v }}
+    {{- end }}
+  {{- end }}
+  {{- $container := "span" }}
+  {{- printf `<%s %s>%s</%s>` $container (delimit $dataAttributes ` `) $noScript $container | safeHTML }}
 {{- else }}
   {{ errorf "%s[%s]: Failed to encode plain text '%s'" $page $template $plain }}
-{{- end }}
+{{- end -}}

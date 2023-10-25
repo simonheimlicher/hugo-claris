@@ -2,7 +2,7 @@
 {{- $page := .Page }}
 {{- $plain := .Plain }}
 {{- $oneTimePassword := default "" .OneTimePassword }}
-{{- $noScript := default (T "private-data-requires-javascript") .NoScript }}
+{{- $noScript := default (T "obfuscated-link_requires-javascript") .NoScript }}
 {{- $template := "claris/_functions/obfuscate-link" }}
 
 {{- $url := urls.Parse $plain }}
