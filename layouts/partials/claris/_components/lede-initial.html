@@ -4,7 +4,7 @@
 
 {{- if reflect.IsMap . }}
   {{- $page = default $page .Page }}
-  {{- $content = default $content .Content }}
+  {{- $content = .Content }}
 {{- end }}
 
 {{- with $content }}
@@ -14,6 +14,7 @@
   {{- $initialWordLengthMin := 3 }}
   {{- $initialWordsIgnore := slice "the" "and" "der" "die" "das" "und" }}
   {{- $ledeRE := `(?s)^\s*<p>(.*?)</p\s*>` -}}
+
   {{- if findRE $ledeRE $content 1 }}
 
     {{- $contentLede := replaceRE `(?s)^\s*<p>(.*?)</p\s*>.*` `<p class="lede">$1</p>` $content 1 }}
