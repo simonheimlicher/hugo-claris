@@ -157,6 +157,17 @@ $fontFamilySpec: (
       font-weight: 600,
     )
   ),
+  variants: (
+    // Font variant: `small-caps`
+    small-caps: (
+      name: 'Source Sans 3',
+      styles: (
+        default: (
+          font-variant: all-small-caps
+        )
+      )
+    )
+  ),
   // Alternative roles
   roles: (
     // Role: `display`, i.e., short pieces of text such as headings, labels, navigation
