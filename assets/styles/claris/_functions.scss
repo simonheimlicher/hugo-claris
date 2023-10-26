@@ -159,14 +159,15 @@
 }
 
 
-@function print-map ( $map, $str: "" ) {
+@function print-map ( $map, $prefix: "", $str: "" ) {
   @each $k, $v in $map {
     @if type-of($v) == map {
-      $str: "#{$str} \000D\000A #{$k}: ( #{print-map($v)} \000D\000A ), ";
+      $str: "#{$str} \000D\000A#{$prefix}#{$k}: ( #{print-map($v, "  #{$prefix}")} \000D\000A #{$prefix}), ";
     }
     @else {
-      $str: "#{$str} \000D\000A \0009 #{$k}: #{$v}, ";
+      $str: "#{$str} \000D\000A#{$prefix}#{$k}: #{$v}, ";
     }
   } // each
-  @return $str;
+  // $len: str-length($str);
+  @return str-slice($str, 0, -3);
 } // @function print-map
