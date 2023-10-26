@@ -736,6 +736,54 @@ $familyDefaultMap: (
   )
 );
 
+$fontFamilyInheritSpec: (
+  name: 'inherit',
+  fallback: 'inherit',
+  // Default styles
+  styles: (
+    // Style: `default`, i.e., body text
+    default: (
+      font-weight: 'inherit',
+      line-height: 'inherit'
+    ),
+    bold: (
+      font-weight: 'inherit',
+    )
+  ),
+  // Alternative roles
+  roles: (
+    // Role: `display`, i.e., short pieces of text such as headings, labels, navigation
+    display: (
+      styles: (
+        default: (
+          font-weight: 'inherit',
+          line-height: 'inherit'
+        ),
+        bold: (
+          font-weight: 'inherit'
+        )
+      )
+    )
+  ),
+  // Font variants such as small-caps, oldstyle-nums
+  variants: (
+    // Font variant: `small-caps`
+    small-caps: (
+      name: 'inherit',
+      styles: (
+        default: (
+          font-variant: 'inherit'
+        ),
+      )
+    )
+  ),
+);
+
+// Store the created font definition with definitionID 'inherit'
+// NOTE: the `!global` keyword ensures that we work with the global
+// variable defined in `claris-main.scss`
+$fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
+
 @mixin defineFontDefinition($definitionID: default, $fontFamilyID: default) {
 
   $prefix: font-definition_#{$definitionID}_;
@@ -857,21 +905,31 @@ $familyDefaultMap: (
   // @warn(print-map($fontDefinitionMap));
 }
 
+:root {
+  @include defineFontDefinition(inherit, inherit);
+}
+
 @mixin useFontDefinition($definitionID: default, $useRole: default, $useVariant: default, $useStyle: all) {
 
   $originDefinitionID: $definitionID;
 
   $prefix: font-definition_;
-  $originPrefix: #{$prefix}#{$definitionID}_;
   $targetPrefix: #{$prefix};
+  $originPrefix: #{$prefix}#{$definitionID}_;
+  $defFamily: map-get($fontDefinitionMap, $originDefinitionID);
 
   @if ($definitionID == inherit) {
     $originDefinitionID: default;
     $originPrefix: #{$prefix}#{$originDefinitionID}_;
+    // NOTE: the `!global` keyword ensures that we work with the global
+    // variable defined in this file, i.e., `variables.scss`
+    // $defFamily: $familyInheritMap !global;
+    // @warn(print-map($fontDefinitionMap));
+    $defFamily: map-get($fontDefinitionMap, 'inherit');
+    // @warn(print-map($defFamily));
+    // $defFamily: map-get($fontDefinitionMap, 'default');
+    // @warn(print-map($defFamily));
   }
-
-
-  $defFamily: map-get($fontDefinitionMap, $originDefinitionID);
 
   @if ($defFamily) {
     // FIXME: Validate if we got the definition
