@@ -7,7 +7,7 @@
 {{- $headingLevel := default 2 .HeadingLevel }}
 {{- $containerClass := default "panel_container" .ContainerClass }}
 {{- $nested := default true .Nested }}
-{{- $defaultFetchPriority := default "low" .FetchPriority }}
+{{- $fetchPriority := default "low" .FetchPriority }}
 {{- if $containerClass }}
   {{- $containerClass = printf "%s layout-%s" $containerClass (cond $nested "flex" "grid") }}
 {{- end }}
@@ -117,15 +117,7 @@ See https://github.com/gohugoio/hugo/issues/7297
                 {{- $cardImageFloat := true }}
                 <div class="card_inner">
                   {{- with .image.resource }}
-                    {{- $cardImageFetchPriority := $defaultFetchPriority }}
-                    {{- if not (eq $defaultFetchPriority "high") }}
-                      {{- if lt (page.Scratch.Get "claris.image.prioritized") 1 }}
-                        {{- page.Scratch.Add "claris.image.prioritized" 1 }}
-                        {{- $cardImageFetchPriority = "auto" }}
-                        {{- partial "html-comment" (printf "[%v]: claris.image.prioritized=%v"
-                            $template (page.Scratch.Get "claris.image.prioritized")) -}}
-                      {{- end }}
-                    {{- end }}
+                    {{- $cardImageFetchPriority := $fetchPriority }}
                     {{- $imgSizesAttr := partial "claris/_functions/resources/images/img-sizes-attr" 20 }}
                     {{- if $cardImageFloat }}
                       {{- partial "responsive-image" (dict

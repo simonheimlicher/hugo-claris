@@ -55,13 +55,6 @@
         {{- warnf "%s[%s]: Listing Item=%v of ItemType=%v .Classification=%v" page $template .Single.Page $itemType .Single }}
       {{- end }} */ -}}
       {{- if $excerptPartial }}
-        {{- if not $fetchPriority }}
-          {{- if lt (page.Scratch.Get "claris.image.prioritized") 1 }}
-            {{- page.Scratch.Add "claris.image.prioritized" 1 }}
-            {{- $fetchPriority = "high" }}
-          {{- end }}
-        {{- end }}
-
         {{- partial $excerptPartial (dict
           "Page" page
           "Meta" .

@@ -120,21 +120,6 @@
         </div>
         <div class="excerpt_main{{ if $excerptImage }} image{{ end }}{{ if $excerptContent }} content{{ end }}">
           {{- with $excerptImage }}
-            {{- if not $fetchPriority }}
-              {{- if lt ($page.Scratch.Get "claris.image.prioritized") 1 }}
-                {{- $page.Scratch.Add "claris.image.prioritized" 1 }}
-                {{- $fetchPriority = "high" }}
-                {{- if $debug }}
-                  {{- warnf "%s[%s]: claris.image.prioritized incremented to %d. Prioritizing excerpt image for %v"
-                      $page $template ($page.Scratch.Get "claris.image.prioritized") $subjectPage -}}
-                {{- end }}
-              {{- else }}
-                {{- if $debug }}
-                  {{- warnf "%s[%s]: claris.image.prioritized already at %d. Not prioritizing excerpt image for %v"
-                      $page $template ($page.Scratch.Get "claris.image.prioritized") $subjectPage -}}
-                {{- end }}
-              {{- end }}
-            {{- end }}
             <div class="excerpt_thumbnail">
                 {{ partial "responsive-image" (dict
                   "Page" $page

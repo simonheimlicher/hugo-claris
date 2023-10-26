@@ -32,7 +32,6 @@
 
 
 {{- .Scratch.Set "claris.module.qrcode.count" 0 }}
-{{- .Scratch.Set "claris.image.prioritized" 0 }}
 {{- if in (slice "page") .Kind }}
   {{- .Scratch.Set "claris.assets.font.main" ($page.Param "fontFamilySerif") }}
 {{- else }}
