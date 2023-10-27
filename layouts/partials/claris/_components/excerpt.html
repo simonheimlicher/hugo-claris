@@ -95,7 +95,9 @@
           {{- $excerptContent = . }}
         {{- end }}
       {{- end }}
-      {{- $excerptContent = $excerptContent | partial `claris/_functions/sanitize` }}
+      {{- with $excerptContent }}
+        {{- $excerptContent = . | partial `claris/_functions/sanitize` }}
+      {{- end }}
     {{- end }}
     {{- $excerptTitle := default (default .Title $excerptMeta.Single.Data.Title) $title }}
     {{- $plainTitle := partial `claris/_functions/sanitize` $excerptTitle }}

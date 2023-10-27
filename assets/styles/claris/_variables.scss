@@ -348,7 +348,9 @@ $main-z-index: 1;
 }
 
 @mixin container_singlecolumn() {
-  @include inner_padding;
+  // @include inner_padding;
+  // FIXME: Avoid large gap betweeen .content-title and .lede
+  @include inner_horizontal-padding;
   max-width: var(--content_max-width);
 }
 

@@ -1,5 +1,5 @@
 {{- $template := "shortcodes/lede-initial" }}
 {{- $innerRendered := .Inner | page.RenderString (dict "display" "block") }}
-{{- partial "html-comment" (printf "[%s]: innerRendered=\n%v" $template $innerRendered) }}
+{{/* {{- partial "html-comment" (printf "[%s]: innerRendered=\n%v" $template $innerRendered) }} */}}
 {{ partial "claris/_components/lede-initial" $innerRendered | safeHTML }}
 
