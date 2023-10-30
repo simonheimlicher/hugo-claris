@@ -29,16 +29,26 @@
 {{- end }}
 
 {{- $logoImage := partialCached "claris/_functions/resources/images/logo-image" (dict "Page" $page "resource" $logoImageResource) -}}
-{{- with $logoURL }}
-        <a href='{{ . }}' title='{{ $t }}' class='nav_brand_parent'>
-{{- end }}
-          <div class="nav_brand{{ with $logoClass }} {{ . }}{{ end }}">
-  {{- with $logoImage }}
-            <img src="{{ absURL .Permalink }}" class="logo" width="{{ .Width }}" height="{{ .Height }}" alt="{{ $t }}">
-  {{- else -}}
-    {{- $t -}}
+    <div class="nav_brand">
+{{- with $logoImage }}
+  {{- with $logoURL }}
+        <a href='{{ . }}' title='{{ $t }}' class='nav_brand_logo_parent'>
   {{- end }}
+          <div class="nav_brand_logo{{ with $logoClass }} {{ . }}{{ end }}">
+            <img src="{{ absURL .Permalink }}" class="logo" width="{{ .Width }}" height="{{ .Height }}" alt="{{ $t }}">
           </div>
-{{- if $logoURL }}
+  {{- if $logoURL }}
         </a>
+  {{- end }}
+{{- else -}}
+      <div class="nav_group nav_brand_text_parent">
+      {{- with $logoURL }}
+        <a href='{{ . }}' title='{{ $t }}' class='nav_brand_text nav_item'>
+      {{- end }}
+          {{- $t -}}
+    {{- if $logoURL }}
+        </a>
+      </div>
+  {{- end }}
 {{- end }}
+    </div>

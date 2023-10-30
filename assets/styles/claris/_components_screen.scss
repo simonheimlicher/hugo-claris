@@ -128,7 +128,7 @@
   z-index: 99;
   padding: 0;
   background: transparent;
-  line-height: 1.5rem;
+  line-height: ($screenViewNavHeight - 1.5rem);
 
   &:after {
     content: '';
@@ -142,6 +142,7 @@
     background: rgba(var(--RGB_choice-bg), 0.98);
     @include background-gradient-translucent("to top", 0.9);
     // @include shadow-centered-narrow
+    box-shadow: 0.25rem 0.25rem 3rem var(--shadow);
     @include color-scheme_transition;
   }
 }
@@ -152,11 +153,15 @@
 }
 
 .nav {
-  display: flex;
   position: relative;
+  height: $screenViewNavHeightNarrow;
+  line-height: ($screenViewNavHeightNarrow - 1.5rem);
+  display: flex;
   justify-content: space-between;
   color: var(--text);
   white-space: nowrap;
+  column-gap: var(--inner_margin);
+  @include useFontDefinition(sans, display);
   @include chrome;
   // FIXME: Overflow-y leads to scroll bars
   // Does not work because overlow-x and -y cannot be set independently
@@ -168,6 +173,7 @@
   @supports (color: var(--CSS-properties)) {
     font-size: var(--font-size-nav);
   }
+  line-height: ($screenViewNavHeight - 1.5rem);
   .icon {
     width: var(--icon-height-nav);
     height: var(--icon-height-nav);
@@ -219,10 +225,6 @@
     transition: transform 0.3s var(--ease);
     transform-origin: 50% 50%;
   }
-  &,
-  &_body {
-    flex-direction: column;
-  }
   &_body {
     // FIXME: Overflow-y leads to scroll bars
     // overflow-x: auto
@@ -231,6 +233,7 @@
     top: 0;
     bottom: 0;
     display: flex;
+    flex-direction: column;
     flex: 1;
     background: inherit;
     transition: transform 0.5s var(--easing);
@@ -259,17 +262,6 @@
       background: rgba(var(--RGB_choice-bg), 0.98);
       @include background-gradient-translucent("to bottom", 0.9);
       @include color-scheme_transition;
-    }
-  }
-  &_item {
-    padding: 0.25rem 0.25rem;
-    display: inline-flex;
-    border-radius: 0;
-    align-items: center;
-    @media (any-hover: hover) {
-      &:not(.nav_active):hover, a.nav_active_in_section:hover {
-        @include nav-hover-background;
-      }
     }
   }
   &_group {
@@ -310,16 +302,12 @@
     border-radius: 0.5rem;
     // Required for IE 11
     z-index: ($main-z-index + 1);
-  }
-  &_brand {
-    position: relative;
-    display: flex;
+    padding: math.div($screenViewNavHeightNarrow - 1.5rem, 2) 0.25rem;
+    padding: math.div($screenViewNavHeightNarrow - 1.5rem, 2) var(--inner_padding_4-1);
+    border-radius: 0;
     align-items: center;
-    border-radius: 0.5rem;
-    // Required for IE 11
-    z-index: ($main-z-index + 1);
     @media (any-hover: hover) {
-      &:not(.nav_active):hover {
+      &:not(.nav_active):hover, a.nav_active_in_section:hover {
         @include nav-hover-background;
       }
     }
@@ -401,7 +389,6 @@
       bottom: 0;
       border-radius: 0.5rem;
       background: var(--choice-bg-menu);
-      box-shadow: 0.25rem 0.25rem 3rem var(--shadow);
       @media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
         background: var(--choice-bg-menu);
         width: auto;
@@ -435,42 +422,66 @@
     }
   }
   &_brand {
-    position: relative;
-    margin-left: calc(0px - var(--inner_padding));
-    margin-right: 0rem;
-    padding: 0 var(--inner_padding_4-1) 0 var(--inner_padding);
-    z-index: 999;
-    width: min-content;
-    // Setting min-height is required to avoid nav bar incl. burger menu icon from collapsing
-    height: $screenViewNavHeightNarrow;
-    img {
-      max-height: 100%;
-      width: auto;
-      max-width: unset;
-      background: transparent !important;
-    }
-    &_parent {
-      margin-right: auto;
-    }
-    &.padding-1 {
+    display: flex;
+    &_logo {
+      position: relative;
+      align-items: center;
+      border-radius: 0.5rem;
+      // Required for IE 11
+      z-index: ($main-z-index + 1);
+      @media (any-hover: hover) {
+        &:not(.nav_active):hover {
+          @include nav-hover-background;
+        }
+      }
+      margin-left: calc(0px - var(--inner_padding));
+      margin-right: 0rem;
+      padding: 0 var(--inner_padding_4-1) 0 var(--inner_padding);
+      z-index: 999;
+      width: min-content;
+      // Setting min-height is required to avoid nav bar incl. burger menu icon from collapsing
+      height: $screenViewNavHeightNarrow;
       img {
-        padding: 0.25em;
+        max-height: 100%;
+        width: auto;
+        max-width: unset;
+        background: transparent !important;
+      }
+      &_parent {
+        margin-right: auto;
+      }
+      &.padding-1 {
+        img {
+          padding: 0.25em;
+        }
+      }
+      &.padding-2 {
+        img {
+          padding: 0.5em;
+        }
+      }
+      &.padding-3 {
+        img {
+          padding: 0.75em;
+        }
+      }
+      &.padding-4 {
+        img {
+          padding: 1em;
+        }
       }
     }
-    &.padding-2 {
-      img {
-        padding: 0.5em;
-      }
-    }
-    &.padding-3 {
-      img {
-        padding: 0.75em;
-      }
-    }
-    &.padding-4 {
-      img {
-        padding: 1em;
-      }
+    &_text {
+      // display: block;
+      // color: var(--text-faint);
+      @include useFontDefinition(inherit, display, small-caps, bold);
+      color: var(--theme-text);
+      line-height: ($screenViewNavHeightNarrow - 1.5rem);
+      padding: math.div($screenViewNavHeightNarrow - 1rem, 2) 0.25rem;
+      padding: math.div($screenViewNavHeightNarrow - 1rem, 2) var(--inner_padding_4-1);
+      padding-right: 1em;
+      border-right: 2px solid var(--theme);
+      border-radius: 0;
     }
   }
   &_mobile_toggle,
@@ -753,6 +764,7 @@
       position: relative;
       display: flex;
       align-items: center;
+      // column-gap: var(--inner_margin_4-2);
       &_follow_color-scheme {
         margin-left: auto;
         display: flex;
@@ -773,15 +785,6 @@
           margin-left: 0;
         }
       }
-    }
-    &_group {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-    &_item {
-      padding: 0.25rem 0.25rem;
-      padding: calc( ($screenViewNavHeightNarrow - 2rem) / 2) var(--inner_padding_4-1);
     }
     &_sub {
       position: absolute;
@@ -815,23 +818,32 @@
 
 // Full navigation menu bar
 @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
-  .header_claris,
-  .nav_brand {
+  .header_claris {
     height: $screenViewNavHeight;
-    line-height: 1.5rem;
+    line-height: ($screenViewNavHeight - 1.5rem);
   }
   .nav {
-    &_item,
-    &_follow {
-      // padding: 0.5rem 0.5rem;
-      padding: calc( ($screenViewNavHeight - 2rem) / 2) var(--inner_padding_4-1);
-    }
+    height: $screenViewNavHeight;
+    // &_item,
+    // &_follow {
+    //   padding: 0.5rem 0.5rem;
+    //   padding: calc( ($screenViewNavHeight - 2rem) / 2) var(--inner_padding_4-1);
+    // }
     &_brand {
-      height: $screenViewNavHeight;
-      // margin-left: (-1 * $screenViewInnerPaddingOneColumn);
-      margin-right: 0;
-      // padding-left: $screenViewInnerPaddingOneColumn;
+      &_logo {
+        height: $screenViewNavHeight;
+        // margin-left: (-1 * $screenViewInnerPaddingOneColumn);
+        margin-right: 0;
+        // padding-left: $screenViewInnerPaddingOneColumn;
+      }
+      &_text {
+        line-height: ($screenViewNavHeight - 1.5rem);
+      }
     }
+    &_item {
+      padding-top: math.div($screenViewNavHeight - 1.5rem, 2);
+      padding-bottom: math.div($screenViewNavHeight - 1.5rem, 2);
+      }
     // &_mobile_toggle {
     //   padding-right: $screenViewInnerPaddingOneColumn;
     // }
