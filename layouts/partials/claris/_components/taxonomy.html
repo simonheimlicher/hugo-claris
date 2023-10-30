@@ -39,12 +39,22 @@
           {{- $slicedTags := sort (sort (sort $recentTagsInfo "lastArticleDate" "desc") "recentCount" "desc") "tagName" "desc" | first $tagsLimit }}
           {{- $taxonomyPageURL := absLangURL $key -}}
           {{- range $slicedTags }}
-          {{- $tag := .tag }}
-          {{- $recentCount := .recentCount }}
-          <a href='{{ $taxonomyPageURL }}/{{ (replace $tag.Name "#" "%23") | urlize }}/' class="article_tag button button_translucent" title="{{ partial `claris/_functions/sanitize` $tag.Name }}">
-            {{- $tag.Page.Title }}
-            <span class="button_tally">{{ $tag.Count }}</span>
-          </a>
+            {{- $tag := .tag }}
+            {{- $tagTitle := $tag.Page.Title }}
+            {{- with T $tagTitle }}
+              {{- $tagTitle = . }}
+            {{- else }}
+              {{- $tagTitle = strings.FirstUpper $tagTitle }}
+            {{- end }}
+            {{- $linkTitle := $tagTitle }}
+            {{- with T "articles_with_taxonomy" }}
+              {{- $linkTitle = printf "%s %s '%s'" (strings.FirstUpper .) (T $key (dict "Count" 1) ) $tagTitle }}
+            {{- end }}
+            {{- $recentCount := .recentCount }}
+            <a href='{{ $taxonomyPageURL }}/{{ (replace $tag.Name "#" "%23") | urlize }}/' class="article_tag button button_translucent" title="{{ $linkTitle }}">
+              {{- $tagTitle }}
+              <span class="button_tally">{{ $tag.Count }}</span>
+            </a>
           {{- end }}
           {{- if (or $taxonomyListComplete (gt (len $taxonomy.ByCount) $tagsLimit) ) }}
           <br>
@@ -53,11 +63,21 @@
           <div class="article_tags">
             <div class="tags_list">
               {{- range $taxonomy.Alphabetical }}
-              {{- $tagsInfo.Add "tagsInfo" (slice .Name .Count)}}
-              <a href='{{ $taxonomyPageURL }}/{{ (replace .Name "#" "%23") | urlize }}/' class=" article_tag button button_translucent" data-position={{ .Count }} title="{{ partial `claris/_functions/sanitize` .Name }}">
-                {{- .Page.Title -}}
-                <span class="button_tally">{{ .Count }}</span>
-              </a>
+                {{- $tagsInfo.Add "tagsInfo" (slice .Name .Count)}}
+                {{- $tagTitle := .Page.Title }}
+                {{- with T $tagTitle }}
+                  {{- $tagTitle = . }}
+                {{- else }}
+                  {{- $tagTitle = strings.FirstUpper $tagTitle }}
+                {{- end }}
+                {{- $linkTitle := $tagTitle }}
+                {{- with T "articles_with_taxonomy" }}
+                  {{- $linkTitle = printf "%s %s '%s'" (strings.FirstUpper .) (T $key (dict "Count" 1) ) $tagTitle }}
+                {{- end }}
+                <a href='{{ $taxonomyPageURL }}/{{ (replace .Name "#" "%23") | urlize }}/' class=" article_tag button button_translucent" data-position={{ .Count }} title="{{ $linkTitle }}">
+                  {{- $tagTitle -}}
+                  <span class="button_tally">{{ .Count }}</span>
+                </a>
               {{- end }}
               <div class="tags_sort"><span title="sort alphabetically">[A~Z]</span><span title="sort by count">[0~9]</span>
               </div>
