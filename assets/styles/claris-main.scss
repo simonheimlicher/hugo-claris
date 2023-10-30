@@ -11,7 +11,7 @@
 
 {{- $themeColorSchemePath := default "colors" ($page.Param "themeColorSchemePath") }}
 {{- with ($page.Param "themeColorScheme" | default false) }}
-{{ $themeColorSchemeFile := printf "%s/%s" }}
+{{ $themeColorSchemeFile := printf "%s/%s" $themeColorSchemePath . }}
 @import 'claris/{{ $themeColorSchemeFile }}';
 {{- end }}
 
@@ -40,19 +40,23 @@ $currentFontDefinition: default !default;
   {{- $familyName :=  .family }}
   {{- $familyID :=  (urlize .family) }}
 
+$fontFamilyName: '{{ $familyName }}';
 $fontFamilyID: '{{ $familyID }}';
 {{ printf `$fontFamily%vID: '%v'` $fontTypeSuffix $familyID | safeCSS }};
 
 $fontFamilyDefault: (name: '{{ $familyName }}');
 
 {{- $fontsSelfHosted := $page.Param "style.fonts.selfhosted" | default ($page.Param "fontsSelfHosted") | default false }}
-{{- $assetFontPath := printf "styles/claris/fonts" }}
+{{- $assetStyleRoot := "styles" }}
+{{- $styleFontsPath := "claris/fonts" }}
+{{- $assetFontPath := printf "%s/%s" $assetStyleRoot $styleFontsPath }}
 {{- if $fontsSelfHosted }}
   {{- $hostedFontPath := default (absURL "fonts") ($page.Param "hostedFontPath") }}
-  {{- with resources.GetMatch (printf "%s/%s*" $assetFontPath $familyID) }}
-    /* Importing self-hosted font '{{ $familyID | title }}' from '{{ . }}' */
+  {{- with resources.Get (printf "%s/%s.scss" $assetFontPath $familyID) }}
+    /* Importing self-hosted font with familyName='{{ $familyName }}' familyID='{{ $familyID }}' from '{{ . }}' */
+    $styleFontsPath: '{{ $styleFontsPath }}';
     $hostedFontPath: '{{ $hostedFontPath }}';
-    @import 'claris/fonts/{{ $familyID }}';
+    @import '{{ $styleFontsPath }}/{{ $familyID }}';
   {{- else }}
     {{- $fontsSelfHosted = false }}
   {{- end }}

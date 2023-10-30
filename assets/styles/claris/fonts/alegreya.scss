@@ -231,7 +231,13 @@ $fontFamilySpec: (
   variants: (
     // Font variant: `small-caps`
     small-caps: (
-      name: 'Alegreya SC'
+      name: 'Alegreya SC',
+      styles: (
+        default: (
+          font-variant: normal,
+          text-transform: lowercase
+        )
+      )
     )
   ),
 );

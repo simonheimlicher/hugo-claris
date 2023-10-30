@@ -739,17 +739,17 @@ $familyDefaultMap: (
 );
 
 $fontFamilyInheritSpec: (
-  name: 'inherit',
-  fallback: 'inherit',
+  name: inherit,
+  fallback: inherit,
   // Default styles
   styles: (
     // Style: `default`, i.e., body text
     default: (
-      font-weight: 'inherit',
-      line-height: 'inherit'
+      font-weight: inherit,
+      line-height: inherit
     ),
     bold: (
-      font-weight: 'inherit',
+      font-weight: inherit,
     )
   ),
   // Alternative roles
@@ -758,11 +758,11 @@ $fontFamilyInheritSpec: (
     display: (
       styles: (
         default: (
-          font-weight: 'inherit',
-          line-height: 'inherit'
+          font-weight: inherit,
+          line-height: inherit
         ),
         bold: (
-          font-weight: 'inherit'
+          font-weight: inherit
         )
       )
     )
@@ -771,10 +771,11 @@ $fontFamilyInheritSpec: (
   variants: (
     // Font variant: `small-caps`
     small-caps: (
-      name: 'inherit',
+      name: inherit,
       styles: (
         default: (
-          font-variant: 'inherit'
+          font-variant: inherit,
+          text-transform: inherit
         ),
       )
     )
