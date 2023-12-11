@@ -62,6 +62,10 @@ appears to be broken, as mentioned above.
 {{- $jsBuildOptionsBase := (dict
     "target" $targetVersion
     "minify" $minifyJS
+    "params" (dict
+      "site" site.Params
+      "page" page.Params
+    )
 ) }}
 
 {{- $jsBuildOptionsTest := (dict

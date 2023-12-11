@@ -37,6 +37,7 @@
     "medium-zoom": "^1.0.6",
     "object-fit-images": "^3.2.4",
     "postcss-cli": "^8.3.1",
+    "posthog-js": "^1.94.2",
     "qrcode-svg": "^1.1.0",
     "regenerator-runtime": "^0.13.7",
     "web-vitals": "^3.3.1"

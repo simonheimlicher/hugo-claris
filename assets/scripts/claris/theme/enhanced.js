@@ -38,5 +38,6 @@ document.addEventListener('DOMContentLoaded', mediumZoomInit);
 // });
 
 import './web-vitals-analytics';
+import './posthog-analytics';
 
 // console.log('END   theme/enhanced.js');
