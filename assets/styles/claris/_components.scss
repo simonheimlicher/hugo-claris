@@ -1290,14 +1290,17 @@ svg.qrcode-svg {
       background-color: var(--theme-hover);
       color: var(--theme-text-hover);
       @include useFontDefinition(meta);
-      width: 7rem;
-      padding: 0.25rem 0.5rem;
+      width: auto;
+      white-space: nowrap;
+      padding: 0.25rem 0.75rem;
       font-size: var(--font-size-meta);
+      line-height: var(--line-height);
+      font-weight: var(--font-weight);
       border-radius: 1rem;
       text-align: center;
-      &:after {
+      &:before {
         position: absolute;
-        top: 1rem;
+        top: calc(var(--font-size-meta) * var(--line-height));
         content: "";
         border-color: var(--theme-hover) transparent;
         border-style: solid;
@@ -1306,7 +1309,7 @@ svg.qrcode-svg {
         width: 0;
         transform-origin: 50% 50%;
         transform: rotate(145deg);
-        right: 0.45rem;
+        right: 1rem;
       }
     }
   }

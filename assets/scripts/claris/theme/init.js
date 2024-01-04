@@ -131,7 +131,7 @@ const clarisInit = function() {
     const yank = 'link_yank';
     const yanked = 'link_yanked';
     copyText.classList.add(yanked);
-    copyText.innerText = 'Link Copied';
+    copyText.innerText = 'Link to this section copied';
     if(!elem(`.${yanked}`, linkNode)) {
       linkNode.appendChild(copyText);
       pushClass(linkNode, yank);
