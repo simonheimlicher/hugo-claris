@@ -12,7 +12,14 @@
 {{- $metaOpengraph := site.Params.robots.index }}
 {{- $metaTwitterCard := site.Params.robots.index }}
 
-{{- $author :=  site.Author.name }}
+{{- $author := default site.Author.name ($page.Param "siteAuthor") }}
+{{- with $author }}
+  {{- with site.Param "authors" }}
+    {{- with index . (anchorize $author) }}
+      {{- $author = .name }}
+    {{- end }}
+  {{- end }}
+{{- end }}
 {{- $authorMeta := partialCached "claris/_functions/meta/author" (dict "Page" $homePage "Author" $author "Debug" $debug) $homePage.Permalink }}
 {{- $socialMeta := partialCached "claris/_functions/meta/social" (dict "Page" $homePage "Author" $author "Debug" $debug) $homePage.Permalink }}
 

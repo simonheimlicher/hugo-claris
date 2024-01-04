@@ -15,7 +15,7 @@
     {{- with default $meta.Site.Data.Images.share .Images.share }}
       {{- with $variantMeta := .variant.default }}
         {{- with (default .version.default .version.aspect_2x1) }}
-          {{- $shareImageURL = .canonicalurl }}
+          {{- $shareImageURL = partial "claris/_functions/canonical-url" .resource }}
         {{- end }}
       {{- end }}
       {{- with .alt }}

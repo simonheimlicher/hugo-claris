@@ -15,9 +15,9 @@
   {{- $authorProfilePagePath := "about" }}
   {{- with $author }}
   {{- else }}
-    {{- with $author = default site.Author.name ($page.Param "author") }}
+    {{- with $author =  ($page.Param "siteAuthor") | default site.Author.name }}
       {{- with site.Param "authors" }}
-        {{- with index . $author }}
+        {{- with index . (anchorize $author) }}
           {{- $author = .name }}
           {{- with index . "profilepage" }}
             {{- $authorProfilePagePath = . }}

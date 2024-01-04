@@ -2,32 +2,51 @@
 {{- $template := "claris/_components/obfuscated-email" }}
 {{- $text := .Text }}
 {{- $plain := .Plain }}
+{{- $plainText := .Plain }}
 {{- $noScript := default (T "obfuscated-link_requires-javascript") .NoScript }}
 {{- if not $plain }}
-  {{- $resource := partial "claris/_functions/resources" (dict "Page" $page "resource" "data/claris/private/authors" )}}
-  {{- with $resource }}
-    {{/* {{- warnf "%s[%s]: resource=%v" $page $template $resource }} */}}
-    {{- $data := $resource | transform.Unmarshal }}
-    {{- $plain = (index $data.authors 0).email }}
+  <!-- If no email address is provided, default to the email of the first author of the page or site -->
+  {{- $authorMap := false }}
+  {{- with site.Author.name | default ($page.Param "siteAuthor") | default ($page.Param "author") }}
+    {{- if reflect.IsMap . }}
+      {{- $authorMap = . }}
+    {{- else }}
+      {{- $authorMap = index ($page.Param "authors") (anchorize . ) }}
+    {{- end }}
   {{- end }}
-{{- end }}
-{{- $url := urls.Parse $plain }}
-{{- if (le (len $url.Scheme) 1) }}
-  {{- if (strings.FindRE `.+@.+` $plain) }}
-    {{- $url = urls.Parse (printf "mailto:%s" $url) }}
+  {{- with $authorMap }}
+    {{- /* warnf "%s[%s]: authorMap=%v" $page $template $authorMap */ -}}
+    {{- with $plainText = $authorMap.email }}
+      {{- $emailEnvVariableName := printf "HUGO_CLARIS_%s" $plainText }}
+      {{- with (getenv $emailEnvVariableName) }}
+        {{- $plainText = . }}
+        {{- /* warnf "%s[%s]: %s=%v" $page $template $emailEnvVariableName $plainText */ -}}
+      {{- end }}
+    {{- end }}
   {{- else }}
-    {{/* {{- warnf "%s[%s]: site.Author=%#v site.Author=%#v site.Author.email=%#v"
-        $page $template site.Author site.Author site.Author.email }} */}}
-    {{- errorf "%s[%s]: Invalid email address: .Plain=%v $plain=%v $url=%v .Scheme=%v .Host=%v .RequestURI=%v"
-        $page $template .Plain $plain $url $url.Scheme $url.Host $url.RequestURI }}
+    {{- errorf "%s[%s]: no valid email found in .Param 'author' or .Param 'authors' %v'" $page $template }}
   {{- end }}
 {{- end }}
-{{- if (gt (len $url.Scheme) 1) }}
-  {{- $plain = printf "%s" $url }}
-  {{/* {{- warnf "%s[%s]: .Plain=%v $plain=%v $url=%v .Scheme=%v .Host=%v .RequestURI=%v"
-      $page $template .Plain $plain $url  $url.Scheme $url.Host $url.RequestURI }} */}}
-  {{- partial "claris/_components/obfuscated-link" (dict "Page" $page "Plain" $plain "Text" $text "NoScript" $noScript) }}
+{{- with $plainText }}
+  {{- $url := urls.Parse $plainText }}
+  {{- if (le (len $url.Scheme) 1) }}
+    {{- if (strings.FindRE `.+@.+` $plainText) }}
+      {{- $url = urls.Parse (printf "mailto:%s" $url) }}
+    {{- else }}
+      {{/* {{- warnf "%s[%s]: site.Author=%#v site.Author=%#v site.Author.email=%#v"
+          $page $template site.Author site.Author site.Author.email }} */}}
+      {{- errorf "%s[%s]: Invalid email address: .Plain=%v $plainText=%v $url=%v .Scheme=%v .Host=%v .RequestURI=%v"
+          $page $template $plain $plainText $url $url.Scheme $url.Host $url.RequestURI }}
+    {{- end }}
+  {{- end }}
+  {{- if (gt (len $url.Scheme) 1) }}
+    {{- $plain = printf "%s" $url }}
+    {{- partial "claris/_components/obfuscated-link" (dict "Page" $page "Plain" $plain "Text" $text "NoScript" $noScript) }}
+  {{- else }}
+    {{- errorf "%s[%s]: Failed to fix invalid email address: .Plain=%v $plainText=%v $url=%v .Scheme=%v .Host=%v .RequestURI=%v"
+        $page $template $plain $plainText $url $url.Scheme $url.Host $url.RequestURI }}
+  {{- end }}
 {{- else }}
-  {{- errorf "%s[%s]: Failed to fix invalid email address: .Plain=%v $plain=%v $url=%v .Scheme=%v .Host=%v .RequestURI=%v"
-      $page $template .Plain $plain $url $url.Scheme $url.Host $url.RequestURI }}
+  {{- errorf "%s[%s]: No plain email address: .Plain=%v $page.Param.author=%v $page.Param.authors=%v"
+      $page $template .Plain $page.Param "author" $page.Param "authors" }}
 {{- end }}
