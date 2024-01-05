@@ -1,7 +1,11 @@
 {{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
 {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
 {{- if (or $envDevel $envProd) -}}
-Sitemap: {{ absURL "/sitemap.xml" }}
+{{- $canonicalBaseURL := site.Params.canonicalbaseurl | default site.BaseURL }}
+{{- $siteMap := printf "%s/%s" (strings.TrimRight "/" $canonicalBaseURL) "sitemap.xml" }}
+{{- with $siteMap }}
+Sitemap: {{ $siteMap }}
+{{- end }}
   {{- $robotsTxtDisallowSections := default false site.Params.robots.robotsTxtDisallowSections }}
   {{- with $robotsTxtDisallowSections }}
 User-agent: *
