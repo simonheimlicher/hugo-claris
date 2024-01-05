@@ -37,7 +37,7 @@
         {{ printf "<h%v class=\"taxonomy\" id=\"%s-section\">" $headingLevel $key | safeHTML }}{{ T $key | default $key | strings.FirstUpper }}{{ printf "</h%v>" $headingLevel | safeHTML }}
         <nav class="tags_nav">
           {{- $slicedTags := sort (sort (sort $recentTagsInfo "lastArticleDate" "desc") "recentCount" "desc") "tagName" "desc" | first $tagsLimit }}
-          {{- $taxonomyPageURL := absLangURL $key -}}
+          {{- $taxonomyPageURL := relLangURL $key -}}
           {{- range $slicedTags }}
             {{- $tag := .tag }}
             {{- $tagTitle := $tag.Page.Title }}

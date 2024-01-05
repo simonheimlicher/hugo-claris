@@ -56,7 +56,7 @@ See https://github.com/gohugoio/hugo/issues/7297
     {{- if $nested }}
     <div class="panel_item panel_item-{{ $panelID }}"{{ with $panelStyle }}{{ . }}{{ end }}>
       {{- with $panelLink }}
-        <a href="{{ . | absLangURL }}">
+        <a href="{{ . | relLangURL }}">
       {{- end }}
       <section class="panel_item_inner">
     {{- end }}
@@ -94,7 +94,7 @@ See https://github.com/gohugoio/hugo/issues/7297
                 {{- end }}
               {{- end }}
               {{- if $cardLink }}
-              <a class="card_item panel_item-{{ $panelID }} card_item-{{ $cardID }} excerpt_container"{{ with $cardStyle }}{{ . }}{{ end }} href="{{ $cardLink | absLangURL }}">
+              <a class="card_item panel_item-{{ $panelID }} card_item-{{ $cardID }} excerpt_container"{{ with $cardStyle }}{{ . }}{{ end }} href="{{ $cardLink | relLangURL }}">
               {{- else }}
               <div class="card_item panel_item-{{ $panelID }} card_item-{{ $cardID }} content"{{ with $cardStyle }}{{ . }}{{ end }}>
               {{- end }}

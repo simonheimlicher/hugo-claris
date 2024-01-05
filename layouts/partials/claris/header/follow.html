@@ -1,4 +1,4 @@
-{{- $base := absURL "" }}
+{{- $base := relURL "" }}
 {{- $items := site.Data.social }}
 {{- $social := site.Menus.social }}
 {{- with $social }}
@@ -13,7 +13,7 @@
     {{ $label = lower .item }}
   {{- end }}
   {{- if and (eq (hasPrefix $url $base) false) (eq (hasPrefix $url "http") false) }}
-    {{- $url = absLangURL $url }}
+    {{- $url = relLangURL $url }}
   {{- end }}
             <div class="nav_parent">
               <a href="{{ $url }}" class="nav_item" title="{{ partial `claris/_functions/sanitize` $name }}">

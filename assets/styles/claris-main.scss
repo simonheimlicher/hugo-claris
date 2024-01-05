@@ -51,7 +51,7 @@ $fontFamilyDefault: (name: '{{ $familyName }}');
 {{- $styleFontsPath := "claris/fonts" }}
 {{- $assetFontPath := printf "%s/%s" $assetStyleRoot $styleFontsPath }}
 {{- if $fontsSelfHosted }}
-  {{- $hostedFontPath := default (absURL "fonts") ($page.Param "hostedFontPath") }}
+  {{- $hostedFontPath := default (relURL "fonts") ($page.Param "hostedFontPath") }}
   {{- with resources.Get (printf "%s/%s.scss" $assetFontPath $familyID) }}
     /* Importing self-hosted font with familyName='{{ $familyName }}' familyID='{{ $familyID }}' from '{{ . }}' */
     $styleFontsPath: '{{ $styleFontsPath }}';

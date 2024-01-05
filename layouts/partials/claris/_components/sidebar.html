@@ -57,7 +57,7 @@
             <ul class="flex-column">
               {{- range . }}
               <li>
-                <a href="{{ .Permalink }}" class="nav-link" title="{{ partial `claris/_functions/sanitize` .Title }}">{{ page.RenderString .Title }}</a>
+                <a href="{{ .RelPermalink }}" class="nav-link" title="{{ partial `claris/_functions/sanitize` .Title }}">{{ page.RenderString .Title }}</a>
               </li>
               {{- end }}
             </ul>
@@ -68,7 +68,7 @@
             <ul>
               {{- range . }}
               <li>
-                <a href="{{ .Permalink }}" class="nav-link" title="{{ partial `claris/_functions/sanitize` .Title }}">{{ page.RenderString .Title }}</a>
+                <a href="{{ .RelPermalink }}" class="nav-link" title="{{ partial `claris/_functions/sanitize` .Title }}">{{ page.RenderString .Title }}</a>
               </li>
               {{- end }}
             </ul>
@@ -79,7 +79,7 @@
             <ul class="flex-column">
               {{- range . }}
               <li>
-                <a href="{{ .Permalink }}" class="nav-link" title="{{ partial `claris/_functions/sanitize` .Title }}">{{ page.RenderString .Title }}</a>
+                <a href="{{ .RelPermalink }}" class="nav-link" title="{{ partial `claris/_functions/sanitize` .Title }}">{{ page.RenderString .Title }}</a>
               </li>
               {{- end }}
             </ul>

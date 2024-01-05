@@ -37,7 +37,7 @@
 {{- end -}}
 {{- range .AlternativeOutputFormats -}}
   {{- if (ne .Rel "canonical" ) }}
-    {{ printf `<link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .Permalink (partial `claris/_functions/sanitize` site.Title) | safeHTML -}}
+    {{ printf `<link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .RelPermalink (partial `claris/_functions/sanitize` site.Title) | safeHTML -}}
   {{- end }}
 {{- end }}
     <link rel="canonical" type="text/html" href="{{ partial "claris/_functions/canonical-url" . }}" title="{{ (partial `claris/_functions/sanitize` $title) }}">

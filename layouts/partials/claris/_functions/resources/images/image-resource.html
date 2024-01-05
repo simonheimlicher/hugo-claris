@@ -18,7 +18,7 @@ partial "claris/_functions/resources" no longer works -->
     {{/* {{- warnf "%s[%s]: Use provided ResourceSpec=%v[%T]" $page $template $resourceSpec $resourceSpec }} */}}
   {{- else }}
     {{- if (hasPrefix $resourceSpec "http") }}
-      {{ $img = resources.GetRemote (absURL $resourceSpec) }}
+      {{ $img = resources.GetRemote $resourceSpec }}
     {{- else }}
       {{- $img = partial "claris/_functions/resources" $imageResourceArgs -}}
       {{- if not $img }}

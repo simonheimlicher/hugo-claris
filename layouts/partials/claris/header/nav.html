@@ -4,7 +4,7 @@
 {{- $template := "partials/claris/header/nav" }}
 {{- $menuData := $page.Site.Data.menu }}
 {{- $link := $page.Permalink }}
-{{- $logoURL := absLangURL site.Params.logoURL }}
+{{- $logoURL := relLangURL site.Params.logoURL }}
 {{- $url := "" }}
 {{- $name := "" }}
 {{- $children := false }}
@@ -18,18 +18,18 @@
       {{- /* partial "html-comment" (printf "        %v =  %v" $menu $menuData) */ -}}
       {{- $children = .submenu }}
       {{- $name = .name }}
-      {{- $url = absURL .link }}
-      {{- /* partial "html-comment" (printf "Page menu.    .URL:%s absURL:%s absLangURL:%s" .URL (absURL .URL) (absLangURL .URL) ) */ -}}
+      {{- $url = relURL .link }}
+      {{- /* partial "html-comment" (printf "Page menu.    .URL:%s relURL:%s relLangURL:%s" .URL (relURL .URL) (relLangURL .URL) ) */ -}}
     {{- else }}
       {{- $children = .Children }}
       {{- $name = or (T .Name) .Name }}
-      {{- $url = absURL .URL }}
+      {{- $url = relURL .URL }}
       {{- $permalink := (site.GetPage (printf "%s" .URL)) }}
       {{- /* partial "html-comment" (printf "site.GetPage '/resume/print':'%s' site.GetPage '%s':%s .Permalink:%s"
           (site.GetPage "/resume/print") (printf "%s" .URL) (site.GetPage (printf "%s" .URL)) $permalink ) */ -}}
       {{- /* FIXME: site.GetPage seems to expect URLs without trailing slash */ -}}
       {{- if site.GetPage (strings.TrimRight "/" (printf "%s" .URL)) }}
-        {{- $url = absLangURL .URL }}
+        {{- $url = relLangURL .URL }}
       {{- end }}
     {{- end }}
     {{- $url = printf "%s/" (strings.TrimRight "/" $url) -}}
@@ -52,17 +52,17 @@
           {{- if $page.Parent.Parent.IsMenuCurrent .Menu . }} nav_active_parent_parent_is_menu{{ end -}}
           {{- if $page.Parent.Parent.HasMenuCurrent .Menu . }} nav_active_parent_parent_has_menu{{ end -}}
         {{- end -}}
-      {{- end -}}" title="{{ partial `claris/_functions/sanitize` $name }}">{{ $name }}{{ with $children }}<img src='{{ absURL "icons/caret-icon.svg" }}' alt="icon" class="nav_icon">{{ end }}</a>
+      {{- end -}}" title="{{ partial `claris/_functions/sanitize` $name }}">{{ $name }}{{ with $children }}<img src='{{ relURL "icons/caret-icon.svg" }}' alt="icon" class="nav_icon">{{ end }}</a>
       {{- with $children }}
               <div class="nav_sub">
                 <span class="nav_child"></span>
         {{- range . }}
           {{- if eq $menu $menuData }}
             {{- $name = .name }}
-            {{- $url = absURL .link }}
+            {{- $url = relURL .link }}
           {{- else }}
             {{- $name = or (T .Name) .Name }}
-            {{- $url = absLangURL .URL }}
+            {{- $url = relLangURL .URL }}
           {{- end }}
           {{- $childID := default "" (printf "%s-%s" $parentID ( (default $name .Identifier) | plainify | urlize) ) }}
                   <a href="{{ $url }}" id="{{ $childID }}" class="nav_child nav_item
@@ -111,7 +111,7 @@
       {{- $menuTitle := default .Title .Params.MenuTitle }}
           <div class="nav_parent nav_parent_section currentsection">
             {{- $activeClass := cond (eq $page.Permalink .Permalink) " nav_active" "" }}
-            <a href="{{ .Permalink }}" class="nav_item{{ $activeClass }}" title="{{ partial `claris/_functions/sanitize` .Title }}">{{ $menuTitle }}</a>
+            <a href="{{ .RelPermalink }}" class="nav_item{{ $activeClass }}" title="{{ partial `claris/_functions/sanitize` .Title }}">{{ $menuTitle }}</a>
           </div>
     {{- end }}
     {{- partial "html-comment" (printf "[%s]: .Section=%v $invisibleSections=%v .Pages=%v"
@@ -125,7 +125,7 @@
         {{- $menuTitle := default .Title .Params.MenuTitle }}
           <div class="nav_parent nav_parent_section pages">
             {{- $activeClass := cond (eq $page.Permalink .Permalink) " nav_active" "" }}
-            <a href="{{ .Permalink }}" class="nav_item{{ $activeClass }}" title="{{ partial `claris/_functions/sanitize` .Title }}">{{ $menuTitle }}</a>
+            <a href="{{ .RelPermalink }}" class="nav_item{{ $activeClass }}" title="{{ partial `claris/_functions/sanitize` .Title }}">{{ $menuTitle }}</a>
           </div>
       {{- end }}
     {{- else }}
@@ -142,7 +142,7 @@
             {{- $menuTitle := default .Title .Params.MenuTitle }}
         <div class="nav_parent nav_parent_section parent_pages">
             {{- $activeClass := cond (eq $page.Permalink .Permalink) " nav_active" "" }}
-          <a href="{{ .Permalink }}" class="nav_item{{ $activeClass }}" title="{{ partial `claris/_functions/sanitize` .Title }}">{{ $menuTitle }}</a>
+          <a href="{{ .RelPermalink }}" class="nav_item{{ $activeClass }}" title="{{ partial `claris/_functions/sanitize` .Title }}">{{ $menuTitle }}</a>
         </div>
             {{- end }}
           {{- end }}
@@ -159,7 +159,7 @@
       {{- $relatedNavEntries = true }}
     {{- end }}
           <div class="nav_parent nav_parent_print">
-            <a href="{{ .Permalink }}" class="nav_item" title="{{ T "print-view" }}">{{ partial "sprite" (dict "icon" "print") }}</a>
+            <a href="{{ .RelPermalink }}" class="nav_item" title="{{ T "print-view" }}">{{ partial "sprite" (dict "icon" "print") }}</a>
           </div>
   {{- end }}
   {{- with .AlternativeOutputFormats.Get "html" -}}
@@ -168,7 +168,7 @@
       {{- $relatedNavEntries = true }}
     {{- end }}
           <div class="nav_parent nav_parent_print">
-            <a href="{{ .Permalink }}" class="nav_item" title="{{ T "screen-view" }}">{{ partial "sprite" (dict "icon" "arrow") }}</a>
+            <a href="{{ .RelPermalink }}" class="nav_item" title="{{ T "screen-view" }}">{{ partial "sprite" (dict "icon" "arrow") }}</a>
           </div>
   {{- end }}
 
@@ -186,7 +186,7 @@
               {{- $relatedNavEntries = true }}
             {{- end }}
           <div class="nav_parent nav_parent_download">
-            <a href="{{ .Permalink }}" class="nav_item" title="{{ T "download-pdf" }} {{ partial `claris/_functions/sanitize` .Title }}">{{ partial "sprite" (dict "icon" "file-pdf") }}</a>
+            <a href="{{ .RelPermalink }}" class="nav_item" title="{{ T "download-pdf" }} {{ partial `claris/_functions/sanitize` .Title }}">{{ partial "sprite" (dict "icon" "file-pdf") }}</a>
           </div>
           {{- else }}
             {{- partial "html-comment" (printf "%s[%s]: fileGlob=%v" $page $template $fileGlob ) }}
@@ -211,13 +211,13 @@
     {{- range sort site.Languages "Weight" "asc" }}
       {{- partial "html-comment" (printf "%s: ctx.Lang:%v translation: %v" $template $page.Lang . ) -}}
       {{- if (eq (printf "%s" $page.Lang) (printf "%s" .)) }}
-              <a href="{{ $page.Permalink }}" class="nav_child nav_item nav_active">{{ $page.Language.LanguageName }}</a>
+              <a href="{{ $page.RelPermalink }}" class="nav_child nav_item nav_active">{{ $page.Language.LanguageName }}</a>
       {{- else }}
         {{- $matchingTranslation := where $page.Translations "Lang" .Lang }}
         {{- with $matchingTranslation }}
           {{- with (index . 0) }}
             {{- $languageName := .Language.LanguageName }}
-              <a href="{{ .Permalink }}" class="nav_child nav_item" title="{{ T "view_page_in_language" (dict "Count" 1 "Language" $languageName) }}">{{ $languageName }}</a>
+              <a href="{{ .RelPermalink }}" class="nav_child nav_item" title="{{ T "view_page_in_language" (dict "Count" 1 "Language" $languageName) }}">{{ $languageName }}</a>
           {{- end }}
         {{- end }}
       {{- end }}
@@ -230,7 +230,7 @@
             <div class="nav_sub">
               <span class="nav_child"></span>
     {{ range site.Home.AllTranslations }}
-              <a href="{{ .Permalink }}" title="{{ T "switch_language_site" }}" class="nav_child nav_item">{{ .Language.LanguageName }}</a>
+              <a href="{{ .RelPermalink }}" title="{{ T "switch_language_site" }}" class="nav_child nav_item">{{ .Language.LanguageName }}</a>
     {{ end }}
             </div>
           </div>

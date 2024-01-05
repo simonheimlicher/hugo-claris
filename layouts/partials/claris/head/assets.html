@@ -29,22 +29,22 @@
       {{- end }}
     {{- end }}
     {{- if not (strings.HasSuffix $styleBundleID "print") }}
-    <link rel="preload" href="{{ .resource.Permalink }}" as="style" integrity="{{ .resource.Data.Integrity }}" crossorigin="anonymous">
+    <link rel="preload" href="{{ .resource.RelPermalink }}" as="style" integrity="{{ .resource.Data.Integrity }}" crossorigin="anonymous">
     {{- end }}
-    <link rel="stylesheet" id="style_claris_main" type="text/css" media="{{ .media }}" href="{{ .resource.Permalink }}" {{- with .fetchpriority }} fetchpriority="{{ . }}"{{ end }} integrity="{{ .resource.Data.Integrity }}" crossorigin="anonymous">
+    <link rel="stylesheet" id="style_claris_main" type="text/css" media="{{ .media }}" href="{{ .resource.RelPermalink }}" {{- with .fetchpriority }} fetchpriority="{{ . }}"{{ end }} integrity="{{ .resource.Data.Integrity }}" crossorigin="anonymous">
   {{- else }}
     {{- errorf "Render %s[%s]: missing stylesheet '%s' [onlyMediaType=%s]" $page $template $styleBundleID $bundleParams.OnlyMediaType }}
   {{- end }}
 {{- end }}
 
 {{- with $scriptBundles.head_async }}
-    <script type="module" async src="{{ .resource.Permalink }}" integrity="{{ .resource.Data.Integrity }}" crossorigin="anonymous"></script>
+    <script type="module" async src="{{ .resource.RelPermalink }}" integrity="{{ .resource.Data.Integrity }}" crossorigin="anonymous"></script>
 {{- end }}
 {{- with $scriptBundles.head }}
-    <script type="module" src="{{ .resource.Permalink }}" integrity="{{ .resource.Data.Integrity }}" crossorigin="anonymous"></script>
+    <script type="module" src="{{ .resource.RelPermalink }}" integrity="{{ .resource.Data.Integrity }}" crossorigin="anonymous"></script>
 {{- end }}
 {{- with $scriptBundles.head_legacy }}
-    <script nomodule src="{{ .resource.Permalink }}" integrity="{{ .resource.Data.Integrity }}" crossorigin="anonymous"></script>
+    <script nomodule src="{{ .resource.RelPermalink }}" integrity="{{ .resource.Data.Integrity }}" crossorigin="anonymous"></script>
 {{- end }}
 
 {{- partialCached "claris/head/fonts" . $assetVariant }}
@@ -57,7 +57,7 @@
   {{- with $legacyStyleSheet }}
     <script>
       if (!(window.CSS && (CSS.supports('color', 'var(--CSS-property-support-validation)') && CSS.supports('display', 'grid')))) {
-        let e = document.createElement('link'); e.rel = 'stylesheet'; e.media = '{{ .media }}'; e.href = {{ printf "'%v'" .resource.Permalink | safeJS }}; e.integrity = {{ printf "'%v'" .resource.Data.Integrity | safeJS }}; e.crossOrigin = 'anonymous';
+        let e = document.createElement('link'); e.rel = 'stylesheet'; e.media = '{{ .media }}'; e.href = {{ printf "'%v'" .resource.RelPermalink | safeJS }}; e.integrity = {{ printf "'%v'" .resource.Data.Integrity | safeJS }}; e.crossOrigin = 'anonymous';
         let o = document.getElementById('style_claris_main'); o.parentNode.replaceChild(e, o);
       }
     </script>

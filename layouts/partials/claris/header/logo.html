@@ -8,10 +8,10 @@
 {{- with $logoURL }}
   {{- if not (strings.HasPrefix . "http") }}
     {{- with strings.TrimLeft "/" . }}
-      {{- $logoURL = absLangURL . }}
+      {{- $logoURL = relLangURL . }}
       {{- warnf "%s[%s]: logoURL: '%v' --> %v" $page $template $logoURL }}
     {{- else }}
-      {{- $logoURL = (site.GetPage "/").Permalink }}
+      {{- $logoURL = (site.GetPage "/").RelPermalink }}
     {{- end }}
   {{- end }}
 {{- end }}
@@ -35,7 +35,7 @@
         <a href='{{ . }}' title='{{ $t }}' class='nav_brand_logo_parent'>
   {{- end }}
           <div class="nav_brand_logo{{ with $logoClass }} {{ . }}{{ end }}">
-            <img src="{{ absURL .Permalink }}" class="logo" width="{{ .Width }}" height="{{ .Height }}" alt="{{ $t }}">
+            <img src="{{ .RelPermalink }}" class="logo" width="{{ .Width }}" height="{{ .Height }}" alt="{{ $t }}">
           </div>
   {{- if $logoURL }}
         </a>

@@ -7,7 +7,7 @@ const clarisHugoParamsInit = function() {
   // console.log('BEGIN clarisHugoParamsInit');
   window.clarisHugoParams = window.clarisHugoParams || {
     baseURL: '{{ default "/" site.BaseURL }}',
-    iconsPath: '{{ absURL (printf "%s/" (default "icons/" (strings.TrimLeft "/" (strings.TrimRight "/" site.Params.iconsDir) ) ) ) }}',
+    iconsPath: '{{ relURL (printf "%s/" (default "icons/" (strings.TrimLeft "/" (strings.TrimRight "/" site.Params.iconsDir) ) ) ) }}',
 
     envDevel: `{{ partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}`,
     envProd: `{{ partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}`,

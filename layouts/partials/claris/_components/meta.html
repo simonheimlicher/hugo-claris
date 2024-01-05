@@ -34,7 +34,7 @@
                           "width" $authorAvatarWidth
                         ) }}
                         {{- with $avatarImage }}
-                          <img src="{{ absURL .Permalink }}" class="article_meta_author_avatar_img" width="{{ $authorAvatarWidth }}" height="{{ $authorAvatarWidth }}" alt="{{ $authorName }}">
+                          <img src="{{ .RelPermalink }}" class="article_meta_author_avatar_img" width="{{ $authorAvatarWidth }}" height="{{ $authorAvatarWidth }}" alt="{{ $authorName }}">
                         {{- end }}
                       {{- end }}
                         <span class="article_meta_author_name">

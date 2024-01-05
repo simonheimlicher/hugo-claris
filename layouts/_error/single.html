@@ -5,7 +5,7 @@
   {{- $t := .Title }}
   <h1>{{ $t | markdownify }}</h1>
   {{- .Content }}
-  <a href="{{ absLangURL "/" }}" title="{{ T "go_back" }}">
+  <a href="{{ relLangURL "" }}" title="{{ T "go_back" }}">
     <div class="button mt-1 mb-2 btn_back">{{ T "go_back" }}</div>
   </a>
   <div class="gears">

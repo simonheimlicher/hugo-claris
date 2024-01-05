@@ -9,20 +9,14 @@
 {{- $arg := . }}
 {{- $canonicalURL := $arg.Permalink -}}
 {{- $relURL := strings.TrimPrefix site.BaseURL $arg.Permalink }}
-{{- $canonicalBaseURL := site.BaseURL -}}
+{{- $canonicalBaseURL := site.Params.canonicalbaseurl | default site.BaseURL }}
 
 <!-- If the page itself has a canonical URL, this takes precedence -->
 {{- if strings.Contains (printf "%T" $arg) "hugolib.pageState" }}
   {{- with $arg.Params.canonicalurl -}}
     {{- $relURL = . }}
-    {{- if $debug }}{{ warnf "[%s]: arg=%v: .Params.canonicalurl=%v relPermalink:\n    %v" $template $arg $relURL $canonicalURL }}{{ end }}
+    {{- if $debug }}{{ warnf "[%s]: arg=%v: using canonical URL from .Params.canonicalurl=%v" $template $arg $relURL }}{{ end }}
   {{- end -}}
-{{- end -}}
-
-{{- with site.Params.canonicalbaseurl }}
-  {{- $canonicalBaseURL = . }}
-  {{- if $debug }}{{ warnf "[%s]: arg=%v T=%T site.BaseURL=%v != site.Params.canonicalbaseurl=%v canonicalURL:\n    %v"
-  $template $arg $arg site.BaseURL site.Params.canonicalbaseurl $canonicalURL }}{{ end }}
 {{- end -}}
 
 {{- $canonicalURL = printf "%s/%s" (strings.TrimRight "/" $canonicalBaseURL) (strings.TrimLeft "/" $relURL) }}
