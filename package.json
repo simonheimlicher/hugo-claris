@@ -40,6 +40,7 @@
     "posthog-js": "^1.94.2",
     "qrcode-svg": "^1.1.0",
     "regenerator-runtime": "^0.13.7",
+    "sass-embedded": "^1.69.7",
     "web-vitals": "^3.3.1"
   },
   "description": "This repository offers an example site for [Hugo](https://gohugo.io/) and also it provides the default content for demos hosted on the [Hugo Themes Showcase](https://themes.gohugo.io/).",
