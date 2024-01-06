@@ -58,7 +58,7 @@ build:
 security:
   enableInlineShortcodes: false
   exec:
-    allow: ['^dart-sass-embedded$', '^sass', '^go$', '^npx$', '^postcss$', '^babel$']
+    allow: ['^dart-sass', '^sass', '^go$', '^npx$', '^postcss$', '^babel$']
     osEnv: ['(?i)^(PATH|PATHEXT|APPDATA|TMP|TEMP|TERM)$']
   funcs:
     getenv: ['^HUGO_']
