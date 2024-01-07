@@ -14,6 +14,7 @@ ignoreFiles:
   - "\\.DS_Store$"
   - "\\.vscode$"
   - ".*\\.code-workspace$"
+  - "\\.frontmatter$"
   - "frontmatter\\.json$"
 
 
@@ -40,11 +41,6 @@ caches:
     # dir: ':resourceDir/_gen'
     dir: ':cacheDir/resources/_gen'
 
-Author:
-  name: "Simon Heimlicher"
-  # NOTE: email is set in data file 'assets/data/claris/en.yaml'
-  # email = "user@example.net"
-
 # Render custom 404 page
 # FIXME: does not seem to work for 'hugo server'
 # [[redirects]]
@@ -67,12 +63,12 @@ security:
     urls: ['.*']
 
 permalinks:
-    articles: ":sections/:filename"
+  articles: ":sections/:filename"
 
 taxonomies:
-    category: categories
-    tag: tags
-    series: series
+  category: categories
+  tag: tags
+  series: series
 
 related:
   includeNewer: true
