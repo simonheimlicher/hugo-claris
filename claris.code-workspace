@@ -7,6 +7,7 @@
 	"settings": {
 		"files.associations": {
             "*.html": "gohtml",
+            "robots.txt": "gohtml",
 		},
         "emmet.includeLanguages": {
             "gohtml": "html",

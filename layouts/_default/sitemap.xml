@@ -17,9 +17,6 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   {{- $notHiddenSections := where .Data.Pages "Section" "not in" $invisibleSections }}
   {{- $notHiddenPages := where .Data.Pages "RelPermalink" "not in" $hiddenPages -}}
-  {{- /* range $notHiddenPages }}
-  {{ .RelPermalink }}
-  {{- end */ -}}
   {{- $notHiddenMedia := where .Data.Pages "Params.media" "not in" $hiddenMedia -}}
   {{- $notHiddenMedia = (append $notHiddenMedia (where .Data.Pages "Params.media" "=" nil) ) -}}
   {{- $filtered := $notHiddenSections | intersect $notHiddenPages | intersect $notHiddenMedia }}
