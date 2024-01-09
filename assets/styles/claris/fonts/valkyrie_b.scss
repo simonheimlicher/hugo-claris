@@ -46,28 +46,10 @@
 @font-face {
   font-display: swap;
   font-family: '#{$fontFamilyName} SC';
-  font-style: italic;
-  font-weight: 400;
-  src: url('#{$hostedFontPath}/#{$fontFamilyID}-sc/#{$fontFamilyID}_caps_italic.woff2') format('woff2'),
-       url('#{$hostedFontPath}/#{$fontFamilyID}-sc/#{$fontFamilyID}_caps_italic.woff') format('woff');
-}
-
-@font-face {
-  font-display: swap;
-  font-family: '#{$fontFamilyName} SC';
   font-style: normal;
   font-weight: 600;
   src: url('#{$hostedFontPath}/#{$fontFamilyID}-sc/#{$fontFamilyID}_caps_bold.woff2') format('woff2'),
        url('#{$hostedFontPath}/#{$fontFamilyID}-sc/#{$fontFamilyID}_caps_bold.woff') format('woff');
-}
-
-@font-face {
-  font-display: swap;
-  font-family: '#{$fontFamilyName} SC';
-  font-style: italic;
-  font-weight: 600;
-  src: url('#{$hostedFontPath}/#{$fontFamilyID}-sc/#{$fontFamilyID}_caps_bold_italic.woff2') format('woff2'),
-       url('#{$hostedFontPath}/#{$fontFamilyID}-sc/#{$fontFamilyID}_caps_bold_italic.woff') format('woff');
 }
 
 $fontFamilySpec: (
