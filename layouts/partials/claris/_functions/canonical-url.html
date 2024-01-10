@@ -12,8 +12,6 @@
   {{- with urls.Parse $arg }}
     {{- $permalink = $arg }}
     {{- $relPermalink = .RequestURI }}
-    {{- warnf "[%s]: Parsed string '%v' as URL: permalink='%v' relPermalink='%v'"
-        $template $arg $permalink $relPermalink }}
   {{- end }}
 {{- else }}
   {{- $permalink = $arg.Permalink }}
