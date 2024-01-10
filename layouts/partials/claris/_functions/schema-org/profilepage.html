@@ -15,18 +15,9 @@
     "Root" (dict
       "@type" "ProfilePage"
       "about" .Reference
+      "mainEntity" .Entity
     )
   ) }}
-  {{- with $schemaOrgMeta.Entities.Article }}
-    {{- $schemaOrgMeta = merge $schemaOrgMeta (dict
-      "Root" (dict
-        "mainEntity" .Reference
-      )
-    ) }}
-  {{- else }}
-    {{- warnf "%s[%s]: Missing entity $schemaOrgMeta.Entities.Article" $page $template }}
-  {{- end }}
-
 {{- else }}
   {{- warnf "%s[%s]: Missing entity $schemaOrgMeta.Entities.PageAuthor" $page $template }}
 {{- end }}
