@@ -10,14 +10,22 @@ const purgecss = require("@fullhuman/postcss-purgecss")({
   safelist: {
     greedy: [/highlight/, /chroma/, /open$/]
   },
-  // variables: true,
+  variables: true,
+  fontFace: true,
 });
+
+const varOptimize = require('postcss-var-optimize');
+
+const pruneVar = require('postcss-prune-var')({
+  skip: ['node_modules/**']
+});
+
 
 module.exports = {
   plugins: [
     require("autoprefixer")({}),
-    // FIXME: Need to pass in the environments that should enable PurgeCSS
-    // as a parameter instead of hardcoding
-    ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [purgecss] : []),
+    // FIXME: Should pass the name of the environments in which to enable CSS purging
+    // as a parameter instead of hardcoding it as an array below
+    ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [purgecss, varOptimize, pruneVar] : []),
   ]
 };
