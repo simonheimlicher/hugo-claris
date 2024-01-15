@@ -194,7 +194,7 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
         {{- $afterPostCSS := $bundle | resources.PostCSS $postCSSOptions }}
         {{- $afterMinify := $bundle | resources.PostCSS $postCSSOptions | resources.Minify }}
         {{- $afterPostProces := $bundle | resources.PostCSS $postCSSOptions | resources.Minify | resources.PostProcess }}
-        {{- warnf "%s[%s]: Size of style bundle '%v' in kB:\n Concat=%7.3fkB [%v]\n      ToCSS=%7.3fkB [%v]\n    PostCSS=%7.3fkB [%v]\n     Minify=%7.3fkB [%v]\nPostProcess=%7.3fkB [%v]"
+        {{- warnf "%s[%s]: Size of style bundle '%v':\n Concat=%7.3fkB [%v]\n      ToCSS=%7.3fkB [%v]\n    PostCSS=%7.3fkB [%v]\n     Minify=%7.3fkB [%v]\nPostProcess=%7.3fkB [%v]"
             $page $template $resourceID
             (div (len $concatResource.Content) 1024.0) $concatResource.RelPermalink
             (div (len $bundle.Content) 1024.0) $bundle.RelPermalink
