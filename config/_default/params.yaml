@@ -88,9 +88,6 @@ fontFamilyMono: "DM Mono"
 # Serve font files from static instead of relying on Google Fonts servers
 fontsSelfHosted: true
 
-# Support IE 11 with JS polyfills / ponyfills
-supportIE11: true
-
 sidebarTaxonomies:
   - tags
 

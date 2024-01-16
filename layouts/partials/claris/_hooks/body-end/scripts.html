@@ -14,161 +14,70 @@
       * Source: https://larsmagnus.co/blog/how-to-make-images-react-to-light-and-dark-scheme
       */
       // console.log('claris/head/assets: pictures begin');
-      {{- if site.Params.supportIE11 }}
-        "use strict";
-        /**
-        * Element.matches() polyfill
-        * https://developer.mozilla.org/en-US/docs/Web/API/Element/matches
-        * https://github.com/jelmerdemaat/element-matches/blob/master/index.js
-        */
-        if (!Element.prototype.matches) {
-          Element.prototype.matches =
-              Element.prototype.matchesSelector ||
-              Element.prototype.msMatchesSelector ||
-              Element.prototype.webkitMatchesSelector;
+      try {
+        const schemeUser = document.documentElement.dataset.colorScheme = window.localStorage.getItem('userSelectedColorScheme');
+        let scheme = null;
+        if ( ! window.matchMedia('(prefers-color-scheme: ' + schemeUser).matches) {
+          // console.log(`claris/head/assets: override system scheme with user scheme[${schemeUser}]`);
+          scheme = schemeUser;
         }
-        /**
-        * Element.closest() polyfill
-        * https://developer.mozilla.org/en-US/docs/Web/API/Element/closest#Polyfill
-        */
-        if (!Element.prototype.closest) {
-            Element.prototype.closest = function (s) {
-                var el = this;
+        const colorSchemeMatchRegex = new RegExp(`\\(\\s*prefers-color-scheme:\\s*${scheme}\\)`);
+        const colorSchemeEliminateRegex = new RegExp(`(\\s*and\\s*)?${colorSchemeMatchRegex.source}(\\s*and\\s*)?`);
+        const pictures = document.querySelectorAll('picture');
+        pictures.forEach((picture) => {
+          let variantStyleAttr = null;
 
-                do {
-                    if (Element.prototype.matches.call(el, s)) return el;
-                    el = el.parentElement || el.parentNode;
-                } while (el !== null && el.nodeType === 1);
-                return null;
-            };
-        }
-        // https://developer.mozilla.org/en-US/docs/Web/API/NodeList/forEach
-        if (window.NodeList && !NodeList.prototype.forEach) {
-          NodeList.prototype.forEach = Array.prototype.forEach;
-        }
-        try {
-          var schemeUser = document.documentElement.dataset.colorScheme = window.localStorage.getItem('userSelectedColorScheme');
-          var scheme = null;
-          if (!window.matchMedia('(prefers-color-scheme: ' + schemeUser).matches) {
-            // console.log(`claris/head/assets: override system scheme with user scheme[${schemeUser}]`);
-            scheme = schemeUser;
-          }
-          var colorSchemeMatchRegex = new RegExp("\\(\\s*prefers-color-scheme:\\s*".concat(scheme, "\\)"));
-          var colorSchemeEliminateRegex = new RegExp("(\\s*and\\s*)?".concat(colorSchemeMatchRegex.source, "(\\s*and\\s*)?"));
-          var pictures = document.querySelectorAll('picture');
-          pictures.forEach(function (picture) {
-            var variantStyleAttr = null;
-            var sources = picture.querySelectorAll("\n              source[media*=\"prefers-color-scheme\"],\n              source[data-media*=\"prefers-color-scheme\"]\n            ");
-            sources.forEach(function (source) {
-              // Preserve the source `media` as a data-attribute
-              // to be able to switch between preferences
-              if (source !== null && source !== void 0 && source.media.includes('prefers-color-scheme')) {
-                source.dataset.media = source.media;
-              }
+          const sources = picture.querySelectorAll(`
+              source[media*="prefers-color-scheme"],
+              source[data-media*="prefers-color-scheme"]
+            `);
 
-              // If argument 'scheme' is defined, we override the behavior of the browser
-              if (scheme) {
-                // If the source element `media` target is the `preference`,
-                // eliminate the 'prefers-scholor-scheme' condition to show the image
-                // independently of the preferred color scheme...
-                if (source !== null && source !== void 0 && source.dataset.media.match(colorSchemeMatchRegex)) {
-                  source.media = source.dataset.media.replace(colorSchemeEliminateRegex, '') || 'all';
-                  // deb('source.dataset.media=' + source.dataset.media + ' --> ' + source.media);
-                  source.srcset = source.dataset.srcset;
-                  variantStyleAttr = source.dataset.style;
-                  // ... otherwise, remove the 'srcset' attribute to hide the image
-                } else if (source.srcset) {
-                  source.media = source.dataset.media;
-                  source.srcset = [];
-                }
-              }
-              // Otherwise, we let the browser decide which image to load
-              else {
-                source.media = source.dataset.media;
+          sources.forEach((source) => {
+            // Preserve the source `media` as a data-attribute
+            // to be able to switch between preferences
+            if (source?.media.includes('prefers-color-scheme')) {
+              source.dataset.media = source.media;
+            }
+
+            // If argument 'scheme' is defined, we override the behavior of the browser
+            if (scheme) {
+              // If the source element `media` target is the `preference`,
+              // eliminate the 'prefers-scholor-scheme' condition to show the image
+              // independently of the preferred color scheme...
+              if (source?.dataset.media.match(colorSchemeMatchRegex)) {
+                source.media = source.dataset.media.replace(colorSchemeEliminateRegex, '') || 'all';
+                // deb('source.dataset.media=' + source.dataset.media + ' --> ' + source.media);
                 source.srcset = source.dataset.srcset;
                 variantStyleAttr = source.dataset.style;
-              }
-            });
-            if (variantStyleAttr) {
-              var imgs = picture.querySelectorAll("img[style]");
-              imgs.forEach(function (img) {
-                if (img !== null && img !== void 0 && img.style) {
-                  img.dataset.style = img.style;
-                }
-                img.style = variantStyleAttr;
-              });
-            }
-          });
-          // console.log('claris/head/assets: pictures done');
-        } catch (e) {
-          // console.log(e);
-        }
-      {{- else }}
-        try {
-          const schemeUser = document.documentElement.dataset.colorScheme = window.localStorage.getItem('userSelectedColorScheme');
-          let scheme = null;
-          if ( ! window.matchMedia('(prefers-color-scheme: ' + schemeUser).matches) {
-            // console.log(`claris/head/assets: override system scheme with user scheme[${schemeUser}]`);
-            scheme = schemeUser;
-          }
-          const colorSchemeMatchRegex = new RegExp(`\\(\\s*prefers-color-scheme:\\s*${scheme}\\)`);
-          const colorSchemeEliminateRegex = new RegExp(`(\\s*and\\s*)?${colorSchemeMatchRegex.source}(\\s*and\\s*)?`);
-          const pictures = document.querySelectorAll('picture');
-          pictures.forEach((picture) => {
-            let variantStyleAttr = null;
-
-            const sources = picture.querySelectorAll(`
-                source[media*="prefers-color-scheme"],
-                source[data-media*="prefers-color-scheme"]
-              `);
-
-            sources.forEach((source) => {
-              // Preserve the source `media` as a data-attribute
-              // to be able to switch between preferences
-              if (source?.media.includes('prefers-color-scheme')) {
-                source.dataset.media = source.media;
-              }
-
-              // If argument 'scheme' is defined, we override the behavior of the browser
-              if (scheme) {
-                // If the source element `media` target is the `preference`,
-                // eliminate the 'prefers-scholor-scheme' condition to show the image
-                // independently of the preferred color scheme...
-                if (source?.dataset.media.match(colorSchemeMatchRegex)) {
-                  source.media = source.dataset.media.replace(colorSchemeEliminateRegex, '') || 'all';
-                  // deb('source.dataset.media=' + source.dataset.media + ' --> ' + source.media);
-                  source.srcset = source.dataset.srcset;
-                  variantStyleAttr = source.dataset.style;
-                // ... otherwise, remove the 'srcset' attribute to hide the image
-                } else if (source.srcset) {
-                  source.media = source.dataset.media;
-                  source.srcset = [];
-                }
-              }
-              // Otherwise, we let the browser decide which image to load
-              else {
+              // ... otherwise, remove the 'srcset' attribute to hide the image
+              } else if (source.srcset) {
                 source.media = source.dataset.media;
-                source.srcset = source.dataset.srcset;
-                variantStyleAttr = source.dataset.style;
+                source.srcset = [];
               }
-            });
-
-            if (variantStyleAttr) {
-              const imgs = picture.querySelectorAll(`img[style]`);
-              imgs.forEach((img) => {
-                if (img?.style) {
-                  img.dataset.style = img.style;
-                }
-                img.style = variantStyleAttr;
-              });
+            }
+            // Otherwise, we let the browser decide which image to load
+            else {
+              source.media = source.dataset.media;
+              source.srcset = source.dataset.srcset;
+              variantStyleAttr = source.dataset.style;
             }
           });
-          // console.log('claris/head/assets: pictures done');
-        }
-        catch (e) {
-          // console.log(e);
-        }
-      {{- end }}
+
+          if (variantStyleAttr) {
+            const imgs = picture.querySelectorAll(`img[style]`);
+            imgs.forEach((img) => {
+              if (img?.style) {
+                img.dataset.style = img.style;
+              }
+              img.style = variantStyleAttr;
+            });
+          }
+        });
+        // console.log('claris/head/assets: pictures done');
+      }
+      catch (e) {
+        // console.log(e);
+      }
     </script>
 
 {{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
@@ -176,8 +85,5 @@
 {{- with partialCached "claris/_functions/asset-bundles" . $assetVariant -}}
   {{- with .Scripts.body.resource }}
     <script type="module" src="{{ .RelPermalink }}" fetchpriority="low" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
-  {{- end -}}
-  {{- with .Scripts.body_legacy.resource }}
-    <script nomodule src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
   {{- end -}}
 {{- end -}}

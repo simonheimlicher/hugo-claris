@@ -4,9 +4,6 @@
 
 {{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
 
-{{/* {{- warnf "%s[%s]: contentTypeList:%s hugo.Environment=%v envDevel=%v envProd=%v Params.supportIE11=%v supportIE11:%v minifyBundles:%v"
-    $page $template $contentTypeList hugo.Environment $envDevel $envProd site.Params.supportIE11 $supportIE11 $minifyBundles -}} */}}
-
 {{/* {{- warnf "%s[%s]: RelPermalink=%s .Type=%s .Layout=%s $contentTypeList=%s $mediaTypeList=%s" .Page $template .Page.RelPermalink .Type .Layout $contentTypeList $mediaTypeList -}} */}}
 
 <!-- Bundle CSS: styles from all content types merged per mediaType type -->
@@ -16,12 +13,12 @@ only reflected in `/index.html` but not in other files.
 Trying to add additional parameters to the below calls to partialCached,
 maybe this helps -->
 {{/* {{- $styleBundles := partialCached "claris/_functions/style-bundles"
-  (merge $bundleParams (dict "Page" $page)) $bundleParams $mediaTypeList $contentTypeList $minifyBundles $supportIE11 $legacyMediaType $legacySuffix }} */}}
+  (merge $bundleParams (dict "Page" $page)) $bundleParams $mediaTypeList $contentTypeList $minifyBundles }} */}}
 {{- $styleBundles := partialCached "claris/_functions/style-bundles" . $assetVariant }}
 
 <!-- Bundle JS: styles from all content types merged per mediaType type -->
 {{/* {{- $scriptBundles := partialCached "claris/_functions/script-bundles"
-  (merge $bundleParams (dict "Page" $page)) $bundleParams $mediaTypeList $contentTypeList $minifyBundles $supportIE11 $legacyMediaType $legacySuffix }} */}}
+  (merge $bundleParams (dict "Page" $page)) $bundleParams $mediaTypeList $contentTypeList $minifyBundles }} */}}
 {{- $scriptBundles := partialCached "claris/_functions/script-bundles" . $assetVariant }}
 
 {{- $assets = (dict "Styles" $styleBundles "Scripts" $scriptBundles) }}

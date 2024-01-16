@@ -262,7 +262,4 @@ export function parseBoolean(string) {
   } else if (!os && /Linux/.test(platform)) {
     pushClass(bodyElement, 'linux');
   }
-  if (window.MSInputMethodContext && document.documentMode) {
-    pushClass(bodyElement, 'legacyJS');
-  }
 })();

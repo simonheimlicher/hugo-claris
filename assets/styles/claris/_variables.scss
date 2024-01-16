@@ -639,51 +639,6 @@ $main-z-index: 1;
 // https://stackoverflow.com/q/4086107/617559
 // Other ideas: https://css-tricks.com/hash-tag-links-padding/, e.g.
 //   https://codepen.io/kirkgleffe/pen/DfvuE
-// Approach based on CSS property does not work with IE 11 and cannot be overridden with Autoprefixer
-// html {
-//   --navigation-header-height: #{$offset};
-// }
-// .main_claris {
-//   padding-top: #{$offset}; // For IE11 with postCSS Autoprefixer
-//   padding-top: var(--navigation-header-height);
-// }
-// Note: the CSS below must be applied to all elements with an id, such as footnotes,
-// not only headings
-@mixin nav-bar-offset_legacy($offset: $screenViewNavHeight) {
-  $anchor-offset: 1rem;
-  .main_claris {
-    padding-top: $offset;
-    margin-top: 0;
-  }
-  main {
-    [id]:target {
-      -webkit-background-clip: content-box;
-      background-clip: content-box;
-      padding-top: $offset + $anchor-offset;
-      margin-top: - $offset - $anchor-offset;
-      &.article_title {
-        padding-top: calc(#{$offset} + #{$heading-padding-top});
-        margin-top: - $offset;
-      }
-      &#contentContainer {
-        padding-top: $offset;
-        margin-top: - $offset;
-      }
-    }
-    h1, h2, h3, h4, h5, h6 {
-      $heading-offset: -1rem;
-      &[id]:target {
-        padding-top: calc( #{$offset} + #{$heading-offset} + #{$heading-margin-top} + #{$heading-padding-top} );
-        margin-top: - $offset - $heading-offset;
-      }
-    }
-  }
-  // .content {
-  // FIXME: Not applicable with layout=panel
-  //   // Required as height of header pushes content down when position: sticky vs. position: fixed
-  //   padding-top: inherit;
-  // }
-}
 
 @mixin nav-bar-offset($offset: $screenViewNavHeight) {
   $anchor-offset: 1rem;

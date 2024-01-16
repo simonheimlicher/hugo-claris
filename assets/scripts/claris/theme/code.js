@@ -34,10 +34,6 @@ const initCodeActions = function () {
   const highlightClass = 'highlight';
   const highlightInnerClass = 'highlight_inner';
 
-  if (containsClass(bodyElement, 'legacyJS')) {
-    return;
-  }
-
   const codeActionButtons = [
     {
       icon: 'copy',

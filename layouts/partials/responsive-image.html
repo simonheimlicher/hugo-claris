@@ -66,8 +66,6 @@
   {{- $imgClass = printf "%s shape-%s" $imgClass . }}
 {{- end }}
 
-{{- $supportIE11 := default true site.Params.supportIE11 }}
-
 {{- $lightbox := default false .lightbox -}}
 
 {{- /* To achieve a '100' score on Lighthouse, it's key to determine which images to prioritize
@@ -172,9 +170,8 @@
       {{- $imgTitle = .title }}
       {{- $imgSizes = default $defaultSizes .sizes }}
       {{- $imgPosition = default $defaultPosition .position }}
-      {{- $variantInlineStyleAttr := printf "object-fit: cover; object-position: %s%s%s"
+      {{- $variantInlineStyleAttr := printf "object-fit: cover; object-position: %s%s"
           $imgPosition
-          (cond $supportIE11 (printf "; font-family: 'object-fit: cover; object-position: %s'" $imgPosition) "")
           (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") -}}
       {{- $imgAlt = default $imgTitle .alt }}
       {{- $imgCredit = default $imgTitle .credit }}
@@ -205,9 +202,8 @@
         {{- $imgCredit = default $imgTitle .credit }}
         {{- $res := .version.default.resource }}
         {{- $imgPosition = default $defaultPosition .position }}
-        {{- $variantInlineStyleAttr := printf "object-fit: cover; object-position: %s%s%s"
+        {{- $variantInlineStyleAttr := printf "object-fit: cover; object-position: %s%s"
             $imgPosition
-            (cond $supportIE11 (printf "; font-family: 'object-fit: cover; object-position: %s'" $imgPosition) "")
             (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") -}}
         {{- if $debug }}
           {{- warnf "%s[%s]: imgPosition=%v in defaultVariant=%v" $page $template $imgPosition . }}
@@ -231,9 +227,8 @@
     {{- end }}
   {{- else }}
     {{- with (partialCached "claris/_functions/resources/images/image-srcset" $imageResourceArgs $resourceSpec $imageResourceVariant) }}
-      {{- $variantInlineStyleAttr := printf "object-fit: cover; object-position: %s%s%s"
+      {{- $variantInlineStyleAttr := printf "object-fit: cover; object-position: %s%s"
           $imgPosition
-          (cond $supportIE11 (printf "; font-family: 'object-fit: cover; object-position: %s'" $imgPosition) "")
           (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") -}}
       {{- $pictureResources = append $pictureResources (slice (dict
           "variant" $defaultVariantName
