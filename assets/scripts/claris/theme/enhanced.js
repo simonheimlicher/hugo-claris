@@ -14,7 +14,7 @@ import "./table-of-contents";
 import './code';
 // import './format-url';
 
-import './qrcode-svg';
+// import './qrcode-svg';
 
 import mediumZoom from 'medium-zoom';
 const mediumZoomInit = function () {
@@ -37,6 +37,6 @@ document.addEventListener('DOMContentLoaded', mediumZoomInit);
 //   mediumZoom("[data-zoomable]", mediumZoomOptions);
 // });
 
-import './web-vitals-analytics';
+// import './web-vitals-analytics';
 
 // console.log('END   theme/enhanced.js');

@@ -102,7 +102,7 @@
     {{- $excerptTitle := default (default .Title $excerptMeta.Single.Data.Title) $title }}
     {{- $plainTitle := partial `claris/_functions/sanitize` $excerptTitle }}
     <div class="{{ delimit $containerClassList " " }}">
-      <a href="{{ .Permalink }}" title="{{ $plainTitle }}">
+      <a href="{{ .RelPermalink }}" title="{{ $plainTitle }}">
         <div class="excerpt_header">
           <h{{ $headingLevel }} class="excerpt_title">
           {{ $excerptTitle | $page.RenderString }}

@@ -52,7 +52,7 @@
           {{- if $page.Parent.Parent.IsMenuCurrent .Menu . }} nav_active_parent_parent_is_menu{{ end -}}
           {{- if $page.Parent.Parent.HasMenuCurrent .Menu . }} nav_active_parent_parent_has_menu{{ end -}}
         {{- end -}}
-      {{- end -}}" title="{{ partial `claris/_functions/sanitize` $name }}">{{ $name }}{{ with $children }}<img src='{{ relURL "icons/caret-icon.svg" }}' alt="icon" class="nav_icon">{{ end }}</a>
+      {{- end -}}" title="{{ partial `claris/_functions/sanitize` $name }}">{{ $name }}{{ with $children }}<img src='{{ relURL "icons/caret-icon.svg" }}' alt="icon" width="32" height="32" class="nav_icon">{{ end }}</a>
       {{- with $children }}
               <div class="nav_sub">
                 <span class="nav_child"></span>

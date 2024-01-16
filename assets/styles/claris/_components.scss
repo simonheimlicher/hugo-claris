@@ -819,103 +819,124 @@
   &.feature-image {
     &_style {
       &-wide {
-        // For IE 11
+        // Style: wide
+        // Aspect ratio: bounded by minimum and maximum
+        $feature-image_aspect-ratio_min: 2;
+        $feature-image_aspect-ratio_max: 4;
+
+        $feature-image_height_coverage_of_viewport-height: 0.5;
+        $feature-image_height_coverage_of_viewport-width: 0.5;
+        $feature-image_height_coverage_max: min(
+          #{$feature-image_height_coverage_of_viewport-height * 100vh},
+          #{$feature-image_height_coverage_of_viewport-width * 100vw}
+        );
+
+        // Height: bounded by minimum and maximum...
+        $fi-v-min-base: 8rem;
+        $fi-v-max-base: 20rem;
+        // ... and a dynamic component that grows with screen size
+        $viewport-dynamic: min(10vh, 10vw);
+
+        $border_overlap_fraction: 0.1;
+        $border_overlap_in_viewport-width: 0.1 * 100vw;
+        $transition_factor: 1e9;
+
+        // Function to calculate dynamic viewport size
+        @function viewport-size($base, $dynamic, $factor: 1) {
+          @if ($factor == 1) {
+            @return calc(#{$base} + #{$dynamic});
+          }
+          @return calc((#{$base} + #{$dynamic}) * #{$factor});
+        }
+
+        // Mixin for feature image max height
+        @mixin feature-image-max-height() {
+          --feature-image_max-height: clamp(
+            #{viewport-size($fi-v-min-base, $viewport-dynamic)},
+            #{$feature-image_height_coverage_max},
+            #{viewport-size($fi-v-max-base, $viewport-dynamic)}
+          );
+        }
+
+        // Mixin for feature image max width
+        // The boundary conditions of `clamp` are the same as those of `feature-image-max-height`,
+        // just multiplied by the aspect ratio
+        $feature-image-width-params: (
+          min: #{viewport-size($fi-v-min-base, $viewport-dynamic, $feature-image_aspect-ratio_min)},
+          max: #{viewport-size($fi-v-max-base, $viewport-dynamic, $feature-image_aspect-ratio_max)}
+        );
+
+        // @mixin feature-image-max-width($max-width-var) {
+        //   --feature-image_max-width: clamp(
+        //     #{viewport-size($fi-v-min-base, $viewport-dynamic, $feature-image_aspect-ratio_min)},
+        //     min(#{$max-width-var}, 100vw),
+        //     #{viewport-size($fi-v-max-base, $viewport-dynamic,  $feature-image_aspect-ratio_max)}
+        //   );
+        // }
+
+        @mixin feature-image-max-width($max-width-var) {
+          --feature-image_max-width: clamp(
+            #{map-get($feature-image-width-params, min)},
+            min(#{$max-width-var}, 100vw),
+            #{map-get($feature-image-width-params, max)}
+          );
+        }
+
+        // Applying mixins
+        @include feature-image-max-height();
+        @include feature-image-max-width(var(--screenViewFeatureImageWidthMax));
+
         .content-title {
           @include content_multicolumn;
-          margin: 1em auto;
-          width: 100%; // For IE 11
-          text-align: center;
+          --title_line-height: calc(var(--font-size-title) * var(--line-height-heading));
+          margin: calc(0.5 * var(--title_line-height)) auto;
+          @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
+            min-width: calc(var(--content_max-width) - var(--inner_margin) * 2);
+          }
+          padding: 0;
+          width: fit-content;
+          text-align: unset;
         }
         .feature-image {
           &_figure {
-            display: block;
-            height: 100%; // For IE 11
+            display: grid;
+            grid-template-columns:
+              minmax(0px, 1fr)
+              calc(min(100%, var(--feature-image_max-width) + min($border_overlap_in_viewport-width, #{$border_overlap_fraction} * var(--feature-image_max-width))))
+              minmax(0px, 1fr);
+
+            // Reset `height: 100%` from IE 11 above to ensure that the grid does not take up the entire height
+            height: unset;
+            picture, noscript {
+              grid-column: 2;
+            }
             .background {
               z-index: ($main-z-index + 3);
               &.left, &.right {
-                display: none;
+                display: block;
+              }
+              &.left {
+                grid-column: 1;
+                margin-right: calc( max(
+                  min(0px, var(--feature-image_max-width) - 100vw * (1.01 - #{$border_overlap_fraction})) * #{$transition_factor},
+                  -1 * min(($border_overlap_in_viewport-width / 2), (#{$border_overlap_fraction} / 2) * var(--feature-image_max-width))
+                ) );
+
+                background: linear-gradient(270deg, transparent 0px, var(--background_dominant-color) var(--background_gradient_end-position) );
+              }
+              &.right {
+                grid-column: 3;
+                margin-left: calc( max(
+                  min(0px, var(--feature-image_max-width) - 100vw * (1.01 - #{$border_overlap_fraction})) * #{$transition_factor},
+                  -1 * min( ($border_overlap_in_viewport-width / 2), (#{$border_overlap_fraction} / 2) * var(--feature-image_max-width))
+                ) );
+
+                background: linear-gradient(90deg, transparent 0px, var(--background_dominant-color) var(--background_gradient_end-position) );
               }
             }
           }
           &_img {
-            max-height: 50vh;
-            max-height: calc(min(50vw, 50vh));
-            @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
-              max-height: 30vh;
-            }
-          }
-        }
-        // For modern browsers
-        @supports (color: var(--CSS-properties)) {
-          --fi_ar_max: calc(4 / 1);
-          --fi_v-min: calc(8rem + min(10vh, 10vw));
-          --fi_v-max: calc(20rem + min(10vh, 10vw));
-          --fi_cov_h-max: 0.5;
-          --fi_cov_v-max: 0.5;
-          --feature-image_max-height: clamp(
-            var(--fi_v-min),
-            min(var(--fi_cov_h-max) * 100vw, var(--fi_cov_v-max) * 100vh),
-            var(--fi_v-max)
-          );
-          --feature-image_max-width: calc(min(
-            100vw,
-            var(--screenViewFeatureImageWidthMax),
-            var(--feature-image_max-height) * var(--fi_ar_max)
-          ));
-          --border_overlap_fraction: 0.1;
-          --transition_factor: 1e9;
-          --border_overlap_vw: calc(100vw * var(--border_overlap_fraction));
-          --background_gradient_end-position: calc( min(var(--border_overlap_fraction) * 100vw, var(--border_overlap_fraction) * var(--feature-image_max-width) / 2) );
-          .content-title {
-            @include content_multicolumn;
-            --title_line-height: calc(var(--font-size-title) * var(--line-height-heading));
-            margin: calc(0.5 * var(--title_line-height)) auto;
-            @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
-              min-width: calc(var(--content_max-width) - var(--inner_margin) * 2);
-            }
-            padding: 0;
-            width: fit-content;
-            text-align: unset;
-          }
-          .feature-image {
-            &_figure {
-              display: grid;
-              grid-template-columns:
-                minmax(0px, 1fr)
-                calc(min(100%, var(--feature-image_max-width) + min(var(--border_overlap_vw), var(--border_overlap_fraction) * var(--feature-image_max-width))))
-                minmax(0px, 1fr);
-              // Reset `height: 100%` from IE 11 above to ensure that the grid does not take up the entire height
-              height: unset;
-              picture, noscript {
-                grid-column: 2;
-              }
-              .background {
-                z-index: ($main-z-index + 3);
-                &.left, &.right {
-                  display: block;
-                }
-                &.left {
-                  grid-column: 1;
-                  margin-right: calc( max(
-                    min(0px, var(--feature-image_max-width) - 100vw * (1.01 - var(--border_overlap_fraction))) * var(--transition_factor),
-                    -1 * min((var(--border_overlap_vw) / 2), (var(--border_overlap_fraction) / 2) * var(--feature-image_max-width))
-                  ) );
-                  background: linear-gradient(270deg, transparent 0px, var(--background_dominant-color) var(--background_gradient_end-position) );
-                }
-                &.right {
-                  grid-column: 3;
-                  margin-left: calc( max(
-                    min(0px, var(--feature-image_max-width) - 100vw * (1.01 - var(--border_overlap_fraction))) * var(--transition_factor),
-                    -1 * min( (var(--border_overlap_vw) / 2), (var(--border_overlap_fraction) / 2) * var(--feature-image_max-width))
-                  ) );
-                  background: linear-gradient(90deg, transparent 0px, var(--background_dominant-color) var(--background_gradient_end-position) );
-                }
-              }
-            }
-            &_img {
-              max-height: var(--feature-image_max-height);
-              // max-height: calc(min(100vw, 50vh));
-            }
+            max-height: var(--feature-image_max-height);
           }
         }
       }
