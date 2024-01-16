@@ -8,7 +8,11 @@
 {{/* {{- warnf "%s[%s]: .Page=%T page=%T" $page $template .Page page }} */}}
 {{- $singleMeta := dict -}}
 
-{{- $assetVariant := partial "claris/_functions/asset-variant" $page }}
+{{/* {{- $assetVariant := partial "claris/_functions/asset-variant" $page }} */}}
+{{- $assetVariant := .Scratch.get "claris.assets.variant" }}
+{{- if not $assetVariant }}
+  {{- $assetVariant = partial "claris/_functions/asset-variant" $page }}
+{{- end }}
 
 {{- with $page }}
 

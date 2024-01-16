@@ -4,7 +4,10 @@
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{/* {{- $debug = or $debug (not (not (findRE `^/$` $page.RelPermalink) ) ) }} */}}
 
-{{- $assetVariant := partial "claris/_functions/asset-variant" $page }}
+{{- $assetVariant := .Scratch.get "claris.assets.variant" }}
+{{- if not $assetVariant }}
+  {{- $assetVariant = partial "claris/_functions/asset-variant" $page }}
+{{- end }}
 
 {{- $siteMeta := partialCached "claris/_functions/meta/site" . site.BaseURL }}
 {{- $singleMeta := partialCached "claris/_functions/meta/single" . $page.Permalink }}

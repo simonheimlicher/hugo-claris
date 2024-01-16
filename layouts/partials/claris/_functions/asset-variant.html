@@ -3,36 +3,42 @@
   {{- $page := .Page }}
   {{- $template := "claris/_functions/asset-variant" }}
 
-  {{- $outputFormat := partial "claris/_functions/output-format" . }}
-  {{- $onlyMediaType := default "all" ($page.Param "onlyMediaType") }}
-  {{- $mediaTypeList := (slice "all" "screen" "print") }}
-  {{- if not (eq $onlyMediaType "all") }}
-    {{- $mediaTypeList = (slice $onlyMediaType) }}
+  {{- if $assetVariant }}
+    {{- warnf "%s[%s]: claris.assets.variant=%v" $page $template $assetVariant }}
+  {{- else }}
+
+    {{- $outputFormat := partial "claris/_functions/output-format" . }}
+    {{- $onlyMediaType := default "all" ($page.Param "onlyMediaType") }}
+    {{- $mediaTypeList := (slice "all" "screen" "print") }}
+    {{- if not (eq $onlyMediaType "all") }}
+      {{- $mediaTypeList = (slice $onlyMediaType) }}
+    {{- end }}
+
+    {{- $contentTypeList := partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type }}
+    {{- $contentTypeList = slice "claris" }}
+    {{/* {{- warnf "%s[%s]: contentTypeList=%v" $page $template $contentTypeList }} */}}
+    {{- $contentType := index (last 1 $contentTypeList) 0 }}
+    {{- $contentTypeListID := delimit $contentTypeList "-" }}
+    {{- $assetStyle := $page.Param "style" | default "default" }}
+    {{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
+    {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
+    {{- $minifyBundles := $envProd }}
+
+    {{- $assetVariant = (dict
+      "OutputFormat" $outputFormat
+      "OnlyMediaType" ($page.Param "onlyMediaType")
+      "MediaTypeList" $mediaTypeList
+      "ContentType" $contentType
+      "ContentTypeList" $contentTypeList
+      "ContentTypeListID" $contentTypeListID
+      "AssetStyle" $assetStyle
+      "BundleParams" (dict
+        "MinifyBundles" $minifyBundles
+      )
+    ) -}}
+
+    {{- .Scratch.Set "claris.assets.variant" $assetVariant }}
   {{- end }}
-
-  {{- $contentTypeList := partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type }}
-  {{- $contentType := index (last 1 $contentTypeList) 0 }}
-  {{- $contentTypeListID := delimit $contentTypeList "-" }}
-  {{- $assetStyle := $page.Param "style" | default "default" }}
-  {{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
-  {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
-  {{- $minifyBundles := $envProd }}
-
-  {{- $assetVariant = (dict
-    "Kind" .Kind
-    "OutputFormat" $outputFormat
-    "OnlyMediaType" ($page.Param "onlyMediaType")
-    "MediaTypeList" $mediaTypeList
-    "ContentType" $contentType
-    "ContentTypeList" $contentTypeList
-    "ContentTypeListID" $contentTypeListID
-    "AssetStyle" $assetStyle
-    "BundleParams" (dict
-      "MinifyBundles" $minifyBundles
-    )
-  ) -}}
-
-  {{- .Scratch.Set "claris.assets.variant" $assetVariant }}
 {{- end }}
 
 {{- return $assetVariant }}
