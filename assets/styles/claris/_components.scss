@@ -821,70 +821,67 @@
       &-wide {
         // Style: wide
         // Aspect ratio: bounded by minimum and maximum
-        $feature-image_aspect-ratio_min: 2;
-        $feature-image_aspect-ratio_max: 4;
+        $fi_aspect-ratio_min: 2;
+        $fi_aspect-ratio_max: 4;
 
-        $feature-image_height_coverage_of_viewport-height: 0.5;
-        $feature-image_height_coverage_of_viewport-width: 0.5;
-        $feature-image_height_coverage_max: min(
-          #{$feature-image_height_coverage_of_viewport-height * 100vh},
-          #{$feature-image_height_coverage_of_viewport-width * 100vw}
-        );
+        $fi_height_coverage_of_viewport-width: 0.5;
+        $fi_height_coverage_of_viewport-height: 0.5;
 
         // Height: bounded by minimum and maximum...
-        $fi-v-min-base: 8rem;
-        $fi-v-max-base: 20rem;
+        $fi_height_min_base: 8rem;
+        $fi_height_max_base: 20rem;
         // ... and a dynamic component that grows with screen size
-        $viewport-dynamic: min(10vh, 10vw);
+        $fi_height_scale_to_viewport-width: 0.1;
+        $fi_height_scale_to_viewport-height: 0.1;
 
         $border_overlap_fraction: 0.1;
         $border_overlap_in_viewport-width: 0.1 * 100vw;
         $transition_factor: 1e9;
 
+        // Function to calculate feature image scaling component to grow
+        // with the minimum of viewport width and height
+        @function fi_viewport_coverage_limit($factor: 1) {
+          @return min(
+            #{$fi_height_coverage_of_viewport-height * $factor * 100vh},
+            #{$fi_height_coverage_of_viewport-width  * $factor * 100vw}
+          ) ;
+        }
+
         // Function to calculate dynamic viewport size
-        @function viewport-size($base, $dynamic, $factor: 1) {
-          @if ($factor == 1) {
-            @return calc(#{$base} + #{$dynamic});
-          }
-          @return calc((#{$base} + #{$dynamic}) * #{$factor});
+        @function fi_viewport_size_limit($base, $factor: 1) {
+          // @return calc(#{$base * $factor} + min($fi_height_scale_to_viewport-width * $factor * 100vw, $fi_height_scale_to_viewport-height * $factor * 100vh));
+          @return #{$base * $factor};
         }
 
         // Mixin for feature image max height
         @mixin feature-image-max-height() {
           --feature-image_max-height: clamp(
-            #{viewport-size($fi-v-min-base, $viewport-dynamic)},
-            #{$feature-image_height_coverage_max},
-            #{viewport-size($fi-v-max-base, $viewport-dynamic)}
+            #{fi_viewport_size_limit($fi_height_min_base)},
+            #{fi_viewport_coverage_limit()},
+            #{fi_viewport_size_limit($fi_height_max_base)}
           );
         }
 
         // Mixin for feature image max width
-        // The boundary conditions of `clamp` are the same as those of `feature-image-max-height`,
-        // just multiplied by the aspect ratio
-        $feature-image-width-params: (
-          min: #{viewport-size($fi-v-min-base, $viewport-dynamic, $feature-image_aspect-ratio_min)},
-          max: #{viewport-size($fi-v-max-base, $viewport-dynamic, $feature-image_aspect-ratio_max)}
-        );
-
-        // @mixin feature-image-max-width($max-width-var) {
-        //   --feature-image_max-width: clamp(
-        //     #{viewport-size($fi-v-min-base, $viewport-dynamic, $feature-image_aspect-ratio_min)},
-        //     min(#{$max-width-var}, 100vw),
-        //     #{viewport-size($fi-v-max-base, $viewport-dynamic,  $feature-image_aspect-ratio_max)}
-        //   );
-        // }
-
-        @mixin feature-image-max-width($max-width-var) {
-          --feature-image_max-width: clamp(
-            #{map-get($feature-image-width-params, min)},
-            min(#{$max-width-var}, 100vw),
-            #{map-get($feature-image-width-params, max)}
+        @mixin feature-image-max-width() {
+          --feature-image_max-width: min(
+            #{fi_viewport_coverage_limit($fi_aspect-ratio_max)},
+            #{fi_viewport_size_limit($fi_height_max_base, $fi_aspect-ratio_max)},
+            #{$screenViewFeatureImageWidthMax},
+            100vw
           );
         }
 
-        // Applying mixins
+        @mixin fi_border_width() {
+          --feature-image_border-width: #{min(
+            $border_overlap_in_viewport-width,
+            $border_overlap_fraction * var(--feature-image_max-width)
+          )}
+        }
+
         @include feature-image-max-height();
-        @include feature-image-max-width(var(--screenViewFeatureImageWidthMax));
+        @include feature-image-max-width();
+        @include fi_border_width();
 
         .content-title {
           @include content_multicolumn;
@@ -902,15 +899,13 @@
             display: grid;
             grid-template-columns:
               minmax(0px, 1fr)
-              calc(min(100%, var(--feature-image_max-width) + min($border_overlap_in_viewport-width, #{$border_overlap_fraction} * var(--feature-image_max-width))))
+              calc(min(100%, var(--feature-image_max-width) + var(--feature-image_border-width)))
               minmax(0px, 1fr);
-
-            // Reset `height: 100%` from IE 11 above to ensure that the grid does not take up the entire height
-            height: unset;
             picture, noscript {
               grid-column: 2;
             }
             .background {
+              --background_gradient_end-position: calc( var(--feature-image_border-width) / 2 );
               z-index: ($main-z-index + 3);
               &.left, &.right {
                 display: block;
@@ -921,7 +916,6 @@
                   min(0px, var(--feature-image_max-width) - 100vw * (1.01 - #{$border_overlap_fraction})) * #{$transition_factor},
                   -1 * min(($border_overlap_in_viewport-width / 2), (#{$border_overlap_fraction} / 2) * var(--feature-image_max-width))
                 ) );
-
                 background: linear-gradient(270deg, transparent 0px, var(--background_dominant-color) var(--background_gradient_end-position) );
               }
               &.right {
@@ -930,7 +924,6 @@
                   min(0px, var(--feature-image_max-width) - 100vw * (1.01 - #{$border_overlap_fraction})) * #{$transition_factor},
                   -1 * min( ($border_overlap_in_viewport-width / 2), (#{$border_overlap_fraction} / 2) * var(--feature-image_max-width))
                 ) );
-
                 background: linear-gradient(90deg, transparent 0px, var(--background_dominant-color) var(--background_gradient_end-position) );
               }
             }
