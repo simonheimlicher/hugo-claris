@@ -251,7 +251,6 @@ $main-z-index: 1;
         @include link-lvhfa_color($attrs, $focus);
         outline: 1px dashed var(--link#{if($variant != null and $variant != '', -#{$variant}, '')}#{$focus});
         background: var(--bg#{if($variant != null and $variant != '', -#{$variant}, '')}-hover);
-        border-radius: 0.25em;
       }
       &:active {
         @include link-lvhfa_color($attrs, $active, 1.0);

@@ -876,7 +876,7 @@
           --feature-image_border-width: #{min(
             $border_overlap_in_viewport-width,
             $border_overlap_fraction * var(--feature-image_max-width)
-          )}
+          )};
         }
 
         @include feature-image-max-height();
