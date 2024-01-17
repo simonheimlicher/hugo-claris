@@ -498,7 +498,7 @@
   }
   &_color-scheme {
     &_choice {
-      display: none;
+      // display: none;
       &_mask {
         position: relative;
         width: $screenViewNavHeightNarrow;
@@ -1212,7 +1212,7 @@ p sup[id^=fnref] {
 }
 
 // https://www.a11yproject.com/posts/how-to-hide-content/
-visually-hidden:not(:focus):not(:active) {
+.visually-hidden:not(:focus):not(:active) {
   clip: rect(0 0 0 0);
   clip-path: inset(50%);
   height: 1px;

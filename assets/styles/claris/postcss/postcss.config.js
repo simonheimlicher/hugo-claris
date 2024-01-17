@@ -5,8 +5,12 @@ const cssElementsKeepRegex = [/highlight/, /chroma/, /open$/,
   /footnotes/, /footnotes-accessible/, /:target/, /fnref/, /visually-hidden/, // footnotes-accessible.js
   /link_yank/, // link-anchor.js
   /scrollable-table/, // scrollable-table.js
+  /color-scheme/, // color-scheme.js
 ];
-const cssCustomPropertiesKeepRegex = [/highlight-bg-yellow/, ]
+const cssCustomPropertiesKeepRegex = [
+  /highlight-bg-yellow/, // footnotes-accessible.js
+  /color-scheme/, // color-scheme.js
+]
 const purgeCSS = require("@fullhuman/postcss-purgecss")({
   content: ["./hugo_stats.json"],
   defaultExtractor: (content) => {
@@ -27,25 +31,22 @@ const varOptimize = require('postcss-var-optimize')({
   blacklist: cssCustomPropertiesKeepRegex
 });
 
+// Cannot use `postcss-prune-var` if CSS custom properties are used in JavaScript
+// We manipulate custom properties via JavaScript for `--color-scheme`, hence cannot use this plugin
+/*
 const pruneVar = require('postcss-prune-var')({
   skip: ['node_modules/**']
 });
-
+*/
 
 module.exports = {
   plugins: [
     require("autoprefixer")({}),
     // FIXME: Should pass the name of the environments in which to enable CSS purging
     // as a parameter instead of hardcoding it as an array below
-    ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [varOptimize, pruneVar, purgeCSS] : []),
-    // ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [purgeCSS, varOptimize, pruneVar] : []),
-    // ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [pruneVar, purgeCSS, varOptimize] : []),
-    // ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [pruneVar, varOptimize, purgeCSS] : []),
+    ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [varOptimize, purgeCSS] : []),
     // ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [purgeCSS] : []),
     // ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [varOptimize] : []),
-    // ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [pruneVar] : []),
-    // ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [pruneVar, purgeCSS] : []),
     // ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [varOptimize, purgeCSS] : []),
-    // ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [varOptimize, pruneVar] : []),
   ]
 };

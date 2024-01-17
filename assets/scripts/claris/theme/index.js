@@ -1,4 +1,4 @@
-import { clarisHugoParams } from './claris-init';
+import { clarisHugoParams, clarisInit } from './claris-init';
 import {
   deb,
   pushClass
@@ -27,7 +27,6 @@ function onDOMContentLoaded(...initializationFunctions) {
 };
 
 // Minimal set of modules
-import { clarisInit } from './claris-init'; // Needs to be loaded first
 import { colorSchemeInit } from './color-scheme'; // Needs to be loaded early
 import { tagOverlayInit } from "./tag-overlay";
 import { obfuscatedLinkInit } from "./obfuscated-link";

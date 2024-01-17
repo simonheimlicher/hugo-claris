@@ -1139,11 +1139,13 @@ html {
   --ease: cubic-bezier(0.39, 0.575, 0.565, 1);
   --easing: cubic-bezier(0.19, 1, 0.22, 1);
 
+  /*! purgecss start ignore */
   --color-scheme: 'light';
 
   // https://web.dev/prefers-color-scheme/#activating-dark-mode-in-the-operating-system
   --color-scheme-duration: 0.7s;
   --color-scheme-timing: ease;
+  /*! purgecss end ignore */
 
   --screenViewWidthChrome: #{$screenViewWidthChrome};
   --screenViewWidthUltrawide: #{$screenViewWidthUltrawide};
