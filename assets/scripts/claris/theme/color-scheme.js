@@ -1,3 +1,4 @@
+import { clarisHugoParams } from './claris-init';
 import {
   deb,
   elem,
@@ -7,6 +8,7 @@ import {
 } from './functions';
 
 export function colorSchemeInit() {
+  const PREFIX = false; // 'color-scheme:';
   var bank;
   try {
     var storage = window.localStorage;
@@ -103,27 +105,27 @@ export function colorSchemeInit() {
     let schemeSystem = schemeUser === 'dark' ? 'light' : 'dark';
     let prefersMetaUser = document.head.querySelector('meta[name=theme-color][media*="prefers-color-scheme: ' + schemeUser + '"]');
     if (!isObj(prefersMetaUser)) {
-      deb('claris/theme/color-scheme: Missing prefers-color-scheme meta for system schemeUser=', schemeUser);
+      deb(PREFIX, 'Missing prefers-color-scheme meta for system schemeUser=', schemeUser);
       return;
     }
     let dataMetaUser = document.head.querySelector('meta[name=data-theme-color][media*="prefers-color-scheme: ' + schemeUser + '"]');
     if (window.matchMedia('(prefers-color-scheme: ' + schemeUser).matches) {
-      deb('claris/theme/color-scheme: system scheme[' + schemeSystem + '] matches user scheme[' + schemeUser + ']');
+      deb(PREFIX, 'system scheme[' + schemeSystem + '] matches user scheme[' + schemeUser + ']');
       if (isObj(dataMetaUser)) {
         // Restore content from value saved in 'data-theme-color' attribute
         prefersMetaUser.content = dataMetaUser.content;
-        deb('claris/theme/color-scheme: restored prefersMetaUser[' + schemeUser + '] from dataMetaUser[' + schemeUser + ']: ', prefersMetaUser);
+        deb(PREFIX, 'restored prefersMetaUser[' + schemeUser + '] from dataMetaUser[' + schemeUser + ']: ', prefersMetaUser);
       }
     }
     else {
-      deb('claris/theme/color-scheme: system scheme[' + schemeSystem + '] is different from user scheme[' + schemeUser + ']');
+      deb(PREFIX, 'system scheme[' + schemeSystem + '] is different from user scheme[' + schemeUser + ']');
       if (!window.matchMedia('(prefers-color-scheme: ' + schemeSystem).matches) {
-        deb('claris/theme/color-scheme: system scheme DOES NOT match other scheme ' + schemeSystem);
+        deb(PREFIX, 'system scheme DOES NOT match other scheme ' + schemeSystem);
         return;
       }
       let prefersMetaSystem = document.head.querySelector('meta[name=theme-color][media*="prefers-color-scheme: ' + schemeSystem + '"]');
       if (!isObj(prefersMetaSystem)) {
-        deb('claris/theme/color-scheme: Missing prefers-color-scheme meta for schemeSystem=', schemeSystem);
+        deb(PREFIX, 'Missing prefers-color-scheme meta for schemeSystem=', schemeSystem);
         return;
       }
       if (!isObj(dataMetaUser)) {
@@ -132,9 +134,9 @@ export function colorSchemeInit() {
         dataMetaUser.media = "(prefers-color-scheme: " + schemeUser;
         dataMetaUser.content = prefersMetaUser.content;
         document.head.appendChild(dataMetaUser);
-        deb('claris/theme/color-scheme: Saved user theme prefers-color-scheme: ' + schemeUser + ': ', dataMetaUser);
+        deb(PREFIX, 'Saved user theme prefers-color-scheme: ' + schemeUser + ': ', dataMetaUser);
       }
-      deb('claris/theme/color-scheme: dataMetaUser: ', dataMetaUser);
+      deb(PREFIX, 'dataMetaUser: ', dataMetaUser);
 
       let dataMetaSystem = document.head.querySelector('meta[name=data-theme-color][media*="prefers-color-scheme: ' + schemeSystem + '"]');
       if (!isObj(dataMetaSystem)) {
@@ -143,12 +145,12 @@ export function colorSchemeInit() {
         dataMetaSystem.media = "(prefers-color-scheme: " + schemeSystem;
         dataMetaSystem.content = prefersMetaSystem.content;
         document.head.appendChild(dataMetaSystem);
-        deb('claris/theme/color-scheme: Saved system theme prefers-color-scheme: ' + schemeSystem + ': ', dataMetaSystem);
+        deb(PREFIX, 'Saved system theme prefers-color-scheme: ' + schemeSystem + ': ', dataMetaSystem);
       }
-      deb('claris/theme/color-scheme: dataMetaSystem: ', dataMetaSystem);
+      deb(PREFIX, 'dataMetaSystem: ', dataMetaSystem);
 
       prefersMetaSystem.content = dataMetaUser.content;
-      deb('claris/theme/color-scheme: override prefersMetaSystem[' + schemeSystem + '] from dataMetaUser[' + schemeUser + ']: ', prefersMetaSystem);
+      deb(PREFIX, 'override prefersMetaSystem[' + schemeSystem + '] from dataMetaUser[' + schemeUser + ']: ', prefersMetaSystem);
     }
   }
 
@@ -226,7 +228,7 @@ export function colorSchemeInit() {
 
     const colorSchemeNav = elem('.nav_color-scheme_choice');
     if (!colorSchemeNav) {
-      deb('claris/theme/color-scheme: .nav_color-scheme_choice not found');
+      deb(PREFIX, '.nav_color-scheme_choice not found');
       return;
     }
     colorSchemeNav.style = "display: block";

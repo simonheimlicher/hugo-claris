@@ -1,3 +1,4 @@
+import * as params from "@params";
 import {
   eventTarget,
   createEl,
@@ -13,7 +14,24 @@ import {
   getMobileOperatingSystem,
 } from './functions';
 
-import { clarisHugoParams } from './claris-hugo-params';
+export const clarisHugoParams = {
+  // Params passed to Hugo in the asset pipeline in `claris/_functions/script-bundles.html`
+  baseURL: params.baseURL,
+  iconsPath: params.iconsPath,
+  envDevel: params.envDevel,
+  envProd: params.envProd,
+
+  // Params to be defined and re-used in other modules
+  parentURL: window.location.protocol + "//" + window.location.host + "/",
+  // The DOM element that we use to indicate properties of the browser and state of the page
+  htmlRootElement: document.documentElement,
+
+  htmlRootClassNoJavaScript: 'no-js',
+  htmlRootClassModernJavaScript: 'modern-js',
+  htmlRootClassNoCSSProperties: 'no-css-prop',
+  htmlRootClassNoCSSGrid: 'no-css-grid',
+  inline: ':inline',
+};
 
 // console.log('BEGIN claris/theme/init');
 export function clarisInit() {
@@ -89,10 +107,8 @@ export function clarisInit() {
     }
   })();
 
-  let headingNodes = [], results, link, icon, current, id,
+  let headingNodes = [], results, link, icon, id,
   tags = ['h2', 'h3', 'h4', 'h5', 'h6'];
-
-  current = document.URL;
 
   for (let idx = 0, tag = tags[0]; idx < tags.length; tag = tags[++idx]) {
     const article = elem('.article_content');
@@ -102,67 +118,14 @@ export function clarisInit() {
     }
   }
 
-  /**
-   * FIXME
-   * Replaced by hard-coding the same HTML via layouts/_default/_markup/render-heading.html
-   *
-  headingNodes.forEach(function(node){
-    link = createEl('a');
-    loadSvg('link', link);
-    link.className = 'link icon';
-    id = node.getAttribute('id');
-    if(id) {
-      link.href = `${current}#${id}`;
-      node.appendChild(link);
-      pushClass(node, 'link_owner');
-    }
-  });
-  */
-
   let inlineListItems = elems('ol li');
-  if(inlineListItems) {
+  if (inlineListItems) {
     for (let idx = 0, listItem = inlineListItems[0]; idx < inlineListItems.length; listItem = inlineListItems[++idx]) {
       let firstChild = listItem.children[0]
       let containsHeading = isMatch(firstChild, tags);
       containsHeading ? pushClass(listItem, 'align') : false;
     }
   }
-
-  function copyFeedback(linkNode) {
-    const copyText = createEl('div');
-    const yank = 'link_yank';
-    const yanked = 'link_yanked';
-    copyText.classList.add(yanked);
-    copyText.innerText = 'Link to this section copied';
-    if(!elem(`.${yanked}`, linkNode)) {
-      linkNode.appendChild(copyText);
-      pushClass(linkNode, yank);
-      setTimeout(function() {
-        linkNode.removeChild(copyText)
-        deleteClass(linkNode, yank);
-      }, 3000);
-    }
-  }
-
-  (function copyHeadingLink() {
-    let deeplink, deeplinks, newLink, linkNode, target;
-    deeplink = 'link';
-    deeplinks = elems(`.${deeplink}`);
-    if(deeplinks) {
-      document.addEventListener('click', function(event)
-      {
-        target = eventTarget(event);
-        // linkNode = target.parentNode;
-        linkNode = target.closest(`.${deeplink}`)
-        if (target && containsClass(target, deeplink) || containsClass(linkNode, deeplink)) {
-          event.preventDefault();
-          newLink = target.href != undefined ? target.href : linkNode.href;
-          copyToClipboard(newLink);
-          target.href != undefined ?  copyFeedback(target) : copyFeedback(linkNode);
-        }
-      });
-    }
-  })();
 
   (function copyLinkToShare() {
     let  copy, copied, excerpt, isCopyIcon, isInExcerpt, link, articleCopy, articleLink, target;
@@ -222,16 +185,6 @@ export function clarisInit() {
       });
     }
   })();
-
-  const tables = elems('table');
-  if (tables) {
-    const scrollable = 'scrollable';
-    for (let idx = 0, table = tables[0]; idx < tables.length; table = tables[++idx]) {
-      const wrapper = createEl('div');
-      wrapper.className = scrollable;
-      wrapEl(table, wrapper);
-    }
-  }
 
   function isMobileDevice() {
     const agent = navigator.userAgent.toLowerCase();

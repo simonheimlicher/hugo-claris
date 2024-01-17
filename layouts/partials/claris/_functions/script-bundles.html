@@ -1,7 +1,7 @@
 {{- $scriptBundles := dict -}}
 {{- $page := .Page }}
 {{- $template := "claris/_functions/script-bundles" }}
-{{- $debug := true }}
+{{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{- /* $debug = or $debug (not (not (findRE `.` $page.RelPermalink) ) ) */ -}}
 {{- /* $debug = or $debug (and (eq $page.Type "_error") (eq site.Language.Lang "en") ) */ -}}
@@ -137,9 +137,10 @@ See: https://gohugo.io/hugo-pipes/js/#options
 {{- $emptyResourceFile := printf "empty-test-file.%s" $sourceExt }}
 {{- $emptyResource := resources.FromString $emptyResourceFile $emptyScriptContents }}
 {{- $emptyTestResource := js.Build $jsBuildOptionsTest $emptyResource }}
-{{- warnf "%s[%s]: emptyResourceFile=%v\nemptyResource.Content:\n%v\nbundled to emptyTestResource.Content:\n%v"
-    $page $template $emptyResourceFile $emptyResource.Content $emptyTestResource.Content }}
-
+{{- if $debug }}
+  {{- warnf "%s[%s]: emptyResourceFile=%v\nemptyResource.Content:\n%v\nbundled to emptyTestResource.Content:\n%v"
+      $page $template $emptyResourceFile $emptyResource.Content $emptyTestResource.Content }}
+{{- end }}
 
 {{- range $target := $targetBundles }}
   {{- $mediaType := default "all" $target.Media }}
@@ -212,13 +213,14 @@ See: https://gohugo.io/hugo-pipes/js/#options
         {{- with $variantContentTypeResources }}
           {{- $testConcatResources := $variantContentTypeResources | resources.Concat $testConcatFile }}
           {{- $testVariantResource := js.Build $jsBuildOptionsTest $testConcatResources }}
-          {{- $contentExcerpt := printf "AAAAAA\n%v\nZZZZZZ" $testVariantResource.Content }}
-          {{- if (gt (len $contentExcerpt) 1000) }}
-            {{- $contentExcerpt = printf "AAAAAA\n%v\nMMM...NNN\n%vZZZZZZ" (substr $testVariantResource.Content 0 500)
-                 (substr $testVariantResource.Content (sub (len $testVariantResource.Content) 500) )}}
+          {{- if $debug }}
+            {{- $contentExcerpt := printf "AAAAAA\n%v\nZZZZZZ" $testVariantResource.Content }}
+            {{- if (gt (len $contentExcerpt) 1000) }}
+              {{- $contentExcerpt = printf "AAAAAA\n%v\nMMM...NNN\n%vZZZZZZ" (substr $testVariantResource.Content 0 500)
+                  (substr $testVariantResource.Content (sub (len $testVariantResource.Content) 500) )}}
+            {{- end }}
+            {{- warnf "%s[%s]: $testVariantResource.Content:\n%v" $page $template $contentExcerpt }}
           {{- end }}
-
-          {{- warnf "%s[%s]: $testVariantResource.Content:\n%v" $page $template $contentExcerpt }}
           {{- if or (not $emptyTestResource) (ne $emptyTestResource.Content $testVariantResource.Content) }}
             {{- $variantResources = append $variantContentTypeResources $variantResources }}
             {{- if $debug }}

@@ -215,20 +215,11 @@ table {
   width: 100%;
   border-collapse: collapse;
   background: var(--table-haze);
-  // border-style: hidden
-  margin-bottom: 1.5rem;
-  &:not(.ln-table) t {
-    background: var(--table-bg);
-  }
 }
 td,
 th {
   padding: 0.5rem 1rem;
   border: 1px solid var(--table-border);
-}
-td,
-th {
-  padding: 0.5rem 1rem;
   font-weight: var(--font-weight);
   &:not(:first-child) {
     padding-left: 1.5rem;

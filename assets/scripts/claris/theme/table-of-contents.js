@@ -5,18 +5,12 @@ import {
   elems,
 } from './functions';
 
-const DEBUG = false;
-// const deb = function (...args) {
-//     if (DEBUG) {
-//       console.print(...args);
-//     }
-// }
-
 // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
 // https://codepen.io/saas/pen/LYENgqq
 let addScrollObserver = null;
 
 export function tableOfContentsInit() {
+    const PREFIX = false; // "table-of-contents"
     // Retrieve all elements
     const articleElement = elem('.article_content');
     if (!articleElement) return;
@@ -36,16 +30,10 @@ export function tableOfContentsInit() {
     const articleTopNav = tableOfContentsAside.querySelector('.article_top');
     if (articleTopNav) {
         const articleTopLink = tableOfContentsAside.querySelector('.article_top_link');
-        deb('articleTopLink: ', articleTopLink);
         const articleTopLI = document.createElement('li');
         articleTopLI.classList.add('article_top');
-        if (DEBUG) {
-            articleTopLI.appendChild(articleTopLink.cloneNode(true));
-        }
-        else {
-            articleTopLI.appendChild(articleTopLink);
-            articleTopNav.remove();
-        }
+        articleTopLI.appendChild(articleTopLink);
+        articleTopNav.remove();
         const tableOfContentsUL = tableOfContentsNav.querySelector('ul');
         if (tableOfContentsUL) {
             tableOfContentsUL.insertBefore(articleTopLI, tableOfContentsUL.firstChild);
@@ -65,7 +53,7 @@ export function tableOfContentsInit() {
                 for (let liIdx = 0, innerLI = innerLIs[0]; liIdx < innerLIs.length; innerLI = innerLIs[++liIdx]) {
                     if (innerLI && !innerLI.innerHTML) {
                         // Remove empty list item from DOM
-                        // deb("Remove empty LI: ", innerLI, innerLI.parentElement);
+                        // deb(PREFIX, "Remove empty LI: ", innerLI, innerLI.parentElement);
                         innerLI.remove();
                     }
                 }
@@ -73,11 +61,11 @@ export function tableOfContentsInit() {
                 for (let ulIdx = 0, innerUL = innerULs[0]; ulIdx < innerULs.length; innerUL = innerULs[++ulIdx]) {
                     if (innerUL && !(innerUL.innerHTML.trim())) {
                         // Remove empty unordered list from DOM
-                        // deb("Remove empty UL: ", innerUL);
+                        // deb(PREFIX, "Remove empty UL: ", innerUL);
                         innerUL.remove();
                     }
                     // else {
-                    //     deb("Keep non-empty UL: '" + innerUL.innerHTML.trim() + "'");
+                    //     deb(PREFIX, "Keep non-empty UL: '" + innerUL.innerHTML.trim() + "'");
                     // }
                 }
                 navigationElementList.push(headingItem);
@@ -89,12 +77,12 @@ export function tableOfContentsInit() {
     const getNavigationElement = function (sectionId) {
         const sectionLink = tableOfContentsNav.querySelector(`a[href="#${sectionId}"]`);
         if (!sectionLink) {
-            deb("getNavigationElement(): entry.target='" + sectionId + " cannot find sectionLink");
+            deb(PREFIX, "getNavigationElement(): entry.target='" + sectionId + " cannot find sectionLink");
             return undefined;
         }
         const navigationElement = sectionLink.parentElement;
         if (!navigationElement) {
-            deb("getNavigationElement(): entry.target='" + sectionId + " sectionLink=" + sectionLink
+            deb(PREFIX, "getNavigationElement(): entry.target='" + sectionId + " sectionLink=" + sectionLink
                 + ": cannot find navigationElement");
             return undefined;
         }
@@ -133,68 +121,68 @@ export function tableOfContentsInit() {
     }
     tableOfContentsAside.style.visibility = 'visible';
 
-    deb('Check for IntersectionObserver');
+    deb(PREFIX, 'Check for IntersectionObserver');
     if ('IntersectionObserver' in window) {
-        deb('Declare addScrollObserver');
+        deb(PREFIX, 'Declare addScrollObserver');
         addScrollObserver = function(navigationElements, content) {
-            deb('Run addScrollObserver()');
+            deb(PREFIX, 'Run addScrollObserver()');
             const navigationElementList = Array.from(navigationElements);
             const sectionHeadings = function (navigationElementList, content) {
                 const navigationElementIds = navigationElementList.map(elem => decodeURI(elem.querySelector('a').href.replace(/.*#([^#]+)/, '$1')));
-                // deb("navigationElementIds:"); deb(navigationElementIds);
+                // deb(PREFIX, "navigationElementIds:"); deb(PREFIX, navigationElementIds);
 
                 let sectionHeadings = [];
 
                 for (let idx = 0, navId = navigationElementIds[0]; idx < navigationElementIds.length; navId = navigationElementIds[++idx]) {
                     let sectionHeading = document.getElementById(navId);
                     if (sectionHeading) {
-                        // deb("    sectionHeading " + sectionHeading + " =  '" + navId + "'");
+                        // deb(PREFIX, "    sectionHeading " + sectionHeading + " =  '" + navId + "'");
                         sectionHeadings.push(sectionHeading);
                     }
                     else {
-                        deb("    no sectionHeading found for '" + navId + "'");
+                        deb(PREFIX, "    no sectionHeading found for '" + navId + "'");
                     }
                 }
-                deb("sectionHeadings:", sectionHeadings);
+                deb(PREFIX, "sectionHeadings:", sectionHeadings);
                 return sectionHeadings;
             }(navigationElements, content);
 
             const getSectionHeadingPosition = function (visibleTop, visibleBottom, sectionHeading) {
                 const boundingClientRect = sectionHeading.getBoundingClientRect();
                 let scrollingDown = true;
-                deb('    getSectionHeadingPosition(sectionHeading=' + sectionHeading.id
+                deb(PREFIX, '    getSectionHeadingPosition(sectionHeading=' + sectionHeading.id
                     + '): top=' + boundingClientRect.top + ' bottom=' + boundingClientRect.bottom);
                 if (scrollingDown) {
                     if (boundingClientRect.bottom < visibleBottom) {
                         if (boundingClientRect.top > visibleTop) {
-                            deb('        visible:\n           top=' + boundingClientRect.top + ' > visibleTop=' + visibleTop
+                            deb(PREFIX, '        visible:\n           top=' + boundingClientRect.top + ' > visibleTop=' + visibleTop
                                 + '\n            bottom=' + boundingClientRect.bottom + ' < visibleBottom=' + visibleBottom);
                             return 'visible';
                         }
                         else {
-                            deb('        above:\n            top=' + boundingClientRect.top + ' <= visibleTop=' + visibleTop
+                            deb(PREFIX, '        above:\n            top=' + boundingClientRect.top + ' <= visibleTop=' + visibleTop
                                 + '\n            bottom=' + boundingClientRect.bottom + ' < visibleBottom=' + visibleBottom);
                             return 'above';
                         }
                     }
-                    deb('        below:\n            top=' + boundingClientRect.top + ' <= visibleTop=' + visibleTop
+                    deb(PREFIX, '        below:\n            top=' + boundingClientRect.top + ' <= visibleTop=' + visibleTop
                         + '\n            bottom=' + boundingClientRect.bottom + ' >= visibleBottom=' + visibleBottom);
                     return 'below';
                 }
                 else {
                     if (boundingClientRect.bottom > visibleTop) {
                         if (boundingClientRect.top < visibleBottom) {
-                            deb('        visible: bottom=' + boundingClientRect.bottom + ' > visibleTop=' + visibleTop
+                            deb(PREFIX, '        visible: bottom=' + boundingClientRect.bottom + ' > visibleTop=' + visibleTop
                                 + '\n    top=' + boundingClientRect.top + ' < visibleBottom=' + visibleBottom);
                             return 'visible';
                         }
                         else {
-                            deb('        above: bottom=' + boundingClientRect.bottom + ' > visibleTop=' + visibleTop
+                            deb(PREFIX, '        above: bottom=' + boundingClientRect.bottom + ' > visibleTop=' + visibleTop
                                 + '\n    top=' + boundingClientRect.top + ' <= visibleBottom=' + visibleBottom);
                             return 'below';
                         }
                     }
-                    deb('        above: bottom=' + boundingClientRect.bottom + ' <= visibleTop=' + visibleTop
+                    deb(PREFIX, '        above: bottom=' + boundingClientRect.bottom + ' <= visibleTop=' + visibleTop
                         + '\n    top=' + boundingClientRect.top + ' <= visibleBottom=' + visibleBottom);
                     return 'above';
                 }
@@ -203,42 +191,42 @@ export function tableOfContentsInit() {
             const setVisibleNavigationElement = function (visibleTop, visibleBottom, className) {
                 let aboveSection, currentSection;
                 // let sectionAboveViewport = sectionHeadings[0];
-                deb("setVisibleNavigationElement():");
+                deb(PREFIX, "setVisibleNavigationElement():");
                 for (let i = 0; i < sectionHeadings.length; ++i) {
                     const pos = getSectionHeadingPosition(visibleTop, visibleBottom, sectionHeadings[i]);
-                    deb("    Position of section " + sectionHeadings[i].id + ': ' + pos);
+                    deb(PREFIX, "    Position of section " + sectionHeadings[i].id + ': ' + pos);
                     if (pos == 'above') {
                         aboveSection = sectionHeadings[i];
-                        deb("    pos=" + pos + " --> aboveSection=" + aboveSection.id);
+                        deb(PREFIX, "    pos=" + pos + " --> aboveSection=" + aboveSection.id);
                         continue;
                     }
                     else if (pos == 'visible') {
                         if (aboveSection) {
                             currentSection = aboveSection;
-                            deb("        currentSection = aboveSection=" + aboveSection.id);
+                            deb(PREFIX, "        currentSection = aboveSection=" + aboveSection.id);
                         }
                         else {
                             currentSection = sectionHeadings[i];
-                            deb("        currentSection = currentSection=" + currentSection.id);
+                            deb(PREFIX, "        currentSection = currentSection=" + currentSection.id);
                         }
                         break;
                     }
                     else {
                         if (aboveSection) {
-                            deb("        currentSection = aboveSection=" + aboveSection.id);
+                            deb(PREFIX, "        currentSection = aboveSection=" + aboveSection.id);
                             currentSection = aboveSection;
                         }
                         else {
                             currentSection = sectionHeadings[i];
-                            deb("        currentSection = currentSection=" + currentSection.id);
+                            deb(PREFIX, "        currentSection = currentSection=" + currentSection.id);
                         }
                     }
-                    deb("    pos=" + pos + " --> currentSection=" + currentSection.id);
+                    deb(PREFIX, "    pos=" + pos + " --> currentSection=" + currentSection.id);
                     break;
                 }
                 if (!currentSection && (currentSection = aboveSection) === undefined) {
                     currentSection = sectionHeadings[0];
-                    deb("setVisibleNavigationElement(): defaulting currentSection=" + currentSection.id);
+                    deb(PREFIX, "setVisibleNavigationElement(): defaulting currentSection=" + currentSection.id);
                 }
 
                 const navigationElement = getNavigationElement(currentSection.id);
@@ -260,10 +248,10 @@ export function tableOfContentsInit() {
                 const visibleTop = navigationBarRect.top == 0 ? navigationBarRect.bottom : 0;
                 const visibleBottom = window.innerHeight;
                 const currentClassName = 'visible';
-                // deb("rootMargin=" + observer.rootMargin);
+                // deb(PREFIX, "rootMargin=" + observer.rootMargin);
 
                 for (let idx = 0, entry = entries[0]; idx < entries.length; entry = entries[++idx]) {
-                    deb("scrollHandler(target=" + entry.target.tagName + " id='" + entry.target.id + "'): intersectionRatio=" + entry.intersectionRatio);
+                    deb(PREFIX, "scrollHandler(target=" + entry.target.tagName + " id='" + entry.target.id + "'): intersectionRatio=" + entry.intersectionRatio);
                     setVisibleNavigationElement(visibleTop, visibleBottom, currentClassName);
                     if (!entry.isIntersecting) {
                         const navigationElement = getNavigationElement(entry.target.id);
@@ -299,19 +287,19 @@ export function tableOfContentsInit() {
                 const currentClassName = 'current';
 
                 entries.forEach(entry => {
-                    // deb("scrollHandler(target=" + entry.target.tagName + " id='" + entry.target.id + "'): intersectionRatio=" + entry.intersectionRatio);
+                    // deb(PREFIX, "scrollHandler(target=" + entry.target.tagName + " id='" + entry.target.id + "'): intersectionRatio=" + entry.intersectionRatio);
                     var target = entry.target;
                     if (target.id == "lastChildId") {
-                        deb("scrollHandler(section.id='" + target.id + "'): intersectionRatio=" + entry.intersectionRatio);
+                        deb(PREFIX, "scrollHandler(section.id='" + target.id + "'): intersectionRatio=" + entry.intersectionRatio);
                         if (entry.isIntersecting) {
                             const precedingNavigationElement = navigationElements.slice(-2)[0];
                             precedingNavigationElement.classList.remove('visible');
-                            deb("    removed visible from preceding element " + precedingNavigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
+                            deb(PREFIX, "    removed visible from preceding element " + precedingNavigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
                         }
                         else {
                             const precedingNavigationElement = navigationElements.slice(-2)[0];
                             precedingNavigationElement.classList.add('visible');
-                            deb("    added visible to preceding element " + precedingNavigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
+                            deb(PREFIX, "    added visible to preceding element " + precedingNavigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
                         }
                         return;
                     }
@@ -319,9 +307,9 @@ export function tableOfContentsInit() {
                     const sectionLink = tableOfContentsNav.querySelector(`a[href="#${target.id}"]`);
                     if (!sectionLink) {
                         if (DEBUG) {
-                            deb("scrollHandler(section.id='" + target.id + "'): intersectionRatio=" + entry.intersectionRatio);
-                            deb("    sectionLink:"); deb(sectionLink);
-                            deb(`    tableOfContentsNav = document.querySelector('.table_of_contents nav'); tableOfContentsNav.querySelector('a[href="#${target.id}"]')`);
+                            deb(PREFIX, "scrollHandler(section.id='" + target.id + "'): intersectionRatio=" + entry.intersectionRatio);
+                            deb(PREFIX, "    sectionLink:"); deb(PREFIX, sectionLink);
+                            deb(PREFIX, `    tableOfContentsNav = document.querySelector('.table_of_contents nav'); tableOfContentsNav.querySelector('a[href="#${target.id}"]')`);
                         }
                         return;
                     }
@@ -335,16 +323,16 @@ export function tableOfContentsInit() {
                             if (DEBUG) {
                                 if (entry.boundingClientRect.top < visibleTop) {
                                     // entered viewport at the top edge, hence scroll direction is up
-                                    deb("scrollHandler('" + target.id + "'): entered from top");
+                                    deb(PREFIX, "scrollHandler('" + target.id + "'): entered from top");
                                     // navigationElement.classList.add('from-top');
                                 }
                                 else {
                                     // entered viewport at the top edge, hence scroll direction is up
-                                    deb("scrollHandler('" + target.id + "'): likely entered from top");
+                                    deb(PREFIX, "scrollHandler('" + target.id + "'): likely entered from top");
                                     // navigationElement.classList.add('likely-from-top');
                                 }
-                                deb("    add visible to entering element " + navigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
-                                deb("    add visible to preceding element " + precedingNavigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
+                                deb(PREFIX, "    add visible to entering element " + navigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
+                                deb(PREFIX, "    add visible to preceding element " + precedingNavigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
                             }
                             navigationElement.classList.add('visible');
                             precedingNavigationElement.classList.add('visible');
@@ -354,15 +342,15 @@ export function tableOfContentsInit() {
                             if (DEBUG) {
                                 if (entry.boundingClientRect.bottom > visibleBottom) {
                                     // entered viewport at the top edge, hence scroll direction is up
-                                    deb("scrollHandler('" + target.id + "'): entered from bottom");
+                                    deb(PREFIX, "scrollHandler('" + target.id + "'): entered from bottom");
                                     // navigationElement.classList.add('from-bottom');
                                 }
                                 else {
                                     // entered viewport at the top edge, hence scroll direction is up
-                                    deb("scrollHandler('" + target.id + "'): likely entered from bottom");
+                                    deb(PREFIX, "scrollHandler('" + target.id + "'): likely entered from bottom");
                                     // navigationElement.classList.add('likely-from-bottom');
                                 }
-                                deb("    add visible to entering element " + navigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
+                                deb(PREFIX, "    add visible to entering element " + navigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
                             }
                             navigationElement.classList.add('visible');
                         }
@@ -380,28 +368,28 @@ export function tableOfContentsInit() {
                             if (DEBUG) {
                                 if (entry.boundingClientRect.top < visibleTop) {
                                     // left viewport at the top edge, hence scroll direction is down
-                                    deb("scrollHandler('" + target.id + "'): left at top");
+                                    deb(PREFIX, "scrollHandler('" + target.id + "'): left at top");
                                     // navigationElement.classList.add('at-top');
                                 }
                                 else {
                                     // left viewport at the top edge, hence scroll direction is down
-                                    deb("scrollHandler('" + target.id + "'): likely left at top");
+                                    deb(PREFIX, "scrollHandler('" + target.id + "'): likely left at top");
                                     // navigationElement.classList.add('likely-at-top');
                                 }
                                 const precedingNavigationElements = navigationElements.slice(0, idx);
-                                deb("scrollHandler('" + sectionHeading.id + "'): sectionLink=" + sectionLink.href.replace(/.*#([^#]+)/, '$1')
+                                deb(PREFIX, "scrollHandler('" + sectionHeading.id + "'): sectionLink=" + sectionLink.href.replace(/.*#([^#]+)/, '$1')
                                     + " navigationElement=" + navigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1')
                                     + " idx=" + idx + " precedingNavigationElements: ");
-                                deb(precedingNavigationElements);
+                                deb(PREFIX, precedingNavigationElements);
                             }
 
                             // // Only considering the immediately preceding element is not sufficient
                             // const precedingNavigationElement = navigationElements[Math.max(0, navigationElements.indexOf(navigationElement) - 1)];
                             // precedingNavigationElement.classList.remove('visible');
-                            deb("    removed visible from preceding element " + precedingNavigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
+                            deb(PREFIX, "    removed visible from preceding element " + precedingNavigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
                             for (let i=0; i < idx; ++i) {
                                 navigationElements[i].classList.remove('visible');
-                                // deb("    removed visible from " + elem.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
+                                // deb(PREFIX, "    removed visible from " + elem.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
                             };
                         }
                         else if ( entry.boundingClientRect.bottom > visibleBottom
@@ -409,17 +397,17 @@ export function tableOfContentsInit() {
                             if (DEBUG) {
                                 if (entry.boundingClientRect.bottom > visibleBottom) {
                                     // left viewport at the bottom edge, hence scroll direction is up
-                                    deb("scrollHandler('" + target.id + "'): left at bottom");
+                                    deb(PREFIX, "scrollHandler('" + target.id + "'): left at bottom");
                                     // navigationElement.classList.add('at-bottom');
                                 }
                                 else {
                                     // left viewport at the bottom edge, hence scroll direction is up
-                                    deb("scrollHandler('" + target.id + "'): likely left at bottom");
+                                    deb(PREFIX, "scrollHandler('" + target.id + "'): likely left at bottom");
                                     // navigationElement.classList.add('likely-at-bottom');
                                 }
                             }
                             navigationElement.classList.remove('visible');
-                            deb("    removed visible from leaving element " + navigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
+                            deb(PREFIX, "    removed visible from leaving element " + navigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
                         }
                         // console.print("scrollHandler('" + target.id + "'): entered left to elsewhere:"
                         //     + "\n  top=" + Math.round(entry.boundingClientRect.top)
@@ -432,7 +420,7 @@ export function tableOfContentsInit() {
             */
         }
     }
-    deb("Declared addScollObserver");
+    deb(PREFIX, "Declared addScollObserver");
     if (addScrollObserver) {
         addScrollObserver(navigationElements, content);
     }

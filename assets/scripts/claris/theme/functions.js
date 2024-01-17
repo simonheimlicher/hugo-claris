@@ -1,22 +1,22 @@
 // global variables
+import { clarisHugoParams } from './claris-init';
 
-const DEBUG = window.clarisHugoParams ? (window.clarisHugoParams.envDevel === true) : false;
 // console.print: console.log without filename/line number
 let deb = function () { };
 if ('queueMicrotask' in window) {
   console.print = function (...args) {
     queueMicrotask(console.log.bind(console, ...args));
   }
-  deb = function (...args) {
-    if (DEBUG) {
-      console.print(...args);
+  deb = function (prefix, ...args) {
+    if (prefix && clarisHugoParams?.envDevel === true) {
+      console.print(prefix, ...args);
     }
   }
 }
 else {
-  deb = function (...args) {
-    if (DEBUG) {
-      console.log(...args);
+  deb = function (prefix, ...args) {
+    if (prefix && clarisHugoParams?.envDevel === true) {
+      console.log(prefix, ...args);
     }
   }
 }

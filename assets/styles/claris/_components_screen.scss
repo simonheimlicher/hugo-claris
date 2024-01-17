@@ -1133,7 +1133,9 @@ html.content-above-header {
   }
 }
 
-@keyframes highlight {
+// footnotes-accessible.js
+/*! purgecss start ignore */
+@keyframes footnotes-accessible_highlight {
   0% {
     opacity: 1;
   }
@@ -1142,7 +1144,7 @@ html.content-above-header {
   }
 }
 
-@keyframes highlight-color {
+@keyframes footnotes-accessible_highlight-color {
   0% {
     opacity: 1;
     background: var(--highlight-bg-yellow);
@@ -1152,7 +1154,6 @@ html.content-above-header {
   }
 }
 
-// footnotes-accessible.js
 // https://danielpost.com/articles/making-hugos-footnotes-accessible/
 .footnotes li {
   & p {
@@ -1166,7 +1167,7 @@ html.content-above-header {
       left: -0.5em;
       right: -0.5em;
       bottom: -0.5em;
-      background: rgba(var(--RGB_highlight-bg-yellow), 1);
+      background: var(--highlight-bg-yellow);
       border-radius: 0.25em;
       opacity: 0;
     }
@@ -1174,7 +1175,7 @@ html.content-above-header {
   &:target,
   &:focus {
     p:after {
-      animation: highlight 3s cubic-bezier(0.3, 0, 1, 0.7);
+      animation: footnotes-accessible_highlight 3s cubic-bezier(0.3, 0, 1, 0.7);
     }
   }
 
@@ -1205,7 +1206,7 @@ p sup[id^=fnref] {
   &:target,
   &:focus {
     a {
-      animation: highlight-color 3s cubic-bezier(0.3, 0, 1, 0.7);
+      animation: footnotes-accessible_highlight-color 3s cubic-bezier(0.3, 0, 1, 0.7);
     }
   }
 }
@@ -1221,18 +1222,6 @@ visually-hidden:not(:focus):not(:active) {
   width: 1px;
 }
 
-/*
-.u-hidden-visually {
-  clip-path: inset(100%);
-  clip: rect(1px, 1px, 1px, 1px);
-  height: 1px;
-  overflow: hidden;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
-}
-*/
-
 .medium-zoom-image {
   margin-top: var(--navigation-header-height);
   z-index: ($main-z-index + 100);
@@ -1247,3 +1236,5 @@ visually-hidden:not(:focus):not(:active) {
     }
   }
 }
+
+/*! purgecss stop ignore */

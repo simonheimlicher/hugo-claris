@@ -1,3 +1,4 @@
+import { clarisHugoParams } from './claris-init';
 import {
   eventTarget,
   elem,

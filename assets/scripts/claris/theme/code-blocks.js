@@ -1,3 +1,4 @@
+import { clarisHugoParams } from './claris-init';
 import {
   eventTarget,
   createEl,
@@ -12,8 +13,6 @@ import {
   copyToClipboard,
   parseBoolean
 } from './functions';
-
-import { clarisHugoParams } from './claris-hugo-params';
 
 export function codeBlocksInit () {
   const doc = document.documentElement;

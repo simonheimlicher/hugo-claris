@@ -34,6 +34,7 @@ import {
 let lazyLoadingInitDone = false;
 // in a function so we can re-run if data is added dynamically
 export function lazyLoadingInit() {
+  const PREFIX = false; // 'lazy-loading:';
   // check if loading attribute supported
   if ('loading' in HTMLImageElement.prototype) {
     // FIXME: Safari 16.4 does not respond to swapping in new value for `src`, therefore we schedule a
@@ -45,17 +46,17 @@ export function lazyLoadingInit() {
     const sources = document.querySelectorAll('source[data-srcset]');
 
     if (!lazyLoadingInitDone) {
-      deb('claris/theme/lazy-loading: Browser supports native lazy loading. Swap in value of attribute `data-src` for `src` and `data-srcset` for `srcset`');
+      deb(PREFIX, 'Browser supports native lazy loading. Swap in value of attribute `data-src` for `src` and `data-srcset` for `srcset`');
     }
     else {
-      deb('claris/theme/lazy-loading: Second round');
+      deb(PREFIX, 'Second round');
     }
 
     // loop through <img>s setting the src attribute and srcset and sizes if present
     // but only if there is no data-media attribute
     for (let img of images) {
       if (!img.dataset.media || !img.dataset.media.includes('prefers-color-scheme')) {
-        // deb('Swapping in src for ', img);
+        deb(PREFIX, 'Swapping in src for ', img);
         try {
           img.src = img.dataset.src;
           if (!isSafariBrowser || lazyLoadingInitDone) {
@@ -63,7 +64,7 @@ export function lazyLoadingInit() {
           }
           const srcset = img.dataset.srcset;
           if (srcset) {
-            deb('Swapping in srcset for ', img);
+            deb(PREFIX, 'Swapping in srcset for ', img);
             img.srcset = srcset;
             if (!isSafariBrowser || lazyLoadingInitDone) {
               delete img.dataset.srcset;
@@ -78,7 +79,7 @@ export function lazyLoadingInit() {
           }
         }
         catch (e) {
-          deb('Failed to swap in src or srcset for img=', img, '\nException: ', e);
+          deb(PREFIX, 'Failed to swap in src or srcset for img=', img, '\nException: ', e);
         }
       }
     }
@@ -101,17 +102,17 @@ export function lazyLoadingInit() {
           }
         }
         catch (e) {
-          deb('Failed to swap in srcset for source=', source, '\nException: ', e);
+          deb(PREFIX, 'Failed to swap in srcset for source=', source, '\nException: ', e);
         }
       }
     }
 
     if (isSafariBrowser && ! lazyLoadingInitDone) {
-      deb('claris/theme/lazy-loading: Schedule a second round of swapping in values for `src` and `srcset`');
+      deb(PREFIX, 'Schedule a second round of swapping in values for `src` and `srcset`');
       window.addEventListener('load', lazyLoadingInit);
       if (document.readyState === "loaded") {
         // If the `load` event has already fired, let's just execute again right now
-        deb('claris/theme/lazy-loading: document.readyState='
+        deb(PREFIX, 'document.readyState='
           + document.readyState + '. Call init initLazyLoading again right now');
         lazyLoadingInit();
       }
@@ -130,7 +131,7 @@ export function lazyLoadingInit() {
       lazySizesParentFitScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/plugins/parent-fit/ls.parent-fit.min.js';
       document.body.appendChild(lazySizesParentFitScript);
 
-      deb('claris/theme/lazy-loading: Browser does not support native lazy loading. Imported lazySizes=', lazySizesScript);
+      deb(PREFIX, 'Browser does not support native lazy loading. Imported lazySizes=', lazySizesScript);
     }
   }
   lazyLoadingInitDone = true;

@@ -1099,12 +1099,16 @@
     height: 100lvh;
   }
 }
-.scrollable {
+
+// Wrap div around tables to make them scrollable
+//! purgecss start ignore
+.scrollable-table {
   display: grid;
   width: 100%;
   max-width: 100%;
   overflow-x: auto;
 }
+//! purgecss end ignore
 
 .inline-separator-list {
   @include useFontDefinition;

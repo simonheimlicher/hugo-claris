@@ -1,9 +1,8 @@
+import { clarisHugoParams } from './claris-init';
 import {
   deb,
   pushClass
 } from './functions';
-
-import { clarisHugoParams } from "./claris-hugo-params";
 
 // Ensure we load all modules in the right order and exactly once
 // Earliest when DOMContentLoaded fires
@@ -11,10 +10,11 @@ import { clarisHugoParams } from "./claris-hugo-params";
 // we check the `readyState` and execute `init()` immediately if the document is
 // no longer in the `loading` state
 // From https://stackoverflow.com/a/7053197/617559
-function onDOMContentLoaded(initializationFunctions) {
+function onDOMContentLoaded(...initializationFunctions) {
+  const PREFIX = false; // 'index:';
   function init() {
     initializationFunctions.forEach(function (fn) {
-      deb("Calling ", fn);
+      deb(PREFIX, "Calling ", fn);
       fn();
     });
   }
@@ -27,15 +27,15 @@ function onDOMContentLoaded(initializationFunctions) {
 };
 
 // Minimal set of modules
-import { clarisHugoParamsInit } from "./claris-hugo-params";
 import { clarisInit } from './claris-init'; // Needs to be loaded first
 import { colorSchemeInit } from './color-scheme'; // Needs to be loaded early
 import { tagOverlayInit } from "./tag-overlay";
 import { obfuscatedLinkInit } from "./obfuscated-link";
 import { navigationMenuInit } from "./navigation-menu";
 import { linkAnchorInit } from "./link-anchor";
+import { scrollableTableInit } from "./scrollable-table";
 import { footnotesAccessibleInit } from './footnotes-accessible';
-onDOMContentLoaded([clarisHugoParamsInit, clarisInit, colorSchemeInit, tagOverlayInit, obfuscatedLinkInit, navigationMenuInit, linkAnchorInit, footnotesAccessibleInit]);
+onDOMContentLoaded(clarisInit, colorSchemeInit, tagOverlayInit, obfuscatedLinkInit, navigationMenuInit, linkAnchorInit, footnotesAccessibleInit, scrollableTableInit);
 
 // Enhancement scripts
 function themeEnhancedInit () {
@@ -50,7 +50,7 @@ import { codeBlocksInit } from "./code-blocks";
 import { lazyLoadingInit } from "./lazy-loading"
 import { mediumZoomInit } from './medium-zoom';
 
-onDOMContentLoaded([themeEnhancedInit, tableOfContentsInit, codeBlocksInit, lazyLoadingInit, mediumZoomInit]);
+onDOMContentLoaded(themeEnhancedInit, tableOfContentsInit, codeBlocksInit, lazyLoadingInit, mediumZoomInit);
 
 // NOTE: PostHog Analytics needs to be conditionally included at the HTML-level
 // Therefore, it is loaded via the template script `claris-head_async` rather than here
@@ -59,4 +59,3 @@ onDOMContentLoaded([themeEnhancedInit, tableOfContentsInit, codeBlocksInit, lazy
 // Disabled scripts
 // import './qrcode-svg'; // Not used
 // import './web-vitals-analytics'; // Not needed
-// import './format-url'; // Not sure if this works
