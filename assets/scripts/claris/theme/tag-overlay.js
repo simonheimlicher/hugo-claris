@@ -8,7 +8,7 @@ import {
   containsClass,
 } from './functions';
 
-const injectTagControl = function() {
+export function tagOverlayInit() {
   const doc = document.documentElement;
 
   function toggleTags(target) {
@@ -76,5 +76,3 @@ const injectTagControl = function() {
   })();
 }
 
-// console.log("theme/tags.js: addEventListener(" + 'DOMContentLoaded' + ", ", injectTagControl + ")");
-window.addEventListener('DOMContentLoaded', injectTagControl);

@@ -1,14 +1,12 @@
 import {
   deb,
-  eventTarget,
   elem,
-  pushClass,
   containsClass,
   elemAttribute,
   isObj,
 } from './functions';
 
-const initColorScheme = function () {
+export function colorSchemeInit() {
   var bank;
   try {
     var storage = window.localStorage;
@@ -237,5 +235,4 @@ const initColorScheme = function () {
       setUserColorScheme(true, true);
     });
   };
-  window.addEventListener('DOMContentLoaded', initColorSchemeToggle);
-}();
+};

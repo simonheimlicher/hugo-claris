@@ -8,7 +8,7 @@ const purgeCSS = require("@fullhuman/postcss-purgecss")({
   // https://github.com/gohugoio/hugo/issues/10338
   // https://discourse.gohugo.io/t/purgecss-and-highlighting/41021
   safelist: {
-    greedy: [/highlight/, /chroma/, /open$/]
+    greedy: [/highlight/, /chroma/, /open$/, /medium-zoom/, /table_of_contents/, /footnotes/, /fnref/, /visually-hidden/]
   },
   variables: true,
   // fontFace: true,

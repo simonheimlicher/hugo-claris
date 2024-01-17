@@ -1162,11 +1162,12 @@ html.content-above-header {
       position: absolute;
       z-index: -1;
       content: '';
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      top: -0.5em;
+      left: -0.5em;
+      right: -0.5em;
+      bottom: -0.5em;
       background: rgba(var(--RGB_highlight-bg-yellow), 1);
+      border-radius: 0.25em;
       opacity: 0;
     }
   }
@@ -1176,7 +1177,9 @@ html.content-above-header {
       animation: highlight 3s cubic-bezier(0.3, 0, 1, 0.7);
     }
   }
+
 }
+
 p sup[id^=fnref] {
   line-height: 0;
   a {
@@ -1206,6 +1209,19 @@ p sup[id^=fnref] {
     }
   }
 }
+
+// https://www.a11yproject.com/posts/how-to-hide-content/
+visually-hidden:not(:focus):not(:active) {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+/*
 .u-hidden-visually {
   clip-path: inset(100%);
   clip: rect(1px, 1px, 1px, 1px);
@@ -1215,16 +1231,8 @@ p sup[id^=fnref] {
   white-space: nowrap;
   width: 1px;
 }
-// https://www.a11yproject.com/posts/how-to-hide-content/
-.visually-hidden:not(:focus):not(:active) {
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  height: 1px;
-  overflow: hidden;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
-}
+*/
+
 .medium-zoom-image {
   margin-top: var(--navigation-header-height);
   z-index: ($main-z-index + 100);

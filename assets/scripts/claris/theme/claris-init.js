@@ -13,8 +13,10 @@ import {
   getMobileOperatingSystem,
 } from './functions';
 
+import { clarisHugoParams } from './claris-hugo-params';
+
 // console.log('BEGIN claris/theme/init');
-const clarisInit = function() {
+export function clarisInit() {
   // console.log('BEGIN claris/theme/init: clarisInit()', clarisHugoParams);
 
   const doc = document.documentElement;
@@ -221,120 +223,6 @@ const clarisInit = function() {
     }
   })();
 
-  /**
-   * Disable JS-based mangling of images
-   */
-  /*
-  function showingImagePosition(){
-    // whether or not to track image position for non-linear images within the article body element.
-    const thisPage = document.documentElement;
-    let showImagePositionOnPage = thisPage.dataset.figures;
-
-    if(showImagePositionOnPage) {
-      showImagePosition = showImagePositionOnPage;
-    }
-    return showImagePosition === "true" ? true : false;
-  }
-
-  function populateAlt(images) {
-    let imagePosition = 0;
-
-    images.forEach((image) => {
-      let alt = image.alt;
-      image.loading = "lazy";
-      const modifiers = [':left', ':right'];
-      const altArr = alt.split('::').map(x => x.trim())
-
-      if (altArr.length > 1) {
-        altArr[1].split(' ').filter(Boolean).forEach(cls =>{
-          pushClass(image, cls);
-          alt = altArr[0]
-        })
-      }
-
-      modifiers.forEach(function(modifier){
-        const canModify = alt.includes(modifier);
-        if(canModify) {
-          pushClass(image, `float_${modifier.replace(":", "")}`);
-          alt = alt.replace(modifier, "");
-        }
-      });
-
-      const isInline = alt.includes(inline);
-      alt = alt.replace(inline, "");
-
-      // wait for position to load and a caption if the image is not online and has an alt attribute
-      if (alt.length > 0 && !containsClass(image, 'alt' && !isInline)) {
-        imagePosition += 1;
-        image.dataset.pos = imagePosition;
-        const showImagePosition = showingImagePosition();
-
-        let desc = document.createElement('p');
-        desc.classList.add('img_alt');
-        let imageAlt = alt;
-
-        const thisImgPos = image.dataset.pos;
-        // modify image caption is necessary
-        imageAlt = showImagePosition ? `${showImagePositionLabel} ${thisImgPos}: ${imageAlt}` : imageAlt;
-        desc.textContent = imageAlt;
-        if(!image.matches(".image_featured")) {
-          // add a caption below image only if the image isn't a featured image
-          image.insertAdjacentHTML('afterend', desc.outerHTML);
-        }
-      }
-
-      if(isInline) {
-        modifyClass(image, 'inline');
-      }
-    });
-
-    hljs.initHighlightingOnLoad();
-  }
-
-  function largeImages(baseParent, images = []) {
-    if(images) {
-      images.forEach(function(image) {
-        let actualWidth = image.naturalWidth;
-        let parentWidth = baseParent.offsetWidth;
-        let actionableRatio = actualWidth / parentWidth;
-
-        if (actionableRatio > 1) {
-          pushClass(image, "image-scalable");
-          image.dataset.scale = actionableRatio;
-          let figure = createEl('figure');
-          wrapEl(image, figure)
-        }
-      });
-    }
-  }
-
-  (function AltImage() {
-    let article = elem('.article_content');
-    let images = article ? article.querySelectorAll('img') : false;
-    images ? populateAlt(images) : false;
-    largeImages(article, images);
-  })();
-
-  doc.addEventListener('click', function(event) {
-    let target = eventTarget(event);
-    isClickableImage = target.matches('.image-scalable');
-
-    let isFigure = target.matches('figure');
-
-    if(isFigure) {
-      let hasClickableImage = containsClass(target.children[0], 'image-scalable');
-      if(hasClickableImage) {
-        modifyClass(target, 'image-scale');
-      }
-    }
-
-    if(isClickableImage) {
-      let figure = target.parentNode;
-      modifyClass(figure, 'image-scale');
-    }
-  });
-  */
-
   const tables = elems('table');
   if (tables) {
     const scrollable = 'scrollable';
@@ -385,5 +273,4 @@ const clarisInit = function() {
   // console.log('END   claris/theme/init: clarisInit()');
 }
 
-document.addEventListener('DOMContentLoaded', clarisInit);
 // console.log('END   claris/theme/init');

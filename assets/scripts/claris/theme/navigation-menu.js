@@ -7,7 +7,7 @@ import {
 } from './functions';
 
 // console.log('BEGIN claris/theme/navigation-menu');
-const navToggle = function() {
+export function navigationMenuInit() {
   // console.log('BEGIN claris/theme/navigation-menu: navToggle()');
   const doc = document.documentElement;
   const htmlRootElement = clarisHugoParams.htmlRootElement;
@@ -83,6 +83,5 @@ const navToggle = function() {
   }
   // console.log('END   claris/theme/navigation-menu: navToggle()');
 };
-document.addEventListener('DOMContentLoaded', navToggle);
 
 // console.log('END   claris/theme/navigation-menu');

@@ -2,7 +2,7 @@
 {{- $template := "claris/head/assets" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (in (slice "home" "section" "page") $page.Kind) }} */}}
+{{- /* {{- $debug = or $debug (in (slice "home" "section" "page") $page.Kind) }} */ -}}
 
 {{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
 {{- $bundleParams := $assetVariant.BundleParams  }}

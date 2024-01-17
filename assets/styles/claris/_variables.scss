@@ -645,7 +645,6 @@ $main-z-index: 1;
     padding-top: $offset;
     margin-top: 0;
     * {
-      $heading-offset: -1rem;
       &[id]:target {
         scroll-margin-top: #{$anchor-offset + $offset};
       }

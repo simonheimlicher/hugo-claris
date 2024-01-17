@@ -1,7 +1,7 @@
 {{- $scriptBundles := dict -}}
 {{- $page := .Page }}
 {{- $template := "claris/_functions/script-bundles" }}
-{{- $debug := false }}
+{{- $debug := true }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{- /* $debug = or $debug (not (not (findRE `.` $page.RelPermalink) ) ) */ -}}
 {{- /* $debug = or $debug (and (eq $page.Type "_error") (eq site.Language.Lang "en") ) */ -}}
@@ -37,12 +37,15 @@ This comes with the caveat that configuration of JavaScript minification
 appears to be broken, as mentioned above.
 -->
 
+{{- $emptyScriptContents := "// A JavaScript file containing\n/* nothing but  comments\n and whitespace */\n" }}
+
 {{- $minifyJS := default false $assetVariant.BundleParams.MinifyBundles -}}
 
 <!-- https://www.hackification.io/software-development/hugo/html/asset-bundling/ */ -->
 {{- $resourcePathBase := "scripts" -}}
 {{- $sourceExt := "js" }}
 {{- $executedSourceSuffix := "_executed" }}
+{{- $emptySuffix := "_empty" }}
 {{- $concatSuffix := "_concat" }}
 {{- $targetSuffix := "_bundle" }}
 {{- $targetExt := "js" -}}
@@ -52,12 +55,34 @@ appears to be broken, as mentioned above.
 {{- /* Avoid error 'JSBUILD: failed to transform "scripts/claris-body_bundle.js" (text/javascript): Transforming async generator functions to the configured target environment ("es2015") is not supported yet' */ -}}
 {{- $targetVersion := "es2020" }}
 
+
+<!-- IMPORTANT NOTE ------------------------------------------------->
+<!-- Assets are published to the publicDir (./public by default),
+i.e. made available as files to be served by the web server, once
+we call one of the following methods:
+  - .Publish
+  - .Permalink
+  - .RelPermalink
+See: https://gohugo.io/hugo-pipes/introduction/#asset-publishing
+
+However, generated assets (e.g., from resource.ExecuteAsTemplate, are
+never available to be used as resources such as ESM modules.
+
+Therefore, we pass Hugo parameters via $jsParams, which are then accessed in the
+JavaScript module `assets/scripts/claris/theme/claris-hugo-params.js`
+See: https://gohugo.io/hugo-pipes/js/#options
+-->
+
 {{- $jsBuildOptionsBase := (dict
     "target" $targetVersion
     "minify" $minifyJS
     "params" (dict
       "site" site.Params
       "page" page.Params
+      "baseURL"  (default "/" site.BaseURL)
+      "iconsPath" (relURL (printf "%s/" (default "icons/" (strings.TrimLeft "/" (strings.TrimRight "/" site.Params.iconsDir) ) ) ) )
+      "envDevel"  (partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment)
+      "envProd"  (partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment)
     )
 ) }}
 
@@ -98,27 +123,24 @@ appears to be broken, as mentioned above.
   ) }}
 {{- end }}
 
-<!-- Parameters to pass to the hugoParamsFile and other top-level script files
+<!-- Parameters to pass to the top-level script files
   that are executed as templates -->
-{{- $tplParams := (dict "Page" $page "ContentTypeList" $contentTypeList "ContentTypeListID" $contentTypeListID) }}
+{{- $tplParams := (dict
+    "Page" $page
+    "ContentTypeList" $contentTypeList
+    "ContentTypeListID" $contentTypeListID
+  )
+}}
 
-<!-- IMPORTANT NOTE ------------------------------------------------->
-<!-- Assets are published to the publicDir (./public by default),
-i.e. made available as files to be served by the web server, once
-we call one of the following methods:
-  - .Publish
-  - .Permalink
-  - .RelPermalink
-See: https://gohugo.io/hugo-pipes/introduction/#asset-publishing
 
-However, generated assets (e.g., from resource.ExecuteAsTemplate, are
-never available to be used as resources such as ESM modules.
+<!-- Bundle a file that contains only comment to be able to match the other files against its output -->
+{{- $emptyResourceFile := printf "empty-test-file.%s" $sourceExt }}
+{{- $emptyResource := resources.FromString $emptyResourceFile $emptyScriptContents }}
+{{- $emptyTestResource := js.Build $jsBuildOptionsTest $emptyResource }}
+{{- warnf "%s[%s]: emptyResourceFile=%v\nemptyResource.Content:\n%v\nbundled to emptyTestResource.Content:\n%v"
+    $page $template $emptyResourceFile $emptyResource.Content $emptyTestResource.Content }}
 
-Therefore, we pass the parameters in the hugo-params file via the
-JavaScript equivalent of global variables in the dictionary
-'window.clarisHugoParams' and concatenate the processed file with
-file that is then published.
--->
+
 {{- range $target := $targetBundles }}
   {{- $mediaType := default "all" $target.Media }}
   {{- if (in $mediaTypeList $mediaType) }}
@@ -150,21 +172,14 @@ file that is then published.
         {{- $tplParams = merge $tplParams (dict "ContentType" $contentType "MediaType" $mediaType) }}
         {{- $resourcePathPrefix := printf "%s/%s" $resourcePathBase $contentType -}}
 
-        <!-- Get the Hugo params file resource and execute it as a Go Template -->
-        {{- $hugoParamsFile := printf "%s-hugo-params" $resourcePathPrefix }}
-        {{- $hugoParamsTestResource := false }}
-
         <!-- Get the main JavaScript file resource to execute it as a Go Template -->
         {{- $variantMainFile := printf "%s-%s" $resourcePathPrefix $variant.BaseName }}
 
-        {{- range $idx, $tplFile := (slice $hugoParamsFile $variantMainFile) }}
+        {{- range $idx, $tplFile := (slice $variantMainFile) }}
           {{- with resources.GetMatch (printf "%s.*" $tplFile ) -}}
             {{- $executedFile := printf "%s%s.%s" $tplFile $executedSourceSuffix $sourceExt }}
             {{- $executedResource := resources.ExecuteAsTemplate $executedFile $tplParams . }}
             {{- $variantContentTypeResources = append (slice $executedResource) $variantContentTypeResources }}
-            {{- if (eq $idx 0) }}
-              {{- $hugoParamsTestResource = js.Build $jsBuildOptionsTest $executedResource }}
-            {{- end }}
           {{- else -}}
             {{- if (eq $contentType "claris") }}
               {{- errorf "%s[%s]: tplFile '%s' not found" $page $template $tplFile }}
@@ -182,24 +197,29 @@ file that is then published.
         {{- $testConcatFile := printf "%s/%s%s.%s" $testTargetPathPrefix $target.Target $concatSuffix $targetExt }}
 
         {{- if and $debug (gt (len $variantContentTypeResources) 0) }}
-          {{- $variantContentTypeResourcesContents := "" }}
+          {{- $resourceSummary := "" }}
           {{- range $idx, $resource := $variantContentTypeResources }}
-            {{- $variantContentTypeResourcesContents = printf "%s    %d --> %v .Name=%v .MediaType=%v\n"
-                $variantContentTypeResourcesContents $idx $resource $resource.RelPermalink $resource.MediaType }}
+            {{- $resourceSummary = printf "%s    %d --> %v .Name=%v .MediaType=%v .Content:\n%v\n"
+                $resourceSummary $idx $resource $resource.RelPermalink $resource.MediaType $resource.Content }}
           {{- end }}
           {{- if $debug }}
             {{- warnf "%s[%s]: .Target=%v .Variant=%v Content types=%v ID=%v accumulated %d variantContentTypeResources:\n%s"
-                $page $template $target.Target $variant.Variant
-                $contentTypeList $contentTypeListID
-                (len $variantContentTypeResources) $variantContentTypeResourcesContents }}
+                $page $template $target.Target $variant.Variant $contentTypeList $contentTypeListID
+                (len $variantContentTypeResources) $resourceSummary }}
             {{- end }}
         {{- end }}
 
         {{- with $variantContentTypeResources }}
           {{- $testConcatResources := $variantContentTypeResources | resources.Concat $testConcatFile }}
           {{- $testVariantResource := js.Build $jsBuildOptionsTest $testConcatResources }}
-          {{- /* FIXME: The "true" in the logical expression below leads to superfluous scripts and needs to be eliminated */ -}}
-          {{- if or (not $hugoParamsTestResource) (ne $hugoParamsTestResource.Content $testVariantResource.Content) }}
+          {{- $contentExcerpt := printf "AAAAAA\n%v\nZZZZZZ" $testVariantResource.Content }}
+          {{- if (gt (len $contentExcerpt) 1000) }}
+            {{- $contentExcerpt = printf "AAAAAA\n%v\nMMM...NNN\n%vZZZZZZ" (substr $testVariantResource.Content 0 500)
+                 (substr $testVariantResource.Content (sub (len $testVariantResource.Content) 500) )}}
+          {{- end }}
+
+          {{- warnf "%s[%s]: $testVariantResource.Content:\n%v" $page $template $contentExcerpt }}
+          {{- if or (not $emptyTestResource) (ne $emptyTestResource.Content $testVariantResource.Content) }}
             {{- $variantResources = append $variantContentTypeResources $variantResources }}
             {{- if $debug }}
               {{- warnf "%s[%s]: variant=%v contentType=%v: added variantContentTypeResources=%v to variantResources=%v"
@@ -208,10 +228,10 @@ file that is then published.
             {{- end -}}
           {{- else }}
             {{- if $debug }}
-              {{- warnf "%s[%s]: variant=%v contentType=%v: bundling mainFile with hugoParams resulted in same bundle as hugoParams alone:\ntestConcatFile=%v\nhugoParams:\n%v\nhugoParams + mainFile=%v:\n%v"
-                  $page $template $variant.Variant $contentType $testConcatFile
-                  $hugoParamsTestResource.Content
-                  $variantMainFile $testVariantResource.Content }}
+              {{- warnf "%s[%s]: variant=%v contentType=%v: bundling mainFile with emptyResource resulted in same bundle as emptyResource alone: not including variantMainFile=%v"
+                  $page $template $variant.Variant $contentType $variantMainFile }}
+              {{- warnf "%s[%s]: input testConcatFile=%v contains testConcatResources.Content:\n%v\n\nemptyResource + mainFile contains testVariantResource.Content:\n%v"
+                  $page $template $testConcatFile $testConcatResources.Content $testVariantResource.Content }}
             {{- end -}}
           {{- end -}}
         {{- end -}}

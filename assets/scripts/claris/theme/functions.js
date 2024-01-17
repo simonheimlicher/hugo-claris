@@ -242,6 +242,7 @@ export function parseBoolean(string) {
   }
 };
 
+/*
 (function() {
   const userAgent = window.navigator.userAgent,
       platform = window.navigator.platform,
@@ -263,3 +264,4 @@ export function parseBoolean(string) {
     pushClass(bodyElement, 'linux');
   }
 })();
+*/

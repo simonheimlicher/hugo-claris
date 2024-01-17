@@ -1,6 +1,6 @@
-// https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API 
+// https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
 // https://codepen.io/saas/pen/LYENgqq
-window.addEventListener('DOMContentLoaded', () => {
+export function linkAnchorInit() {
   // Retrieve all elements
 
   const headingAnchorSelector = '.link.icon';
@@ -13,4 +13,4 @@ window.addEventListener('DOMContentLoaded', () => {
     const textContent = elem.closest('H1, H2, H3, H4, H5, H6').textContent;
     elem.setAttribute('title', 'Anchor link to heading "' + textContent + '"');
   };
-});
+}

@@ -1,4 +1,4 @@
-window.addEventListener("DOMContentLoaded", () => {
+export function obfuscatedLinkInit() {
   const obfuscatedLinkKeyOneTimePasswordAttr = 'data-obfuscated-link-one-time-password';
   const nodeList = document.querySelectorAll('[' + obfuscatedLinkKeyOneTimePasswordAttr + ']');
   // console.log("obfuscated-link: deobufscating links: ", nodeList);
@@ -168,4 +168,4 @@ window.addEventListener("DOMContentLoaded", () => {
     parentNode.replaceChild(unobfuscatedNode, node)
     parentNode.innerHTML = parentNode.innerHTML.replace(/^(.*[^ ])\n/, '$1').replace(/\n+(.)$/, '$1')
   }
-});
+}

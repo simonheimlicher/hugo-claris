@@ -13,8 +13,9 @@ import {
   parseBoolean
 } from './functions';
 
+import { clarisHugoParams } from './claris-hugo-params';
 
-const initCodeActions = function () {
+export function codeBlocksInit () {
   const doc = document.documentElement;
   const iconsPath = clarisHugoParams.iconsPath;
   const parentURL = clarisHugoParams.parentURL;
@@ -99,12 +100,6 @@ const initCodeActions = function () {
       }
     }
   })();
-
-    // FIXME
-  // fetch is not available in IE 11
-  // Requires promise polyfill and fetch polyfill
-  // https://github.com/taylorhakes/promise-polyfill
-  // https://github.com/github/fetch
 
   function loadSvg(file, parent, path = iconsPath) {
     // const link = `${parentURL}${path}${file}.svg`;
@@ -326,4 +321,3 @@ const initCodeActions = function () {
     }
   })();
 };
-window.addEventListener("DOMContentLoaded", initCodeActions);

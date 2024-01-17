@@ -16,7 +16,7 @@ const DEBUG = false;
 // https://codepen.io/saas/pen/LYENgqq
 let addScrollObserver = null;
 
-function injectTableOfContents() {
+export function tableOfContentsInit() {
     // Retrieve all elements
     const articleElement = elem('.article_content');
     if (!articleElement) return;
@@ -437,4 +437,3 @@ function injectTableOfContents() {
         addScrollObserver(navigationElements, content);
     }
 }
-window.addEventListener('DOMContentLoaded', injectTableOfContents);
