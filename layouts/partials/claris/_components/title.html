@@ -1,11 +1,14 @@
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/_components/title" }}
-{{- $title := default page.Title $meta.Single.Data.Title }}
 {{- $headingLevel := 1 }}
-{{- $subtitle := default page.Params.subtitle $meta.Single.Data.Subrtitle }}
-{{- $supertitle := default page.Params.supertitle $meta.Single.Data.Supertitle }}
 {{- $titleClass := "content-title" }}
 
+{{- /* Use the `formatted` version of the title, subtitle and supertitle from meta for consistency */ -}}
+{{- $title := $meta.Single.Formatted.Title }}
+{{- $subtitle := $meta.Single.Formatted.Subrtitle }}
+{{- $supertitle := $meta.Single.Formatted.Supertitle }}
+
+{{- /* Allow overriding everything by passing a `dict` */ -}}
 {{- if reflect.IsMap . }}
   {{- with .Supertitle }}
     {{- $supertitle = . }}
@@ -19,6 +22,8 @@
   {{- $headingLevel = default $headingLevel .HeadingLevel }}
 {{- end }}
 
+{{- /* Create a plainified and sanitized version of title, subtitle and supertitle for length calculations */ -}}
+{{- $titlePlain := default "" ($title | partial `claris/_functions/sanitize`) }}
 {{- $supertitlePlain := default "" ($supertitle | partial `claris/_functions/sanitize`) }}
 {{- $subtitlePlain := default "" ($subtitle | partial `claris/_functions/sanitize`) }}
 
@@ -30,23 +35,23 @@
 {{- if or $supertitlePlain $subtitlePlain }}
   {{- $min := default 10 (index (page.Param "meta.headline.targetlength") 0) }}
   {{- $max := default 60 (index (page.Param "meta.headline.targetlength") 1) }}
-  {{- if le (len $title) $max }}
-    {{- if and $supertitlePlain (le (add (len $title) (len $supertitlePlain) 2) $max) }}
+  {{- if le (len $titlePlain) $max }}
+    {{- if and $supertitlePlain (le (add (len $titlePlain) (len $supertitlePlain) 2) $max) }}
       {{- $supertitleInside = $supertitleOutside }}
       {{- $supertitleOutside = "" }}
-      {{- if and $subtitlePlain (le (add (len $title) (len $supertitlePlain) (len $subtitlePlain) 5) $max) }}
+      {{- if and $subtitlePlain (le (add (len $titlePlain) (len $supertitlePlain) (len $subtitlePlain) 5) $max) }}
         {{- $subtitleInside = $subtitleOutside }}
         {{- $subtitleOutside = "" }}
       {{- end }}
     {{- else }}
-      {{- if and $subtitlePlain (le (add (len $title) (len $subtitlePlain) 2) $max) }}
+      {{- if and $subtitlePlain (le (add (len $titlePlain) (len $subtitlePlain) 2) $max) }}
         {{- $subtitleInside = $subtitleOutside }}
         {{- $subtitleOutside = "" }}
       {{- end }}
     {{- end }}
   {{- else }}
     {{- warnf "%s[%s]: Title=%v [%d characters] > targetlength=%d: %v"
-        page $template $title (len $title) $max (substr $title 0 $max) }}
+        page $template $title (len $titlePlain) $max (substr $title 0 $max) }}
   {{- end }}
 {{- end }}
 

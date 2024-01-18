@@ -16,8 +16,7 @@
 
 {{- with $page }}
 
-  {{- $defaultTitlePartial := "partials/claris/head/title.html" }}
-  {{- $titleVariant := dict "title" (.Title | .RenderString | plainify) }}
+  {{- $titleVariant := dict "title" (.Title) }}
   {{- with $assetVariant.ContentType }}
     {{- $titlePartial := printf "partials/%s/head/title.html" . }}
     {{- if templates.Exists $titlePartial }}
@@ -27,12 +26,12 @@
       {{- end }}
       {{- $titleVariant = partial $titlePartial (dict "Page" $page) }}
     {{- else }}
-      {{- $titlePartial = $defaultTitlePartial }}
+      {{- $defaultTitlePartial := "partials/claris/head/title.html" }}
       {{- if $debug }}
         {{- warnf "%s[%s]: contentType=%v: Calling default title partial %v"
-            $page $template . $titlePartial }}
+            $page $template . $defaultTitlePartial }}
       {{- end }}
-      {{- $titleVariant = partial $titlePartial (dict "Page" $page) }}
+      {{- $titleVariant = partial $defaultTitlePartial (dict "Page" $page) }}
     {{- end }}
   {{- else }}
     {{/* {{- if $debug }} */}}
@@ -119,6 +118,8 @@
 
   {{- $canonicalURL := partial "claris/_functions/canonical-url" $page }}
 
+  <!-- NOTE: For consistency, we apply the partial `claris/_functions/sanitize`
+       to all strings that might contain HTML or soft hyphens -->
   {{- $singleMeta = (dict
     "Single" (dict
       "Data" (dict
@@ -127,12 +128,18 @@
         "ArticleSection" ( default "Root" (default .Params.section (humanize .Section) ) )
         "ArticleID" $articleID
         "EntityID" (printf "%s#%s" $canonicalURL $articleID)
-        "Title" $titleVariant.title
-        "Subtitle" $titleVariant.subtitle
-        "Supertitle" $titleVariant.supertitle
-        "Headline" $titleVariant.headline
-        "Tagline" $tagline
-        "Description" $description
+        "Title" ($titleVariant.title | partial `claris/_functions/sanitize`)
+        "Subtitle" ($titleVariant.subtitle | partial `claris/_functions/sanitize`)
+        "Supertitle" ($titleVariant.supertitle | partial `claris/_functions/sanitize`)
+        "Headline" ($titleVariant.headline | partial `claris/_functions/sanitize`)
+        "Tagline" ($tagline | partial `claris/_functions/sanitize`)
+        "Description" ($description | partial `claris/_functions/sanitize`)
+        "Title" ($titleVariant.title | partial `claris/_functions/sanitize`)
+        "Subtitle" ($titleVariant.subtitle | partial `claris/_functions/sanitize`)
+        "Supertitle" ($titleVariant.supertitle | partial `claris/_functions/sanitize`)
+        "Headline" ($titleVariant.headline | partial `claris/_functions/sanitize`)
+        "Tagline" ($tagline | partial `claris/_functions/sanitize`)
+        "Description" ($description | partial `claris/_functions/sanitize`)
         "ItemType" $itemType
         "Language" $language
         "Locale" $locale
@@ -149,6 +156,14 @@
         "License" $license
         "Genre" $genre
         "Keywords" $keywords
+      )
+      "Formatted" (dict
+        "Title" $titleVariant.title
+        "Subtitle" $titleVariant.subtitle
+        "Supertitle" $titleVariant.supertitle
+        "Headline" $titleVariant.headline
+        "Tagline" $tagline
+        "Description" $description
       )
       "Page" $page
     )
