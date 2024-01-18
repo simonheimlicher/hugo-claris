@@ -5,12 +5,14 @@
 {{- $plainText := .Plain }}
 {{- $noScript := default (T "obfuscated-link_requires-javascript") .NoScript }}
 {{- if not $plain }}
-  <!-- If no email address is provided, default to the email of the first author of the page or site -->
+  {{- /* If no email address is provided, default to the email of the first author of the page or site */ -}}
   {{- $authorMap := false }}
   {{- with site.Author.name | default ($page.Param "siteAuthor") | default ($page.Param "author") }}
     {{- if reflect.IsMap . }}
       {{- $authorMap = . }}
     {{- else }}
+      {{- /* Assume that `$page.Param "author"` is the author of the specific page
+          and look up their entry in the author map based on the `anchorize`d version */ -}}
       {{- $authorMap = index ($page.Param "authors") (anchorize . ) }}
     {{- end }}
   {{- end }}
@@ -24,7 +26,8 @@
       {{- end }}
     {{- end }}
   {{- else }}
-    {{- errorf "%s[%s]: no valid email found in .Param 'author' or .Param 'authors' %v'" $page $template }}
+    {{- errorf "%s[%s]: no valid email found: \n.Param \"siteAuthor\": '%v'\n.Param \"author\": '%v'\n.Param \"authors\": '%v'"
+        $page $template ($page.Param "siteAuthors") ($page.Param "author") ($page.Param "authors") }}
   {{- end }}
 {{- end }}
 {{- with $plainText }}
@@ -47,6 +50,6 @@
         $page $template $plain $plainText $url $url.Scheme $url.Host $url.RequestURI }}
   {{- end }}
 {{- else }}
-  {{- errorf "%s[%s]: No plain email address: .Plain=%v $page.Param.author=%v $page.Param.authors=%v"
-      $page $template .Plain $page.Param "author" $page.Param "authors" }}
+  {{- errorf "%s[%s]: Not a plain email address: .Plain='%v'\n.Param \"siteAuthor\": '%v'\n.Param \"author\": '%v'\n.Param \"authors\": '%v'"
+      $page $template .Plain ($page.Param "siteAuthors") ($page.Param "author") ($page.Param "authors") }}
 {{- end }}
