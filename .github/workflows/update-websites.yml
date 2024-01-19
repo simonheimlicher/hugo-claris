@@ -1,0 +1,65 @@
+name: Update websites
+
+# Update Hugo modules and trigger deployment on dependent website repositories
+
+on:
+  push:
+    branches:
+      - main
+      - stage
+
+jobs:
+  update-modules:
+    env:
+      REPO_URI: ${{ github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout hugo-claris
+        uses: actions/checkout@v3
+        with:
+          repository: $REPO_URI
+          ref: ${{ github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: hugo-claris
+
+      - name: Get Last Commit Message
+        id: last-commit
+        run: |
+          cd hugo-claris
+          echo "LAST_COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+
+      - name: Checkout hugo-claris-demo
+        uses: actions/checkout@v3
+        with:
+          repository: simonheimlicher/hugo-claris-demo
+          ref: ${{ github.ref_name }}
+          token: ${{ secrets.GH_ACTIONS_PAT }}
+          path: hugo-claris-demo
+
+      - name: Checkout heimlicher.com
+        uses: actions/checkout@v3
+        with:
+          repository: simonheimlicher/heimlicher.com
+          ref: ${{ github.ref_name }}
+          token: ${{ secrets.GH_ACTIONS_PAT }}
+          path: heimlicher.com
+
+      - name: Update Hugo Modules in hugo-claris-demo
+        run: |
+          cd hugo-claris-demo
+          hugo mod get
+          git config user.name "GitHub Actions"
+          git config user.email "<your-email>"
+          git add .
+          git commit -m "Updated modules: ${{ env.LAST_COMMIT_MESSAGE }}"
+          git push
+
+      - name: Update Hugo Modules in heimlicher.com
+        run: |
+          cd heimlicher.com
+          hugo mod get
+          git config user.name "GitHub Actions"
+          git config user.email "<your-email>"
+          git add .
+          git commit -m "Updated modules: ${{ env.LAST_COMMIT_MESSAGE }}"
+          git push
