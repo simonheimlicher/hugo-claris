@@ -18,8 +18,9 @@ jobs:
     env:
       REPO_URI: ${{ github.repository }}
       BRANCH_NAME: ${{ github.ref_name }}
-      EVENT_ACTOR_ID: "${{ github.triggering_actor }}"
+      EVENT_ACTOR_ID: "${{ github.actor }}"
       EVENT_ACTOR_EMAIL: "${{ github.event.sender.id }}+${{ github.event.sender.login }}@users.noreply.github.com"
+      COMMIT_MESSAGE_PREFIX: "chore: update ${{ github.repository }}@${{ github.ref_name }}"
       HUGO_VERSION: 0.121.2
 
     steps:
@@ -43,7 +44,7 @@ jobs:
           echo "LAST_COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
 
       - name: Checkout hugo-claris-demo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: simonheimlicher/hugo-claris-demo
           ref: ${{ env.BRANCH_NAME }}
@@ -51,7 +52,7 @@ jobs:
           path: hugo-claris-demo
 
       - name: Checkout heimlicher.com
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: simonheimlicher/heimlicher.com
           ref: ${{ env.BRANCH_NAME }}
@@ -65,7 +66,7 @@ jobs:
           git config user.name "${{ env.EVENT_ACTOR_ID }}"
           git config user.email "${{ env.EVENT_ACTOR_EMAIL }}"
           git add .
-          git commit -m "Updated modules: ${{ env.LAST_COMMIT_MESSAGE }}"
+          git commit -m "${{ env.COMMIT_MESSAGE_PREFIX }}${{ env.LAST_COMMIT_MESSAGE }}"
           git push
 
       - name: Update Hugo Modules in heimlicher.com
@@ -75,5 +76,5 @@ jobs:
           git config user.name "${{ env.EVENT_ACTOR_ID }}"
           git config user.email "${{ env.EVENT_ACTOR_EMAIL }}"
           git add .
-          git commit -m "Updated modules: ${{ env.LAST_COMMIT_MESSAGE }}"
+          git commit -m "${{ env.COMMIT_MESSAGE_PREFIX }}${{ env.LAST_COMMIT_MESSAGE }}"
           git push
