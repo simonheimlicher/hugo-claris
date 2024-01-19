@@ -17,7 +17,7 @@ jobs:
       - name: Checkout hugo-claris
         uses: actions/checkout@v3
         with:
-          repository: $REPO_URI
+          repository: ${{ env.REPO_URI }}
           ref: ${{ github.ref_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
           path: hugo-claris
