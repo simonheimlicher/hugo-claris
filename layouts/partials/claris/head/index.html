@@ -46,6 +46,7 @@
 {{- /* FIXME: To avoid creating the same bundle multiple times, we remove `.Kind` from the cache busters and only keep `$assetVariant` */ -}}
 {{- /* partialCached "claris/head/assets" . $assetVariant .Kind */ -}}
 {{- partialCached "claris/head/assets" . -}}
+{{- partialCached "claris/head/posthog-analytics" . -}}
     <noscript>
       <style>.noscript-hide { display: none !important; }</style>
     </noscript>

@@ -4,7 +4,7 @@
 
 import 'scripts/claris/theme';
 
-{{- if and (page.Param "posthog.key") (page.Param "posthog.host") }}
+{{- if and  (page.Param "posthog.bundle") (page.Param "posthog.key") (page.Param "posthog.host")  }}
 import { postHogAnalyticsInit } from 'scripts/claris/theme/posthog-analytics';
 window.addEventListener('DOMContentLoaded', postHogAnalyticsInit);
 {{- end }}
