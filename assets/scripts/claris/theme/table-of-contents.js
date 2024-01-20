@@ -1,6 +1,5 @@
 import {
   deb,
-  eventTarget,
   elem,
   elems,
 } from './functions';
@@ -111,7 +110,7 @@ export function tableOfContentsInit() {
     }
 
     const navigationClickHandler = function (event) {
-        let target = eventTarget(event).querySelector('a') || eventTarget(event);
+        let target = event.target.querySelector('a') || event.target;
         setActiveNavigationElement(target.parentNode);
         target.click();
     };

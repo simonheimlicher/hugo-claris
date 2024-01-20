@@ -1,6 +1,5 @@
 import { clarisHugoParams } from './claris-init';
 import {
-  eventTarget,
   elem,
   deleteClass,
   modifyClass,
@@ -32,7 +31,7 @@ export function navigationMenuInit() {
   }
   // Add click event listener to document element to also capture clicks outside the navigation menu
   doc.addEventListener('click', function (event) {
-    const target = eventTarget(event);
+    const target = event.target;
     const isNavToggle = target.matches(navToggleIconClass) || target.closest(navToggleIconClass);
     if (isNavToggle) {
       event.preventDefault();
@@ -70,7 +69,7 @@ export function navigationMenuInit() {
   const contentContainerElem = elem('#contentContainer');
   if (contentContainerElem) {
     navToggle.addEventListener('click', function (event) {
-      const target = eventTarget(event);
+      const target = event.target;
       const isNavOpenIcon = target.matches(navToggleOpenSelector) || target.closest(navToggleOpenSelector);
       if (isNavOpenIcon) {
         event.preventDefault();

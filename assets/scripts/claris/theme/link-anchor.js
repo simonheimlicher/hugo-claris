@@ -2,7 +2,6 @@
 // https://codepen.io/saas/pen/LYENgqq
 
 import {
-  eventTarget,
   createEl,
   elem,
   elems,
@@ -48,7 +47,7 @@ export function linkAnchorInit() {
   if (anchorLinks) {
     document.addEventListener('click', function(event)
     {
-      target = eventTarget(event);
+      target = event.target;
       linkNode = target.closest(`.${anchorLink}`)
       if (target && containsClass(target, anchorLink) || containsClass(linkNode, anchorLink)) {
         event.preventDefault();

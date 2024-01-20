@@ -1,6 +1,5 @@
 import { clarisHugoParams } from './claris-init';
 import {
-  eventTarget,
   createEl,
   elem,
   elems,
@@ -242,7 +241,7 @@ export function codeBlocksInit () {
 
   doc.addEventListener('click', function (event) {
     // copy code block
-    const target = eventTarget(event);
+    const target = event.target;
     const isCopyIcon = isItem(target, copyId);
     const isWrapIcon = isItem(target, wrapId);
     const isLinesIcon = isItem(target, linesId);

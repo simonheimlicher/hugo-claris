@@ -1,5 +1,4 @@
 import {
-  eventTarget,
   elem,
   elems,
   pushClass,
@@ -43,7 +42,7 @@ export function tagOverlayInit() {
 
   (function showAllArticleTags(){
     doc.addEventListener('click', function(event){
-      const target = eventTarget(event);
+      const target = event.target;
       toggleTags(target)
     });
 
@@ -55,7 +54,7 @@ export function tagOverlayInit() {
     // console.log("sortTags: add click event listener");
     doc.addEventListener('click', function(event){
       const active = 'active';
-      const target = eventTarget(event);
+      const target = event.target;
       const isSortButton = target.matches('.tags_sort') || target.matches('.tags_sort span');
       // console.log('sortTags(): isSortButton=' + isSortButton + ' target=', target);
       if(isSortButton) {

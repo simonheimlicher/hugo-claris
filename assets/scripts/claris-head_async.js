@@ -1,6 +1,6 @@
 // console.log('BEGIN claris-head_async');
 
-/* File='scripts/claris/hugo-params.js': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .MediaType='{{ .MediaType }}' */
+/* File='scripts/claris-head_async.js': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .MediaType='{{ .MediaType }}' */
 
 import 'scripts/claris/theme';
 

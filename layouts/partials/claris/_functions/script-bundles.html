@@ -68,22 +68,40 @@ See: https://gohugo.io/hugo-pipes/introduction/#asset-publishing
 However, generated assets (e.g., from resource.ExecuteAsTemplate, are
 never available to be used as resources such as ESM modules.
 
-Therefore, we pass Hugo parameters via $jsParams, which are then accessed in the
-JavaScript module `assets/scripts/claris/theme/claris-hugo-params.js`
+Therefore, we pass Hugo parameters via $scriptParams. This is a dict comprising
+constants, which are passed to ESBuild via "params" and can then accessed in
+JavaScript modules.
 See: https://gohugo.io/hugo-pipes/js/#options
 -->
 
-{{- $jsBuildOptionsBase := (dict
-    "target" $targetVersion
-    "minify" $minifyJS
-    "params" (dict
+<!-- NOTE
+It does not appear to be possible to conditionally define a debug function
+as an empty function, which should be removed outside development.
+If we define a function whose behavior depends on a variable injected via $scriptParams,
+the function will end up in the production code because $scriptParams turns into a
+regular JavaScript object, which could change at runtime.
+{{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
+{{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
+{{- $debugFunctionDefinition := `(prefix, ...args) => {}` }}
+{{- if $envDevel }}
+{{- $debugFunctionDefinition = `(prefix, ...args) => prefix && console.log(prefix, ...args)` }}
+{{- end }}
+-->
+
+{{- $scriptParams := (dict
       "site" site.Params
       "page" page.Params
       "baseURL"  (default "/" site.BaseURL)
       "iconsPath" (relURL (printf "%s/" (default "icons/" (strings.TrimLeft "/" (strings.TrimRight "/" site.Params.iconsDir) ) ) ) )
-      "envDevel"  (partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment)
-      "envProd"  (partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment)
+      "envDevel"  $envDevel
+      "envProd"  $envProd
     )
+}}
+
+{{- $jsBuildOptionsBase := (dict
+    "target" $targetVersion
+    "minify" $minifyJS
+    "params" $scriptParams
 ) }}
 
 {{- $jsBuildOptionsTest := (dict
@@ -129,6 +147,7 @@ See: https://gohugo.io/hugo-pipes/js/#options
     "Page" $page
     "ContentTypeList" $contentTypeList
     "ContentTypeListID" $contentTypeListID
+    "ScriptParams" $scriptParams
   )
 }}
 

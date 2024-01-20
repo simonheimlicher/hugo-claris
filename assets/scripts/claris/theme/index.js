@@ -11,7 +11,8 @@ import {
 // no longer in the `loading` state
 // From https://stackoverflow.com/a/7053197/617559
 function onDOMContentLoaded(...initializationFunctions) {
-  const PREFIX = false; // 'index:';
+  const PREFIX = 'index:';
+  // const deb = clarisHugoParams.debugFunction;
   function init() {
     initializationFunctions.forEach(function (fn) {
       deb(PREFIX, "Calling ", fn);
