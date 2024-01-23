@@ -1,26 +1,61 @@
 {{- $page := page }}
+{{- $args := . }}
 {{- $content := . }}
 {{- $template := "claris/_components/lede-initial" }}
 
 {{- if reflect.IsMap . }}
   {{- $page = default $page .Page }}
-  {{- $content = .Content }}
+  {{- $content = default $content .Content }}
 {{- end }}
 
 {{- with $content }}
-  {{- $initialParaMinLength := 350 }}
-  {{- $initialWordsMin := 10 }}
-  {{- $initialWordsMax := 25 }}
-  {{- $initialWordLengthMin := 3 }}
-  {{- $initialWordsIgnore := slice "the" "and" "der" "die" "das" "und" }}
-  {{- $ledeRE := `(?s)^\s*<p>(.*?)</p\s*>` -}}
+  {{- $plainParagraphsMin := ($page.Param "typography.plainParagraphsMin") | default 3 }}
+  {{- $initialParaMinLength := ($page.Param "typography.initialParaMinLength") | default 320 }}
+  {{- $initialWordsWordsMin := ($page.Param "typography.initialWordsWordsMin") | default 5 }}
+  {{- $initialWordsCharactersMin := ($page.Param "typography.initialWordsCharactersMin") | default 10 }}
+  {{- $initialWordsCharactersMax := ($page.Param "typography.initialWordsCharactersMax") | default 25 }}
+  {{- $initialWordLengthMin := ($page.Param "typography.initialWordLengthMin") | default 3 }}
+  {{- $initialWordsIgnore := ($page.Param "typography.initialWordsIgnore") | default (slice "the" "and" "der" "die" "das" "und") }}
 
-  {{- if findRE $ledeRE $content 1 }}
+  {{- /* Allow overriding parameters, e.g., from shortcode `lede-initial` */ -}}
+  {{- with and (reflect.IsMap $args) $args }}
+    {{- if isset . "PlainParagraphsMin" }}
+      {{- $plainParagraphsMin = .PlainParagraphsMin }}
+    {{- end }}
+    {{- if isset . "InitialParaMinLength" }}
+      {{- $initialParaMinLength = .InitialParaMinLength }}
+    {{- end }}
+    {{- if isset . "InitialWordsCharactersMin" }}
+      {{- $initialWordsCharactersMin = .InitialWordsCharactersMin }}
+    {{- end }}
+    {{- if isset . "InitialWordsCharactersMax" }}
+      {{- $initialWordsCharactersMax = .InitialWordsCharactersMax }}
+    {{- end }}
+    {{- if isset . "InitialWordLengthMin" }}
+      {{- $initialWordLengthMin = .InitialWordLengthMin }}
+    {{- end }}
+    {{- if isset . "InitialWordsIgnore" }}
+      {{- $initialWordsIgnore = .InitialWordsIgnore }}
+    {{- end }}
+    {{- warnf "plainParagraphsMin=%d initialParaMinLength=%d" $plainParagraphsMin $initialParaMinLength }}
+  {{- end }}
 
-    {{- $contentLede := replaceRE `(?s)^\s*<p>(.*?)</p\s*>.*` `<p class="lede">$1</p>` $content 1 }}
-    {{- $contentWithoutLede := replaceRE `(?s)^\s*<p>.*?</p\s*>\s*(.*)` `$1` $content 1 }}
+  {{- /* Regexes need to be prefixed with `(?s)`
+      This is called the `single line modifier` and it allows the dot symbol (`.`)
+      to match newline characters (`\n`)
 
-    {{- $initialParaRE := `(?s)^\s*<p>(.*?)</p\s*>` }}
+      We use `\P{L}` to match non-letter characters. For a more precise definition, see
+      https://www.regular-expressions.info/unicode.html#category
+      */ -}}
+  {{- $paragraphRE := `(?:\s*<p>(.+?)</p>\s*)` }}
+  {{- $threeParagraphRE := printf `(?s)^\s*%s{%d,}` $paragraphRE $plainParagraphsMin -}}
+  {{- $threeParagraphMatch := findRE $threeParagraphRE $content 1 }}
+  {{- if $threeParagraphMatch }}
+    {{- $ledeParagraphRE := printf `(?s)^\s*%s\s*(.*)` $paragraphRE }}
+    {{- $contentLede := replaceRE $ledeParagraphRE `<p class="lede">$1</p>` $content 1 }}
+    {{- $contentWithoutLede := replaceRE $ledeParagraphRE `$2` $content 1 }}
+
+    {{- $initialParaRE := printf `(?s)^%s` $paragraphRE }}
     {{- $initialPara := findRE $initialParaRE $contentWithoutLede 1 }}
     {{- with $initialPara = index $initialPara 0 }}
       {{- if gt (len .) $initialParaMinLength }}
@@ -33,7 +68,7 @@
 
         {{- $initialWordList := slice }}
         {{- $initialWords := "" }}
-
+        {{- warnf "tokens=%v" $tokens }}
         {{- range $tokens }}
           {{- $token := (replaceRE `(?s)(\S+)\s*` `$1` .) }}
           {{- if not $initialLetter }}
@@ -43,17 +78,25 @@
               {{- $token = false }}
             {{- end }}
           {{- else if not $initialWords }}
-            {{- if gt (len $initialWordList) 5 }}
+            {{- /* Stop if we have more than $initialWordsWordsMin words accumulated */ -}}
+            {{- if gt (len $initialWordList) $initialWordsWordsMin }}
               {{- $initialWords = delimit $initialWordList " " }}
+            {{- /* Stop upon the first token that begins with a non-letter character (e.g., opening quotes or parentheses)
+                and don't add the token */ -}}
             {{- else if findRE `^\P{L}` $token 1 }}
               {{- $initialWords = delimit $initialWordList " " }}
+            {{- /* Stop upon the first token that contains a non-letter character (e.g., apostrophe in `people's`)
+                and add the token */ -}}
             {{- else if findRE `\P{L}` $token 1 }}
               {{- $initialWordList = append $token $initialWordList }}
               {{- $initialWords = delimit $initialWordList " " }}
               {{- $token = false }}
-            {{- else if gt (len (delimit $initialWordList " ")) $initialWordsMax }}
+            {{- /* Stop if we have more than $initialWordsCharactersMax characters accumulated */ -}}
+            {{- else if gt (len (delimit $initialWordList " ")) $initialWordsCharactersMax }}
               {{- $initialWords = delimit $initialWordList " " }}
-            {{- else if gt (len (delimit $initialWordList " ")) $initialWordsMin }}
+            {{- /* Stop if we have more than $initialWordsCharactersMin characters accumulated
+                and the current token is one we want to ignore (e.g., `the` or `it`) */ -}}
+            {{- else if gt (len (delimit $initialWordList " ")) $initialWordsCharactersMin }}
               {{- if findRE (printf `^(%s)` (delimit $initialWordsIgnore `|`) ) $token 1 }}
                 {{- $initialWords = delimit $initialWordList " " }}
               {{- else if le (len $token) $initialWordLengthMin }}
@@ -65,12 +108,16 @@
               {{- $token = false }}
             {{- end }}
           {{- end }}
-
           {{- with $token }}
             {{- $modifiedTokens = append . $modifiedTokens }}
           {{- end }}
         {{- end }}
-        {{- $modifiedInitialPara := printf `<p class="drop-cap"><span class="initial-letter">%s</span><span class="initial-words">%s</span> %s</p>` $initialLetter $initialWords (delimit $modifiedTokens " ") }}
+        {{- /* If there is only one token, we will end up here */ -}}
+        {{- if not $initialWords }}
+            {{- $initialWords = delimit $initialWordList " " }}
+        {{- end }}
+
+        {{- $modifiedInitialPara := printf `<p class="initial"><span class="initial-letter">%s</span><span class="initial-words">%s</span> %s</p>` $initialLetter $initialWords (delimit $modifiedTokens " ") }}
         {{- $contentWithoutLede = replaceRE $initialParaRE $modifiedInitialPara $contentWithoutLede 1 }}
       {{- end }}
     {{- end }}

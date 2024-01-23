@@ -73,6 +73,15 @@ outdatedAfterYears: 5
 #   "articles"
 # ]
 
+typography:
+  plainParagraphsMin: 3
+  initialParaMinLength: 320
+  initialWordsWordsMin: 5
+  initialWordsCharactersMin: 10
+  initialWordsCharactersMax: 25
+  initialWordLengthMin: 3
+  initialWordsIgnore: [the, and, der, die, das, und]
+
 fontFamilySans: "Source Sans 3"
 # fontFamilySans: "IBM Plex Sans"
 # fontFamilySans: "Public Sans"
