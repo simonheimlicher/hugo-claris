@@ -292,8 +292,6 @@ blockquote {
 
   min-height: calc(1.25 * var(--quotation-mark-close-height));
 
-  // Only render the below if the browser supports CSS properties
-  @supports (color: var(--CSS-properties)) {
     &::before {
       @include useFontDefinition(serif);
       content: "“";
@@ -315,7 +313,6 @@ blockquote {
       font-size: calc(var(--quotation-mark-close-font-size));
       color: $blockquote-quotation-color-close;
       font-weight: normal;
-    }
   }
 
   footer {

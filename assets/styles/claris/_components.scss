@@ -343,38 +343,9 @@
 
       &-item {
         padding-bottom: var(--inner_padding_4-3);
-        // FIXME: IE 11 bug
-        // https://github.com/philipwalton/flexbugs/issues/75
-        // Setting a min-height on the container (body does not work)
-        // avoids scaled images taking up as much space as they would if not scaled
-        // FIXME: Does not work. responsive-figure images still blow up
-        // For IE 11
         min-height: 1px;
-        flex: 1 1 10%;
         min-width: min(80%, max(20%, 16em));
-        @supports (display: flex) {
-          flex: 1 1 min-content;
-        }
-      }
-      // Footer main | Newsletter form
-      form {
-        display: flex;
-        flex-wrap: wrap;
-      }
-      input {
-        &[type="email"] {
-          border: 0;
-          padding: 0.625rem;
-          margin-top: 0.3125rem;
-        }
-        &[type="submit"] {
-          background-color: var(--accent);
-          color: #fff;
-          cursor: pointer;
-          border: 0;
-          padding: 0.625rem 0.9375rem;
-          margin-top: 0.3125rem;
-        }
+        flex: 1 1 min-content;
       }
     }
     // Footer external links

@@ -65,52 +65,38 @@ $main-z-index: 1;
   }
 
   $pVar: ('top': $top, 'right': $right, 'bottom': $bottom, 'left': $left);
-  $pFix: ('top': $top, 'right': $right, 'bottom': $bottom, 'left': $left);
   @each $key, $value in $pVar {
     $direction: direction($key);
     @if type-of($value) == 'number' {
       @if is-absolute-length(#{$value}) {
         @debug "absolute-length: #{$value}";
-        $pFix: map-merge($pFix, (#{$key}: #{$value}) );
         $pVar: map-merge($pVar, (
           #{$key}: calc( max(#{$value}, env(safe-area-inset-#{$key}, 0px) ) )
         ));
       }
       @else {
-        $valueFix: $value;
         $valueVar: $value;
         @if $value == 0 {
-          $valueFix: 0;
           $valueVar: env(safe-area-inset-#{$key}, 0px)
         }
         @else {
-          // FIXME: Use a single padding value for browsers that don't support CSS properties
-          $valueFix: ($value * $screenViewInnerPaddingNarrow);
           $valueVar: calc( max(#{$value} * var(--#{$where}_padding), env(safe-area-inset-#{$key}, 0px) ) )
         }
-        $pFix: map-merge($pFix, (#{$key}: $valueFix));
         $pVar: map-merge($pVar, (#{$key}: $valueVar));
         }
     }
     @else {
-      $pFix: map-merge($pFix, (#{$key}: null) );
       $pVar: map-merge($pVar, (#{$key}: null) );
     }
   }
-  // @debug "pFix: #{$pFix}";
   // @debug "pVar: #{$pVar}";
 
-  // For browsers that don't support CSS properties
-  @each $key, $value in $pFix {
-    padding-#{$key}: #{$value};
-  }
-  @supports (color: var(--CSS-properties)) {
-    @media screen {
-      @each $key, $value in $pVar {
-        padding-#{$key}: #{$value};
-      }
+  @media screen {
+    @each $key, $value in $pVar {
+      padding-#{$key}: #{$value};
     }
   }
+  // }
 }
 
 @mixin inner_padding($padding-factor: 1) {
