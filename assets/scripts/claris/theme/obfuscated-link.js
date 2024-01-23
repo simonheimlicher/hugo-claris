@@ -186,8 +186,8 @@ export function obfuscatedLinkInit() {
     const flags = 'us';
     const replacement = String.raw`$1$2`;
     const stripNewlineRE = new RegExp(searchPattern, flags);
-    const replacementLog = `UUU$1VVV$2WWW`;
-    console.log(parentNode.innerHTML.replace(stripNewlineRE, replacementLog));
+    // const replacementLog = `UUU$1VVV$2WWW`;
+    // console.log(parentNode.innerHTML.replace(stripNewlineRE, replacementLog));
     parentNode.innerHTML = parentNode.innerHTML.replace(stripNewlineRE, replacement);
   }
   if (postponedNodes.length > 0) {
