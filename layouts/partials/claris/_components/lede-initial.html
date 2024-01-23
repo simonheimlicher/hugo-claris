@@ -37,7 +37,6 @@
     {{- if isset . "InitialWordsIgnore" }}
       {{- $initialWordsIgnore = .InitialWordsIgnore }}
     {{- end }}
-    {{- warnf "plainParagraphsMin=%d initialParaMinLength=%d" $plainParagraphsMin $initialParaMinLength }}
   {{- end }}
 
   {{- /* Regexes need to be prefixed with `(?s)`
@@ -68,7 +67,7 @@
 
         {{- $initialWordList := slice }}
         {{- $initialWords := "" }}
-        {{- warnf "tokens=%v" $tokens }}
+
         {{- range $tokens }}
           {{- $token := (replaceRE `(?s)(\S+)\s*` `$1` .) }}
           {{- if not $initialLetter }}
