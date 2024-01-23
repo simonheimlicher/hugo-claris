@@ -8,8 +8,8 @@
 {{- $obfuscatedAddressPlaceholder := "OBFUSCATED" }}
 {{- $obfuscated := partial "claris/_functions/obfuscate-link" (dict "Page" $page "Plain" $plain "NoScript" $noScript) }}
 {{- with $obfuscated }}
-  {{/* {{- partial "html-comment" (printf "[%s]: Plain: '%s'. Result:\n%s"
-      $template $plain (jsonify (dict "indent" "  ") $obfuscated) ) }} */}}
+  {{- /* {{- partial "html-comment" (printf "[%s]: Plain: '%s'. Result:\n%s"
+      $template $plain (jsonify (dict "indent" "  ") $obfuscated) ) }} */ -}}
   {{- $scheme := .Scheme }}
   {{- $encrypted := .Encrypted }}
   {{- $oneTimePassword := .OneTimePassword }}
@@ -63,7 +63,7 @@
     {{- end }}
   {{- end }}
   {{- $container := "span" }}
-  {{- printf `<%s %s>%s</%s>` $container (delimit $dataAttributes ` `) $noScript $container | safeHTML }}
+  {{- printf `<%s %s>%s</%s>` $container (delimit $dataAttributes ` `) $noScript $container | safeHTML -}}
 {{- else }}
   {{ errorf "%s[%s]: Failed to encode plain text '%s'" $page $template $plain }}
 {{- end -}}

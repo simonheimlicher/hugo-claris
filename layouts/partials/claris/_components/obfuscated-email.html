@@ -36,8 +36,8 @@
     {{- if (strings.FindRE `.+@.+` $plainText) }}
       {{- $url = urls.Parse (printf "mailto:%s" $url) }}
     {{- else }}
-      {{/* {{- warnf "%s[%s]: site.Author=%#v site.Author=%#v site.Author.email=%#v"
-          $page $template site.Author site.Author site.Author.email }} */}}
+      {{- /* warnf "%s[%s]: site.Author=%#v site.Author=%#v site.Author.email=%#v"
+          $page $template site.Author site.Author site.Author.email */ -}}
       {{- errorf "%s[%s]: Invalid email address: .Plain=%v $plainText=%v $url=%v .Scheme=%v .Host=%v .RequestURI=%v"
           $page $template $plain $plainText $url $url.Scheme $url.Host $url.RequestURI }}
     {{- end }}
@@ -52,4 +52,4 @@
 {{- else }}
   {{- errorf "%s[%s]: Not a plain email address: .Plain='%v'\n.Param \"siteAuthor\": '%v'\n.Param \"author\": '%v'\n.Param \"authors\": '%v'"
       $page $template .Plain ($page.Param "siteAuthors") ($page.Param "author") ($page.Param "authors") }}
-{{- end }}
+{{- end -}}
