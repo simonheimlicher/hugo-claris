@@ -6,14 +6,9 @@
 {{- $template := "claris/header/logo" }}
 
 {{- with $logoURL }}
-  {{- if not (strings.HasPrefix . "http") }}
-    {{- with strings.TrimLeft "/" . }}
-      {{- $logoURL = relLangURL . }}
-      {{- warnf "%s[%s]: logoURL: '%v' --> %v" $page $template $logoURL }}
-    {{- else }}
-      {{- $logoURL = (site.GetPage "/").RelPermalink }}
-    {{- end }}
-  {{- end }}
+  {{- $logoURL = printf "%s" $logoURL | safeURL }}
+{{- else }}
+  {{- $logoURL = (site.GetPage "/").RelPermalink | safeURL }}
 {{- end }}
 
 

@@ -3,84 +3,43 @@
 {{- $headingLevel := 1 }}
 {{- $titleClass := "content-title" }}
 
-{{- /* Use the `formatted` version of the title, subtitle and supertitle from meta for consistency */ -}}
+{{- /* Use the `formatted` version of the title, subtitle and supertitle from meta data */ -}}
+
+{{- with $meta.Single.Formatted }}
+  {{- partial "html-comment" (printf "[%s]: BEGIN: Kind=%v $meta.Single.Formatted.Title=%v .Supertitle=%v .Subtitle=%v .Tagline=%v"
+      $template page.Kind .Title .Supertitle .Subtitle .Tagline ) }}
+{{- end -}}
+
 {{- $title := $meta.Single.Formatted.Title }}
-{{- $subtitle := $meta.Single.Formatted.Subrtitle }}
+
 {{- $supertitle := $meta.Single.Formatted.Supertitle }}
+{{- $supertitleOutside := $meta.Single.Formatted.SupertitleOutside }}
+{{- $supertitleInside := $meta.Single.Formatted.SupertitleInside }}
 
-{{- /* Allow overriding everything by passing a `dict` */ -}}
-{{- if reflect.IsMap . }}
-  {{- with .Supertitle }}
-    {{- $supertitle = . }}
-  {{- end }}
-  {{- with .Subtitle }}
-    {{- $subtitle = . }}
-  {{- end }}
-  {{- with .TitleClass }}
-    {{- $titleClass = . }}
-  {{- end }}
-  {{- $headingLevel = default $headingLevel .HeadingLevel }}
+{{- $subtitle := $meta.Single.Formatted.Subtitle }}
+{{- $subtitleInside := $meta.Single.Formatted.SubtitleInside }}
+{{- $subtitleOutside := $meta.Single.Formatted.SubtitleOutside }}
+
+{{- if $title }}
+        <div{{- with $titleClass }} class="{{ . }}"{{ end }}>
+  {{- with $supertitleOutside -}}
+          <span class="supertitle">{{. }}<span class="visually-hidden">: </span></span>
+  {{- end -}}
+        <h{{ $headingLevel }} id="articleTop">
+  {{- with $supertitleInside -}}
+          <span class="supertitle">{{. }}<span class="visually-hidden">: </span></span>
+  {{- end -}}
+
+  <span class="title">{{- $title -}}</span>
+
+  {{- with $subtitleInside -}}
+          <span class="subtitle"><span class="visually-hidden"> – </span>{{. }}</span>
+  {{- end -}}
+        </h{{ $headingLevel }}>
+  {{- with $subtitleOutside -}}
+          <span class="subtitle"><span class="visually-hidden"> – </span>{{. }}</span>
+  {{- end -}}
+      </div>
 {{- end }}
 
-{{- /* Create a plainified and sanitized version of title, subtitle and supertitle for length calculations */ -}}
-{{- $titlePlain := default "" ($title | partial `claris/_functions/sanitize`) }}
-{{- $supertitlePlain := default "" ($supertitle | partial `claris/_functions/sanitize`) }}
-{{- $subtitlePlain := default "" ($subtitle | partial `claris/_functions/sanitize`) }}
-
-{{- $supertitleOutside := $supertitle }}
-{{- $subtitleOutside := $subtitle }}
-{{- $supertitleInside := "" }}
-{{- $subtitleInside := "" }}
-
-{{- if or $supertitlePlain $subtitlePlain }}
-  {{- $min := default 10 (index (page.Param "meta.headline.targetlength") 0) }}
-  {{- $max := default 60 (index (page.Param "meta.headline.targetlength") 1) }}
-  {{- if le (len $titlePlain) $max }}
-    {{- if and $supertitlePlain (le (add (len $titlePlain) (len $supertitlePlain) 2) $max) }}
-      {{- $supertitleInside = $supertitleOutside }}
-      {{- $supertitleOutside = "" }}
-      {{- if and $subtitlePlain (le (add (len $titlePlain) (len $supertitlePlain) (len $subtitlePlain) 5) $max) }}
-        {{- $subtitleInside = $subtitleOutside }}
-        {{- $subtitleOutside = "" }}
-      {{- end }}
-    {{- else }}
-      {{- if and $subtitlePlain (le (add (len $titlePlain) (len $subtitlePlain) 2) $max) }}
-        {{- $subtitleInside = $subtitleOutside }}
-        {{- $subtitleOutside = "" }}
-      {{- end }}
-    {{- end }}
-  {{- else }}
-    {{- warnf "%s[%s]: Title=%v [%d characters] > targetlength=%d: %v"
-        page $template $title (len $titlePlain) $max (substr $title 0 $max) }}
-  {{- end }}
-{{- end }}
-
-{{- with page -}}<!-- Restore "." to refer to page context from which the partial was called -->
-  {{- /* with $meta.Single.Data }}
-    {{- partial "html-comment" (printf "[%s]: BEGIN: Kind=%v $meta.Single.Title=%v .Supertitle=%v .Subtitle=%v .Tagline=%v"
-        $template page.Kind .Title .Supertitle .Subtitle .Tagline ) }}
-  {{- end */ -}}
-
-  {{- if $title }}
-          <div{{- with $titleClass }} class="{{ . }}"{{ end }}>
-    {{- with $supertitleOutside -}}
-           <span class="supertitle">{{. | page.RenderString }}<span class="visually-hidden">: </span></span>
-    {{- end -}}
-          <h{{ $headingLevel }} id="articleTop">
-    {{- with $supertitleInside -}}
-           <span class="supertitle">{{. | page.RenderString }}<span class="visually-hidden">: </span></span>
-    {{- end -}}
-
-    <span class="title">{{- $title | page.RenderString -}}</span>
-
-    {{- with $subtitleInside -}}
-            <span class="subtitle"><span class="visually-hidden"> – </span>{{. | page.RenderString }}</span>
-    {{- end -}}
-         </h{{ $headingLevel }}>
-    {{- with $subtitleOutside -}}
-            <span class="subtitle"><span class="visually-hidden"> – </span>{{. | page.RenderString }}</span>
-    {{- end -}}
-        </div>
-  {{- end }}
-{{- end }}
-{{- /* partial "html-comment" (printf "[%s]:   END" $template) */ -}}
+{{- partial "html-comment" (printf "[%s]:   END" $template) -}}

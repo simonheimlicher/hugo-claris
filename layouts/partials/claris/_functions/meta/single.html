@@ -16,7 +16,7 @@
 
 {{- with $page }}
 
-  {{- $titleVariant := dict "title" (.Title) }}
+  {{- $titleVariant := dict "Title" .Title }}
   {{- with $assetVariant.ContentType }}
     {{- $titlePartial := printf "partials/%s/head/title.html" . }}
     {{- if templates.Exists $titlePartial }}
@@ -24,14 +24,14 @@
         {{- warnf "%s[%s]: contentType=%v: Calling title partial %v"
             $page $template . $titlePartial }}
       {{- end }}
-      {{- $titleVariant = partial $titlePartial (dict "Page" $page) }}
+      {{- $titleVariant = partial $titlePartial $page }}
     {{- else }}
       {{- $defaultTitlePartial := "partials/claris/head/title.html" }}
       {{- if $debug }}
         {{- warnf "%s[%s]: contentType=%v: Calling default title partial %v"
             $page $template . $defaultTitlePartial }}
       {{- end }}
-      {{- $titleVariant = partial $defaultTitlePartial (dict "Page" $page) }}
+      {{- $titleVariant = partial $defaultTitlePartial $page }}
     {{- end }}
   {{- else }}
     {{/* {{- if $debug }} */}}
@@ -111,73 +111,61 @@
   {{- end }}
 
   {{- $genre := default (index .Params.categories 0) .Params.genre }}
-  {{- $keywords := apply (default (default (split (anchorize $titleVariant.title) "-") .Params.tags) .Params.keywords) "lower" "." }}
+  {{- $keywords := apply (default (default (split (anchorize $titleVariant.Title) "-") .Params.tags) .Params.keywords) "lower" "." }}
 
   <!-- HTML 'id' attribute of the DOM container of the main content -->
   {{- $articleID := default "contentContainer" ($page.Param "articleID") }}
 
   {{- $canonicalURL := partial "claris/_functions/canonical-url" $page }}
 
-  <!-- NOTE: For consistency, we apply the partial `claris/_functions/sanitize`
+  <!-- NOTE: For consistency, in the `Data` key, we apply the partial `claris/_functions/sanitize`
        to all strings that might contain HTML or soft hyphens -->
   {{- $singleMeta = (dict
-    "Single" (dict
-      "Data" (dict
-        "URL" $page.RelPermalink
-        "CanonicalURL" $canonicalURL
-        "ArticleSection" ( default "Root" (default .Params.section (humanize .Section) ) )
-        "ArticleID" $articleID
-        "EntityID" (printf "%s#%s" $canonicalURL $articleID)
-        "Title" ($titleVariant.title | partial `claris/_functions/sanitize`)
-        "Subtitle" ($titleVariant.subtitle | partial `claris/_functions/sanitize`)
-        "Supertitle" ($titleVariant.supertitle | partial `claris/_functions/sanitize`)
-        "Headline" ($titleVariant.headline | partial `claris/_functions/sanitize`)
-        "Tagline" ($tagline | partial `claris/_functions/sanitize`)
-        "Description" ($description | partial `claris/_functions/sanitize`)
-        "Title" ($titleVariant.title | partial `claris/_functions/sanitize`)
-        "Subtitle" ($titleVariant.subtitle | partial `claris/_functions/sanitize`)
-        "Supertitle" ($titleVariant.supertitle | partial `claris/_functions/sanitize`)
-        "Headline" ($titleVariant.headline | partial `claris/_functions/sanitize`)
-        "Tagline" ($tagline | partial `claris/_functions/sanitize`)
-        "Description" ($description | partial `claris/_functions/sanitize`)
-        "ItemType" $itemType
-        "Language" $language
-        "Locale" $locale
-        "AlternativeLanguages" $alternativeLanguages
-        "CopyrightYear" ( now.Format "2006" )
-        "Date" (dict
-          "Created" .Date
-          "Published" .PublishDate
-          "Modified" .Lastmod
-        )
-        "Author" $authorMeta
-        "Images" $imageMeta
-        "WordCount" .WordCount
-        "License" $license
-        "Genre" $genre
-        "Keywords" $keywords
+    "Data" (dict
+      "URL" $page.RelPermalink
+      "CanonicalURL" $canonicalURL
+      "ArticleSection" ( default "Root" (default .Params.section (humanize .Section) ) )
+      "ArticleID" $articleID
+      "EntityID" (printf "%s#%s" $canonicalURL $articleID)
+      "Tagline" ($tagline | partial `claris/_functions/sanitize`)
+      "Description" ($description | partial `claris/_functions/sanitize`)
+      "Tagline" ($tagline | partial `claris/_functions/sanitize`)
+      "Description" ($description | partial `claris/_functions/sanitize`)
+      "ItemType" $itemType
+      "Language" $language
+      "Locale" $locale
+      "AlternativeLanguages" $alternativeLanguages
+      "CopyrightYear" ( now.Format "2006" )
+      "Date" (dict
+        "Created" .Date
+        "Published" .PublishDate
+        "Modified" .Lastmod
       )
-      "Formatted" (dict
-        "Title" $titleVariant.title
-        "Subtitle" $titleVariant.subtitle
-        "Supertitle" $titleVariant.supertitle
-        "Headline" $titleVariant.headline
-        "Tagline" $tagline
-        "Description" $description
-      )
-      "Page" $page
+      "Author" $authorMeta
+      "Images" $imageMeta
+      "WordCount" .WordCount
+      "License" $license
+      "Genre" $genre
+      "Keywords" $keywords
     )
+    "Formatted" (dict
+      "Tagline" $tagline
+      "Description" $description
+    )
+    "Page" $page
   ) }}
+
+  {{- $singleMeta = merge $singleMeta $titleVariant }}
 
 {{- end }}
 
 {{- if $debug }}
   {{/* {{- warnf "%s[%s]: returning .Data=\n%v" $page $template
       (jsonify (dict "indent" "  ") $singleMeta.Single.Data) }} */}}
-  {{/* {{- warnf "%s[%s]: returning %v" $page $template
-      $singleMeta }} */}}
+  {{- warnf "%s[%s]: returning %v" $page $template
+      $singleMeta }}
 {{- end }}
 {{- /* if not $singleMeta.Single.Data.Headline }}
   {{- errorf "%s[%s]: invalid $singleMeta.Single.Data.Headline='%v'" $page $template $singleMeta.Single.Data.Headline }}
 {{- end */ -}}
-{{- return $singleMeta }}
+{{- return (dict "Single" $singleMeta) }}
