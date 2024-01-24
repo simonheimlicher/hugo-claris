@@ -1047,21 +1047,9 @@ $indicator-width: var(--toc_indicator_width)) {
             }
           }
         }
-        // @at-root .modern-js &.visible {
-        //   & > a {
-        //     &::before {
-        //       background-color: var(--toc_indicator_icon_color);
-        //     }
-        //   }
-        // }
       }
     }
   }
-}
-
-// FIXME: Don't show table_of_contents without modern-js
-html:not(.modern-js) .article_aside .table_of_contents {
-  display: none;
 }
 
 @media screen {

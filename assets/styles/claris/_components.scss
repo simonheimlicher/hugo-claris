@@ -1795,7 +1795,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
   background: rgb(255, 255, 136);
   background: linear-gradient(135deg, var(--note-bg) 80%, var(--note-bg) 85%, var(--note-bg-light) 100%);
 
-  html:not(no-css-prop) &::before {
+  &::before {
     content: "";
     position: absolute;
     z-index: ($main-z-index  - 2);
@@ -1810,7 +1810,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
     background: rgb(255, 255, 136);
     background: linear-gradient(135deg, var(--note-bg) 80%, var(--note-bg) 85%, var(--note-bg-light) 100%);
   }
-  html:not(no-css-prop) &::after {
+  &::after {
     content: "";
     position: absolute;
     z-index: ($main-z-index  - 3);

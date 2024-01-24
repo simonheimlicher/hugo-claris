@@ -1,9 +1,11 @@
 // console.log('BEGIN claris-head');
-// NOTE: color-scheme needs to be loaded as early as possible to avoid the infamous
-// Flash of Incorrect Color Scheme (FOICS) at page load when dark mode is active
-// FIXME: Moved application of stored color scheme to inline <script> in file
-// claris/head/assets
-// import 'scripts/claris/theme/init';
-// import 'scripts/claris/theme/color-scheme';
+
+/* File='scripts/claris-head.js': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .MediaType='{{ .MediaType }}' */
+
+// NOTE: JavaScript code in this file is executed as a module in the <head>
+// This means that
+// * Loading is "defer" on browsers that support the "module" attribute
+//   while all other browsers ignore this script
+// * Execution is synchronous, i.e., the script does not have the "async" attribute
 
 // console.log('END   claris-head');

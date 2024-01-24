@@ -43,9 +43,9 @@ mobileNavigation: right # if you prefer left change to 'left'
 
 # Enforce dark or light scheme irrespective of system settings of user
 # You cannot enforce both schemes at the same time. i.e by enforcing one scheme,
-# you priotise it over the other (by setting it to true).
+# you prioritize it over the other (by setting it to true).
 # The color scheme toggle UI will remain in place. That way, if a user prefers
-# darkscheme, they can have their way.
+# the other color scheme, they can have their way.
 # enforceLightMode: false
 # enforceDarkMode: false
 
@@ -81,14 +81,8 @@ outdatedAfterYears: 5
 #   "articles"
 # ]
 
-typography:
-  plainParagraphsMin: 3
-  initialParaMinLength: 320
-  initialWordsWordsMin: 5
-  initialWordsCharactersMin: 10
-  initialWordsCharactersMax: 25
-  initialWordLengthMin: 3
-  initialWordsIgnore: [the, and, der, die, das, und]
+sidebarTaxonomies:
+  - tags
 
 fontFamilySans: "Source Sans 3"
 # fontFamilySans: "IBM Plex Sans"
@@ -116,8 +110,14 @@ fontFamilyMono: "DM Mono"
 # Serve font files from static instead of relying on Google Fonts servers
 fontsSelfHosted: true
 
-sidebarTaxonomies:
-  - tags
+typography:
+  plainParagraphsMin: 3
+  initialParaMinLength: 320
+  initialWordsWordsMin: 5
+  initialWordsCharactersMin: 10
+  initialWordsCharactersMax: 25
+  initialWordLengthMin: 3
+  initialWordsIgnore: [the, and, der, die, das, und]
 
 responsive:
   breakpoints:
@@ -145,7 +145,6 @@ responsive:
       # Layout with two asides and wider sections in main column, e.g., for code or figures
       ultraWide: 96rem
 
-
 colors:
   colorPrimaryLit: "hsl(200, 100%, 50%)"
   colorPrimaryDim: "hsl(200, 100%, 50%)"
@@ -162,6 +161,9 @@ colors:
   onBackgroundLit: "hsl(200, 10%, 13%)"
   onBackgroundDim: "hsl(200, 10%, 95%)"
 
+javascript:
+  optional:
+    mediumzoom: false
 
 meta:
   headline:

@@ -24,25 +24,7 @@ export const clarisHugoParams = {
 };
 
 export function clarisInit() {
-
   const htmlRootElement = clarisHugoParams.htmlRootElement;
-
   const htmlRootClassNoJavaScript = clarisHugoParams.htmlRootClassNoJavaScript;
-  const htmlRootClassNoCSSProperties =
-    clarisHugoParams.htmlRootClassNoCSSProperties;
-  const htmlRootClassNoCSSGrid = clarisHugoParams.htmlRootClassNoCSSGrid;
-  const grid_supported =
-    typeof document.createElement("div").style.grid === "string";
-  if (!grid_supported) {
-    pushClass(htmlRootElement, htmlRootClassNoCSSGrid);
-  }
-
-  const css_properties_supported =
-    window.CSS &&
-    CSS.supports("color", "var(--CSS-property-support-validation)");
-  if (!css_properties_supported) {
-    pushClass(htmlRootElement, htmlRootClassNoCSSProperties);
-  }
-
   deleteClass(htmlRootElement, htmlRootClassNoJavaScript);
 }

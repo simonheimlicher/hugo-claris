@@ -28,7 +28,7 @@ on 'load'.
 
 import {
   deb,
-} from './functions';
+} from 'scripts/claris/base/functions';
 
 // Source: https://alistairshepherd.uk/writing/image-lazyload-conditional-polyfill/
 let lazyLoadingInitDone = false;

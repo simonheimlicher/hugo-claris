@@ -1,6 +1,11 @@
 // console.log('BEGIN claris-body');
 
-// FIXME: Moved to `claris-head_async`
-// import 'scripts/claris/theme';
+/* File='scripts/claris-body.js': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .MediaType='{{ .MediaType }}' */
+
+// NOTE: JavaScript code in this file is executed as a module at the bottom of the <body>
+// This means that
+// * Loading is "defer" on browsers that support the "module" attribute
+//   while all other browsers ignore this script
+// * Execution is synchronous, i.e., the script does not have the "async" attribute
 
 // console.log('END   claris-body');

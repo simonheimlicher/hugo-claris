@@ -2,7 +2,7 @@ import {
   deb,
   elem,
   elems,
-} from './functions';
+} from 'scripts/claris/base/functions';
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
 // https://codepen.io/saas/pen/LYENgqq
