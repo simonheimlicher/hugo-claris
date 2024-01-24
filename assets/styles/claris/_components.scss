@@ -886,7 +886,8 @@
           --title_line-height: calc(var(--font-size-title) * var(--line-height-heading));
           margin: calc(0.5 * var(--title_line-height)) auto;
           @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
-            min-width: calc(var(--content_max-width) - var(--inner_margin) * 2);
+            // min-width: calc(var(--content_max-width) - var(--inner_margin) * 2);
+            min-width: var(--content_max-width);
           }
           padding: 0;
           width: fit-content;
