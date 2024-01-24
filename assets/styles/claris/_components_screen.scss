@@ -130,7 +130,7 @@
   background: transparent;
   line-height: ($screenViewNavHeight - 1.5rem);
 
-  &:after {
+  &::after {
     content: '';
     position: absolute;
     top: 0;
@@ -251,7 +251,7 @@
       transition: transform 0.5s var(--easing);
       left: 0;
     }
-    &:after {
+    &::after {
       content: '';
       position: absolute;
       top: $screenViewNavHeightNarrow;
@@ -348,7 +348,7 @@
     &:not(:first-child) {
       position: relative;
     }
-    &:first-child:before {
+    &:first-child::before {
       position: absolute;
       content: "";
       @extend %upcaret;
@@ -370,19 +370,19 @@
       white-space: nowrap;
       color: var(--text);
     }
-    &:before,
-    &:after {
+    &::before,
+    &::after {
       content: "";
       position: absolute;
     }
-    &:before {
+    &::before {
       @extend %upcaret;
       z-index: 1;
       @media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
         border-bottom: 0.5rem solid var(--choice-bg-menu);
       }
     }
-    &:after {
+    &::after {
       top: 0;
       left: 0;
       right: 0;
@@ -680,7 +680,7 @@
     }
   }
   .jsopen {
-    &:after {
+    &::after {
       content: "";
       position: fixed;
       z-index: 2;
@@ -756,7 +756,7 @@
       top: auto;
       bottom: auto;
       transition: none;
-      &:after {
+      &::after {
         content: none;
       }
     }
@@ -1065,7 +1065,7 @@ html:not(.modern-js) .article_aside .table_of_contents {
 }
 
 @media screen {
-  .outdated:before {
+  .outdated::before {
     content: '';
     display: block;
     width: 60%;
@@ -1079,7 +1079,7 @@ html:not(.modern-js) .article_aside .table_of_contents {
     opacity: 1;
     z-index: -1;
   }
-  .outdated:after {
+  .outdated::after {
     content: '';
     display: block;
     width: 60%;
@@ -1093,7 +1093,7 @@ html:not(.modern-js) .article_aside .table_of_contents {
     opacity: 1;
     z-index: -1;
   }
-  .outated h2:before {
+  .outated h2::before {
     content: '';
     display: block;
     width: 30%;
@@ -1159,7 +1159,7 @@ html.content-above-header {
   & p {
     position: relative;
     z-index: ($main-z-index  + 1);
-    &:after {
+    &::after {
       position: absolute;
       z-index: -1;
       content: '';
@@ -1174,7 +1174,7 @@ html.content-above-header {
   }
   &:target,
   &:focus {
-    p:after {
+    p::after {
       animation: footnotes-accessible_highlight 3s cubic-bezier(0.3, 0, 1, 0.7);
     }
   }
@@ -1191,7 +1191,7 @@ p sup[id^=fnref] {
     padding: 0 0.3em 0;
     border-radius: 50%;
   }
-  a:after {
+  a::after {
     position: absolute;
     z-index: -1;
     content: '';

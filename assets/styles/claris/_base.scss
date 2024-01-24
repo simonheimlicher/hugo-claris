@@ -294,7 +294,7 @@ blockquote {
 
   // Only render the below if the browser supports CSS properties
   @supports (color: var(--CSS-properties)) {
-    &:before {
+    &::before {
       @include useFontDefinition(serif);
       content: "“";
       position: absolute;
@@ -305,7 +305,7 @@ blockquote {
       color: $blockquote-quotation-color-open;
       font-weight: normal;
     }
-    &:after {
+    &::after {
       @include useFontDefinition(serif);
       content: "”";
       position: absolute;

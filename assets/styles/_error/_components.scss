@@ -137,7 +137,7 @@ h1, h2 {
   background: var(--stroke-color);
   padding: 0;
 }
-.gear:before{
+.gear::before{
   position: absolute;
   left: var(--gear-before-pos);
   top: var(--gear-before-pos);
@@ -148,7 +148,7 @@ h1, h2 {
   border-radius: 50%;
   background: var(--main-color);
 }
-.gear:after {
+.gear::after {
   position: absolute;
   left: var(--gear-after-pos);
   top: var(--gear-after-pos);
@@ -180,7 +180,7 @@ h1, h2 {
   border-radius: var(--bar-border-radius);
   background: var(--stroke-color);
 }
-.gear .bar:before {
+.gear .bar::before {
   position: absolute;
   left: var(--bar-before-pos);
   top: var(--bar-before-pos);

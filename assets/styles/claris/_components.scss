@@ -673,7 +673,7 @@
   //   background: linear-gradient(180deg, rgba(var(--RGB_bg), 0.8) 0%, rgba(var(--RGB_bg), 0.8) 80%, rgba(var(--RGB_bg), 0.8) 100%)
   //   backdrop-filter: blur(50px)
   //   -webkit-backdrop-filter: blur(50px)
-  // &:after {
+  // &::after {
   //   position: absolute;
   //   content: "";
   //   top: 0;
@@ -1166,7 +1166,7 @@
         width: 5rem;
         font-weight: var(--font-weight-strong);
       }
-      &:before {
+      &::before {
         content: "";
         position: absolute;
         width: 4.5rem;
@@ -1181,7 +1181,7 @@
         transition: 0.25s transform var(--ease);
       }
       &.sorted {
-        &:before {
+        &::before {
           transform: translateX(5rem);
         }
       }
@@ -1193,7 +1193,7 @@
     position: relative;
     font-size: 2rem;
     margin-bottom: -1rem;
-    &:after {
+    &::after {
       content: attr(data-count);
       margin-left: 1.5rem;
       background-color: #eee;
@@ -1314,7 +1314,7 @@ svg.qrcode-svg {
       font-weight: var(--font-weight);
       border-radius: 1rem;
       text-align: center;
-      &:before {
+      &::before {
         position: absolute;
         top: calc(var(--font-size-meta) * var(--line-height));
         content: "";
@@ -1659,7 +1659,7 @@ svg.qrcode-svg {
   }
   &_left,
   &_right {
-    &:after {
+    &::after {
       clear: both;
     }
   }
@@ -1793,7 +1793,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
   background: rgb(255, 255, 136);
   background: linear-gradient(135deg, var(--note-bg) 80%, var(--note-bg) 85%, var(--note-bg-light) 100%);
 
-  html:not(no-css-prop) &:before {
+  html:not(no-css-prop) &::before {
     content: "";
     position: absolute;
     z-index: ($main-z-index  - 2);
@@ -1808,7 +1808,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
     background: rgb(255, 255, 136);
     background: linear-gradient(135deg, var(--note-bg) 80%, var(--note-bg) 85%, var(--note-bg-light) 100%);
   }
-  html:not(no-css-prop) &:after {
+  html:not(no-css-prop) &::after {
     content: "";
     position: absolute;
     z-index: ($main-z-index  - 3);
