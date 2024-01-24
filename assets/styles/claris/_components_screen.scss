@@ -964,7 +964,7 @@ $indicator-width: var(--toc_indicator_width)) {
   --toc_indicator_icon_color: var(--xxxhaze);
   --toc_indicator_icon_width: calc(var(--toc_indicator_width) / 3);
 
-  h2 {
+  &_heading {
     font-size: var(--font-size-normal);
     margin: calc(1em * (1 - var(--line-height-heading))) 0 var(--inner_margin_4-1) 0;
     padding: 0;
