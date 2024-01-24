@@ -82,6 +82,12 @@ other = "Alle Tags"
 [all_series]
 other = "Alle Serien"
 
+[taxonomy_index_description]
+other = "Verzeichnis aller"
+
+[term_index_description]
+other = "Verzeichnis aller"
+
 [overview]
 other = "Übersicht"
 

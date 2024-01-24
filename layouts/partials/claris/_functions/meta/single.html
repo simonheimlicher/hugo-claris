@@ -16,22 +16,26 @@
 
 {{- with $page }}
 
-  {{- $titleVariant := dict "Title" .Title }}
+  {{- $metaVariant := (dict
+      "Data" (dict "Title" (partial "claris/_functions/sanitize" .Title) )
+      "Formatted" (dict "Title" (page.RenderString .Title))
+  ) }}
+
+  {{- $defaultMetaPartial := "claris/_functions/meta/head.html" }}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: contentType=%v: Calling default meta partial %v"
+        $page $template . $defaultMetaPartial }}
+  {{- end }}
+  {{- $metaVariant = merge $metaVariant (partial $defaultMetaPartial $page) }}
+
   {{- with $assetVariant.ContentType }}
-    {{- $titlePartial := printf "partials/%s/head/title.html" . }}
-    {{- if templates.Exists $titlePartial }}
+    {{- $metaPartial := printf "partials/%s/head/meta.html" . }}
+    {{- if templates.Exists $metaPartial }}
       {{- if $debug }}
-        {{- warnf "%s[%s]: contentType=%v: Calling title partial %v"
-            $page $template . $titlePartial }}
+        {{- warnf "%s[%s]: contentType=%v: Calling meta partial %v"
+            $page $template . $metaPartial }}
       {{- end }}
-      {{- $titleVariant = partial $titlePartial $page }}
-    {{- else }}
-      {{- $defaultTitlePartial := "partials/claris/head/title.html" }}
-      {{- if $debug }}
-        {{- warnf "%s[%s]: contentType=%v: Calling default title partial %v"
-            $page $template . $defaultTitlePartial }}
-      {{- end }}
-      {{- $titleVariant = partial $defaultTitlePartial $page }}
+      {{- $metaVariant = merge $metaVariant (partial $metaPartial $page) }}
     {{- end }}
   {{- else }}
     {{/* {{- if $debug }} */}}
@@ -39,18 +43,6 @@
           $page $template $assetVariant }}
     {{/* {{- end }} */}}
   {{- end }}
-
-  {{- $tagline := .Params.tagline }}
-
-  {{- $description := "" }}
-  {{- with .Description }}
-      {{ $description = . }}
-  {{- else }}
-    {{- with .Summary }}
-      {{ $description = . }}
-    {{- end }}
-  {{- end }}
-  {{- $description = $description | partial `claris/_functions/sanitize` }}
 
   {{- $mainSections := $page.Param "mainSections" }}
   {{- $itemType := "page" }}
@@ -111,7 +103,7 @@
   {{- end }}
 
   {{- $genre := default (index .Params.categories 0) .Params.genre }}
-  {{- $keywords := apply (default (default (split (anchorize $titleVariant.Title) "-") .Params.tags) .Params.keywords) "lower" "." }}
+  {{- $keywords := apply (default (default (split (anchorize $metaVariant.Title) "-") .Params.tags) .Params.keywords) "lower" "." }}
 
   <!-- HTML 'id' attribute of the DOM container of the main content -->
   {{- $articleID := default "contentContainer" ($page.Param "articleID") }}
@@ -127,10 +119,6 @@
       "ArticleSection" ( default "Root" (default .Params.section (humanize .Section) ) )
       "ArticleID" $articleID
       "EntityID" (printf "%s#%s" $canonicalURL $articleID)
-      "Tagline" ($tagline | partial `claris/_functions/sanitize`)
-      "Description" ($description | partial `claris/_functions/sanitize`)
-      "Tagline" ($tagline | partial `claris/_functions/sanitize`)
-      "Description" ($description | partial `claris/_functions/sanitize`)
       "ItemType" $itemType
       "Language" $language
       "Locale" $locale
@@ -148,14 +136,10 @@
       "Genre" $genre
       "Keywords" $keywords
     )
-    "Formatted" (dict
-      "Tagline" $tagline
-      "Description" $description
-    )
     "Page" $page
   ) }}
 
-  {{- $singleMeta = merge $singleMeta $titleVariant }}
+  {{- $singleMeta = merge $singleMeta $metaVariant }}
 
 {{- end }}
 

@@ -30,6 +30,8 @@
 {{- /* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo/)?/leadership/` $page.RelPermalink) ) ) -}} */ -}}
 {{- /* {{- $debug = or $debug (eq $page.Kind "home") -}} */ -}}
 
+{{- $plainTitle := partial `claris/_functions/sanitize` $title }}
+
 {{- $excerptContent := false }}
 {{- if not $excerptMeta }}
   {{- $excerptMeta = partial "claris/_functions/meta/single" (dict "Page" $subjectPage) }}
@@ -99,13 +101,13 @@
         {{- $excerptContent = . | partial `claris/_functions/sanitize` }}
       {{- end }}
     {{- end }}
-    {{- $excerptTitle := default (default .Title $excerptMeta.Single.Data.Title) $title }}
-    {{- $plainTitle := partial `claris/_functions/sanitize` $excerptTitle }}
-    <div class="{{ delimit $containerClassList " " }}">
-      <a href="{{ .RelPermalink }}" title="{{ $plainTitle }}">
+    {{- $excerptTitle := $excerptMeta.Single.Formatted.Title | default $title }}
+    {{- $excerptPlainTitle := $excerptMeta.Single.Data.Title | default $plainTitle }}
+    <div class="{{ delimit $containerClassList ` ` }}">
+      <a href="{{ .RelPermalink }}" title="{{ $excerptPlainTitle }}">
         <div class="excerpt_header">
           <h{{ $headingLevel }} class="excerpt_title">
-          {{ $excerptTitle | $page.RenderString }}
+          {{ $excerptTitle }}
           </h{{ $headingLevel }}>
           {{- with $headerPartial }}
             {{ partial $headerPartial (dict
@@ -126,8 +128,8 @@
                 {{ partial "responsive-image" (dict
                   "Page" $page
                   "resource" .
-                  "title" $plainTitle
-                  "alt" (default $plainTitle $imageMeta.excerpt.variant.default.alt)
+                  "title" $excerptPlainTitle
+                  "alt" (default $excerptPlainTitle $imageMeta.excerpt.variant.default.alt)
                   "fetchpriority" $fetchPriority
                   "quality" "low"
                 ) }}

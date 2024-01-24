@@ -82,6 +82,12 @@ other = "All tags"
 [all_series]
 other = "All series"
 
+[taxonomy_index_description]
+other = "Index of"
+
+[term_index_description]
+other = "Index of"
+
 [overview]
 other = "Overview"
 
