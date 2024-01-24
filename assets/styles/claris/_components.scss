@@ -1763,32 +1763,33 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
   --note-bg: var(--note-bg-yellow);
   --note-bg-light: var(--note-bg-yellow-light);
   --note-bg-top: var(--note-bg-yellow-top);
-  --note-border: var(--note-bg-yellow-border);
+  --note-border: var(--note-border-yellow);
 
+  --note-shadow-bg: rgba(0, 0, 0, 0.40);
   &.important,
   &.orange {
     --note-bg: var(--note-bg-orange);
     --note-bg-light: var(--note-bg-orange-light);
     --note-bg-top: var(--note-bg-orange-top);
-    --note-border: var(--note-bg-orange-border);
+    --note-border: var(--note-border-orange);
   }
   &.red {
     --note-bg: var(--note-bg-red);
     --note-bg-light: var(--note-bg-red-light);
     --note-bg-top: var(--note-bg-red-top);
-    --note-border: var(--note-bg-red-border);
+    --note-border: var(--note-border-red);
   }
   &.green {
     --note-bg: var(--note-bg-green);
     --note-bg-light: var(--note-bg-green-light);
     --note-bg-top: var(--note-bg-green-top);
-    --note-border: var(--note-bg-green-border);
+    --note-border: var(--note-border-green);
   }
   &.blue {
     --note-bg: var(--note-bg-blue);
     --note-bg-light: var(--note-bg-blue-light);
     --note-bg-top: var(--note-bg-blue-top);
-    --note-border: var(--note-bg-blue-border);
+    --note-border: var(--note-border-blue);
   }
   background: rgb(255, 255, 136);
   background: linear-gradient(135deg, var(--note-bg) 80%, var(--note-bg) 85%, var(--note-bg-light) 100%);
@@ -1815,9 +1816,9 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
     right: 0;
     bottom: 1rem;
     width: 8rem;
-    height: 4rem;
+    height: 1rem;
     background: rgba(0, 0, 0, 0.2);
-    box-shadow: 2px 15px 5px rgba(0, 0, 0, 0.40);
+    box-shadow: 2px 15px 5px var(--note-shadow-bg);
     transform: matrix(-1, -0.1, 0, 1, 0, 0);
   }
   &_wrap {
@@ -1866,6 +1867,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
   --note-bg-blue-light: #{scale-color($note-bg-blue-dim, $lightness: -53%)};
   --note-bg-blue-top: #{scale-color($note-bg-blue-dim, $saturation: -3%, $lightness: -2%)};
   --note-border-blue: #{scale-color($note-bg-blue-dim, $saturation: -100%, $lightness: 20%)};
+  --note-shadow-bg: rgba(0, 0, 0, 0.95);
 }
 @media screen {
   html[data-color-scheme="dark"] {
@@ -1879,14 +1881,15 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
     .note {
       @include note-dim-colors;
     }
+  }
+}
+
 // Shortcode responsive-figure
 // Purpose: Insert images and code blocks that respond to screen size
 // Usage:
 // {{ <responsive-image src="/images/picture" caption="This is the picture"> }}
 // {{ <responsive-code caption="Example code"> }}
 // {{ </responsive-code> }}
-  }
-}
 .shortcode_responsive-figure,
 .excerpt_container {
   margin: var(--inner_margin) auto;

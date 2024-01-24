@@ -10,6 +10,7 @@ const cssElementsKeepRegex = [/highlight/, /chroma/, /open$/,
 const cssCustomPropertiesKeepRegex = [
   /highlight-bg-yellow/, // footnotes-accessible.js
   /color-scheme/, // color-scheme.js
+  /note-bg/, // shortcode note
 ]
 const purgeCSS = require("@fullhuman/postcss-purgecss")({
   content: ["./hugo_stats.json"],
