@@ -39,8 +39,8 @@
 {{- end -}}
 
 {{- if not (hasPrefix $canonicalURL "http") }}
-  {{- errorf "[%s]: arg=%v T=%T: invalid canonicalURL='%s'. Please make sure to specify either a fully-qualified site.BaseURL or site.Params.CanonicalBaseURL. Unable to generate a fully qualified URL based on:\n.RelPermalink:                '%v'\n$relURL:                '%v'\nsite.BaseURL:                 '%v'\nsite.Params.canonicalbaseurl: '%v'\ncanonicalURL:                 '%v'"
-    $template $arg $arg $canonicalURL $relPermalink $relURL site.BaseURL site.Params.canonicalbaseurl $canonicalURL }}
+  {{- warnf "[%s]:\n\nHugo configuration is incomplete: unable to generate a fully qualified URL based on:\n\n    site.BaseURL:                 '%v'\n    site.Params.canonicalbaseurl: '%v'\n\nPlease make sure to specify either a fully-qualified site.BaseURL or site.Params.CanonicalBaseURL."
+    $template  site.BaseURL site.Params.canonicalbaseurl }}
 {{- end -}}
 
 {{- $canonicalURL = printf "%s" $canonicalURL | safeURL }}

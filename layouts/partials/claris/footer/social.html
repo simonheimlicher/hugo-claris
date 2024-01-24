@@ -19,6 +19,8 @@
     {{- end }}
     </ul>
 {{- else }}
-  {{- warnf "%s[%s]: Missing 'Social' in $meta.Site.Data=%v"
-  $page $template $meta.Site.Data }}
+{{- if site.Params.claris.hints }}
+  {{- warnf "%s[%s]: No social media accounts configured.\nTo include links to Twitter, LinkedIn and GitHub in the footer, add a map under the key 'social' to your `hugo.yaml` "
+      $page $template -}}
+  {{- end }}
 {{- end }}

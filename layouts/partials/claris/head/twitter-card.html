@@ -52,9 +52,15 @@
     <meta name="twitter:creator" content="{{ . }}">
     <meta name="twitter:site" content="{{ . }}">
   {{- else }}
-    {{- warnf "%s[%s]: Missing Twitter profile: site.Social.twitter=%v site.Params.social.twitter.id=%v"
-    $page $template site.Social.twitter site.Params.social.twitter.id }}
+    {{- if site.Params.claris.hints }}
+      {{- warnf "%s[%s]: Missing Twitter handle: site.Social.twitter=%v site.Params.social.twitter.id=%v"
+          $page $template site.Social.twitter site.Params.social.twitter.id -}}
+    {{- end }}
   {{- end }}
-
+{{- else }}
+  {{- if site.Params.claris.hints }}
+    {{- warnf "%s[%s]: Twitter card disabled: meta.Site.Classification.TwitterCard=%v meta.Classification.TwitterCard=%v"
+        $page $template $meta.Site.Classification.TwitterCard $meta.Classification.TwitterCard -}}
   {{- end }}
+{{- end }}
 {{- end -}}

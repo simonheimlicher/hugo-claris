@@ -32,8 +32,8 @@
 {{- end }}
 
 {{- $description := site.Params.website.description | partial `claris/_functions/sanitize` }}
-{{- if not $description }}
-  {{- warnf "%s[%s]: invalid parameter site.Params.website.description=%v" $page $template $description }}
+{{- if and (not $description) site.Params.claris.hints }}
+  {{- warnf "%s[%s]: Missing website description. To include a description of your website, add it to site.Params.website.description" $page $template }}
 {{- end }}
 
 {{- $organization := site.Params.organization.name }}

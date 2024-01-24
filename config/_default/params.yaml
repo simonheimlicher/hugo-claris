@@ -1,5 +1,11 @@
-# FIXME: canonicalBaseURL can be set in Site but not retrieved from site.CanonicalBaseURL
+# As a value for canonicalBaseURL can be set in the 'Site' configuration object
+#  but not retrieved from site.CanonicalBaseURL, we set it here in 'site.Params'
 # canonicalBaseURL: "https://simon.heimlicher.com/"  # Include trailing slash
+
+# If you would like to get hints as to how to enable additional features,
+# set `claris.hints` to `true`
+claris:
+  hints: true
 
 siteAuthor: Simon Heimlicher
 authors:
@@ -25,7 +31,9 @@ mainSections:
 
 # logo: "images/logo.png"
 
-logoURL: /
+# The logo or site title is a link. Here you can configure its URL
+# Default: site.BaseURL
+# logoURL: /
 
 # center logo on navbar
 centerLogo: false # Set to "true" for centering or "false" for left aligned.
@@ -191,5 +199,6 @@ robots:
   indeximages: true
   follow: true
   # Sections to be listed in robots.txt as being excluded from indexing
-  # CAUTION: This will cause attackers to look at these sections in particular, so do not use this parameter to hide a section
+  # CAUTION: This will cause attackers to look at these sections in particular,
+  # so do not use this parameter to hide a private section
   # robotsTxtDisallowSections: [_error, _home, _footer]
