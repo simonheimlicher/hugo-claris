@@ -725,8 +725,7 @@ $fontFamilyInheritSpec: (
 // NOTE: the `!global` keyword ensures that we work with the global
 // variable defined in `claris-main.scss`
 $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
-
-@mixin defineFontDefinition($definitionID: default, $fontFamilyID: default) {
+@mixin defineFontDefinitionWithCssProperties($definitionID: default, $fontFamilyID: default) {
 
   $prefix: font-definition_#{$definitionID}_;
 
@@ -846,12 +845,7 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
   // @include mapToCSSProperties($fontDefinitionMap, fontDefinitionMap);
   // @warn(print-map($fontDefinitionMap));
 }
-
-:root {
-  @include defineFontDefinition(inherit, inherit);
-}
-
-@mixin useFontDefinition($definitionID: default, $useRole: default, $useVariant: default, $useStyle: all) {
+@mixin useFontDefinitionWithCssProperties($definitionID: default, $useRole: default, $useVariant: default, $useStyle: all) {
 
   $originDefinitionID: $definitionID;
 
@@ -965,9 +959,126 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
   }
 }
 
-@mixin defineAndUseFontFamily($definitionID: default, $fontFamilyID: default, $role: default) {
-  @include defineFontDefinition($definitionID, $fontFamilyID, $role);
-  @include useFontDefinition($definitionID);
+@mixin defineFontDefinition($definitionID: default, $fontFamilyID: default) {
+
+}
+
+:root {
+  @include defineFontDefinition(inherit, inherit);
+}
+
+@mixin useFontDefinition($definitionID: default, $useRole: default, $useVariant: default, $useStyle: all) {
+
+  $originDefinitionID: $definitionID;
+
+  $prefix: font-definition_;
+  $targetPrefix: #{$prefix};
+  $originPrefix: #{$prefix}#{$definitionID}_;
+  $defFamily: map-get($fontDefinitionMap, $originDefinitionID);
+
+  @if ($definitionID == inherit) {
+    $originDefinitionID: default;
+    $originPrefix: #{$prefix}#{$originDefinitionID}_;
+    // NOTE: the `!global` keyword ensures that we work with the global
+    // variable defined in this file, i.e., `variables.scss`
+    // $defFamily: $familyInheritMap !global;
+    // @warn(print-map($fontDefinitionMap));
+    $defFamily: map-get($fontDefinitionMap, 'inherit');
+    // @warn(print-map($defFamily));
+    // $defFamily: map-get($fontDefinitionMap, 'default');
+    // @warn(print-map($defFamily));
+  }
+
+  @if ($defFamily) {
+    // FIXME: Validate if we got the definition
+    // @include mapToCSSProperties($defFamily, useFontDefinition_definitionID-#{$definitionID});
+
+    // --useFontDefinition_definitionID-#{$definitionID}_useRole-#{$useRole}_useVariant-#{$useVariant}__originPrefix: #{$originPrefix};
+    // --useFontDefinition_definitionID-#{$definitionID}_useRole-#{$useRole}_useVariant-#{$useVariant}__targetPrefix: #{$targetPrefix};
+    // --#{$targetPrefix}font-family: var(--#{$originPrefix}font-family);
+
+    @each $role, $defRole in map-get($defFamily, roles) {
+      $prefixRole: #{$role}_;
+
+      @each $variant, $defVariant in map-get($defRole, variants) {
+        $prefixVariant: #{$variant}_;
+
+        $defStyleMap: map-get($defVariant, styles);
+        @if ($defStyleMap) {
+          // @include mapToCSSProperties($defStyleMap, useFontDefinition_definitionID-#{$definitionID}__defStyleMap);
+          $originPrefixRoleVariant: #{$originPrefix}#{$prefixRole}#{$prefixVariant};
+          $targetPrefixRoleVariant: #{$targetPrefix}#{$prefixRole}#{$prefixVariant};
+          $defaultPrefixRoleVariant: #{$prefix}default_#{$prefixRole}#{$prefixVariant};
+
+          @each $style, $defStyle in $defStyleMap {
+            $stylePrefix: #{$style}_;
+
+            $originPrefixStyle: #{$originPrefixRoleVariant}#{$stylePrefix};
+            $targetPrefixStyle: #{$targetPrefixRoleVariant}#{$stylePrefix};
+            $defaultPrefixStyle: #{$defaultPrefixRoleVariant}#{$stylePrefix};
+
+            // @if ($originDefinitionID != default) {
+            //   @each $key in (font-family) {
+            //     --#{$defaultPrefixStyle}#{$key}: var(--#{$originPrefixStyle}#{$key});
+            //   }
+            //   @each $key, $value in $defStyle {
+            //     --#{$defaultPrefixStyle}#{$key}: var(--#{$originPrefixStyle}#{$key});
+            //   }
+            // }
+
+            @each $key in (font-family) {
+              // --#{$targetPrefixStyle}#{$key}: var(--#{$originPrefixStyle}#{$key});
+              @if ($role == $useRole) and ($variant == $useVariant) {
+                @if (($useStyle == all) and ($style == default)) or ($style == $useStyle) {
+                  // --useFontDefinition_definitionID-#{$definitionID}_useRole-#{$useRole}_useVariant-#{$useVariant}_useStyle-#{$useStyle}__originPrefixStyle: #{$originPrefixStyle};
+                  #{$key}: var(--#{$targetPrefixStyle}#{$key});
+                }
+              }
+            }
+
+            // --useFontDefinition_definitionID-#{$definitionID}_role-#{$useRole}_variant-#{$variant}_style-#{$style}__originPrefixStyle: #{$originPrefixStyle};
+            // --useFontDefinition_definitionID-#{$definitionID}_role-#{$useRole}_variant-#{$variant}_style-#{$style}__targetPrefixStyle: #{$targetPrefixStyle};
+            // @if ($role == default) and ($variant == default) and ($style == default) {
+            //   @each $key, $value in $defStyle {
+            //     --#{$key}: var(--#{$originPrefixStyle}#{$key});
+            //   }
+            // }
+
+            @if ( ($role == $useRole) and ($variant == $useVariant)) {
+
+              // @each $key, $value in $defStyle {
+              //   --#{$targetPrefixStyle}#{$key}: var(--#{$originPrefixStyle}#{$key});
+              // }
+
+              @if ($style == default) or ($style == $useStyle) {
+                @each $key, $value in $defStyle {
+                  // --useFontDefinition_definitionID-#{$definitionID}_useRole-#{$useRole}_useVariant-#{$useVariant}_useStyle-#{$useStyle}__originPrefixStyle: #{$originPrefixStyle};
+                  #{$key}: var(--#{$targetPrefixStyle}#{$key});
+                }
+              }
+              @else if ($useStyle == all) and ($style == bold) {
+                bold, strong {
+                  @each $key, $value in $defStyle {
+                    #{$key}: var(--#{$targetPrefixStyle}#{$key});
+                  }
+                }
+              }
+              @else {
+                // FIXME: Should not be reached
+                --useFontDefinition_definitionID-#{$definitionID}_useRole-#{$useRole}_useVariant-#{$useVariant}_useStyle-#{$useStyle}__originPrefixStyle: #{$originPrefixStyle};
+              }
+            }
+          }
+        }
+        @else {
+          --#{$originPrefix}useFontDefinition_definitionID-#{$definitionID}_role-#{$role}_variant-#{$variant}_undefined: #{$defStyleMap};
+        }
+      }
+    }
+  }
+  @else {
+    --#{$originPrefix}useFontDefinition_undefined: #{$definitionID};
+  }
 }
 
 // Generating fluid font scales for copy-paste: https://www.fluid-type-scale.com/calculate https://utopia.fyi/type/calculator/
