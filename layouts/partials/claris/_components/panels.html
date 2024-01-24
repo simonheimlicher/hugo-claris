@@ -30,8 +30,7 @@ If we include a page as a panel or a card, we currently do so using its
 `.Content` attribute, which is of type `template.HTML`, not a `string`
 containing Markdown. In this case, all is fine as we don't need to render it.
 If we include a `string`, e.g. from a YAML file or from front matter
-via .Page.Param, we cannot use shortcodes because `page.RenderString`
-does not render shortcodes in Markdown as of Hugo version 0.113.0
+via .Page.Param, we will likely need to use page.RenderShortcodes instead
 See https://github.com/gohugoio/hugo/issues/7297
 -->
 
