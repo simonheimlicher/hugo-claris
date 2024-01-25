@@ -26,10 +26,10 @@ export function onDOMContentLoaded(...initializationFunctions) {
 
 // Minimal set of modules
 import { colorSchemeInit } from './color-scheme'; // Needs to be loaded early
-import { tagOverlayInit } from "./tag-overlay";
+import { taxonomyOverlayInit } from "./taxonomy-overlay";
 import { obfuscatedLinkInit } from "./obfuscated-link";
 import { navigationMenuInit } from "./navigation-menu";
 import { linkAnchorInit } from "./link-anchor";
 import { scrollableTableInit } from "./scrollable-table";
 import { footnotesAccessibleInit } from './footnotes-accessible';
-onDOMContentLoaded(clarisInit, colorSchemeInit, tagOverlayInit, obfuscatedLinkInit, navigationMenuInit, linkAnchorInit, footnotesAccessibleInit, scrollableTableInit);
+onDOMContentLoaded(clarisInit, colorSchemeInit, taxonomyOverlayInit, obfuscatedLinkInit, navigationMenuInit, linkAnchorInit, footnotesAccessibleInit, scrollableTableInit);

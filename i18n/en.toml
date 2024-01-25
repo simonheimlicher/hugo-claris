@@ -88,6 +88,12 @@ other = "Index of"
 [term_index_description]
 other = "Index of"
 
+[taxonomy-overlay_sort_alphabetically]
+other = "Alphabetically"
+
+[taxonomy-overlay_sort_frequency]
+other = "By frequency"
+
 [overview]
 other = "Overview"
 

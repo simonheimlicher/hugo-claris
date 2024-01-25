@@ -88,6 +88,12 @@ other = "Verzeichnis aller"
 [term_index_description]
 other = "Verzeichnis aller"
 
+[taxonomy-overlay_sort_alphabetically]
+other = "Alphabetisch"
+
+[taxonomy-overlay_sort_frequency]
+other = "Nach Häufigkeit"
+
 [overview]
 other = "Übersicht"
 

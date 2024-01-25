@@ -5,6 +5,7 @@ const cssElementsKeepRegex = [/highlight/, /chroma/, /open$/,
   /footnotes/, /footnotes-accessible/, /:target/, /fnref/, /visually-hidden/, // footnotes-accessible.js
   /link_yank/, // link-anchor.js
   /scrollable-table/, // scrollable-table.js
+  /taxonomy-overlay/, // taxonomy-overlay.js
   /color-scheme/, // color-scheme.js
 ];
 const cssCustomPropertiesKeepRegex = [

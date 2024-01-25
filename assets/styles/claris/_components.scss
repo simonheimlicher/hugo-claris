@@ -515,28 +515,6 @@
     // padding: 0 0.75em;
     padding: 0.0625em 0.5em 0.125em 0.5em;
     font-size: var(--font-size-meta);
-    &s {
-      display: none;
-      &.jswidgetopen {
-        display: block;
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100vh;
-        overflow-y: auto;
-        width: 100vw;
-        padding: 5rem 1.5rem;
-        background: var(--translucent);
-        cursor: pointer;
-        z-index: 999;
-        overflow-y: auto;
-      }
-      &_toggle {
-        margin-top: 0.5rem;
-        margin-left: 0.5rem;
-        cursor: pointer;
-      }
-    }
   }
   &_tag,
   &_share {
@@ -1117,73 +1095,121 @@
   @include inline-separator-list;
 }
 
-.tag {
-  &s {
-    &_list {
-      cursor: auto;
-      background: var(--bg-hover);
-      padding: 4.5rem 1.5rem 1.5rem 1.5rem;
-      border-radius: 1rem;
-      max-width: 40rem;
-      margin: 0 auto;
-      box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.12);
-      position: relative;
-      display: flex;
-      flex-flow: row wrap;
-    }
-    &_nav {
-      position: relative;
-      margin: 0 -0.5rem;
-    }
-    &_hide {
-      position: absolute;
-      top: 1rem;
-      right: 1.5rem;
-      padding: 0.5rem;
-      border-radius: 50%;
+//! purgecss start ignore
+.taxonomy-overlay {
+  $taxonomy-overlay_transition_button: background 0.2s ease-out;
+  &_container {
+    display: none;
+    &.jswidgetopen {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      overflow-y: auto;
+      width: 100vw;
+      padding: 5rem 1.5rem;
+      background: var(--translucent);
       cursor: pointer;
+      z-index: 999;
+      overflow-y: auto;
     }
-    &_sort {
-      font-size: 1rem;
-      color: var(--text);
-      background: var(--theme-bg);
-      position: absolute;
-      top: 1.5rem;
-      left: 1.5rem;
-      border-radius: 1.5rem;
-      padding: 0.1rem;
-      &,
-      span {
-        user-select: none;
-      }
-      span {
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        height: 2rem;
-        position: relative;
-        z-index: 5;
-        cursor: pointer;
-        width: 5rem;
-        font-weight: var(--font-weight-strong);
-      }
+    .article_meta_tag {
+      margin: 0.25em 0.5em;
+      font-size: var(--font-size-meta);
+    }
+  }
+  &_toggle {
+    margin-top: 0.5rem;
+    margin-left: 0.5rem;
+    cursor: pointer;
+  }
+  &_list {
+    cursor: auto;
+    background: var(--bg-hover);
+    padding: 4.5rem 1.5rem 1.5rem 1.5rem;
+    border-radius: 1rem;
+    max-width: 40rem;
+    margin: 0 auto;
+    box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.12);
+    position: relative;
+    display: flex;
+    flex-flow: row wrap;
+  }
+  &_nav {
+    position: relative;
+    margin: 0 -0.5rem;
+  }
+  &_hide {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    padding: 0.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  &_sort {
+    font-size: 1rem;
+    color: var(--text);
+    background: var(--theme-bg);
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    border-radius: 1.5rem;
+    padding: 0.1rem 1rem;
+    display: flex;
+    gap: 1.5rem;
+    &,
+    &_button {
+      user-select: none;
+    }
+    &_button {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      height: 2rem;
+      position: relative;
+      z-index: 5;
+      cursor: pointer;
+      width: auto;
       &::before {
         content: "";
         position: absolute;
-        width: 4.5rem;
-        top: 0.25rem;
-        bottom: 0.25rem;
-        left: 0.25rem;
+        top: 0;
+        right: -1rem;
+        bottom: 0;
+        left: -1rem;
         z-index: 3;
-        background: var(--theme-bg-hover);
         opacity: 0.5;
+        background: var(--theme-bg);
         border: 1px solid var(--bg);
         border-radius: 1.5rem;
-        transition: 0.25s transform var(--ease);
+        // transition: 0.25s transform var(--ease);
+        transition: $taxonomy-overlay_transition_button;
       }
-      &.sorted {
+      &_alphabetically {
+        font-weight: bolder;
+        z-index: 10;
         &::before {
-          transform: translateX(5rem);
+          background: var(--theme-bg-hover);
+        }
+      }
+    }
+    &.taxonomy-overlay_sorted {
+      .taxonomy-overlay_sort_button {
+        &_alphabetically {
+          z-index: 5;
+          font-weight: normal;
+          &::before {
+            background: var(--theme-bg);
+          }
+        }
+        &_frequency {
+          z-index: 10;
+          font-weight: bolder;
+          &::before {
+            background: var(--theme-bg-hover);
+          }
         }
       }
     }
@@ -1204,6 +1230,8 @@
     }
   }
 }
+//! purgecss end ignore
+
 .icon {
   display: inline-flex;
   justify-content: center;
