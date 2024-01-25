@@ -1,13 +1,8 @@
 {{- $page := . }}
-{{- $p := .Params }}
-{{- $s := site.Params }}
 {{- $template := "partials/header" }}
 {{- $contentType := default "claris" (partialCached "claris/_functions/alternative-type" . .Kind .Type) }}
-{{- $centerLogo := $s.centerLogo }}
-{{- $logoURL := default site.BaseURL $s.logoURL }}
-{{- if not $logoURL }}
-  {{- errorf "%s[%s]: Invalid logoURL=%v" $page $template $logoURL }}
-{{- end }}
+{{- $centerLogo := page.Param "centerLogo" }}
+{{- $logoURL := page.Param "logoURL" | default site.BaseURL }}
       <nav class="nav inner_horizontal inner_top-0">
         {{- /* FIXME: partial "claris/header/logo" is required for mobile navigation to work. Otherwise, JS "theme/navigation-menu.js" will terminate early" */ -}}
         {{- if $centerLogo }}
@@ -16,7 +11,7 @@
           {{- partialCached "claris/header/logo" (dict "logourl" $logoURL "Page" $page) }}
         {{- end }}
         {{- partialCached "claris/header/nav-menu" (dict "logoclass" "" "Page" $page) }}
-        <div class='nav_body nav_body_{{ default "right" $s.mobileNavigation }}'>
+        <div class='nav_body nav_body_{{ default "right" (page.Param "mobileNavigation") }}'>
           {{- $menuData := site.Data.menu }}
           {{- with $menuData }}
             {{ partial "claris/header/nav" (dict "ctx" $page "Page" $page "Menu" $menuData) }}

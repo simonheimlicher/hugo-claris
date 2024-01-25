@@ -195,7 +195,7 @@ website:
   # license:
   #   text: "simon.heimlicher.com © 1999 by Simon Heimlicher is licensed under CC BY-NC-ND 4.0"
 
-# configuration of robots tag in head
+# configuration of robots tag in head of individual pages
 robots:
   index: true
   indeximages: true

@@ -8,9 +8,14 @@ Sitemap: {{ $siteMap }}
   {{- end }}
   {{- $robotsTxtDisallowSections := default false site.Params.robots.robotsTxtDisallowSections }}
   {{- with $robotsTxtDisallowSections }}
+    {{- if not (reflect.IsSlice $robotsTxtDisallowSections) }}
+      {{- $robotsTxtDisallowSections = slice $robotsTxtDisallowSections }}
+    {{- end }}
+    {{- $siteBaseURL := site.BaseURL | default "/" | urls.Parse }}
+    {{- $siteBasePath := $siteBaseURL.Path }}
 User-agent: *
-    {{- range . }}
-{{ printf "Disallow: /%s/" (replaceRE "^/*(.+)/*$" "$1" . )}}
+    {{- range $robotsTxtDisallowSections }}
+{{ printf "Disallow: %s%s" $siteBasePath (strings.TrimLeft "/" .) }}
     {{- end }}
   {{- end }}
 {{ else -}}
