@@ -472,8 +472,7 @@
       }
     }
     &_text {
-      // display: block;
-      // color: var(--text-faint);
+      display: block;
       @include useFontDefinition(inherit, display, small-caps, bold);
       color: var(--theme-text);
       line-height: ($screenViewNavHeightNarrow - 1.5rem);

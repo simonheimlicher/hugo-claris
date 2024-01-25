@@ -24,12 +24,17 @@
 {{- $socialMeta := partialCached "claris/_functions/meta/social" (dict "Page" $homePage "Author" $author "Debug" $debug) $homePage.Permalink }}
 
 {{- $name := default site.Title site.Params.website.name }}
-{{- $title := site.Title }}
-{{- $tagline := site.Params.website.tagline | partial `claris/_functions/sanitize` }}
+
+{{- $title := site.Title | $page.RenderString }}
+{{- $titlePlain := $title | partial `claris/_functions/sanitize` }}
+
+{{- $tagline := site.Params.website.tagline | $page.RenderString }}
+{{- $taglinePlain := $tagline | partial `claris/_functions/sanitize` }}
 {{- $headline := $title }}
 {{- with $tagline }}
   {{- $headline = printf "%s: %s" $title $tagline }}
 {{- end }}
+{{- $headlinePlain := $headline | partial `claris/_functions/sanitize` }}
 
 {{- $description := site.Params.website.description | partial `claris/_functions/sanitize` }}
 {{- if and (not $description) site.Params.claris.hints }}
@@ -105,9 +110,9 @@
       "WebsiteID" $websiteID
       "EntityID" (printf "%s#%s" $canonicalURL $websiteID)
       "Name" $name
-      "Title" $title
-      "Headline" $headline
-      "Tagline" $tagline
+      "Title" $titlePlain
+      "Headline" $headlinePlain
+      "Tagline" $taglinePlain
       "Description" $description
       "Author" $authorMeta
       "Social" $socialMeta
@@ -119,6 +124,11 @@
         "Text" $licenseText
         "HTML" $licenseHTML
       )
+    )
+    "Formatted" (dict
+      "Title" $title
+      "Headline" $headline
+      "Tagline" $tagline
     )
   )
 ) }}

@@ -1,4 +1,6 @@
 {{- $page := .Page }}
+{{- $meta := page.Scratch.Get "clarismeta" }}
+
 {{- $logoImageResource := default site.Params.logo site.Params.header.logo.resource }}
 {{- $logoURL := .logourl }}
 {{- $logoClass := .logoclass }}
@@ -11,8 +13,7 @@
   {{- $logoURL = (site.GetPage "/").RelPermalink | safeURL }}
 {{- end }}
 
-
-{{- $t := site.Title -}}
+{{- $t := $meta.Site.Formatted.Title | default site.Title -}}
 
 {{- with site.Params.header.logo }}
   {{- with .padding }}
