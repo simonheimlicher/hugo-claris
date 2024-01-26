@@ -35,12 +35,6 @@ mainSections:
 # Default: site.BaseURL
 # logoURL: /
 
-# center logo on navbar
-centerLogo: false # Set to "true" for centering or "false" for left aligned.
-
-# Set the collapsed mobile navigation to either appear from the left or the right
-mobileNavigation: right # if you prefer left change to 'left'
-
 # Enforce dark or light scheme irrespective of system settings of user
 # You cannot enforce both schemes at the same time. i.e by enforcing one scheme,
 # you prioritize it over the other (by setting it to true).
@@ -114,11 +108,8 @@ style:
     # 1 .Download the font files using [google-webfonts-helper](https://gwfh.mranftl.com/fonts)
     # 2. Then add the fonts to the `static` directory under the path that is expected
     #    by the corresponding file in `assets/styles/claris/fonts/...`
-    # 3. Enable self hosted fonts by setting site.Params.style.fonts.selfhosted = true below
-    # selfhosted: true
-
-favicons:
-  path: /
+    # 3. Enable self hosted fonts by setting `style.fonts.selfhosted = true` below
+    # selfhosted:
 
 typography:
   plainParagraphsMin: 3
@@ -176,14 +167,16 @@ javascript:
     mediumzoom: false
 
 meta:
+  favicon:
+    # Favicons will be added to the <head> element if they exist in the `static` directory
+    # If your favicons live in a sub directory, set the path prefix below
+    # If your icons are in `static/icons/`, you would set `meta.favicon.pathprefix = "icons"`
+    # pathprefix: "icons"
+
   headline:
     targetlength: [50, 60]
 
-home:
-  section: _home
-
 footer:
-  section: _footer
   recentarticles: 3
 
 # Hidden pages:
@@ -192,25 +185,25 @@ footer:
 # No Schema.org (JSON+LD) meta
 hidden:
   # Sections within which all pages will be hidden
-  sections: [_error, _home, _footer]
+  sections: [_error]
   pathelements: [hidden, confidential]
 
 website:
-  name: simon.heimlicher.com
+  name: claris.heimlicher.com
 
   # The year when this website was created, this value is used in the copyright
   # notice of the footer.
-  established: 1999
+  established: 2016
 
   # license:
   #   text: "simon.heimlicher.com © 1999 by Simon Heimlicher is licensed under CC BY-NC-ND 4.0"
 
-# configuration of robots tag in head of individual pages
 robots:
+  # configuration of robots tag in head of individual pages
   index: true
   indeximages: true
   follow: true
   # Sections to be listed in robots.txt as being excluded from indexing
   # CAUTION: This will cause attackers to look at these sections in particular,
   # so do not use this parameter to hide a private section
-  # robotsTxtDisallowSections: [_error, _home, _footer]
+  # robotsTxtDisallowSections: [_error]

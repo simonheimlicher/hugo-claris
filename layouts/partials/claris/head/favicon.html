@@ -1,14 +1,34 @@
-{{- /* <!-- IMPORTANT NOTE: URLs passed to relURL must not start with a '/', unless
+{{- $page := default page .Page }}
+{{- $template := "claris/head/favicon" }}
+{{- /*
+IMPORTANT NOTE: URLs passed to relURL must not start with a '/', unless
 we absolutely want to ignore the path within site.BaseURL
-https://gohugo.io/functions/relURL/ -->
-<!-- Generate favicons with https://realfavicongenerator.net/favicon_result?file_id=p1f4mdr89t5lsk11g8au6b165q6#.YI6Qim6xUmo --> */ -}}
-{{- $faviconsDir := printf "%s" (strings.TrimLeft "/" (strings.TrimRight "/" (default "/" site.Params.faviconsDir) ) ) }}
-{{- $appleTouch := relURL (printf "%s%s" $faviconsDir "apple-touch-icon.png") }}
-{{- $favicon32 := relURL (printf "%s%s" $faviconsDir "favicon-32x32.png" ) }}
-{{- $favicon16 := relURL (printf "%s%s" $faviconsDir "favicon-16x16.png" ) }}
-{{- $manifest := relURL (printf "%s%s" $faviconsDir "site.webmanifest" ) }}
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ $appleTouch }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ $favicon32 }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ $favicon16 }}">
-    <link rel="manifest" href="{{ $manifest }}">
+https://gohugo.io/functions/relURL/
+
+Generate favicons using https://realfavicongenerator.net/
+
+*/ -}}
+
+{{- $faviconPathPrefix := "" }}
+{{- with page.Param "meta.favicon.pathprefix" }}
+  {{- $faviconPathPrefix = . | strings.TrimLeft "/" | strings.TrimRight "/" | relURL }}
+  {{- warnf `%s[%s]: page.Param "meta.favicon.pathprefix"='%v' faviconPathPrefix='%v'` $page $template (page.Param "meta.favicon.pathprefix") $faviconPathPrefix }}
+{{- end }}
+
+{{- $appleTouch := relURL (printf "%s%s" $faviconPathPrefix "apple-touch-icon.png") }}
+{{- $favicon32 := relURL (printf "%s%s" $faviconPathPrefix "favicon-32x32.png" ) }}
+{{- $favicon16 := relURL (printf "%s%s" $faviconPathPrefix "favicon-16x16.png" ) }}
+{{- $manifest := relURL (printf "%s%s" $faviconPathPrefix "site.webmanifest" ) }}
+{{- if fileExists (printf "static/%s" $appleTouch) }}
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ $appleTouch }}">
+{{- end }}
+{{- if fileExists (printf "static/%s" $favicon32) }}
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ $favicon32 }}">
+{{- end }}
+{{- if fileExists (printf "static/%s" $favicon16) }}
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ $favicon16 }}">
+{{- end }}
+{{- if fileExists (printf "static/%s" $manifest) }}
+  <link rel="manifest" href="{{ $manifest }}">
+{{- end }}
 {{- /* Eliminate trailing whitespace */ -}}
