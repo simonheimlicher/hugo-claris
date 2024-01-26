@@ -54,7 +54,7 @@
     {{- end }}
     <div class="footer_main-item inner_horizontal"{{ with $inlineStyle }}{{ . }}{{ end }}>
     {{- with .Title }}
-      <h2 class="footer_title">{{ . }}</h2>
+      <h2 class="footer_title">{{ page.RenderString . }}</h2>
     {{- end }}
     {{ $page.Page.Content }}
     </div>
