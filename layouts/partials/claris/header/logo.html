@@ -2,15 +2,13 @@
 {{- $meta := page.Scratch.Get "clarismeta" }}
 
 {{- $logoImageResource := default site.Params.logo site.Params.header.logo.resource }}
-{{- $logoURL := .logourl }}
 {{- $logoClass := .logoclass }}
 
 {{- $template := "claris/header/logo" }}
 
-{{- with $logoURL }}
-  {{- $logoURL = printf "%s" $logoURL | safeURL }}
-{{- else }}
-  {{- $logoURL = (site.GetPage "/").RelPermalink | safeURL }}
+{{- $logoURL := (site.GetPage "/").RelPermalink }}
+{{- with (page.Param "header.logo.linkpath") }}
+  {{- $logoURL = printf "%s" . | relLangURL }}
 {{- end }}
 
 {{- $t := $meta.Site.Formatted.Title | default site.Title -}}
