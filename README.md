@@ -1,8 +1,8 @@
-# Hugo Claris — Responsive, Modular, Modern
+# **Hugo Claris:** a fluid and responsive theme for a professional portfolio website
 
 <img alt="iPhone 12 Pro landscape" src="./static/images/hugo-claris-demo_home_iPhone_12_Pro-landscape.png" width=844> 
 
-### Visit an [*example website of Hugo Claris*](https://claris.heimlicher.com/)
+### Visit the [*demo website of Hugo Claris*](https://claris.heimlicher.com/)
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/simonheimlicher/hugo-claris/blob/main/LICENSE) &middot;
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTE.md) &middot;
@@ -69,27 +69,21 @@ mkdir -p archetypes assets config content data i18n layouts static themes
 
 ### 3. Install the Module for Claris
 
-The following step must only be done after the above command (`hugo mod init`...) has successfully completed. Otherwise, you will get an error along the following lines, when you run `hugo mod init github.com/simonheimlicher/vitae`:
-
-```zsh
-Error: failed to load modules: module "github.com/simonheimlicher/hugo-claris" not found in "/Users/shz/Resources/Websites/hugo/sites/vitae/themes/github.com/simonheimlicher/hugo-claris"; either add it as a Hugo Module or store it in "/Users/shz/Resources/Websites/hugo/sites/vitae/themes".: module does not exist
-```
-
-This error indicates that you have successfully configured the module to be loaded but your site's root directory itself is not a Hugo Module. Before you try to go back to the above step, you need to temporarily rename your configuration, otherwise step 2.b will not work.
+In the following step, we add the Claris theme to the configuration of Hugo. This must only be done after the current directory has been initialized as a Hugo Module using the above command (`hugo mod init`...).
 
 #### 3.a Add a reference to the Claris theme in Hugo's main configuration file
 
-First, we need to add *Claris* as a module to the main config file of Hugo. Having created a new site with `hugo new site`, you should find a config file named `hugo.toml` in the root of the newly created directory (`your-hugo-site` in the example above).
-
-However, I suggest to remove this file immediately. Instead, I highly recommend that you prepare for having separate configuration files for your development and production environments. Hugo supports this via the following directory structure:
+First, we need to add *Claris* as a module to the main config file of Hugo. I highly recommend that you prepare for having separate configuration files for your development and production environments. Hugo supports this via the following directory structure:
 
 ```zsh
 config/_default     # Configuration that applies to all environments
-config/development  # Configuration that applies onlny for the development environment and builds upon `_default`
-config/production   # Configuration that applies onlny for the production environment and builds upon `_default`
+config/development  # Configuration for the development environment, 
+                    # builds upon `_default`
+config/production   # Configuration for the production environment,
+                    # builds upon `_default`
 ```
 
-To configure Hugo to use the Claris theme, you need to edit its main configuration file. Specifically, you want to add the Claris theme under `module -> imports`. 
+To configure Hugo to use the Claris theme, you edit its main configuration file to add the Claris theme under `module -> imports`.
 
 If you are not familiar with the file format named `TOML` or, like me, just prefer `YAML`, then now is the perfect time to decide which format your config files shall use. Depending on the format you have chosen (TOML or YAML), add one of the following blocks to your main configuration file.
 
@@ -128,6 +122,48 @@ The module will be fetched by running the following command:
 ```zsh
 hugo mod get -u
 ```
+
+<details  style="cursor:pointer"><summary><strong>If this does not work...</strong></summary>
+
+  If you add any module to the Hugo configuration without having initialized the current directory as a `Hugo Module` with `hugo mod init github.com/your-username/your-hugo-site` (see **Step 2.b** above), you will get the following error message:
+
+  ```zsh
+  Error: failed to load modules: 
+  module "github.com/simonheimlicher/hugo-claris" not found in 
+  ".../your-hugo-site/themes/github.com/simonheimlicher/hugo-claris";
+  either add it as a Hugo Module or store it in 
+  ".../your-hugo-site/themes".: module does not exist
+  ```
+
+  This error indicates that you have **correctly configured the module** to be loaded but your site's **root directory itself is not a Hugo Module.**
+  
+  You can easily verify this by checking if there is a file named `go.mod`:
+  
+  ```zsh
+  cat go.mod
+  ```
+
+This should yield something along the following lines:
+
+  ```zsh
+  module github.com/simonheimlicher/vitae
+
+  go 1.21.6
+
+  require github.com/simonheimlicher/hugo-claris v0.0.0-20240125155746-88a461801fbe // indirect
+  ```
+  
+  Before you try to go back to the above step, you need to temporarily rename your configuration, otherwise initializing the directory as Hugo Module will not work. To rectify the situation, you may proceed along the following lines:
+
+  ```zsh
+  mv -i config{,-disabled}
+
+  hugo mod init github.com/your-username/your-hugo-site
+
+  mv -i config{-disabled,}
+  ```
+
+</details>
 
 #### 3.c Create the `index.md` for your site's home page
 
