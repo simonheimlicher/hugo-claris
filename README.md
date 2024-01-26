@@ -42,9 +42,11 @@ Ensure that you have Hugo installed on your system. You need Hugo’s extended v
 
 ### 2. Initialize your Hugo site
 
-To use *Claris* as a Hugo module, create and initialize your Hugo site (if you haven't already) in two steps:
+To use *Claris* as a Hugo module, create and initialize your Hugo site (if you haven't already) in three steps:
 
 #### 2.a Create a new directory and `cd` into it
+
+> While you could let Hugo initialize the site using `hugo new site your-hugo-site`, this will add only two files, both of which we will need to delete immediately.
 
 ```zsh
 mkdir your-hugo-site
@@ -185,10 +187,10 @@ Your site should now be running locally, accessible at `http://localhost:1313`. 
 
 To deploy your Hugo site with the *Claris* theme to Cloudflare Pages:
 
-- Push your site to a GitHub repository.
-- [Set up a new project on Cloudflare Pages](https://developers.cloudflare.com/pages/get-started), linking it to your GitHub repository.
-- In the build settings, set the build command to `hugo` and the build output directory to `public`.
-- Cloudflare Pages will build and deploy your site every time you push to your repository.
+* Push your site to a GitHub repository.
+* [Set up a new project on Cloudflare Pages](https://developers.cloudflare.com/pages/get-started), linking it to your GitHub repository.
+* Follow the [framework-specific guide for Hugo](https://developers.cloudflare.com/pages/framework-guides/deploy-a-hugo-site/)
+* Cloudflare Pages will build and deploy your site every time you push to your repository.
 
 ## Contributing
 
@@ -196,7 +198,7 @@ We welcome contributions to *Claris*! Whether it's bug fixes, feature additions,
 
 ### License
 
-*Claris* is [MIT licensed](./LICENSE). 
+*Claris* is [MIT licensed](./LICENSE).
 
 ---
 
