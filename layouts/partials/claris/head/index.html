@@ -18,7 +18,6 @@
     <meta name="viewport" content="width=device-width, viewport-fit=cover">
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="{{- $backgroundLight -}}">
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="{{- $backgroundDark -}}">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     {{- $title := default $meta.Site.Data.Headline $meta.Single.Data.Headline | safeHTML }}
     {{- if not $meta.Single.Data.Headline }}
       {{- warnf "%s[%s]: Invalid meta.Single.Data.Headline='%s'; using meta.Site.Data.Headline='%s' [.Title='%s' .Supertitle='%v' .Subtitle='%v']"
@@ -26,12 +25,12 @@
           $meta.Single.Data.Supertitle $meta.Single.Data.Subtitle -}}
     {{- end }}
     <title>{{ $title }}</title>
-    {{ hugo.Generator }}
     {{- partial "claris/head/schema-org" . }}
     <meta name="description" content="{{ default $meta.Site.Data.Description $meta.Single.Data.Description }}">
     {{- partial "claris/head/opengraph" . }}
     {{- partial "claris/head/twitter-card" . }}
     {{ partial "claris/head/robots" . }}
+    {{ hugo.Generator }}
 {{- with .Page.Param "googleSiteVerification" }}
     <meta name="google-site-verification" content="{{ . }}">
 {{- end -}}
