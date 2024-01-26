@@ -723,7 +723,7 @@
   --initial_margin-negative: calc(var(--initial_font-size) / -13);
   --initial_margin-top: calc(var(--initial_margin-negative));
   --initial_margin-right: 0px;
-  --initial_margin-bottom: calc(var(--initial_margin-negative) / 1.5);
+  --initial_margin-bottom: var(--initial_margin-negative);
   --initial_margin-left: calc(var(--initial_margin-negative) / 16);
   margin-top: 2em;
   min-height: calc(var(--initial_font-size) / 1.4);
