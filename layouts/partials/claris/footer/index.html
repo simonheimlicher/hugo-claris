@@ -22,26 +22,33 @@
 
 <div class="footer_inner inner_bottom">
   {{- $footerPages := slice }}
-  {{- with site.GetPage site.Params.footer.section }}
-    {{- with .Resources.Match "*.md" }}
-      {{- $footerPages = sort . ".Params.weight" }}
+  {{- with $footerSection }}
+    {{- with site.GetPage $footerSection }}
+      {{- with .Resources.Match "*.md" }}
+        {{- $footerPages = sort . ".Params.weight" }}
+      {{- else }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: No page resources match '*.md' in '%v'"
+              $page $template $footerSection }}
+        {{- end }}
+      {{- end }}
     {{- else }}
       {{- if $debug }}
-        {{- warnf "%s[%s]: No page resources match '*.md' in '%v'"
-            $page $template site.Params.footer.section }}
+        {{- warnf "%s[%s]: site.GetPage %v failed"
+            $page $template $footerSection }}
       {{- end }}
     {{- end }}
   {{- else }}
-    {{- if $debug }}
-      {{- warnf "%s[%s]: site.GetPage %v failed"
-          $page $template site.Params.footer.section }}
+    {{- if site.Params.claris.hints }}
+      {{- warnf "%s[%s]: site.Params.footer.section=%v.\nSet this value to a section, e.g., '_footer', for its pages to show up in the footer of every page."
+          $page $template $footerSection }}
     {{- end }}
   {{- end }}
 
   {{- with $footerPages }}
     {{- if $debug }}
       {{- warnf "%s[%s]: site.RegularPages.ByWeight \"Type\" \"in\" %v: %v"
-          $page $template site.Params.footer.section $footerPages }}
+          $page $template $footerSection $footerPages }}
       {{- range $id, $page := $footerPages }}
         {{- warnf "%s[%s]: %v" $page $template . }}
       {{- end }}
