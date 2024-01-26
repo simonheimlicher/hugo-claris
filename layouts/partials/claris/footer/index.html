@@ -5,6 +5,17 @@
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{- /* $debug = or $debug (not (not (findRE `^(?:\S+-demo)?/$` $page.RelPermalink) ) ) */ -}}
 
+{{- /* The footer of each page comprises several elements.
+    Its main part is fed from individual pages that are merged.
+    These pages are loacted in a special section defined in
+    `site.Params.footer.section`, which defaults to `_footer`.
+    It is imperative to keep these pages out of search engine indexes.
+    For this reason, please put an `index.md` file into the footer section
+    with the following front matter:
+      ---
+      headless: true
+      ---
+*/ -}}
 {{- $title := site.Title }}
 {{- $siteAuthor := $meta.Site.Data.Author.Name }}
 {{- $footerSection := site.Params.footer.section }}

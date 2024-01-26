@@ -44,6 +44,14 @@
 
       <!-- Determine if any part of the path to the file underlying this page is hidden -->
       {{- $hiddenSections := $page.Param "hidden.sections" }}
+      {{- with $page.Param "footer.section" }}
+        <!-- Ideally, the user would put a file `index.md` with the following content into the `_footer` directory:
+        ---
+        headless: true
+        ---
+        But in case this file is misssing, we hide the footer section here -->
+        {{- $hiddenSections = append . $hiddenSections | uniq }}
+      {{- end }}
       {{- $hiddenPathPrefix := default "_" ($page.Param "hidden.pathprefix") }}
       {{- $hiddenPathElements := $page.Param "hidden.pathelements" }}
 
@@ -72,7 +80,7 @@
           {{- end }}
         {{- end }}
       {{- end }}
-      {{/* {{- if $debug }}
+      {{/* {{- if $debug and $pageHidden }}
         {{- warnf "%s[%s]: pageHidden=%v based on pagePath=%s hiddenSections=%v hiddenPathElements=%v hiddenPathPrefix=%v"
             $page $template $pageHidden $pagePath $hiddenSections $hiddenPathElements $hiddenPathPrefix }}
       {{- end }} */}}
