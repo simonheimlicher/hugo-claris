@@ -107,8 +107,18 @@ fontFamilySerif: Alegreya
 fontFamilyMono: "DM Mono"
 # fontFamilyMono: Menlo
 
-# Serve font files from static instead of relying on Google Fonts servers
-fontsSelfHosted: true
+style:
+  fonts:
+    # If you want to serve font files from the `static` directory instead of
+    # relying on the font files provided by the Google Fonts service:
+    # 1 .Download the font files using [google-webfonts-helper](https://gwfh.mranftl.com/fonts)
+    # 2. Then add the fonts to the `static` directory under the path that is expected
+    #    by the corresponding file in `assets/styles/claris/fonts/...`
+    # 3. Enable self hosted fonts by setting site.Params.style.fonts.selfhosted = true below
+    # selfhosted: true
+
+favicons:
+  path: /
 
 typography:
   plainParagraphsMin: 3

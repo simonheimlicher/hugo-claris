@@ -51,7 +51,7 @@
 {{- $fontFormatRE := `url\(['"][^'"]+\.[a-z0-9]+['"]\)\s*format\(\s*['"]([^'"]+)['"]\)` }}
 {{- $fontFileURLRE := `url\(\s*['"]([^'"]+\.[a-z0-9]+)['"]\s*\)` }}
 
-{{- $fontsSelfHosted := $page.Param "style.fonts.selfhosted" | default ($page.Param "fontsSelfHosted") | default false }}
+{{- $fontsSelfHosted := $page.Param "style.fonts.selfhosted" | default false }}
 
 {{- with and $fontsSelfHosted $styleSheet }}
   {{- $fontURLMatches := findRE $fontMatchRE (lower .unminified.Content) }}

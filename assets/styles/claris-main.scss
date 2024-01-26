@@ -46,7 +46,7 @@ $fontFamilyID: '{{ $familyID }}';
 
 $fontFamilyDefault: (name: '{{ $familyName }}');
 
-{{- $fontsSelfHosted := $page.Param "style.fonts.selfhosted" | default ($page.Param "fontsSelfHosted") | default false }}
+{{- $fontsSelfHosted := $page.Param "style.fonts.selfhosted" | default false }}
 {{- $assetStyleRoot := "styles" }}
 {{- $styleFontsPath := "claris/fonts" }}
 {{- $assetFontPath := printf "%s/%s" $assetStyleRoot $styleFontsPath }}
