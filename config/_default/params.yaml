@@ -36,7 +36,7 @@ header:
     # Default: "/" in the current language
     # If you would like to link to a different page, provide the path of this page below.
     # For example: if you would like the logo to link to `/post`, you would use:
-    linkpath: /post
+    # linkpath: /post
 
 # Enforce dark or light scheme irrespective of system settings of user
 # You cannot enforce both schemes at the same time. i.e by enforcing one scheme,
