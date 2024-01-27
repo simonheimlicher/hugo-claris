@@ -81,38 +81,50 @@ outdatedAfterYears: 5
 sidebarTaxonomies:
   - tags
 
-fontFamilySans: "Source Sans 3"
-# fontFamilySans: "IBM Plex Sans"
-# fontFamilySans: "Public Sans"
-# fontFamilySans: Cabin
-# fontFamilySans: "Merriweather Sans"
-# fontFamilySans: Nunito
-# fontFamilySans: "Nunito Sans"
-# fontFamilySans: Mulish
-# fontFamilySans: Inter
+assets:
+  styles:
+    fonts:
+      type:
+        default: "sans"
+        content: "sans"
+        article: "serif"
+        code: "mono"
+        heading: "inherit"
+        meta: "sans"
+      family:
+        sans: "Source Sans 3"
+        # sans:  "IBM Plex Sans"
+        # sans:  "Public Sans"
+        # sans:  Cabin
+        # sans:  "Merriweather Sans"
+        # sans:  Nunito
+        # sans:  "Nunito Sans"
+        # sans:  Mulish
+        # sans:  Inter
+        serif: "Alegreya"
+        # serif:  "Andada Pro"
+        # serif:  "IBM Plex Serif"
+        # serif:  Merriweather
+        # serif:  "Crimson Text"
+        # serif:  "Crimson Pro"
+        # serif:  Literata
+        # serif:  Spectral
+        # serif:  Vollkorn
+        mono: "DM Mono"
+        # mono: "Menlo"
+      # If you want to serve font files from the `static` directory instead of
+      # relying on the font files provided by the Google Fonts service:
+      # 1 .Download the font files using [google-webfonts-helper](https://gwfh.mranftl.com/fonts)
+      # 2. Then add the fonts to the `static` directory under the path that is expected
+      #    by the corresponding file in `assets/styles/claris/fonts/...`
+      # 3. Enable self hosted fonts by setting `style.fonts.selfhosted = true` below
+      # selfhosted: true
 
-fontFamilySerif: Alegreya
-# fontFamilySerif: "Andada Pro"
-# fontFamilySerif: "IBM Plex Serif"
-# fontFamilySerif: Merriweather
-# fontFamilySerif: "Crimson Text"
-# fontFamilySerif: "Crimson Pro"
-# fontFamilySerif: Literata
-# fontFamilySerif: Spectral
-# fontFamilySerif: Vollkorn
+  scripts:
+    optional:
+      mediumzoom: false
 
-fontFamilyMono: "DM Mono"
-# fontFamilyMono: Menlo
 
-style:
-  fonts:
-    # If you want to serve font files from the `static` directory instead of
-    # relying on the font files provided by the Google Fonts service:
-    # 1 .Download the font files using [google-webfonts-helper](https://gwfh.mranftl.com/fonts)
-    # 2. Then add the fonts to the `static` directory under the path that is expected
-    #    by the corresponding file in `assets/styles/claris/fonts/...`
-    # 3. Enable self hosted fonts by setting `style.fonts.selfhosted = true` below
-    # selfhosted:
 
 typography:
   plainParagraphsMin: 3
@@ -164,10 +176,6 @@ colors:
   colorBackgroundDim: "hsl(200, 10%, 10%)"
   onBackgroundLit: "hsl(200, 10%, 13%)"
   onBackgroundDim: "hsl(200, 10%, 95%)"
-
-javascript:
-  optional:
-    mediumzoom: false
 
 meta:
   favicon:

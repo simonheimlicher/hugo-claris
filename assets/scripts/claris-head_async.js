@@ -17,7 +17,7 @@ import "scripts/claris/enhanced";
 // Therefore, all optional NPM packages are loaded in this Go template script
 
 let optionalModules = [];
-{{- if page.Param "javascript.optional.mediumzoom" }}
+{{- if page.Param "assets.scripts.optional.mediumzoom" }}
 import { mediumZoomInit } from "scripts/claris/optional/medium-zoom";
 optionalModules.push(mediumZoomInit);
 {{- end }}

@@ -8,10 +8,10 @@
 {{- $fontFamilyMono := default "DM Mono" ($page.Param "fontFamilyMono") }}
 {{- $fontFamilies := (slice $fontFamilySans $fontFamilySerif $fontFamilyMono) }}
 
-{{- $fontsSelfHosted := $page.Param "style.fonts.selfhosted" | default false }}
+{{- $fontsSelfHosted := $page.Param "assets.styles.fonts.selfhosted" | default false }}
 
 {{- /* warnf "%s[%s]: fontFamilies:%v $fontsSelfHosted:%v"
-  $page $template $fontFamilies ($page.Param "style.fonts.selfhosted") */ -}}
+  $page $template $fontFamilies ($page.Param "assets.styles.fonts.selfhosted") */ -}}
 {{- if not $fontsSelfHosted -}}
   {{- /* warnf "%s[%s]: Loading fonts in fontFamilies:%v from Google " $page $template $fontFamilies */ -}}
   <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -19,7 +19,14 @@
     {{/* {{- warnf "%s[%s]: contentTypeList=%v" $page $template $contentTypeList }} */}}
     {{- $contentType := index (last 1 $contentTypeList) 0 }}
     {{- $contentTypeListID := delimit $contentTypeList "-" }}
-    {{- $assetStyle := $page.Param "style" | default "default" }}
+    {{- $assetStyle := "default" }}
+    {{- with ($page.Param "style") }}
+      {{- if eq (printf "%T" .) "string" }}
+        {{- $assetStyle = "default" }}
+      {{- else }}
+        {{- errorf `%s[%s]: Invalid page.Param "style"='%v' of type %T` $page $template . . }}
+      {{- end }}
+    {{- end }}
     {{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
     {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
     {{- $minifyBundles := $envProd }}
