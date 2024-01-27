@@ -961,6 +961,139 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
 
 @mixin defineFontDefinition($definitionID: default, $fontFamilyID: default) {
 
+  $prefix: font-definition_#{$definitionID}_;
+
+  // @include mapToCSSProperties($fontFamilyMap, fontFamilyMap);
+
+  // Get the specification of this font family
+  $specFamily: map-get($fontFamilyMap, $fontFamilyID);
+
+  @if ($specFamily) {
+
+    // Create a new font definition for this font family
+    $defFamily: ();
+
+    $fontNameFamily: map-get($specFamily, name);
+    $fallbackStackFamily: map-get($specFamily, fallback);
+    $fallbackStackFamily: defaultTo($fallbackStackDefault, map-get($specFamily, fallback));
+    // --fallbackStackFamily: #{$fallbackStackFamily};
+
+    $specStyles: updateMap(map-get($familyDefaultMap, styles), map-get($specFamily, styles));
+
+    $specRolesDefault: updateMap((default: (styles: $specStyles)), map-get($familyDefaultMap, roles));
+    $specRoles:  updateMap($specRolesDefault,  map-get($specFamily, roles));
+
+    $specVariantsDefault: updateMap((default: (
+      name: $fontNameFamily,
+      fallback: $fallbackStackFamily,
+      styles: $specStyles
+    )), map-get($familyDefaultMap, variants));
+
+    // $specVariants: $specVariantsDefault;
+    // $specVariants: map-get($specFamily, variants);
+    $specVariants: updateMap($specVariantsDefault, map-get($specFamily, variants));
+
+    // @include mapToCSSProperties($specStyles, specStyles);
+    // @include mapToCSSProperties($specRoles, specRoles);
+    // @include mapToCSSProperties($specVariants, specVariants);
+
+    $defRoleMap: ();
+    @each $role, $specRole in $specRoles {
+      $defRole: updateMap(map-get($specRoles, default), $specRole);
+      // @include mapToCSSProperties($defRole, defRoleInitial_role-#{$role});
+      $prefixRole: $prefix;
+      $prefixRole: #{$prefix}#{$role}_;
+      // --#{$prefixRole}font-family_ID: #{$fontFamilyID}; // FIXME: Replace by defining fontDefinitionClass
+
+      // @include mapToCSSProperties($specRole, specRole_role-#{$role});
+
+      $fontNameRole: defaultTo($fontNameFamily, map-get($specRole, name));
+      $fallbackStackRole: defaultTo($fallbackStackFamily, map-get($specRole, fallback));
+
+      $stylesRole: updateMap($specStyles, map-get($specRole, styles));
+      // @include mapToCSSProperties($stylesRole, stylesRole_role-#{$role});
+
+      // Go through all variants (default, small-caps, oldstyle-nums etc.)
+      // that are defined for this font family's specification
+      $defVariantMap: ();
+      $fontStackVariantDefault: null;
+
+      @each $variant, $specVariant in $specVariants {
+        // @include mapToCSSProperties($specVariant, specVariant_variant-#{$variant});
+        $defVariant: updateMap(map-get($specVariants, default), (styles: $stylesRole));
+        $defVariant: updateMap($defVariant, $specVariant);
+        // $defVariant: updateMap(updateMap(map-get($specVariants, default), $defRole), $specVariant);
+        // @include mapToCSSProperties($defVariant, defVariantInitial_variant-#{$variant});
+        // Prefix to use for this variant if it is not default
+        $prefixVariant: $prefixRole;
+        $prefixVariant: #{$prefixVariant}#{$variant}_;
+
+        // Variants may have different `font-family`
+        $fontNameVariant: defaultTo($fontNameRole, map-get($specVariant, name));
+        // Variants may have different fallback fonts
+        $fallbackStackVariant: defaultTo($fallbackStackRole, map-get($specVariant, fallback));
+        // --fallbackStackVariant: #{$fallbackStackVariant};
+        $fontStackVariant: join( ($fontNameVariant), $fallbackStackVariant);
+        // --#{$prefixVariant}font-family: #{inspect($fontStackVariant)};
+
+        @if ($variant == 'default') {
+          $fontStackVariantDefault: $fontStackVariant;
+          .font-family_#{$fontFamilyID} {
+            font-family: #{inspect($fontStackVariant)};
+          }
+        }
+        // Only output font stack if it differs from default
+        @else if ($fontStackVariantDefault and $fontStackVariant != $fontStackVariantDefault) {
+          .font-family_#{$fontFamilyID}_#{$variant} {
+            font-family: #{inspect($fontStackVariant)};
+          }
+        }
+
+        $stylesVariant: map-get($defVariant, styles);
+        // Variants may have different styles
+        $defStyleMap: ();
+        @each $style, $specStyle in $stylesRole {
+          $defStyle: map-get($stylesRole, default);
+          $defStyle: updateMap(map-get($stylesRole, default), map-get($stylesVariant, default) );
+          $defStyle: updateMap(map-get($stylesRole, $style), map-get($stylesVariant, $style) );
+          $defStyle: updateMap($defStyle, $specStyle);
+          // @include mapToCSSProperties(map-get($stylesVariant, $style), stylesVariant_style-#{$style});
+          // @include mapToCSSProperties($defStyle, defStyleInitial_style-#{$style});
+
+          $prefixStyle: #{$prefixVariant};
+          $prefixStyle: #{$prefixStyle}#{$style}_;
+
+          .#{$prefixStyle} {
+            @each $key, $value in $defStyle {
+              #{$prefixStyle}#{$key}: #{$value};
+            }
+          }
+          // @include mapToCSSProperties($defStyle, defStyleFinal_style-#{$style});
+          $defStyleMap: map-merge($defStyleMap, ($style: $defStyle));
+        }
+        $defVariant: map-merge($defVariant, (styles: $defStyleMap));
+        $defVariantMap: map-merge($defVariantMap, ($variant: $defVariant));
+        // @include mapToCSSProperties($defVariant, defVariantFinal_variant-#{$variant});
+      }
+      $defRole: map-merge($defRole, (variants: $defVariantMap));
+      $defRoleMap: map-merge($defRoleMap, ($role: $defRole));
+      // @include mapToCSSProperties($defRole, defRoleFinal_role-#{$role});
+    }
+    $defFamily: map-merge($defFamily, (roles: $defRoleMap));
+
+    // Store the created font definition as $definitionID
+    // NOTE: the `!global` keyword ensures that we work with the global
+    // variable defined in `claris-main.scss`
+    // @include mapToCSSProperties($defFamily, defineFontDefinition_definitionID-#{$definitionID}_);
+    $fontDefinitionMap: map-merge($fontDefinitionMap, ($definitionID: $defFamily)) !global;
+  }
+  @else {
+    --defineFontDefinition_fontFamilyId_undefined: #{$fontFamilyID};
+  }
+
+  // FIXME: Output updated $fontDefinitionMap
+  // @include mapToCSSProperties($fontDefinitionMap, fontDefinitionMap);
+  // @warn(print-map($fontDefinitionMap));
 }
 
 :root {
@@ -1031,7 +1164,8 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
               @if ($role == $useRole) and ($variant == $useVariant) {
                 @if (($useStyle == all) and ($style == default)) or ($style == $useStyle) {
                   // --useFontDefinition_definitionID-#{$definitionID}_useRole-#{$useRole}_useVariant-#{$useVariant}_useStyle-#{$useStyle}__originPrefixStyle: #{$originPrefixStyle};
-                  #{$key}: var(--#{$targetPrefixStyle}#{$key});
+                  // #{$key}: var(--#{$targetPrefixStyle}#{$key}); // FIXME: Replace by `@extend fontDefinitionClass;`
+                  @extend .font-family_#{$originDefinitionID} !optional;
                 }
               }
             }
@@ -1053,13 +1187,13 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
               @if ($style == default) or ($style == $useStyle) {
                 @each $key, $value in $defStyle {
                   // --useFontDefinition_definitionID-#{$definitionID}_useRole-#{$useRole}_useVariant-#{$useVariant}_useStyle-#{$useStyle}__originPrefixStyle: #{$originPrefixStyle};
-                  #{$key}: var(--#{$targetPrefixStyle}#{$key});
+                  // #{$key}: var(--#{$targetPrefixStyle}#{$key}); // FIXME: Replace by `@extend fontDefinitionClass;`
                 }
               }
               @else if ($useStyle == all) and ($style == bold) {
                 bold, strong {
                   @each $key, $value in $defStyle {
-                    #{$key}: var(--#{$targetPrefixStyle}#{$key});
+                    // #{$key}: var(--#{$targetPrefixStyle}#{$key}); // FIXME: Replace by `@extend fontDefinitionClass;`
                   }
                 }
               }
@@ -1116,15 +1250,7 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
   $smaller-factor-idx-max: 3;
   $larger-factor-idx-max: 6;
 
-  /* Fallback variables for browsers that don't support clamp */
-  --#{$prop}-base: #{$min-size};
-  @media screen and (min-width: $max-breakpoint) {
-    --#{$prop}-base: #{$max-size};
-  }
-
-  @supports (margin: clamp(1px, 1vw, 1px)) {
-    --#{$prop}-base: #{fluid($min-size, $max-size, $min-breakpoint, $max-breakpoint, $unit)};
-  }
+  --#{$prop}-base: #{fluid($min-size, $max-size, $min-breakpoint, $max-breakpoint, $unit)};
 
   --#{$prop}-normal: #{geometric-scaled-prop($prop, $scale-factor, $base-shift)};
   @for $i from 1 through $smaller-factor-idx-max {
@@ -1145,28 +1271,18 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
 @mixin fluid-fractional-scale($prop, $min-size, $max-size, $min-breakpoint: $screenViewBreakpointWidthMobile, $max-breakpoint: $screenViewBreakpointWidthWide, $unit: vw,
     $denominator: $fractionalScaleDenominator, $base-shift: 0) {
 
+  // Define, up to how many times the $min-size we should define
+  // E.g., with `$min-size: 1 rem`, `$denominator: 4` and `$numerator-max: 4 * $denominator`,
+  // the maximal value will be 4rem:
+  // ($numerator-max)   / $denominator * $min-size = 4rem
+  // (4 * $denominator) / $denominator * $min-size = 4rem
+  // (4 * 4             / 4            * 1rem      = 4rem
   $numerator-max: 4 * $denominator;
 
-  /* Fallback variables for browsers that don't support clamp */
-  --fallback-without-clamp: #{$prop};
-  --#{$prop}: #{$min-size};
+  --#{$prop}-base: #{fluid($min-size, $max-size, $min-breakpoint, $max-breakpoint, $unit)};
+  --#{$prop}: #{fractional-scaled-prop($prop, $base-shift + $denominator, $denominator)};
   @for $i from 0 through $numerator-max {
-    --#{$prop}_#{$denominator}-#{$i}: #{roundDec(math.div($i, $denominator) * $min-size, $fluidScaleDigits)};
-  }
-  @media screen and (min-width: $max-breakpoint) {
-    --fallback-without-clamp: #{$prop};
-    --#{$prop}: #{$max-size};
-    @for $i from 0 through $numerator-max {
-      --#{$prop}_#{$denominator}-#{$i}: #{roundDec(math.div($i, $denominator) * $max-size, $fluidScaleDigits)};
-    }
-  }
-
-  @supports (margin: clamp(1px, 1vw, 1px)) {
-    --#{$prop}-base: #{fluid($min-size, $max-size, $min-breakpoint, $max-breakpoint, $unit)};
-    --#{$prop}: #{fractional-scaled-prop($prop, $base-shift + $denominator, $denominator)};
-    @for $i from 0 through $numerator-max {
-      --#{$prop}_#{$denominator}-#{$i}: #{fractional-scaled-prop($prop, $base-shift + $i, $denominator)};
-    }
+    --#{$prop}_#{$denominator}-#{$i}: #{fractional-scaled-prop($prop, $base-shift + $i, $denominator)};
   }
 }
 
