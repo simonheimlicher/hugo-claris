@@ -292,27 +292,27 @@ blockquote {
 
   min-height: calc(1.25 * var(--quotation-mark-close-height));
 
-    &::before {
-      @include useFontDefinition(serif);
-      content: "“";
-      position: absolute;
-      top: calc(var(--box-padding-top) + var(--quotation-mark-open-height));
-      left: 0;
-      line-height: var(--quotation-mark-open-height);
-      font-size: var(--quotation-mark-open-font-size);
-      color: $blockquote-quotation-color-open;
-      font-weight: normal;
-    }
-    &::after {
-      @include useFontDefinition(serif);
-      content: "”";
-      position: absolute;
-      bottom: calc(0px - 0.5 * var(--quotation-mark-close-height));
-      right: calc( var(--box-padding-right) - 0.5 * var(--quotation-mark-close-height));
-      line-height: var(--quotation-mark-close-height);
-      font-size: calc(var(--quotation-mark-close-font-size));
-      color: $blockquote-quotation-color-close;
-      font-weight: normal;
+  &::before {
+    @include useFontDefinition(serif);
+    content: "“";
+    position: absolute;
+    top: calc(var(--box-padding-top) + var(--quotation-mark-open-height));
+    left: 0;
+    line-height: var(--quotation-mark-open-height);
+    font-size: var(--quotation-mark-open-font-size);
+    color: $blockquote-quotation-color-open;
+    font-weight: normal;
+  }
+  &::after {
+    @include useFontDefinition(serif);
+    content: "”";
+    position: absolute;
+    bottom: calc(0px - 0.5 * var(--quotation-mark-close-height));
+    right: calc( var(--box-padding-right) - 0.5 * var(--quotation-mark-close-height));
+    line-height: var(--quotation-mark-close-height);
+    font-size: calc(var(--quotation-mark-close-font-size));
+    color: $blockquote-quotation-color-close;
+    font-weight: normal;
   }
 
   footer {
