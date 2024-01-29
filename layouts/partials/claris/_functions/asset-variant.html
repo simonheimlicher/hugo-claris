@@ -20,11 +20,21 @@
     {{- $contentType := index (last 1 $contentTypeList) 0 }}
     {{- $contentTypeListID := delimit $contentTypeList "-" }}
     {{- $assetStyle := "default" }}
-    {{- with ($page.Param "style") }}
+    {{- $assetStyleSuffix := "" }}
+    {{- with $assetStyle = ($page.Param "style") }}
       {{- if eq (printf "%T" .) "string" }}
-        {{- $assetStyle = "default" }}
+        {{- if ne $assetStyle "default" }}
+          {{- /* Append style name only if $assetStyle is not "default" */ -}}
+          {{- $assetStyleSuffix = printf "_style-%s" $assetStyle }}
+          {{- warnf "%s[%s]: non-default assetStyle=%v: defined assetStyleSuffix=%v" $page $template $assetStyle $assetStyleSuffix }}
+        {{- end }}
       {{- else }}
-        {{- errorf `%s[%s]: Invalid page.Param "style"='%v' of type %T` $page $template . . }}
+        {{- /* Append hash if $assetStyle is not a simple string */ -}}
+        {{- $assetStyleSuffix = printf "_style-%s" ($assetStyle | jsonify | sha256) }}
+        {{- warnf "%s[%s]: non-string assetStyle=%v: defined assetStyleSuffix=%v" $page $template $assetStyle $assetStyleSuffix }}
+      {{- end }}
+      {{- with $assetStyleSuffix }}
+        {{- $contentTypeListID = printf "%s%s" $contentTypeListID . }}
       {{- end }}
     {{- end }}
     {{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
@@ -39,6 +49,7 @@
       "ContentTypeList" $contentTypeList
       "ContentTypeListID" $contentTypeListID
       "AssetStyle" $assetStyle
+      "AssetStyleSuffix" $assetStyleSuffix
       "BundleParams" (dict
         "MinifyBundles" $minifyBundles
       )

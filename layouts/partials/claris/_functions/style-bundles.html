@@ -13,17 +13,7 @@
 {{- $contentTypeList := $assetVariant.ContentTypeList }}
 {{- $contentTypeListID := $assetVariant.ContentTypeListID }}
 {{- $assetStyle := $assetVariant.AssetStyle }}
-{{- $assetStyleSuffix := "" }}
-{{- if not (eq $assetStyle "default") }}
-  {{- /* FIXME: 2024-01-27: Only append a sha256 string if $assetStyle is not a simple string */ -}}
-  {{- if eq (printf "%T" $assetStyle) "string" }}
-    {{- $assetStyleSuffix = printf "_style-%s" $assetStyle }}
-  {{- else }}
-    {{- $assetStyleSuffix = printf "_style-%s" ($assetStyle | jsonify | sha256) }}
-  {{- end }}
-  {{- warnf "%s[%s]: non-default assetStyle=%v: defined assetStyleSuffix=%v" $page $template $assetStyle $assetStyleSuffix }}
-  {{- $contentTypeListID = printf "%s%s" $contentTypeListID $assetStyleSuffix }}
-{{- end }}
+{{- $assetStyleSuffix := $assetVariant.AssetStyleSuffix }}
 
 <!-- NOTE: There are two ways to minify styles (CSS) in Hugo:
 1. resources.PostCSS: by passing (dict "config" "./relative/path/to/configDir")
