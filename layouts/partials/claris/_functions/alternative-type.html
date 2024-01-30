@@ -22,11 +22,11 @@ Once this is set up, you can call this function in the context of a page:
 {{- $resourceGlob := (printf "/styles/%s/*" $pageType) }}
 {{- if (ne $pageType $defaultType) }}
   {{- with (resources.GetMatch $resourceGlob ) }}
-    {{/* {{- warnf "%s[%s]: Returning '%s' as alternative content type: Got resource '%s' matching '%s'"
-        $page $template $pageType . $resourceGlob }} */}}
     {{- $alternativeType = $pageType }}
-  {{/* {{- else }}
-    {{- warnf "%s[%s]: Not considering '%s' as an alternative content type: No resource matching '%s'"
+    {{/* {{- warnf "%s[%s]: Returning '%s' as alternative content type: found resource '%s' matching '%s'"
+        $page $template $pageType . $resourceGlob }} */}}
+  {{- else }}
+    {{/* {{- warnf "%s[%s]: Not considering '%s' as an alternative content type: No resource matching '%s'"
         $page $template $pageType $resourceGlob }} */}}
   {{- end }}
 {{- end }}
@@ -45,4 +45,6 @@ Once this is set up, you can call this function in the context of a page:
     {{- end }}
   {{- end }}
 {{- end }}
+{{/* {{- warnf "%s[%s]: Returning alternativeType='%v': defaultType=%v pageType=%v (arguments: %v)"
+    $page $template $alternativeType $defaultType $pageType . }} */}}
 {{- return $alternativeType }}

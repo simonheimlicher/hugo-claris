@@ -23,19 +23,23 @@
 
   {{- $defaultMetaPartial := "claris/_functions/meta/head.html" }}
   {{- if $debug }}
-    {{- warnf "%s[%s]: contentType=%v: Calling default meta partial %v"
-        $page $template . $defaultMetaPartial }}
+    {{- warnf "%s[%s]: Calling default meta partial %v"
+        $page $template $defaultMetaPartial }}
   {{- end }}
   {{- $metaVariant = merge $metaVariant (partial $defaultMetaPartial $page) }}
 
   {{- with $assetVariant.ContentType }}
-    {{- $metaPartial := printf "partials/%s/head/meta.html" . }}
-    {{- if templates.Exists $metaPartial }}
+    {{- $contentTypeMetaPartial := printf "partials/%s/head/meta.html" . }}
+    {{- if templates.Exists $contentTypeMetaPartial }}
       {{- if $debug }}
         {{- warnf "%s[%s]: contentType=%v: Calling meta partial %v"
-            $page $template . $metaPartial }}
+            $page $template . $contentTypeMetaPartial }}
       {{- end }}
-      {{- $metaVariant = merge $metaVariant (partial $metaPartial $page) }}
+      {{- $contentTypeMetaVariant := partial $contentTypeMetaPartial (dict
+          "Page" $page
+          "meta" $metaVariant
+      ) }}
+      {{- $metaVariant = merge $metaVariant $contentTypeMetaVariant }}
     {{- end }}
   {{- else }}
     {{/* {{- if $debug }} */}}

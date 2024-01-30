@@ -14,24 +14,40 @@
       {{- $mediaTypeList = (slice $onlyMediaType) }}
     {{- end }}
 
+    {{/* {{- warnf "%s[%s]: .Type=%v .Params.type=%v" $page $template .Type .Params.type }} */}}
     {{- $contentTypeList := partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type }}
-    {{- $contentTypeList = slice "claris" }}
     {{/* {{- warnf "%s[%s]: contentTypeList=%v" $page $template $contentTypeList }} */}}
     {{- $contentType := index (last 1 $contentTypeList) 0 }}
     {{- $contentTypeListID := delimit $contentTypeList "-" }}
     {{- $assetStyle := "default" }}
     {{- $assetStyleSuffix := "" }}
-    {{- with $assetStyle = ($page.Param "style") }}
+    {{- with $page.Param "style" }}
+      {{- $customAssetStyle := . }}
+      {{/* {{- warnf "%s[%s]: site.Params.style=%v $page.Params.style=%v" $page $template site.Params.style $page.Params.style }} */}}
       {{- if eq (printf "%T" .) "string" }}
-        {{- if ne $assetStyle "default" }}
-          {{- /* Append style name only if $assetStyle is not "default" */ -}}
-          {{- $assetStyleSuffix = printf "_style-%s" $assetStyle }}
-          {{- warnf "%s[%s]: non-default assetStyle=%v: defined assetStyleSuffix=%v" $page $template $assetStyle $assetStyleSuffix }}
+        {{- if ne $customAssetStyle "default" }}
+          {{- /* Append style name only if $customAssetStyle is not "default" */ -}}
+          {{- $assetStyleSuffix = printf "_style-%s" $customAssetStyle }}
+          {{/* {{- warnf "%s[%s]: non-default assetStyle=%v: defined assetStyleSuffix=%v" $page $template $customAssetStyle $assetStyleSuffix }} */}}
+        {{- end }}
+      {{- else if reflect.IsMap $customAssetStyle }}
+        {{- /* Append hash if $customAssetStyle is not a simple string or an empty map */ -}}
+        {{- $validAssetStyle := false }}
+        {{- range $k, $v := $customAssetStyle }}
+          {{- if ne (printf "%T" $v) "<nil>" }}
+            {{/* {{- warnf "%s[%s]: k=%v v=%v [%T]" $page $template $k $v $v }} */}}
+            {{- $validAssetStyle = true }}
+          {{- end }}
+        {{- end }}
+        {{- if $validAssetStyle }}
+          {{- $assetStyleSuffix = printf "_style-%s" ($customAssetStyle | jsonify | sha256) }}
+          {{- $assetStyle = $customAssetStyle }}
+          {{/* {{- warnf "%s[%s]: using customAssetStyle=%vfrom site.Params.style=%v $page.Params.style=%v: defined assetStyleSuffix=%v" $page $template $customAssetStyle site.Params.style $page.Params.style $assetStyleSuffix }} */}}
+        {{/* {{- else }}
+          {{- warnf "%s[%s]: ignoring empty customAssetStyle=%v from site.Params.style=%v $page.Params.style=%v" $page $template $customAssetStyle site.Params.style $page.Params.style }} */}}
         {{- end }}
       {{- else }}
-        {{- /* Append hash if $assetStyle is not a simple string */ -}}
-        {{- $assetStyleSuffix = printf "_style-%s" ($assetStyle | jsonify | sha256) }}
-        {{- warnf "%s[%s]: non-string assetStyle=%v: defined assetStyleSuffix=%v" $page $template $assetStyle $assetStyleSuffix }}
+        {{- errorf "%s[%s]: invalid 'style' param: must be of type 'string' or 'map'. Check site.Params.style=%v and $page.Params.style=%v" $page $template site.Params.style $page.Params.style }}
       {{- end }}
       {{- with $assetStyleSuffix }}
         {{- $contentTypeListID = printf "%s%s" $contentTypeListID . }}

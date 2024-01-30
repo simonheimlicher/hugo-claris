@@ -1,4 +1,4 @@
-/* {{- $page := .Page }} {{- $mediaType := .MediaType }} */
+/* {{- $page := .Page }} {{- $mediaType := .MediaType }} {{- $template := "assets/styles/claris-main.scss" }} */
 /* File='styles/claris-main.scss': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .ContentTypeList='{{ printf "%v" .ContentTypeList }}' .ContentTypeListID='{{ .ContentTypeListID }}' .ContentType='{{ .ContentType }}' .MediaType='{{ .MediaType }}' */
 /* AssetStyle:
 {{ jsonify (dict "indent" "  ") .AssetStyle }}
@@ -52,12 +52,17 @@ $fontFamilyDefault: (name: '{{ $familyName }}');
 {{- $assetFontPath := printf "%s/%s" $assetStyleRoot $styleFontsPath }}
 {{- if $fontsSelfHosted }}
   {{- $hostedFontPath := default (relURL "fonts") ($page.Param "hostedFontPath") }}
-  {{- with resources.Get (printf "%s/%s.scss" $assetFontPath $familyID) }}
+  {{- $fontSpecPathGlob := printf "%s/%s.scss" $assetFontPath $familyID }}
+  {{- with resources.Get $fontSpecPathGlob }}
     /* Importing self-hosted font with familyName='{{ $familyName }}' familyID='{{ $familyID }}' from '{{ . }}' */
     $styleFontsPath: '{{ $styleFontsPath }}';
     $hostedFontPath: '{{ $hostedFontPath }}';
     @import '{{ $styleFontsPath }}/{{ $familyID }}';
+    {{- /* warnf "%s[%s]: loading font specification file for familyID=%v from '%v' (matching %v)"
+      $page $template $familyID . $fontSpecPathGlob */ -}}
   {{- else }}
+    {{- errorf "%s[%s]: could not find font specification file for familyID=%v at '%v'"
+          $page $template $familyID $fontSpecPathGlob -}}
     {{- $fontsSelfHosted = false }}
   {{- end }}
 {{- end }}
@@ -103,15 +108,17 @@ $fontFamilySpec: (
   $fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: $fontFamilySpec));
 {{- end }}
 
-{{- $fallbankFontFamilyStylesheet := printf `/styles/claris/fonts/fallback/%s.*` $familyID }}
-{{- if resources.GetMatch $fallbankFontFamilyStylesheet }}
-  {{- $familyStack := (slice (printf `%s-fallback` $familyID) (printf `%s-fallback-android` $familyID)) }}
-  $fallbackStack: ({{ printf `'%s'` (delimit $familyStack "', '") }});
-  $fontFamilyDefault: map-merge($fontFamilyDefault, (fallback: $fallbackStack) );
-  @import 'claris/fonts/fallback/{{ $familyID }}';
-{{- else }}
-  /* No fallback stylesheet found for font family {{ .family }} at {{ $fallbankFontFamilyStylesheet }} */
-  @import 'claris/fonts/fallback/{{ $fontTypeKey }}';
+{{- if $fontsSelfHosted }}
+  {{- $fallbankFontFamilyStylesheet := printf `/styles/claris/fonts/fallback/%s.*` $familyID }}
+  {{- if resources.GetMatch $fallbankFontFamilyStylesheet }}
+    {{- $familyStack := (slice (printf `%s-fallback` $familyID) (printf `%s-fallback-android` $familyID)) }}
+    $fallbackStack: ({{ printf `'%s'` (delimit $familyStack "', '") }});
+    $fontFamilyDefault: map-merge($fontFamilyDefault, (fallback: $fallbackStack) );
+    @import 'claris/fonts/fallback/{{ $familyID }}';
+  {{- else }}
+    /* No fallback stylesheet found for font family {{ .family }} at {{ $fallbankFontFamilyStylesheet }} */
+    @import 'claris/fonts/fallback/{{ $fontTypeKey }}';
+  {{- end }}
 {{- end }}
 
 // The font family map may have different structures:
