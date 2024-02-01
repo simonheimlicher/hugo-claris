@@ -121,9 +121,15 @@ assets:
       # selfhosted: true
 
   scripts:
-    optional:
-      mediumzoom: false
-
+    # To enable the `Medium.com`-like zoom effect on responsive images,
+    # add the argument `lightbox` when calling the shortcode `responsive-image`
+    # and set `assets.scripts.mediumzoom: true`
+    # mediumzoom: true
+    # To enable PostHog Analytics, configure the host and key below
+    # posthog:
+    #   key: <your key>
+    #   host: https://api.posthog.com
+    #   host: https://eu.posthog.com
 
 
 typography:

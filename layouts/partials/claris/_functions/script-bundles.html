@@ -92,6 +92,7 @@ regular JavaScript object, which could change at runtime.
       "site" site.Params
       "page" page.Params
       "baseURL"  (default "/" site.BaseURL)
+      "canonicalBaseURL"  (partial "claris/_functions/canonical-url" "/")
       "iconsPath" (relURL (printf "%s/" (default "icons/" (strings.TrimLeft "/" (strings.TrimRight "/" site.Params.iconsDir) ) ) ) )
       "envDevel"  $envDevel
       "envProd"  $envProd

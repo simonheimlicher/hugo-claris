@@ -17,7 +17,7 @@ import "scripts/claris/enhanced";
 // Therefore, all optional NPM packages are loaded in this Go template script
 
 let optionalModules = [];
-{{- if page.Param "assets.scripts.optional.mediumzoom" }}
+{{- if page.Param "assets.scripts.mediumzoom" }}
 import { mediumZoomInit } from "scripts/claris/optional/medium-zoom";
 optionalModules.push(mediumZoomInit);
 {{- end }}
@@ -25,7 +25,7 @@ optionalModules.push(mediumZoomInit);
 // import "./qrcode-svg"; // Not used
 // import "./web-vitals-analytics"; // Not needed
 
-{{- if and (page.Param "posthog.bundle") (page.Param "posthog.key") (page.Param "posthog.host")  }}
+{{- if and (page.Param "assets.scripts.posthog.key") (page.Param "assets.scripts.posthog.host")  }}
 import { postHogAnalyticsInit } from "scripts/claris/optional/posthog-analytics";
 optionalModules.push(postHogAnalyticsInit);
 {{- end }}
