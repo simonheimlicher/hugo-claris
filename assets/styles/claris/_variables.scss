@@ -650,7 +650,8 @@ html {
   --dim-image-filter: brightness(75%);
 }
 
-$fallbackStackDefault: (Arial);
+// Ensure to define a list. If there is only one fallback font, append a comma: ("Fallback Font", )
+$fallbackStackDefault: ("Arial", );
 
 $familyDefaultMap: (
   styles: (
@@ -741,7 +742,6 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
     $defFamily: ();
 
     $fontNameFamily: map-get($specFamily, name);
-    $fallbackStackFamily: map-get($specFamily, fallback);
     $fallbackStackFamily: defaultTo($fallbackStackDefault, map-get($specFamily, fallback));
     // --fallbackStackFamily: #{$fallbackStackFamily};
 

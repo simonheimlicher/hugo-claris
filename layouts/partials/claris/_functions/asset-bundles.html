@@ -2,9 +2,12 @@
 {{- $page := .Page }}
 {{- $template := "claris/_functions/asset-bundles" }}
 
-{{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
+{{- $assetVariant := $page.Scratch.Get "claris.assets.variant" }}
 
-{{/* {{- warnf "%s[%s]: RelPermalink=%s .Type=%s .Layout=%s $contentTypeList=%s $mediaTypeList=%s" .Page $template .Page.RelPermalink .Type .Layout $contentTypeList $mediaTypeList -}} */}}
+{{/* {{- warnf "%s[%s]: RelPermalink=%s .Type=%s .Layout=%s $contentTypeList=%s $mediaTypeList=%s"
+    .Page $template .Page.RelPermalink .Type .Layout
+    $assetVariant.ContentTypeList $assetVariant.MediaTypeList }} */}}
+    <!-- (jsonify (dict "indent" "  ")  $assetVariant) -->
 
 <!-- Bundle CSS: styles from all content types merged per mediaType type -->
 <!-- FIXME: Sometimes a change to a template file such as
@@ -15,11 +18,13 @@ maybe this helps -->
 {{/* {{- $styleBundles := partialCached "claris/_functions/style-bundles"
   (merge $bundleParams (dict "Page" $page)) $bundleParams $mediaTypeList $contentTypeList $minifyBundles }} */}}
 {{- $styleBundles := partialCached "claris/_functions/style-bundles" . $assetVariant }}
+{{/* {{- $styleBundles := partialCached "claris/_functions/style-bundles" (dict "Page" $page "AssetVariant" $assetVariant) }} */}}
 
 <!-- Bundle JS: styles from all content types merged per mediaType type -->
 {{/* {{- $scriptBundles := partialCached "claris/_functions/script-bundles"
   (merge $bundleParams (dict "Page" $page)) $bundleParams $mediaTypeList $contentTypeList $minifyBundles }} */}}
 {{- $scriptBundles := partialCached "claris/_functions/script-bundles" . $assetVariant }}
+{{/* {{- $scriptBundles := partialCached "claris/_functions/script-bundles" (dict "Page" $page "AssetVariant" $assetVariant) }} */}}
 
 {{- $assets = (dict "Styles" $styleBundles "Scripts" $scriptBundles) }}
 {{- return $assets }}

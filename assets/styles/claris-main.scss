@@ -46,11 +46,11 @@ $fontFamilyID: '{{ $familyID }}';
 
 $fontFamilyDefault: (name: '{{ $familyName }}');
 
-{{- $fontsSelfHosted := $page.Param "assets.styles.fonts.selfhosted" | default false }}
 {{- $assetStyleRoot := "styles" }}
-{{- $styleFontsPath := "claris/fonts" }}
-{{- $assetFontPath := printf "%s/%s" $assetStyleRoot $styleFontsPath }}
+{{- $fontsSelfHosted := $page.Param "assets.styles.fonts.selfhosted" | default false }}
 {{- if $fontsSelfHosted }}
+  {{- $styleFontsPath := "claris/fonts" }}
+  {{- $assetFontPath := printf "%s/%s" $assetStyleRoot $styleFontsPath }}
   {{- $hostedFontPath := default (relURL "fonts") ($page.Param "hostedFontPath") }}
   {{- $fontSpecPathGlob := printf "%s/%s.scss" $assetFontPath $familyID }}
   {{- with resources.Get $fontSpecPathGlob }}
