@@ -17,10 +17,19 @@
     {{- end }}
   {{- end }}
 
-  {{- $featureImageClassList := slice (printf "feature-image_style-%s" (default "wide" ($page.Param "image.feature.style") ) ) }}
-  {{- range $param := (slice "overlay") }}
-    {{- range $key, $value :=  $page.Param (printf "image.feature.%s" $param) }}
-      {{- $featureImageClassList = append (slice (printf "feature-image_%s_%s-%s" $param $key $value) ) $featureImageClassList }}
+  {{- $featureImageClassList := false }}
+  {{- with $featureImageParams := $page.Param "image.feature" }}
+    {{- if reflect.IsSlice $featureImageParams }}
+      {{- $featureImageParams = index $featureImageParams 0 }}
+    {{- end }}
+    {{- $featureImageStyle := default "wide" ($page.Param "image.feature.style") }}
+    {{- $featureImageClassList = slice (printf "feature-image_style-%s" $featureImageStyle ) }}
+    {{- if reflect.IsMap $featureImageParams }}
+      {{- range $param := (slice "overlay") }}
+        {{- range $key, $value :=  $page.Param (index $featureImageParams $param) }}
+          {{- $featureImageClassList = append (slice (printf "feature-image_%s_%s-%s" $param $key $value) ) $featureImageClassList }}
+        {{- end }}
+      {{- end }}
     {{- end }}
   {{- end }}
 
@@ -37,7 +46,11 @@
   {{- end }}
 
   {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
-  <header class="main_header {{ delimit $featureImageClassList ` ` }}">
+  {{- $mainHeaderClassList := slice "main_header" }}
+  {{- with $featureImageClassList }}
+    {{- $mainHeaderClassList = append $featureImageClassList $mainHeaderClassList }}
+  {{- end }}
+  <header class="{{ delimit $mainHeaderClassList ` ` }}">
     {{- partial "claris/_components/feature-image" . }}
     {{- partial "claris/_components/title" . }}
   </header>
