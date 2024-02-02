@@ -235,8 +235,8 @@ $main-z-index: 1;
       }
       &:focus {
         @include link-lvhfa_color($attrs, $focus);
-        outline: 1px dashed var(--link#{if($variant != null and $variant != '', -#{$variant}, '')}#{$focus});
-        background: var(--bg#{if($variant != null and $variant != '', -#{$variant}, '')}-hover);
+        outline: 1px dashed var(--link#{if($variant != null and $variant != '', -#{$variant}, '')}#{if($focus != null and $focus != '', -#{$focus}, '')});
+        // background: var(--bg#{if($variant != null and $variant != '', -#{$variant}, '')}-hover);
       }
       &:active {
         @include link-lvhfa_color($attrs, $active, 1.0);
