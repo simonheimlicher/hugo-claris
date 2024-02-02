@@ -394,13 +394,13 @@
  */
 
 .button {
-  background-color: var(--theme-bg);
+  background-color: var(--theme);
   color: var(--theme-text);
   display: inline-flex;
   padding: 0.5em 1.5em 0.75em 1.5em;
   // text-transform: uppercase
   text-transform: none;
-  border: 1px solid var(--theme-opa-20);
+  border: 1px solid var(--translucent);
   border-radius: 1.5em;
   font-size: var(--font-size-button);
   align-items: center;

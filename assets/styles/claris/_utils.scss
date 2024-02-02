@@ -141,17 +141,6 @@ $sites: ("facebook": #325c94, "twitter": #00abdc,"linkedin": #007bb6);
     }
   }
 }
-// Error pages
-.never {
-  // height: 75vh
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  // padding: 1.5rem
-  text-align: center;
-}
 .inline {
   display: inline;
   margin: 0;

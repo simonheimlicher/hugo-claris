@@ -26,6 +26,21 @@
   --bar-pos-left: calc(var(--unit) * -3);
 }
 
+// Error pages
+.error {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  &_back-button {
+    margin: 0.5em;
+    font-size: 1.25em;
+    font-weight: bold;
+  }
+}
+
 h1 {
   font-size: 300%;
   margin: 0;
@@ -121,10 +136,14 @@ h1, h2 {
   margin-top: 0;
   opacity: 0;
 }
+
+.error_back-button {
+
+}
 .gears {
   position: relative;
-  margin: auto;
-  width: auto;
+  // margin: auto;
+  // width: auto;
   height: calc(var(--unit) * 35);
 }
 .gear {

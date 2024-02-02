@@ -1,10 +1,10 @@
 {{- define "main" }}
-<div class="never inner_horizontal">
+<div class="error inner_horizontal">
   {{- $t := .Title }}
   <h1>{{ $t | markdownify }}</h1>
   {{- .Content }}
-  <a href="{{ relLangURL "" }}" title="{{ T "go_back" }}">
-    <div class="button mt-1 mb-2 btn_back">{{ T "go_back" }}</div>
+  <a href="{{ relLangURL `` }}" title="{{ T `go_back` }}">
+    <div class="button error_back-button">{{ T "go_back" }}</div>
   </a>
   <div class="gears">
     <div class="gear one">
