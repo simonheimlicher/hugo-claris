@@ -26,7 +26,7 @@
     {{- $featureImageClassList = slice (printf "feature-image_style-%s" $featureImageStyle ) }}
     {{- if reflect.IsMap $featureImageParams }}
       {{- range $param := (slice "overlay") }}
-        {{- range $key, $value :=  $page.Param (index $featureImageParams $param) }}
+        {{- range $key, $value :=  (index $featureImageParams $param) }}
           {{- $featureImageClassList = append (slice (printf "feature-image_%s_%s-%s" $param $key $value) ) $featureImageClassList }}
         {{- end }}
       {{- end }}

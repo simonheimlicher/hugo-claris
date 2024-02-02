@@ -15,21 +15,30 @@
 @import 'claris/{{ $themeColorSchemeFile }}';
 {{- end }}
 
-$fontTypeDefault: '{{ $page.Param "assets.styles.fonts.type.default" | default "sans" }}';
-$fontTypeContent: '{{ $page.Param "assets.styles.fonts.type.content" | default ($page.Param "assets.styles.fonts.type.default") }}';
-$fontTypeArticle: '{{ $page.Param "assets.styles.fonts.type.article" | default "serif" }}';
-$fontTypeCode:    '{{ $page.Param "assets.styles.fonts.type.code"    | default "mono" }}';
-$fontTypeHeading: '{{ $page.Param "assets.styles.fonts.type.heading" | default "inherit" }}';
-$fontTypeMeta:    '{{ $page.Param "assets.styles.fonts.type.meta"    | default "sans" }}';
+{{ $fontTypeDefault := $page.Param "assets.styles.fonts.type.default" | default "sans" }}
+{{ $fontTypeContent := $page.Param "assets.styles.fonts.type.content" | default ($page.Param "assets.styles.fonts.type.default") }}
+{{ $fontTypeArticle := $page.Param "assets.styles.fonts.type.article" | default "serif" }}
+{{ $fontTypeCode    := $page.Param "assets.styles.fonts.type.code"    | default "mono" }}
+{{ $fontTypeHeading := $page.Param "assets.styles.fonts.type.heading" | default "inherit" }}
+{{ $fontTypeMeta    := $page.Param "assets.styles.fonts.type.meta"    | default "sans" }}
 
-{{- $fontFamilySans  := $page.Param "assets.styles.fonts.family.sans"  | default "Source Sans 3" }}
-{{- $fontFamilySerif := $page.Param "assets.styles.fonts.family.serif" | default "Alegreya" }}
-{{- $fontFamilyMono  := $page.Param "assets.styles.fonts.family.mono"  | default "DM Mono"  }}
+$fontTypeDefault: '{{ $fontTypeDefault }}';
+$fontTypeContent: '{{ $fontTypeContent }}';
+$fontTypeArticle: '{{ $fontTypeArticle }}';
+$fontTypeCode:    '{{ $fontTypeCode }}';
+$fontTypeHeading: '{{ $fontTypeHeading }}';
+$fontTypeMeta:    '{{ $fontTypeMeta }}';
+
+{{- $fontFamilyNames  := (dict
+  "sans"  ($page.Param "assets.styles.fonts.family.sans"  | default "Source Sans 3")
+  "serif" ($page.Param "assets.styles.fonts.family.serif" | default "Alegreya")
+  "mono"  ($page.Param "assets.styles.fonts.family.mono"  | default "DM Mono")
+) -}}
 {{- $fontFamilies := (slice
-  (dict "fontType" "default"  "family" $fontFamilySans)
-  (dict "fontType" "sans"     "family" $fontFamilySans)
-  (dict "fontType" "serif"    "family" $fontFamilySerif)
-  (dict "fontType" "mono"     "family" $fontFamilyMono)
+  (dict "fontType" "default"  "family" (index $fontFamilyNames $fontTypeDefault) )
+  (dict "fontType" "sans"     "family" $fontFamilyNames.sans)
+  (dict "fontType" "serif"    "family" $fontFamilyNames.serif)
+  (dict "fontType" "mono"     "family" $fontFamilyNames.mono)
 ) -}}
 $fontFamilyMap: ();
 $fontDefinitionMap: () !default;
