@@ -1,4 +1,6 @@
+{{- $ctx := . }}
 {{- $page := .Page }}
+{{- $assetVariant := .AssetVariant }}
 {{- $template := "claris/_hooks/body-end/scripts" }}
 
     <script>
@@ -80,9 +82,7 @@
       }
     </script>
 
-{{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
-
-{{- with partialCached "claris/_functions/asset-bundles" . $assetVariant -}}
+{{- with partialCached "claris/_functions/asset-bundles" $ctx $assetVariant -}}
   {{- with .Scripts.body.resource }}
     <script type="module" src="{{ .RelPermalink }}" fetchpriority="low" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
   {{- end -}}

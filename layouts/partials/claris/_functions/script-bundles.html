@@ -7,7 +7,7 @@
 {{- /* $debug = or $debug (and (eq $page.Type "_error") (eq site.Language.Lang "en") ) */ -}}
 {{- $skeletonOnly := false }}
 
-{{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
+{{- $assetVariant := .AssetVariant -}}
 
 {{- $mediaTypeList := $assetVariant.MediaTypeList }}
 {{- $contentTypeList := $assetVariant.ContentTypeList }}

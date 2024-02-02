@@ -13,12 +13,14 @@
 {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
 
 {{- $assetVariant := partial "claris/_functions/asset-variant" . }}
+{{- $partialContext := (dict "Page" . "AssetVariant" $assetVariant) }}
+{{- partial "html-comment" (printf "%s[%s]: assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) }}
 
 {{- if $debug }}
   {{- warnf "%s[%s]: hugo.Environment=%v envDevel=%v envProd=%v"
       $page $template hugo.Environment $envDevel $envProd -}}
-  {{- warnf "%s[%s]: claris.assets.variant=\n%v"
-      $page $template (jsonify (dict "indent" "  ") (.Scratch.Get "claris.assets.variant") ) -}}
+  {{- warnf "%s[%s]: assetVariant=\n%v"
+      $page $template (jsonify (dict "indent" "  ") $assetVariant ) -}}
 {{- end }}
 
 {{- $kindMap := (dict
@@ -89,8 +91,8 @@
 <head>
   {{ partial "html-comment" (printf "[%s]: .Type=%s .Layout=%s .MediaType=%s $assetVariant.OutputFormat=%s meta.Classification=%v]"
     $template .Type .Layout .MediaType $assetVariant.OutputFormat.Name (jsonify (dict "indent" "  ") $meta.Classification)) }}
-  {{- partial "claris/head/index" . }}
-  {{- partialCached "claris/_hooks/head-end/index" . $assetVariant }}
+  {{- partial "claris/head/index" $partialContext }}
+  {{- partialCached "claris/_hooks/head-end/index" $partialContext $assetVariant }}
 </head>
 {{ partial "html-comment" (printf "BASEOF [%s]: BEGIN body" $template) }}
 <body id="documentContainer" {{- block "body-data" . -}} {{- end -}}>
@@ -102,7 +104,7 @@
       <script src="{{ relURL . }}" ></script>
     {{- end }}
   {{- end }}
-  {{- partialCached "claris/_hooks/body-end/index" . $assetVariant }}
+  {{- partialCached "claris/_hooks/body-end/index" $partialContext $assetVariant }}
 </body>
 {{ partial "html-comment" (printf "BASEOF [%s]: END  body" $template) }}
 </html>

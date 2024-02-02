@@ -1,10 +1,9 @@
+{{- $ctx := . }}
 {{- $page := .Page }}
 {{- $template := "claris/_hook/body-end/index" }}
 
-{{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
+{{- $assetVariant := .AssetVariant -}}
 
-{{- /* warnf "%s[%s]: $assetVariant=%v" $page $template $assetVariant */ -}}
-{{- partialCached "claris/_hooks/body-end/scripts" . $assetVariant }}
-
-{{- partialCached "claris/_hooks/body-end/math" . }}
-{{- partialCached "claris/_hooks/body-end/icons" . }}
+{{- partialCached "claris/_hooks/body-end/scripts" $ctx $assetVariant }}
+{{- partialCached "claris/_hooks/body-end/math" $ctx $assetVariant }}
+{{- partialCached "claris/_hooks/body-end/icons" $ctx $assetVariant }}

@@ -1,78 +1,69 @@
-{{- $assetVariant := .Scratch.Get "claris.assets.variant" }}
-{{- if not $assetVariant }}
-  {{- $page := .Page }}
-  {{- $template := "claris/_functions/asset-variant" }}
+{{- $assetVariant := false }}
+{{- $page := .Page }}
+{{- $template := "claris/_functions/asset-variant" }}
+{{- $outputFormat := partial "claris/_functions/output-format" . }}
+{{- $onlyMediaType := default "all" ($page.Param "onlyMediaType") }}
+{{- $mediaTypeList := (slice "all" "screen" "print") }}
+{{- if not (eq $onlyMediaType "all") }}
+  {{- $mediaTypeList = (slice $onlyMediaType) }}
+{{- end }}
 
-  {{- if $assetVariant }}
-    {{- warnf "%s[%s]: claris.assets.variant=%v" $page $template $assetVariant }}
+{{/* {{- warnf "%s[%s]: .Type=%v .Params.type=%v" $page $template .Type .Params.type }} */}}
+{{- $contentTypeList := partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type }}
+{{/* {{- warnf "%s[%s]: contentTypeList=%v" $page $template $contentTypeList }} */}}
+{{- $contentType := index (last 1 $contentTypeList) 0 }}
+{{- $contentTypeListID := delimit $contentTypeList "-" }}
+{{- $assetStyle := "default" }}
+{{- $assetStyleSuffix := "" }}
+{{- with $page.Param "style" }}
+  {{- $customAssetStyle := . }}
+  {{/* {{- warnf "%s[%s]: site.Params.style=%v $page.Params.style=%v" $page $template site.Params.style $page.Params.style }} */}}
+  {{- if eq (printf "%T" .) "string" }}
+    {{- if ne $customAssetStyle "default" }}
+      {{- /* Append style name only if $customAssetStyle is not "default" */ -}}
+      {{- $assetStyleSuffix = printf "_style-%s" $customAssetStyle }}
+      {{/* {{- warnf "%s[%s]: non-default assetStyle=%v: defined assetStyleSuffix=%v" $page $template $customAssetStyle $assetStyleSuffix }} */}}
+    {{- end }}
+  {{- else if reflect.IsMap $customAssetStyle }}
+    {{- /* Append hash if $customAssetStyle is not a simple string or an empty map */ -}}
+    {{- $validAssetStyle := false }}
+    {{- range $k, $v := $customAssetStyle }}
+      {{- if ne (printf "%T" $v) "<nil>" }}
+        {{/* {{- warnf "%s[%s]: k=%v v=%v [%T]" $page $template $k $v $v }} */}}
+        {{- $validAssetStyle = true }}
+      {{- end }}
+    {{- end }}
+    {{- if $validAssetStyle }}
+      {{- $assetStyleSuffix = printf "_style-%s" ($customAssetStyle | jsonify | sha256) }}
+      {{- $assetStyle = $customAssetStyle }}
+      {{/* {{- warnf "%s[%s]: using customAssetStyle=%vfrom site.Params.style=%v $page.Params.style=%v: defined assetStyleSuffix=%v" $page $template $customAssetStyle site.Params.style $page.Params.style $assetStyleSuffix }} */}}
+    {{/* {{- else }}
+      {{- warnf "%s[%s]: ignoring empty customAssetStyle=%v from site.Params.style=%v $page.Params.style=%v" $page $template $customAssetStyle site.Params.style $page.Params.style }} */}}
+    {{- end }}
   {{- else }}
-
-    {{- $outputFormat := partial "claris/_functions/output-format" . }}
-    {{- $onlyMediaType := default "all" ($page.Param "onlyMediaType") }}
-    {{- $mediaTypeList := (slice "all" "screen" "print") }}
-    {{- if not (eq $onlyMediaType "all") }}
-      {{- $mediaTypeList = (slice $onlyMediaType) }}
-    {{- end }}
-
-    {{/* {{- warnf "%s[%s]: .Type=%v .Params.type=%v" $page $template .Type .Params.type }} */}}
-    {{- $contentTypeList := partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type }}
-    {{/* {{- warnf "%s[%s]: contentTypeList=%v" $page $template $contentTypeList }} */}}
-    {{- $contentType := index (last 1 $contentTypeList) 0 }}
-    {{- $contentTypeListID := delimit $contentTypeList "-" }}
-    {{- $assetStyle := "default" }}
-    {{- $assetStyleSuffix := "" }}
-    {{- with $page.Param "style" }}
-      {{- $customAssetStyle := . }}
-      {{/* {{- warnf "%s[%s]: site.Params.style=%v $page.Params.style=%v" $page $template site.Params.style $page.Params.style }} */}}
-      {{- if eq (printf "%T" .) "string" }}
-        {{- if ne $customAssetStyle "default" }}
-          {{- /* Append style name only if $customAssetStyle is not "default" */ -}}
-          {{- $assetStyleSuffix = printf "_style-%s" $customAssetStyle }}
-          {{/* {{- warnf "%s[%s]: non-default assetStyle=%v: defined assetStyleSuffix=%v" $page $template $customAssetStyle $assetStyleSuffix }} */}}
-        {{- end }}
-      {{- else if reflect.IsMap $customAssetStyle }}
-        {{- /* Append hash if $customAssetStyle is not a simple string or an empty map */ -}}
-        {{- $validAssetStyle := false }}
-        {{- range $k, $v := $customAssetStyle }}
-          {{- if ne (printf "%T" $v) "<nil>" }}
-            {{/* {{- warnf "%s[%s]: k=%v v=%v [%T]" $page $template $k $v $v }} */}}
-            {{- $validAssetStyle = true }}
-          {{- end }}
-        {{- end }}
-        {{- if $validAssetStyle }}
-          {{- $assetStyleSuffix = printf "_style-%s" ($customAssetStyle | jsonify | sha256) }}
-          {{- $assetStyle = $customAssetStyle }}
-          {{/* {{- warnf "%s[%s]: using customAssetStyle=%vfrom site.Params.style=%v $page.Params.style=%v: defined assetStyleSuffix=%v" $page $template $customAssetStyle site.Params.style $page.Params.style $assetStyleSuffix }} */}}
-        {{/* {{- else }}
-          {{- warnf "%s[%s]: ignoring empty customAssetStyle=%v from site.Params.style=%v $page.Params.style=%v" $page $template $customAssetStyle site.Params.style $page.Params.style }} */}}
-        {{- end }}
-      {{- else }}
-        {{- errorf "%s[%s]: invalid 'style' param: must be of type 'string' or 'map'. Check site.Params.style=%v and $page.Params.style=%v" $page $template site.Params.style $page.Params.style }}
-      {{- end }}
-      {{- with $assetStyleSuffix }}
-        {{- $contentTypeListID = printf "%s%s" $contentTypeListID . }}
-      {{- end }}
-    {{- end }}
-    {{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
-    {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
-    {{- $minifyBundles := $envProd }}
-
-    {{- $assetVariant = (dict
-      "OutputFormat" $outputFormat
-      "OnlyMediaType" ($page.Param "onlyMediaType")
-      "MediaTypeList" $mediaTypeList
-      "ContentType" $contentType
-      "ContentTypeList" $contentTypeList
-      "ContentTypeListID" $contentTypeListID
-      "AssetStyle" $assetStyle
-      "AssetStyleSuffix" $assetStyleSuffix
-      "BundleParams" (dict
-        "MinifyBundles" $minifyBundles
-      )
-    ) -}}
-
-    {{- .Scratch.Set "claris.assets.variant" $assetVariant }}
+    {{- errorf "%s[%s]: invalid 'style' param: must be of type 'string' or 'map'. Check site.Params.style=%v and $page.Params.style=%v" $page $template site.Params.style $page.Params.style }}
+  {{- end }}
+  {{- with $assetStyleSuffix }}
+    {{- $contentTypeListID = printf "%s%s" $contentTypeListID . }}
   {{- end }}
 {{- end }}
+{{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
+{{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
+{{- $minifyBundles := $envProd }}
+
+{{- $assetVariant = (dict
+  "Language" site.Language.Lang
+  "OutputFormat" $outputFormat
+  "OnlyMediaType" ($page.Param "onlyMediaType")
+  "MediaTypeList" $mediaTypeList
+  "ContentType" $contentType
+  "ContentTypeList" $contentTypeList
+  "ContentTypeListID" $contentTypeListID
+  "AssetStyle" $assetStyle
+  "AssetStyleSuffix" $assetStyleSuffix
+  "BundleParams" (dict
+    "MinifyBundles" $minifyBundles
+  )
+) -}}
 
 {{- return $assetVariant }}

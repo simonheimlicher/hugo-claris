@@ -1,8 +1,9 @@
+{{- $ctx := . }}
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/head/index" }}
 
-{{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
+{{- $assetVariant := .AssetVariant -}}
 {{- $backgroundLight := default site.Params.colors.colorBackgroundLit ($page.Param "colors.colorBackgroundLit") }}
 {{- $backgroundDark := default site.Params.colors.colorBackgroundDim ($page.Param "colors.colorBackgroundDim") }}
 {{- if not (in (slice "page") $page.Kind ) }}
@@ -14,6 +15,7 @@
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{- /* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/de/transformation/why-okr` $page.RelPermalink) ) ) }} */ -}}
 {{- with $page }}
+    {{- partial "html-comment" (printf "%s[%s]: assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) }}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, viewport-fit=cover">
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="{{- $backgroundLight -}}">
@@ -44,7 +46,7 @@
 
 {{- /* FIXME: To avoid creating the same bundle multiple times, we remove `.Kind` from the cache busters and only keep `$assetVariant` */ -}}
 {{- /* partialCached "claris/head/assets" . $assetVariant .Kind */ -}}
-{{- partialCached "claris/head/assets" . -}}
+{{- partialCached "claris/head/assets" $ctx $assetVariant -}}
     <noscript>
       <style>.noscript-hide { display: none !important; }</style>
     </noscript>

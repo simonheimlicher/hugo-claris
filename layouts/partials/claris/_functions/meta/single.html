@@ -9,8 +9,9 @@
 {{- $singleMeta := dict -}}
 
 {{/* {{- $assetVariant := partial "claris/_functions/asset-variant" $page }} */}}
-{{- $assetVariant := .Scratch.get "claris.assets.variant" }}
+{{- $assetVariant := .AssetVariant }}
 {{- if not $assetVariant }}
+  {{/* {{- warnf "%s[%s]: .AssetVariant is unset" $page $template }} */}}
   {{- $assetVariant = partial "claris/_functions/asset-variant" $page }}
 {{- end }}
 

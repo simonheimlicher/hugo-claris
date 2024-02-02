@@ -2,7 +2,8 @@
 {{- $page := .Page }}
 {{- $template := "claris/_functions/asset-bundles" }}
 
-{{- $assetVariant := $page.Scratch.Get "claris.assets.variant" }}
+{{- $assetVariant := .AssetVariant }}
+{{- partial "html-comment" (printf "%s[%s]: assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) }}
 
 {{/* {{- warnf "%s[%s]: RelPermalink=%s .Type=%s .Layout=%s $contentTypeList=%s $mediaTypeList=%s"
     .Page $template .Page.RelPermalink .Type .Layout

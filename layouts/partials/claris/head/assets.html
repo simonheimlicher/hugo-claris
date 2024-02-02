@@ -1,16 +1,18 @@
+{{- $ctx := . }}
 {{- $page := .Page }}
 {{- $template := "claris/head/assets" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{- /* {{- $debug = or $debug (in (slice "home" "section" "page") $page.Kind) }} */ -}}
 
-{{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
+{{- $assetVariant := .AssetVariant -}}
 {{- $bundleParams := $assetVariant.BundleParams  }}
     <script>
       try { document.documentElement.dataset.colorScheme = window.localStorage.getItem('userSelectedColorScheme'); } catch (e) { }
     </script>
 
-{{- $assets := partialCached "claris/_functions/asset-bundles" . $assetVariant -}}
+{{- partial "html-comment" (printf "%s[%s]: assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) }}
+{{- $assets := partialCached "claris/_functions/asset-bundles" $ctx $assetVariant -}}
 
 {{- $scriptBundles := $assets.Scripts }}
 {{- $styleBundles := $assets.Styles }}

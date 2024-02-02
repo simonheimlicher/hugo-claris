@@ -7,7 +7,7 @@
 {{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/(de/)?.*?/resume` $page.RelPermalink) ) ) -}} */}}
 {{/* {{- $debug = or $debug (eq site.Language.Lang "en") }} */}}
 
-{{- $assetVariant := $page.Scratch.Get "claris.assets.variant" -}}
+{{- $assetVariant :=.AssetVariant -}}
 
 {{- $mediaTypeList := $assetVariant.MediaTypeList }}
 {{- $contentTypeList := $assetVariant.ContentTypeList }}
@@ -87,7 +87,11 @@ that contains the `postcss.config.js` file - not the file itself. -->
 {{- /* FIXME: Use key "AssetStyle instead of "Style" in the dict $tplParams. If the dict has a key named "Style", the following error occurs:
 error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main_all.scss" (text/x-scss): "styles/claris-vitae-main_all.scss:0:15": Expected expression.
 */ -}}
-{{- $tplParams := (dict "Page" $page "AssetStyle" $assetStyle "ContentTypeList" $contentTypeList "ContentTypeListID" $contentTypeListID) }}
+{{- $tplParams := (dict "Page" $page
+    "AssetVariant" $assetVariant
+    "AssetStyle" $assetStyle
+    "ContentTypeList" $contentTypeList
+    "ContentTypeListID" $contentTypeListID) }}
 
 {{- range $resourceID, $params := $styleResources }}
   {{- $mediaType := default "all" $params.media }}
