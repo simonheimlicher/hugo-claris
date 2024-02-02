@@ -739,6 +739,16 @@
   justify-content: flex-end;
   z-index: ($main-z-index + 2);
   .content-title {
+    @include content_multicolumn;
+    --title_line-height: calc(var(--font-size-title) * var(--line-height-heading));
+    margin: calc(0.5 * var(--title_line-height)) auto;
+    @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
+      // min-width: calc(var(--content_max-width) - var(--inner_margin) * 2);
+      min-width: var(--content_max-width);
+    }
+    padding: 0;
+    width: fit-content;
+    text-align: unset;
     color: var(--header-text);
     z-index: ($main-z-index + 5);
     hyphens: manual;
@@ -797,18 +807,19 @@
           )
         }
 
-        .content-title {
-          @include content_multicolumn;
-          --title_line-height: calc(var(--font-size-title) * var(--line-height-heading));
-          margin: calc(0.5 * var(--title_line-height)) auto;
-          @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
-            // min-width: calc(var(--content_max-width) - var(--inner_margin) * 2);
-            min-width: var(--content_max-width);
-          }
-          padding: 0;
-          width: fit-content;
-          text-align: unset;
-        }
+        // .content-title {
+        //   @include content_multicolumn;
+        //   --title_line-height: calc(var(--font-size-title) * var(--line-height-heading));
+        //   margin: calc(0.5 * var(--title_line-height)) auto;
+        //   @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
+        //     // min-width: calc(var(--content_max-width) - var(--inner_margin) * 2);
+        //     min-width: var(--content_max-width);
+        //   }
+        //   padding: 0;
+        //   width: fit-content;
+        //   text-align: unset;
+        // }
+
         .feature-image {
           &_figure {
             display: grid;
