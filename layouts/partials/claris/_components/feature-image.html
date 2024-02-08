@@ -20,13 +20,18 @@
 {{- with $meta.Single.Data.Images }}
   {{- with $featureImage = .feature.variant.default }}
     {{- $classPrefix := printf "feature-image" }}
+    {{- $featureImageAspectRatioMin := $page.Param "assets.styles.images.feature.ratio.min" | default 2 }}
+    {{- $featureImageAspectRatioMax := $page.Param "assets.styles.images.feature.ratio.max" | default 4 }}
+
     {{- $featureImageArgs := (dict
       "resource" (default .version.default.resource (index .version $featureImageStyle).resource)
       "position" $featureImage.position
+      "aspectratio" (printf "%dx1" $featureImageAspectRatioMin)
       "alt" $featureImage.alt
       "title" $featureImage.title
       "credit" $featureImage.credit
       "fullbleedhorizontal" true
+      "placeholder" true
       "figureclass" (printf "%s_figure" $classPrefix)
       "imgclass" (printf "%s_img" $classPrefix)
       "fetchpriority" $fetchPriority

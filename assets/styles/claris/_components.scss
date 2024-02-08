@@ -777,27 +777,20 @@
     &_style {
       &-wide {
         // Style: wide
-        // Aspect ratio: bounded by minimum and maximum
-        $fi_aspect-ratio_min: 2;
-        $fi_aspect-ratio_max: 4;
-
-        $fi_width_coverage_of_viewport-width: 0.5;
-        $fi_height_coverage_of_viewport-height: 0.5;
-
         $border_overlap_fraction: 0.1;
         $border_overlap_in_viewport-width: 0.1 * 100vw;
         $transition_factor: 1e9;
 
         --feature-image_max-height: min(
-          #{ math.div(1, $fi_aspect-ratio_min) * 100vw},
-          #{$fi_height_coverage_of_viewport-height * 100vh},
-          #{ math.div(1, $fi_aspect-ratio_min) * $screenViewBreakpointWidthWide}
+          #{ math.div(1, $featureImageAspectRatioMin) * 100vw},
+          #{$featureImageViewportHeightMax * 100vh},
+          #{ math.div(1, $featureImageAspectRatioMin) * $screenViewBreakpointWidthWide}
         );
 
         --feature-image_max-width: min(
           100vw,
-          #{$fi_aspect-ratio_max * $fi_height_coverage_of_viewport-height * 100vh},
-          #{ math.div($fi_aspect-ratio_max, $fi_aspect-ratio_min) * $screenViewBreakpointWidthWide}
+          #{$featureImageAspectRatioMax * $featureImageViewportHeightMax * 100vh},
+          #{ math.div($featureImageAspectRatioMax, $featureImageAspectRatioMin) * $screenViewBreakpointWidthWide}
         );
 
         @function feature-image_border-width($factor: 1) {

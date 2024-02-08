@@ -207,6 +207,12 @@ $fontFamilyMap: map-merge($fontFamilyMap, ({{ $familyID }}: $fontFamilySpec) );
 
 {{- end }}
 
+// Feature image at top of article and section pages
+// Aspect ratio: bounded by minimum and maximum
+$featureImageAspectRatioMin: {{ $page.Param "assets.styles.images.feature.ratio.min" | default 2 }};
+$featureImageAspectRatioMax: {{ $page.Param "assets.styles.images.feature.ratio.max" | default 4 }};
+$featureImageViewportHeightMax: {{ $page.Param "assets.styles.images.feature.viewport.height.max" | default 0.5 }};
+
 @import 'claris/variables';
 @import 'claris/override';
 
