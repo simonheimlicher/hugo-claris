@@ -2,7 +2,9 @@
 {{- $template := "_default/list" }}
 {{- $debug := false }}
 {{/* {{- $debug = or $debug (not (not (findRE `^/tags/` .RelPermalink) ) ) }} */}}
+{{- $assetVariant := partial "claris/_functions/asset-variant" . }}
+
 {{ partial "html-comment" (printf "[%s]: BEGIN define main" $template) }}
-{{ partial "claris/main/index" . }}
+{{ partial "claris/main/index" (dict "Page" . "AssetVariant" $assetVariant) }}
 {{ partial "html-comment" (printf "[%s]: END   define main" $template) }}
 {{- end }}
