@@ -14,6 +14,7 @@
 {{- $imgTitle := default $imgAlt .title -}}
 {{- $imgCredit := default false .credit -}}
 {{- $fullBleedHorizontal := default false .fullbleedhorizontal }}
+{{- $includePlaceholder := default false .placeholder }}
 
 {{- $imgClass := default "responsive" .imgclass -}}
 {{- $defaultPosition := "center center" }}
@@ -85,8 +86,8 @@
 {{- $noscriptHideClass := "noscript-hide" }}
 {{- $lazyloadPolyfillClass := "lazyload" }}
 {{- $scriptBasedLoading := or $lazy $variantSpec -}}
-{{- $includePlaceholder := $scriptBasedLoading }}
-{{- $includeNoscriptFallback := $scriptBasedLoading }}
+{{- $includePlaceholder := or $includePlaceholder $scriptBasedLoading }}
+{{- $includeNoscriptFallback := $includePlaceholder }}
 
 <!-- Always include the low-quality placeholder to avoid the jarring white whole on slow connections -->
 {{- $placeholderAsBackground := true }}
@@ -94,44 +95,13 @@
 {{- $defaultMedia := "default" }}
 {{- $defaultVariantName := "default" }}
 
-{{- $targetFormats := default false .targetformats }}
-{{- $processingParams := default false .processingparams }}
-
-{{- if not $processingParams }}
-  {{- $targetSizeSpec := "" }}
-  {{- with $width := $.width }}
-    {{- with $height := $.height }}
-      {{- $targetSizeSpec = printf "%dx%d" $width $height }}
-    {{- else }}
-      {{- $targetSizeSpec = printf "%dx" $width }}
-    {{- end }}
-  {{- else }}
-    {{- with $height := .height }}
-      {{- $targetSizeSpec = printf "x%d" $height }}
-    {{- end }}
-  {{- end }}
-  {{- with $targetSizeSpec }}
-    {{- $processingParams = (dict
-      "method" "fill"
-      "args" $targetSizeSpec
-    ) }}
-  {{- end }}
-{{- end }}
-
-{{- $imageResourceArgs = merge $imageResourceArgs (dict
-  "targetformats" $targetFormats
-  "processingparams" $processingParams
-) -}}
-
 {{- $figureInlineStyle := "" }}
 
 {{- $imgInlineStyleSlice := slice -}}
 {{- range $attr, $value := (dict
-  "aspect-ratio" $imageResourceArgs.aspectratio
   "border-radius" $imageResourceArgs.borderradius
   "min-width" $imageResourceArgs.minwidth
   "min-height" $imageResourceArgs.minheight
-  "max-height" $imageResourceArgs.maxheight
   "max-width" (cond (not (not $imageResourceArgs.maxwidth)) (printf "min(100%%, %v)" $imageResourceArgs.maxwidth) false)
   "max-height" (cond (not (not $imageResourceArgs.maxheight)) (printf "min(100%%, %v)" $imageResourceArgs.maxheight) false)
   ) -}}
