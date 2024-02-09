@@ -14,7 +14,7 @@
 {{- $imgTitle := default $imgAlt .title -}}
 {{- $imgCredit := default false .credit -}}
 {{- $fullBleedHorizontal := default false .fullbleedhorizontal }}
-{{- $includePlaceholder := default false .placeholder }}
+{{- $includePlaceholder := default false .includeplaceholder }}
 
 {{- $imgClass := default "responsive" .imgclass -}}
 {{- $defaultPosition := "center center" }}
@@ -127,6 +127,7 @@
     {{- $imageResourceVariant = merge $imageResourceVariant (dict
       "width" .width
       "height" .height
+      "aspectratio" .aspectratio
       "targetformats" .targetformats
       "processingparams" .processingparams
     ) }}
