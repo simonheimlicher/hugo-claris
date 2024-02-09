@@ -15,7 +15,7 @@
 {{- $contentTypeListID := delimit $contentTypeList "-" }}
 {{- $assetStyle := "default" }}
 {{- $assetStyleSuffix := "" }}
-{{- with $page.Param "assets.styles" }}
+{{- with $page.Params.assets.styles }}
   {{- $customAssetStyle := . }}
   {{/* {{- warnf "%s[%s]: site.Params.style=%v $page.Params.style=%v" $page $template site.Params.style $page.Params.style }} */}}
   {{- if eq (printf "%T" .) "string" }}
