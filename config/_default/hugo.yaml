@@ -2,7 +2,7 @@ title: Simon Heimlicher
 copyright: Copyright © Simon Heimlicher
 
 # set `baseurl` to your root domain including trailing slash
-baseURL: "https://simon.heimlicher.com/"  # Include trailing slash
+baseURL: "https://simon.heimlicher.com/" # Include trailing slash
 
 defaultContentLanguage: en
 languageCode: en-us
@@ -29,13 +29,13 @@ enableMissingTranslationPlaceholders: true
 security:
   enableInlineShortcodes: false
   exec:
-    allow: ['^dart-sass', '^sass', '^go$', '^npx$', '^postcss$']
-    osEnv: ['(?i)^(PATH|PATHEXT|APPDATA|TMP|TEMP|TERM)$']
+    allow: ["^dart-sass", "^sass", "^go$", "^npx$", "^postcss$"]
+    osEnv: ["(?i)^(PATH|PATHEXT|APPDATA|TMP|TEMP|TERM)$"]
   funcs:
-    getenv: ['^HUGO_']
+    getenv: ["^HUGO_"]
   http:
-    methods: ['(?i)GET|POST']
-    urls: ['.*']
+    methods: ["(?i)GET|POST"]
+    urls: [".*"]
 
 permalinks:
   articles: ":sections/:filename"
@@ -49,19 +49,6 @@ related:
   includeNewer: true
   threshold: 50
   toLower: true
-
-  indices:
-    - name = "categories"
-      weight = 100
-
-    - name = "tags"
-      weight = 100
-
-    - name = "keywords"
-      weight = 100
-
-    - name = "date"
-      weight = 10
 
 module:
   imports:
