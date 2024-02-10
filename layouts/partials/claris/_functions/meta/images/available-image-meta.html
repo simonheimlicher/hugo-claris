@@ -31,8 +31,16 @@ $imageKindMeta = (dict
       "title" = "The sun is shining in Zurich, Switzerland"
       "alt" = "Photo of the Limmat river in Zurich, Switzerland"
       "version" (dict
-        "2x1" "images/light-scheme"
-        "1x1" "images/light-scheme"
+        "aspect_2x1" (dict
+          "resource" "images/light-scheme_2x1"
+          "aspect" "2x1"
+          "ratio" 2
+        )
+        "aspect_1x1" (dict
+          "resource" "images/light-scheme_1x1"
+          "aspect" "1x1"
+          "ratio" 1
+        )
       )
     )
     "dark" (dict
@@ -40,8 +48,16 @@ $imageKindMeta = (dict
       "title" = "The moon is shining in Zurich, Switzerland"
       "alt" = "Photo of the Limmat river at night in Zurich, Switzerland"
       "version" (dict
-        "2x1" "images/dark-scheme"
-        "1x1" "images/dark-scheme"
+        "aspect_2x1" (dict
+          "resource" "images/dark-scheme_2x1"
+          "aspect" "2x1"
+          "ratio" 2
+        )
+        "aspect_1x1" (dict
+          "resource" "images/dark-scheme_1x1"
+          "aspect" "1x1"
+          "ratio" 1
+        )
       )
     )
   )
@@ -158,36 +174,33 @@ $imageKindMeta = (dict
         {{- with $imgMeta }}
           {{- $versionResource := $imgMeta.resource }}
           {{- $aspectRatio := partial "claris/_functions/resources/images/aspect-ratio" $versionResource }}
-          {{- if and (gt (index $aspectRatio 0) 0) (gt (index $aspectRatio 1) 0) }}
-            {{- $imgVersionMeta := dict }}
-            {{- $aspectRatioString := printf "%dx%d" (index $aspectRatio 0) (index $aspectRatio 1) }}
-            {{- $versionName := printf "aspect_%s" $aspectRatioString }}
-            {{- range $k, $v := $imgMeta }}
-              {{- if (ne $k "resource") }}
-                {{- $imgVersionMeta = merge $imgVersionMeta (dict $k $v) }}
-              {{- end }}
+          {{- $imgVersionMeta := dict }}
+          {{- $versionName := printf "aspect_%s" $aspectRatio.human }}
+          {{- range $k, $v := $imgMeta }}
+            {{- if (ne $k "resource") }}
+              {{- $imgVersionMeta = merge $imgVersionMeta (dict $k $v) }}
             {{- end }}
-            {{- $imgVersionMeta = merge $imgVersionMeta (dict "version" (dict
-                $versionName $versionResource
+          {{- end }}
+          {{- $imgVersionMeta = merge $imgVersionMeta (dict "version" (dict
+              $versionName (dict
+                "resource" $versionResource
+                "aspect" $aspectRatio.human
+                "ratio" $aspectRatio.float
               )
-            ) }}
-            {{- $imageKindVariantMeta = merge $imageKindVariantMeta (dict $variantName $imgVersionMeta) }}
-            <!-- We add the first variant that has valid image
-            resources as a duplicate under the $defaultVariantName
-            key until it is potentially overwritten by the meta data
-            from the variant named $defaultVariantName -->
-            {{- if not (isset $imageKindVariantMeta $defaultVariantName) }}
-              {{- $imageKindVariantMeta = merge $imageKindVariantMeta (dict $defaultVariantName $imgVersionMeta) }}
-            {{- end }}
-            {{- if $debug }}
-              {{- warnf "%s[%s]: kind=%v Added image version=%v with resource='%v'[%T] in imgVersionMeta=\n%v\nto imageKindVariantMeta=\n%v"
-                  $page $template $imageKind $versionName $versionResource $versionResource
-                  (jsonify (dict "indent" "  ") $imgVersionMeta)
-                  (jsonify (dict "indent" "  ") $imageKindVariantMeta) }}
-            {{- end }}
-          {{- else }}
-            {{- warnf "%s[%s]: kind=%v Invalid image meta with resource='%v'[%T] not added to imageKindVariantMeta=\n%v"
-                $page $template $imageKind $versionResource $versionResource
+            )
+          ) }}
+          {{- $imageKindVariantMeta = merge $imageKindVariantMeta (dict $variantName $imgVersionMeta) }}
+          <!-- We add the first variant that has valid image
+          resources as a duplicate under the $defaultVariantName
+          key until it is potentially overwritten by the meta data
+          from the variant named $defaultVariantName -->
+          {{- if not (isset $imageKindVariantMeta $defaultVariantName) }}
+            {{- $imageKindVariantMeta = merge $imageKindVariantMeta (dict $defaultVariantName $imgVersionMeta) }}
+          {{- end }}
+          {{- if $debug }}
+            {{- warnf "%s[%s]: kind=%v Added image version=%v with resource='%v'[%T] in imgVersionMeta=\n%v\nto imageKindVariantMeta=\n%v"
+                $page $template $imageKind $versionName $versionResource $versionResource
+                (jsonify (dict "indent" "  ") $imgVersionMeta)
                 (jsonify (dict "indent" "  ") $imageKindVariantMeta) }}
           {{- end }}
         {{- end }}

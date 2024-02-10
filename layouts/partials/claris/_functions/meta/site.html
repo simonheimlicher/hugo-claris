@@ -95,7 +95,7 @@
   "Debug" $debug
 ) }}
 
-{{- $metaImages := partialCached "claris/_functions/meta/images/index" $metaImagesParams $metaImagesParams }}
+{{- $metaImages := partialCached "claris/_functions/meta/images/from-params" $metaImagesParams $metaImagesParams }}
 
 {{- $siteMeta = (dict
   "Site" (dict

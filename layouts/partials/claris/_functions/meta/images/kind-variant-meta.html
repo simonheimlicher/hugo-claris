@@ -46,7 +46,11 @@
     "title" "Sun is rising"
     "alt" "Photo of sunrise"
     "version" (dict
-      "aspect_1x1" resource.ResourceAdapter
+      "aspect_16x9" (
+        "resource" resource.ResourceAdapter
+        "aspect" "16x9"
+        "ratio" 1.778
+      )
     )
   )
   -->
@@ -75,37 +79,39 @@
       {{- $greatestSizeRatio := 0.0 }}
 
       {{- range $versionID, $versionResource := $variantMeta.version }}
-        {{- $candAspect := div (mul 1.0 .Width) .Height }}
+        {{- $candAspect := .ratio }}
         {{- $candDeviation := math.Pow (sub (div $candAspect $targetAspect ) 1) 2 }}
 
         {{- if le $candDeviation $lowestAspectDeviation }}
-          {{- $widthRatio := div (mul 1.0 .Width) $verSpec.width }}
-          {{- $heightRatio := div (mul 1.0 .Height) $verSpec.height }}
-          {{- $sizeRatio := (mul (math.Pow $widthRatio 2) (math.Pow $heightRatio 2) ) }}
-          {{/* {{- if or (and (ge $widthRatio 0.9) (ge $heightRatio 0.4) ) (and (ge $widthRatio 0.4) (ge $heightRatio 0.9) ) }} */}}
-          {{- if ge $sizeRatio $greatestSizeRatio }}
-            {{- $bestMatchVersionResource = $versionResource }}
-            {{- $lowestAspectDeviation = $candDeviation}}
-            {{- $greatestSizeRatio = $sizeRatio }}
-            {{- if $debug }}
-              {{- warnf "%s[%s]: %v/%v/%v: targetAspect=%.3f valid cand: %vx%v aspect=%.3f aspectDeviation=%.3f widthRatio=%.3f heightRatio=%.3f sizeRatio=%.3f"
-                  $page $template $imageKind $variantName $verSpec
-                  $targetAspect .Width .Height
-                  $candAspect $candDeviation
-                  $widthRatio $heightRatio $sizeRatio }}
-            {{- end }}
-          {{- else }}
-            {{- if $debug }}
-              {{- warnf "%s[%s]: %v/%v/%v: targetAspect=%v too small: %vx%v candAspect=%.3f candDeviation=%.3f vs. lowestAspectDeviation=%.3f"
-                  $page $template $imageKind $variantName $verSpec
-                  $targetAspect .Width .Height $candAspect $candDeviation $lowestAspectDeviation }}
+          {{- with .resource }}
+            {{- $widthRatio := div (mul 1.0 .Width) $verSpec.width }}
+            {{- $heightRatio := div (mul 1.0 .Height) $verSpec.height }}
+            {{- $sizeRatio := (mul (math.Pow $widthRatio 2) (math.Pow $heightRatio 2) ) }}
+            {{/* {{- if or (and (ge $widthRatio 0.9) (ge $heightRatio 0.4) ) (and (ge $widthRatio 0.4) (ge $heightRatio 0.9) ) }} */}}
+            {{- if ge $sizeRatio $greatestSizeRatio }}
+              {{- $bestMatchVersionResource = $versionResource }}
+              {{- $lowestAspectDeviation = $candDeviation}}
+              {{- $greatestSizeRatio = $sizeRatio }}
+              {{- if $debug }}
+                {{- warnf "%s[%s]: %v/%v/%v: targetAspect=%.3f valid cand: %vx%v aspect=%.3f aspectDeviation=%.3f widthRatio=%.3f heightRatio=%.3f sizeRatio=%.3f"
+                    $page $template $imageKind $variantName $verSpec
+                    $targetAspect .Width .Height
+                    $candAspect $candDeviation
+                    $widthRatio $heightRatio $sizeRatio }}
+              {{- end }}
+            {{- else }}
+              {{- if $debug }}
+                {{- warnf "%s[%s]: %v/%v/%v: targetAspect=%v too small: %vx%v candAspect=%.3f candDeviation=%.3f vs. lowestAspectDeviation=%.3f"
+                    $page $template $imageKind $variantName $verSpec
+                    $targetAspect .Width .Height $candAspect $candDeviation $lowestAspectDeviation }}
+              {{- end }}
             {{- end }}
           {{- end }}
         {{- end }}
       {{- end }}
 
       {{- with $bestMatchVersionResource }}
-        {{- $versionResource := . }}
+        {{- $versionResource := .resource }}
         {{- $origin := "existing" }}
 
         {{- if or $generate $processAllImages }}
@@ -129,28 +135,30 @@
 
           {{- if (lt $greatestSizeRatio 1.0) }}
             {{- $processMethod = "crop" }}
-            {{- $originalAspect := div (mul 1.0 .Width) .Height }}
+            {{- $originalAspect := .ratio }}
             {{- if gt $originalAspect $targetAspect }}
-              <!-- Original aspect ratio > target aspect ratio:
-              use height of original but reduce width to match target aspect ratio -->
-              {{- $cropWidth = (int (math.Round (mul .Height (mul 1.0 $targetAspect)) ) ) }}
-              {{- $cropHeight = .Height }}
-            {{- else }}
-              <!-- Original aspect ratio < target aspect ratio:
-              use width of original but reduce height to match target aspect ratio -->
-              {{- $cropWidth = .Width }}
-              {{- $cropHeight = (int (math.Round (div .Width (mul 1.0 $targetAspect)) ) ) }}
-            {{- end }}
-            {{- if $debug }}
-              {{- warnf "%s[%s]: %v/%v/%v: aspectDeviation=%.3f sizeRatio=%.3f: original is too small; use method %v to scale from %dx%d to %dx%d"
-                  $page $template $imageKind $variantName $verSpec
-                  $lowestAspectDeviation $greatestSizeRatio
-                  $processMethod .Width .Height $cropWidth $cropHeight }}
+              {{- with .resource }}
+                <!-- Original aspect ratio > target aspect ratio:
+                use height of original but reduce width to match target aspect ratio -->
+                {{- $cropWidth = (int (math.Round (mul .Height (mul 1.0 $targetAspect)) ) ) }}
+                {{- $cropHeight = .Height }}
+              {{- else }}
+                <!-- Original aspect ratio < target aspect ratio:
+                use width of original but reduce height to match target aspect ratio -->
+                {{- $cropWidth = .Width }}
+                {{- $cropHeight = (int (math.Round (div .Width (mul 1.0 $targetAspect)) ) ) }}
+              {{- end }}
+              {{- if $debug }}
+                {{- warnf "%s[%s]: %v/%v/%v: aspectDeviation=%.3f sizeRatio=%.3f: original is too small; use method %v to scale from %dx%d to %dx%d"
+                    $page $template $imageKind $variantName $verSpec
+                    $lowestAspectDeviation $greatestSizeRatio
+                    $processMethod .Width .Height $cropWidth $cropHeight }}
+              {{- end }}
             {{- end }}
           {{- end }}
 
           {{- $imageResourceArgs := merge $imageResourceBaseArgs (dict
-            "resource" .
+            "resource" .resource
             "process" (dict
               "method" $processMethod
               "args" (printf "%vx%v %s" $cropWidth $cropHeight $centerMethod)
@@ -184,9 +192,7 @@
 
           <!-- Only add `resource`, avoid referencing `.Permalink` as this would cause the image file to be copied
           to the output directory as-is -->
-          {{- $versionMeta := (dict
-            "resource" .
-          ) }}
+          {{- $versionMeta := . }}
 
           {{- if $debug }}
             {{- warnf "%s[%s]: %v/%v/%v: Added %v versionMeta=%v[%vx%v] that matches version=%v in required versions=%v to processedVersionMeta=\n%v\nprocessedImageKindURLs=%v"
@@ -222,13 +228,11 @@
     {{- $processedVersionMeta := dict }}
 
     {{- if isset $variantMeta "version" }}
-      {{- range $versionID, $versionResource := $variantMeta.version }}
+      {{- range $versionID, $versionMeta := $variantMeta.version }}
         {{- if not (in (index $processedImageKindVariantMeta $variantName) $versionID) }}
-          <!-- Only add `resource`, avoid referencing `.Permalink` as this would cause the image file to be copied
-          to the output directory as-is -->
-          {{- $versionMeta := (dict
-            "resource" $versionResource
-          ) }}
+          <!-- Only add the image `resource` within $versionMeta "as is" and avoid
+          referencing its property `.Permalink` as this would cause the image file to be copied
+          to the output directory -->
           {{- $processedVersionMeta = merge $processedVersionMeta (dict $versionID $versionMeta) }}
           {{- if $debug }}
             {{- warnf "%s[%s]: %v/%v/%v Added additional available versionMeta=\n%v\n to processedVersionMeta=\n%v"

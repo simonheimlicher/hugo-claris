@@ -4,7 +4,7 @@
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{/* {{- $debug = or $debug (not (not (findRE `/([^/]+-demo/)?powerful` $page.RelPermalink) ) ) }} */}}
-{{- $template := "claris/_functions/meta/images/index" }}
+{{- $template := "claris/_functions/meta/images/from-params" }}
 
 {{- with $paramsImage }}
   <!-- Grab images provided by .Params.image
