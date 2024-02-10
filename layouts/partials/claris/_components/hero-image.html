@@ -1,6 +1,12 @@
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $imagesMeta := $meta.Single.Data.Images }}
 {{- $template := "partials/hero-image" }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
+{{- /* $debug = or $debug (not (not (findRE `/about` page.RelPermalink) ) ) */ -}}
+{{- /* $debug = or $debug (and (eq page.Kind "home" ) (not site.LanguagePrefix) ) */ -}}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?([^/]+)/?$` `$1` page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
 {{- $fetchPriority := "low" }}
 {{- if reflect.IsMap . }}
   {{- with .FetchPriority }}
@@ -13,6 +19,7 @@
       "figureclass" (printf "hero-image_%s_figure" $imagesMeta.hero.style)
       "imgclass" (printf "hero-image_%s_img" $imagesMeta.hero.style)
       "fetchpriority" $fetchPriority
+      "Debug" $debug
     ) -}}
   {{/* {{- warnf "%s[%s]: Calling responsive-image with .style=%v and .resource=%v'"
       page $template .style .variant }} */}}

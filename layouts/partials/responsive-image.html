@@ -1,8 +1,10 @@
 {{- $template := "partials/responsive-image" }}
 {{- $page := .Page }}
 {{- $debug := false }}
+{{- $debug = or $debug .Debug }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{- /* $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?leadership/$` $page.RelPermalink) ) ) */ -}}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?([^/]+)/?$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 {{- $imageResourceArgs := merge . (dict
   "Debug" $debug
 ) -}}
@@ -32,11 +34,11 @@
 {{- $defaultVersionName := "default" }}
 
 {{- if or (and $resourceSpec (not $imgAlt)) (and $variantSpec (not $variantSpec.default.alt) ) }}
-  {{- warnf "%s[%s]: Missing attribute .alt in .resource=%v and .variant.default=\n%v"
-  $page $template $resourceSpec
+  {{- warnf "%s Missing attribute .alt in .resource=%v and .variant.default=\n%v"
+  $dbg $resourceSpec
   (jsonify (dict "indent" "  ") $variantSpec.default ) }}
 {{- end }}
-{{- /* {{- warnf "%s[%s]: .resource has type [%T]" $page $template $resourceSpec -}} */ -}}
+{{- /* {{- warnf "%s .resource has type [%T]" $dbg $resourceSpec -}} */ -}}
 
 {{- with .float -}}
   {{- $containerClass = printf "%s float-%s" $containerClass . -}}
@@ -76,8 +78,8 @@
   {{- if (in (slice "auto" "low" "high") .) }}
     {{- $fetchPriority = . -}}
   {{- else }}
-      {{- errorf "%s[%s]: Invalid param for fetchpriority=%v [type %T]"
-          $page $template $fetchPriority $fetchPriority -}}
+      {{- errorf "%s Invalid param for fetchpriority=%v [type %T]"
+          $dbg $fetchPriority $fetchPriority -}}
   {{- end }}
 {{- end }}
 
@@ -134,7 +136,7 @@
   {{- end }}
   {{- if $variantSpec }}
     {{- if $debug }}
-      {{- warnf "%s[%s]: .variant is map: %v" $page $template $variantSpec -}}
+      {{- warnf "%s .variant is map: %v" $dbg (jsonify (dict "indent" "  ") $variantSpec) -}}
     {{- end }}
     {{- range $variantName, $variantMeta := $variantSpec }}
       {{- $resMedia := .media }}
@@ -146,8 +148,17 @@
           (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") -}}
       {{- $imgAlt = default $imgTitle .alt }}
       {{- $imgCredit = default $imgTitle .credit }}
-      {{- $version := default $defaultVersionName .aspect }}
-      {{- $res := (index .version $version).resource }}
+      {{- if $debug }}
+        {{- warnf "%s Available versions: \n%v" $dbg (jsonify (dict "indent" "  ") .) }}
+      {{- end }}
+      {{- /* If there are multiple versions of the image, the partial
+            `claris/_functions/meta/images/kind-variant-meta.html`
+             will have made them available under the `version` key and named them
+             by their aspect ratio, e.g., `aspect_16x9` for the version with a 16:9
+             aspect ratio */ -}}
+      {{- /* $version := default $defaultVersionName .aspect }}
+      {{- $res := (index .version $version).resource | default .resource */ -}}
+      {{- $res := (index .version $defaultVariantName).resource | default .resource }}
       {{- $imageResourceArgs = merge $imageResourceArgs (dict "resource" $res ) }}
       {{- with (partialCached "claris/_functions/resources/images/image-srcset" $imageResourceArgs $res $imageResourceVariant) }}
         {{- $pictureResources = append $pictureResources (slice (dict
@@ -162,7 +173,7 @@
           "credit" $imgCredit
         ) ) }}
       {{- /* else }}
-        {{- warnf "%s[%s]: failed to get srcSet with %v" $page $template $imageResourceArgs */ -}}
+        {{- warnf "%s failed to get srcSet with %v" $dbg $imageResourceArgs */ -}}
       {{- end }}
     {{- end }}
     {{- /* If none of the .media values match $defaultVariantName, take the first image as the default */ -}}
@@ -171,13 +182,13 @@
         {{- $imgTitle = .title }}
         {{- $imgAlt = default $imgTitle .alt }}
         {{- $imgCredit = default $imgTitle .credit }}
-        {{- $res := .version.default.resource }}
+        {{- $res := .version.default.resource | default .resource }}
         {{- $imgPosition = default $defaultPosition .position }}
         {{- $variantInlineStyleAttr := printf "object-fit: cover; object-position: %s%s"
             $imgPosition
             (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") -}}
         {{- if $debug }}
-          {{- warnf "%s[%s]: imgPosition=%v in defaultVariant=%v" $page $template $imgPosition . }}
+          {{- warnf "%s imgPosition=%v in defaultVariant=%v" $dbg $imgPosition . }}
         {{- end }}
         {{- $imageResourceArgs = merge $imageResourceArgs (dict "resource" $res ) }}
         {{- with (partialCached "claris/_functions/resources/images/image-srcset" $imageResourceArgs $res $imageResourceVariant) }}
@@ -192,7 +203,7 @@
             "credit" $imgCredit
           ) ) }}
         {{- /* else }}
-          {{- warnf "%s[%s]: failed to get srcSet with %v" $page $template $imageResourceArgs */ -}}
+          {{- warnf "%s failed to get srcSet with %v" $dbg $imageResourceArgs */ -}}
         {{- end -}}
       {{- end }}
     {{- end }}
@@ -211,17 +222,17 @@
           "credit" $imgCredit
         ) ) }}
     {{- /* else }}
-      {{- warnf "%s[%s]: .resource: %v failed to get srcSet with %v" $page $template $resourceSpec $imageResourceArgs */ -}}
+      {{- warnf "%s .resource: %v failed to get srcSet with %v" $dbg $resourceSpec $imageResourceArgs */ -}}
     {{- end -}}
   {{- end }}
-  {{- /* {{- warnf "%s[%s]: .resource=%q[%T] with imageResourceVariant=%v with imageResourceArgs=%v: pictureResources:\n%v\n"
-      $page $template $imageResourceArgs.resource $imageResourceArgs.resource $imageResourceVariant
+  {{- /* {{- warnf "%s .resource=%q[%T] with imageResourceVariant=%v with imageResourceArgs=%v: pictureResources:\n%v\n"
+      $dbg $imageResourceArgs.resource $imageResourceArgs.resource $imageResourceVariant
       $imageResourceArgs $pictureResources -}} */ -}}
 
   {{- with $pictureResources }}
     {{- if $debug }}
-      {{- warnf "%s[%s]: pictureResources=%v"
-          $page $template (jsonify (dict "indent" "  ") . ) }}
+      {{- warnf "%s pictureResources=%v"
+          $dbg (jsonify (dict "indent" "  ") . ) }}
     {{- end }}
     {{- $defaultSrcURL := "" }}
     {{- with (where $pictureResources "variant" "eq" $defaultVariantName) }}
@@ -230,8 +241,8 @@
       {{- end }}
     {{- end }}
     {{- if not $defaultSrcURL }}
-      {{- warnf "%s[%s]: Failed to determine defaultSrcURL from %v"
-          $page $template (jsonify (dict "indent" "  ") .) -}}
+      {{- warnf "%s Failed to determine defaultSrcURL from %v"
+          $dbg (jsonify (dict "indent" "  ") .) -}}
     {{- end }}
 
     {{- $backgroundLeftInlineStyle := "" -}}
@@ -260,8 +271,8 @@
       {{- $media := .media }}
       {{- $variantInlineStyleAttr := .style }}
       {{- if $debug }}
-        {{- warnf "%s[%s]: media=%v: pictureResource=%v"
-            $page $template .media (jsonify (dict "indent" "  ") . ) }}
+        {{- warnf "%s media=%v: pictureResource=%v"
+            $dbg .media (jsonify (dict "indent" "  ") . ) }}
       {{- end }}
       {{- $placeholderInlineImg := .formatsrcsets.placeholder }}
       {{- range .formatsrcsets.formats }}
@@ -288,8 +299,8 @@
       {{- if gt $numFormats 1 }}
         {{- $nonDefaultFormats := first (sub $numFormats 1) .formatsrcsets.formats }}
         {{- if $debug }}
-          {{- warnf "%s[%s]: media=%v: nonDefaultFormats=%v"
-              $page $template $media (jsonify (dict "indent" "  ") $nonDefaultFormats ) }}
+          {{- warnf "%s media=%v: nonDefaultFormats=%v"
+              $dbg $media (jsonify (dict "indent" "  ") $nonDefaultFormats ) }}
         {{- end }}
         {{- $variantInlineStyleAttr := .style }}
         {{- $placeholderInlineImg := .formatsrcsets.placeholder }}
@@ -411,7 +422,7 @@
 
   {{- else }}
 
-    {{- warnf "%s[%s]: failed to get srcSet with param .resource=%v" $page $template $resourceSpec -}}
+    {{- warnf "%s failed to get srcSet with param .resource=%v" $dbg $resourceSpec -}}
 
   {{- end }}
 
