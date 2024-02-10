@@ -1,10 +1,13 @@
 {{- $imageMeta := dict }}
 {{- $page := .Page }}
-{{- $paramsImage := .Params.image }}
-{{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `/([^/]+-demo/)?powerful` $page.RelPermalink) ) ) }} */}}
 {{- $template := "claris/_functions/meta/images/from-params" }}
+{{- $paramsImage := .Params.image }}
+{{- $debug := default false .Debug }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
+{{/* $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `quantum-supremacy|about` $page.RelPermalink) ) ) ) */}}
+{{/* $debug = or $debug (and (not site.LanguagePrefix) (eq $page.Kind "home" ) ) */}}
+{{/* $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `quantum-supremacy` $page.RelPermalink) ) ) ) */}}
+{{ $dbg := printf "%s[%s]" (replaceRE `.*?([^/]+)/?$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- with $paramsImage }}
   <!-- Grab images provided by .Params.image
@@ -94,9 +97,9 @@
     "RequiredVersions" $requiredImageVersions
     "Debug" $debug
   ) }}
-  {{- if $debug }}
-    {{- warnf "%s[%s]: Calling 'available-image-meta' with %v"
-        $page $template (jsonify (dict "indent" "  ") $availableImageMetaParams ) }}
+  {{- if and false $debug }}
+    {{- warnf "%s Calling 'available-image-meta' with %v"
+        $dbg (jsonify (dict "indent" "  ") $availableImageMetaParams ) }}
   {{- end }}
   {{- $availableImageMeta := partial "claris/_functions/meta/images/available-image-meta" (merge
     $availableImageMetaParams (dict "Page" $page)
@@ -106,12 +109,12 @@
   the default kind from which we can generate image resources for all other kinds -->
   {{- $defaultImageKindMeta := index $availableImageMeta $defaultKind }}
   {{- with $defaultImageKindMeta }}
-    {{/* {{- if $debug }}
-      {{- warnf "%s[%s]: Parsed paramsImage=\n%v\nto availableImageMeta=\n%v"
-          $page $template
+    {{- if $debug }}
+      {{- warnf "%s Parsed paramsImage:\n%v\nto availableImageMeta:\n%v"
+          $dbg
           (jsonify (dict "indent" "  ") $paramsImage)
           (jsonify (dict "indent" "  ") $availableImageMeta) }}
-    {{- end }} */}}
+    {{- end }}
 
     <!-- Pass through all kinds again and ensure that there
     is an image for every required version -->
@@ -121,25 +124,42 @@
       {{- $versions := default slice .versions }}
 
       {{- $imageKindMeta := (index $availableImageMeta $imageKind) }}
+
+      {{- $debugRequiredVersionsString := "" }}
+      {{- if $debug }}
+        {{- if $versions }}
+          {{- $versionStringList := slice }}
+          {{- range $versIdx, $versMeta := $versions }}
+            {{ $versionStringList = append (printf "%dx%d" .width .height) $versionStringList }}
+          {{- end }}
+          {{- $debugRequiredVersionsString = delimit $versionStringList ", " }}
+        {{- end }}
+      {{- end }}
+
       {{- if $imageKindMeta }}
         {{- if $debug }}
-          {{- warnf "%s[%s]: kind=%v: Using dedicated images for this kind%s: imageKindMeta=\n%v"
-              $page $template $imageKind
-              (cond (gt (len $versions) 0) (printf " and generate required versions=%v" $versions) "")
+          {{- if $versions }}
+            {{- $debugRequiredVersionsString = printf " and generate required versions [%v]"
+                $debugRequiredVersionsString }}
+          {{- else }}
+            {{- $debugRequiredVersionsString = "" }}
+          {{- end }}
+          {{- warnf "%s kind=%v: Using dedicated images for this kind%s: imageKindMeta:\n%v"
+              $dbg $imageKind $debugRequiredVersionsString
               (jsonify (dict "indent" "  ") $imageKindMeta) }}
         {{- end }}
       {{- else }}
         {{- if and $generate $versions }}
           {{- $imageKindMeta = $defaultImageKindMeta }}
           {{- if $debug }}
-            {{- warnf "%s[%s]: kind=%v: Using images from default kind=%v to generate required versions=%v: imageKindMeta=\n%v"
-                $page $template $imageKind $defaultKind $versions
+            {{- warnf "%s kind=%v: Using images from default kind=%v to generate required versions [%v]: imageKindMeta:\n%v"
+                $dbg $imageKind $defaultKind $debugRequiredVersionsString
                 (jsonify (dict "indent" "  ") $imageKindMeta) }}
           {{- end }}
         {{- else }}
           {{- if $debug }}
-            {{- warnf "%s[%s]: kind=%v: No images of this kind found and no versions required"
-                $page $template $imageKind }}
+            {{- warnf "%s kind=%v: No images of this kind found and no versions required"
+                $dbg $imageKind }}
           {{- end }}
         {{- end }}
       {{- end }}
@@ -161,29 +181,29 @@
             $imageKind $imageKindMeta
           ) }}
           {{- if $debug }}
-            {{- warnf "%s[%s]: kind=%v Added imageKindMeta=\n%v\nto imageMeta=\n%v"
-                $page $template $imageKind
+            {{- warnf "%s kind=%v Added imageKindMeta:\n%v\nto imageMeta:\n%v"
+                $dbg $imageKind
                 (jsonify (dict "indent" "  ") $imageKindMeta)
                 (jsonify (dict "indent" "  ") $imageMeta) }}
           {{- end }}
         {{- end }}
       {{- else }}
         {{- if $debug }}
-          {{- warnf "%s[%s]: kind=%v: Not returning any image resources for this kind"
-              $page $template $imageKind }}
+          {{- warnf "%s kind=%v: Not returning any image resources for this kind"
+              $dbg $imageKind }}
         {{- end }}
       {{- end }}
     {{- end }}
   {{- else }}
     {{- if $debug }}
-      {{- warnf "%s[%s]: No image resources found in .Params.image: \n%v"
-          $page $template (jsonify (dict "indent" "  ") $page.Params.image) }}
+      {{- warnf "%s No image resources found in .Params.image: \n%v"
+          $dbg (jsonify (dict "indent" "  ") $page.Params.image) }}
     {{- end }}
   {{- end }}
 
   {{- if $debug }}
-    {{- warnf "%s[%s]: returning \n%v\n"
-        $page $template (jsonify (dict "indent" "  ") $imageMeta) }}
+    {{- warnf "%s returning \n%v\n"
+        $dbg (jsonify (dict "indent" "  ") $imageMeta) }}
   {{- end }}
 {{- end }}
 

@@ -1,0 +1,82 @@
+{{- $bestMatchVersion := false }}
+{{- $template := "claris/_functions/meta/images/closest-aspect" }}
+{{- $page := .Page }}
+{{- $versions := .version }}
+{{- $aspect := .aspect }}
+{{- $ratio := .ratio }}
+{{- $width := .width }}
+{{- $height := .height }}
+
+{{- $debug := false }}
+{{- $debug = default $debug .Debug }}
+{{- /* $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `quantum-supremacy|about` $page.RelPermalink) ) ) ) */ -}}
+{{- /* $debug = or $debug (and (not site.LanguagePrefix) (eq $page.Kind "home" ) ) */ -}}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?([^/]+)/?$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
+{{/* {{- warnf "%s %v" $dbg (jsonify (dict "indent" "  ") (merge . (dict "Page" "omitted"))) }} */}}
+
+{{- $targetAspect := $ratio }}
+{{- if not $targetAspect }}
+  {{- with $aspect }}
+    {{/* {{- warnf "%s split %v on x" $dbg . }} */}}
+    {{- with split . "x" }}
+      {{- $width = index . 0 }}
+      {{- $height = index . 1 }}
+    {{- end }}
+  {{- else }}
+    {{- if not (and $width $height) }}
+      {{- errorf "%s Cannot determine targetAspect based on arguments:\n%v"
+          $dbg $targetAspect
+          (jsonify (dict "indent" "  ") .) }}
+    {{- end }}
+  {{- end }}
+  {{- $targetAspect = div (cast.ToFloat $width) (cast.ToFloat $height) }}
+{{- end }}
+
+{{- if $debug }}
+  {{- warnf "%s .width=%v .height=%v .aspect=%v .ratio=%v --> targetAspect=%v in\n%v"
+      $dbg $width $height $aspect $ratio $targetAspect
+      (jsonify (dict "indent" "  ") $versions) }}
+{{- end }}
+
+{{- $bestMatchVersionMeta := false }}
+{{- $lowestAspectDeviation := 100.0 }}
+{{- $greatestSizeRatio := 0.0 }}
+
+{{- range $versionID, $versionMeta := $versions }}
+  {{- $candAspect := .ratio }}
+  {{- $candDeviation := math.Pow (sub (div $candAspect $targetAspect ) 1) 2 }}
+
+  {{- if le $candDeviation $lowestAspectDeviation }}
+    {{- with .resource }}
+      {{- $widthRatio := div (cast.ToFloat .Width) (cast.ToFloat $width) }}
+      {{- $heightRatio := div (cast.ToFloat .Height) (cast.ToFloat $height) }}
+      {{- $sizeRatio := (mul (math.Pow $widthRatio 2) (math.Pow $heightRatio 2) ) }}
+      {{- if ge $sizeRatio $greatestSizeRatio }}
+        {{- $bestMatchVersionMeta = $versionMeta }}
+        {{- $lowestAspectDeviation = $candDeviation}}
+        {{- $greatestSizeRatio = $sizeRatio }}
+        {{- if $debug }}
+          {{- warnf "%s targetAspect=%.3f valid cand: %vx%v aspect=%.3f aspectDeviation=%.3f widthRatio=%.3f heightRatio=%.3f sizeRatio=%.3f"
+              $dbg
+              $targetAspect .Width .Height
+              $candAspect $candDeviation
+              $widthRatio $heightRatio $sizeRatio }}
+        {{- end }}
+      {{- else }}
+        {{- if $debug }}
+          {{- warnf "%s targetAspect=%v too small: %vx%v candAspect=%.3f candDeviation=%.3f vs. lowestAspectDeviation=%.3f"
+              $dbg
+              $targetAspect .Width .Height $candAspect $candDeviation $lowestAspectDeviation }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- $bestMatchVersion = (dict
+  "meta" $bestMatchVersionMeta
+  "targetaspect" $targetAspect
+  "aspectdeviation" $lowestAspectDeviation
+  "sizeratio" $greatestSizeRatio
+) }}
+{{- return $bestMatchVersion }}

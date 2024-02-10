@@ -1,30 +1,31 @@
-{{- $page := .Page }}
-{{- $meta := page.Scratch.Get "clarismeta" }}
-{{- $entityParams := . }}
-{{- $template := "claris/_functions/schema-org/webpage" }}
-{{- $debug := .Debug }}
-{{/* {{- $debug = or $debug (not (not (findRE `technology` $page.RelPermalink) ) ) }} */}}
-{{- $entityParams := merge . (dict "Debug" $debug) }}
+{{ $page := .Page }}
+{{ $meta := page.Scratch.Get "clarismeta" }}
+{{ $entityParams := . }}
+{{ $template := "claris/_functions/schema-org/webpage" }}
+{{ $debug := default false .Debug }}
+{{/* $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `quantum-supremacy|about` $page.RelPermalink) ) ) ) */}}
+{{/* $debug = or $debug (eq $page.Kind "home" ) */}}
+{{ $dbg := printf "%s[%s]" (replaceRE `.*?([^/]+)/?$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
+{{ $entityParams := merge . (dict "Debug" $debug) }}
 
-{{- $dateFormat := default "2006-01-02T15:04:05.00Z" .Format.Date -}}
+{{ $dateFormat := default "2006-01-02T15:04:05.00Z" .Format.Date }}
 
 <!-- [Schema.org entity WebPage](https://schema.org/WebPage)
 -->
 
-{{- $schemaOrgMeta := dict }}
+{{ $schemaOrgMeta := dict }}
 
-{{- with $meta.Single.Data }}
+{{ with $meta.Single.Data }}
 
-  {{- with .Author }}
-    {{- $schemaOrgMeta = merge $schemaOrgMeta (partialCached "claris/_functions/schema-org/_entities/author"
+  {{ with .Author }}
+    {{ $schemaOrgMeta = merge $schemaOrgMeta (partialCached "claris/_functions/schema-org/_entities/author"
         $entityParams .) }}
-  {{- else }}
-    {{- errorf "%s[%s]: Missing meta data $meta.Single.Data.Author: $meta.Single.Data=%v" $page $template (jsonify (dict "indent" "  ") .) }}
-  {{- end }}
+  {{ else }}
+    {{ errorf "%sMissing meta data $meta.Single.Data.Author: $meta.Single.Data=%v" $dbg (jsonify (dict "indent" "  ") .) }}
+  {{ end }}
 
-  {{- $schemaOrgMeta = merge $schemaOrgMeta (dict
-    "Root" (dict
+  {{ $rootMeta := (dict
       "@context" "http://schema.org"
       "@type" "WebPage"
       "@id" .EntityID
@@ -42,54 +43,72 @@
       "datePublished" ((default .Date.Created .Date.Published).Format $dateFormat | safeHTML)
       "dateModified" (.Date.Modified.Format $dateFormat | safeHTML)
       "publisher"  $schemaOrgMeta.Entities.SiteAuthor.Reference
-      "image" (default $meta.Site.Data.Images.search.canonicalurl .Images.search.canonicalurl)
       "url" .CanonicalURL
       "genre" (default .Genre .ArticleSection)
       "keywords" .Keywords
     )
+  }}
+
+  {{ with $shareImageURLs := partial "claris/_functions/meta/images/get-image" (dict
+    "Page" $page
+    "kind" "share"
+    "return" "canonicalurls"
+    "Debug" $debug
   ) }}
+    {{ $rootMeta = merge $rootMeta (dict
+        "image" $shareImageURLs
+      ) }}
+  {{ else }}
+    {{ if $debug }}
+      {{ warnf "%sMissing share image in lang=%v" $dbg site.LanguagePrefix }}
+    {{ end }}
+  {{ end }}
+
+  {{ $schemaOrgMeta = merge $schemaOrgMeta (dict
+      "Root" $rootMeta
+    ) }}
       {{/* "headline" .Title
       "alternativeHeadline" .Headline */}}
 
-  {{- $specificEntityType := false }}
-  {{- with $page.Params.schemaorg.entitytype }}
-    {{- if (eq (lower .) "profilepage") }}
-      {{- $specificEntityType = . }}
-      {{/* {{- warnf "%s[%s]: .Params.SchemaOrg.EntityType=%v" $page $template $specificEntityType }} */}}
-    {{- else }}
-      {{- errorf "%s[%s]: Invalid Schema.org EntityType specified in .Params.SchemaOrg.EntityType=%v" $page $template . }}
-    {{- end }}
-  {{- else }}
-    {{- with $page.Kind }}
-      {{- $kindToEntity := (dict
+  {{ $specificEntityType := false }}
+  {{ with $page.Params.schemaorg.entitytype }}
+    {{ if (eq (lower .) "profilepage") }}
+      {{ $specificEntityType = . }}
+      {{/* {{ warnf "%s.Params.SchemaOrg.EntityType=%v" $dbg $specificEntityType }} */}}
+    {{ else }}
+      {{ errorf "%sInvalid Schema.org EntityType specified in .Params.SchemaOrg.EntityType=%v" $dbg . }}
+    {{ end }}
+  {{ else }}
+    {{ with $page.Kind }}
+      {{ $kindToEntity := (dict
         "home" "WebSite"
         "page" "Article"
         "section" "CollectionPage"
         "term" "CollectionPage"
         "taxonomy" "CollectionPage"
       ) }}
-      {{- with index $kindToEntity . }}
-        {{- $specificEntityType = . }}
-        {{/* {{- warnf "%s[%s]: kind=%v: entityType=%v kindToEntity=%v" $page $template $page.Kind . $kindToEntity }} */}}
-      {{- end }}
-    {{- end }}
-  {{- end }}
+      {{ with index $kindToEntity . }}
+        {{ $specificEntityType = . }}
+        {{/* {{ warnf "%skind=%v: entityType=%v kindToEntity=%v" $dbg $page.Kind . $kindToEntity }} */}}
+      {{ end }}
+    {{ end }}
+  {{ end }}
 
-  {{- with $specificEntityType }}
-    {{- if $debug }}
-      {{- warnf "%s[%s]: kind=%v: entityType=%v" $page $template $page.Kind $specificEntityType }}
-    {{- end }}
-    {{- $entityParams = merge $entityParams (dict "SchemaOrgMeta" $schemaOrgMeta) }}
-    {{- $schemaOrgMeta = (merge $schemaOrgMeta
+  {{ with $specificEntityType }}
+    {{ if $debug }}
+      {{ warnf "%skind=%v: entityType=%v" $dbg $page.Kind $specificEntityType }}
+    {{ end }}
+    {{ $entityParams = merge $entityParams (dict "SchemaOrgMeta" $schemaOrgMeta) }}
+    {{ $schemaOrgMeta = (merge $schemaOrgMeta
       (partial (printf "claris/_functions/schema-org/%s" (lower .) ) $entityParams)
     ) }}
-  {{/* {{- else }}
-    {{- warnf "%s[%s]: kind=%v: no entityType=%v" $page $template $page.Kind $specificEntityType }} */}}
-  {{- end }}
-{{- end }}
+  {{/* {{ else }}
+    {{ warnf "%skind=%v: no entityType=%v" $dbg $page.Kind $specificEntityType }} */}}
+  {{ end }}
+{{ end }}
 
-{{- if $debug }}
-  {{- warnf "%s[%s]: returning %v" $page $template
+{{ if $debug }}
+  {{ warnf "%sreturning %v" $dbg
   (jsonify (dict "indent" "  ") $schemaOrgMeta) }}
-{{- end }}
-{{- return $schemaOrgMeta }}
+{{ end }}
+{{ return $schemaOrgMeta }}

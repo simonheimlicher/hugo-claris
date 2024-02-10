@@ -1,0 +1,30 @@
+{{- $imgVersionMeta := false }}
+{{- $template := "claris/_functions/meta/images/version-meta" }}
+{{- $page := page }}
+
+{{- $debug := false }}
+{{- $debug = default $debug .Debug }}
+{{- /* $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `quantum-supremacy|about` $page.RelPermalink) ) ) ) */ -}}
+{{- /* $debug = or $debug (and (not site.LanguagePrefix) (eq $page.Kind "home" ) ) */ -}}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?([^/]+)/?$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
+{{- $imgMeta := .meta }}
+{{- $versionResource := $imgMeta.resource }}
+{{- $aspectRatio := partial "claris/_functions/resources/images/aspect-ratio" $versionResource }}
+
+{{- $versionName := printf "aspect_%s" $aspectRatio.human }}
+{{- range $k, $v := $imgMeta }}
+  {{- if (ne $k "resource") }}
+    {{- $imgVersionMeta = merge $imgVersionMeta (dict $k $v) }}
+  {{- end }}
+{{- end }}
+{{- $imgVersionMeta = merge $imgVersionMeta (dict "version" (dict
+    $versionName (dict
+      "resource" $versionResource
+      "aspect" $aspectRatio.human
+      "ratio" $aspectRatio.float
+    )
+  )
+) }}
+
+{{- return $imgVersionMeta }}

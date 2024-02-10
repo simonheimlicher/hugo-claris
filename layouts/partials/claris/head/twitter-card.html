@@ -3,7 +3,9 @@
 {{- $template := "claris/head/twitter-card" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- $debug = or $debug (not (not (findRE `tags/$` $page.RelPermalink) ) ) }}
+{{- /* $debug = or $debug (not (not (findRE `tags/$` $page.RelPermalink) ) ) */ -}}
+{{- /* $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `quantum-supremacy|about` $page.RelPermalink) ) ) ) */ -}}
+{{- /* $debug = or $debug (and (not site.LanguagePrefix) (eq $page.Kind "home" ) ) */ -}}
 
 {{- $dateLocalISO8601 := "2006-01-02T15:04:05-07:00" -}}
 
@@ -12,16 +14,14 @@
   {{- with $meta.Single.Data }}
     {{- $shareImageURL := false }}
     {{- $shareImageAlt := false }}
-    {{- with default $meta.Site.Data.Images.share .Images.share }}
-      {{- with $variantMeta := .variant.default }}
-        {{- /* If there are alternative versions, prefer one with aspect ratio 2x1 */ -}}
-        {{- with (default .version.default .version.aspect_2x1) }}
-          {{- $shareImageURL = partial "claris/_functions/canonical-url" .resource }}
-        {{- end }}
-      {{- end }}
-      {{- with .alt }}
-        {{- $shareImageAlt = . }}
-      {{- end }}
+    {{- with partial "claris/_functions/meta/images/get-image" (dict
+      "Page" $page
+      "kind" "share"
+      "aspect" "16x9"
+      "Debug" $debug
+    ) }}
+      {{- $shareImageURL = .canonicalurl }}
+      {{- $shareImageAlt = .alt }}
     {{- else }}
       {{- if $debug }}
         {{- warnf "%s[%s]: Missing share image in lang=%v: $meta.Site=%#v $meta.Single=%#v"
