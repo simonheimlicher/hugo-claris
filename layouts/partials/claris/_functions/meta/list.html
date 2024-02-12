@@ -11,6 +11,8 @@
 
 {{- $limit := 0 }}
 
+{{- $assetVariant := .AssetVariant }}
+
 {{- $ephemeralSections := default slice ($page.Param "ephemeralSections") }}
 {{- $listMeta := dict -}}
 {{- $candidateListItems := false }}
@@ -84,9 +86,10 @@
       {{- warnf "%s[%s]: Found items to list: validListItems=%v" $page $template $validListItems }}
     {{- end }}
     {{- range $validListItems }}
-      {{- $singleMeta := partial "claris/_functions/meta/single" (dict "Page" . "Debug" $debug) .Permalink }}
-      {{- $classificationMeta := partialCached "claris/_functions/meta/classification" (dict "Page" . "Debug" $debug) .Permalink }}
-      {{- $itemMeta := merge $singleMeta $classificationMeta}}
+      {{- $listItemMetaParams := (dict "Page" . "AssetVariant" $assetVariant "Template" $template "Debug" $debug) }}
+      {{- $singleMeta := partialCached "claris/_functions/meta/single" $listItemMetaParams .Permalink }}
+      {{- $classificationMeta := partialCached "claris/_functions/meta/classification" $listItemMetaParams .Permalink }}
+      {{- $itemMeta := merge $singleMeta $classificationMeta }}
       {{- if $debug }}
         {{- warnf "%s[%s]: Page=%v .Kind=%v: itemMeta for page=%v:\n%v" $page $template . .Kind $itemMeta.Single.Page $itemMeta.Classification }}
       {{- end }}

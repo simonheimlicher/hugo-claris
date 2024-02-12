@@ -155,8 +155,8 @@ $imageKindMeta = (dict
           {{- else }}
             {{- $imageResourceArgs := merge $imageResourceBaseArgs $imgParam }}
             {{- if $debug }}
-              {{- warnf "%s[%s]: kind=%v Looking for image with .resource=%q in imageResourceArgs=%v"
-                  $page $template $imageKind $imageResourceArgs.resource $imageResourceArgs }}
+              {{- warnf "%s[%s]: kind=%v Looking for image matching %q"
+                  $page $template $imageKind $imageResourceArgs.resource }}
             {{- end }}
             {{- $imgResource := partial "claris/_functions/resources/get" $imageResourceArgs -}}
             {{- if (strings.Contains (printf "%T" $imgResource) "resources.resourceAdapter") }}
@@ -164,9 +164,8 @@ $imageKindMeta = (dict
                 "resource" $imgResource
               ) }}
             {{- else }}
-              {{- warnf "%s[%s]: kind=%v: got invalid image resource='%v'[%T] from .resource=%q in imageResourceArgs=%v"
-                  $page $template $imageKind $imgResource $imgResource
-                  $imageResourceArgs.resource $imageResourceArgs }}
+              {{- warnf "%s[%s]: kind=%v: could not find image matching %q"
+                  $page $template $imageKind $imageResourceArgs.resource }}
             {{- end }}
           {{- end }}
         {{- end }}

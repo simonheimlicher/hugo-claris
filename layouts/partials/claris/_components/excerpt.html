@@ -7,6 +7,8 @@
   {{- $page.Scratch.Add $scratchExcerptRenderedKey slice }}
 {{- end }}
 
+{{- $assetVariant := .AssetVariant }}
+
 {{- $excerptImageKey := default "excerpt.variant.default.version.default" .ExcerptImageKey }}
 
 {{- $subjectPage := .SubjectPage }}
@@ -34,7 +36,7 @@
 
 {{- $excerptContent := false }}
 {{- if not $excerptMeta }}
-  {{- $excerptMeta = partial "claris/_functions/meta/single" (dict "Page" $subjectPage) }}
+  {{- $excerptMeta = partialCached "claris/_functions/meta/single" (dict "Page" $subjectPage "AssetVariant" $assetVariant "Template" $template) $subjectPage.Permalink }}
 {{- end }}
 
 {{- if $debug }}

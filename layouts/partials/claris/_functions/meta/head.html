@@ -1,208 +1,257 @@
 {{ $titleVariant := dict }}
-{{ $page := default page . }}
+{{ $page := .Page }}
 {{ $template := "claris/_functions/meta/head" }}
 {{ $debug := false }}
-{{/* {{ $debug = page.Scratch.Get "clarisdebug" }} */}}
+{{/* {{ $debug = $page.Scratch.Get "clarisdebug" }} */}}
 {{/* $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?` $page.RelPermalink) ) ) */}}
+{{ $title := "" }}
 
-{{ $supertitleTitleSep := ": " }}
-{{ $supertitleSepLen := len $supertitleTitleSep }}
-{{ $subtitleTitleSep := " – " }}
-{{ $subtitleSepLen := len $subtitleTitleSep }}
-
-{{ $title      := default "" $page.Title                | $page.RenderString }}
-{{ $subtitle   := default "" ($page.Param "subtitle")   | $page.RenderString }}
-{{ $supertitle := default "" ($page.Param "supertitle") | $page.RenderString }}
-
-{{/* Derive a plain text, sanitized version of title, subtitle and supertitle for length calculations */}}
-{{ $titlePlain      := $title      | partial "claris/_functions/sanitize" }}
-{{ $titleLen        := len $titlePlain }}
-{{ $supertitlePlain := $supertitle | partial "claris/_functions/sanitize" }}
-{{ $supertitleLen   := len $supertitlePlain }}
-{{ $subtitlePlain   := $subtitle   | partial "claris/_functions/sanitize" }}
-{{ $subtitleLen     := len $subtitlePlain }}
-
-{{/* If we add the supertitle or subtitle to the title, we move it from ...Outside to ...Inside */}}
-{{ $supertitleOutside := $supertitle }}
-{{ $subtitleOutside   := $subtitle }}
-{{ $supertitleInside  := "" }}
-{{ $subtitleInside    := "" }}
-
-{{ $headline := $title }}
-{{ $tagline := "" }}
-{{ $description := "" }}
-
-{{ with .Description }}
-    {{ $description = . }}
+{{ if $page.IsHome }}
+  {{/* {{ warnf "%s[%s] home $page.IsHome=%v" $page $template $page.IsHome }} */}}
+  {{ with $page.Site.Title }}
+    {{ $title = . }}
+  {{ else }}
+    {{ if $page.Param "claris.hints" }}
+      {{ warnf "%s[%s]: Invalid site title=%q. Please configure the title of your site in hugo.{yaml|toml}"
+          $page $template $title }}
+    {{ end }}
+  {{ end }}
 {{ else }}
-  {{ with .Summary }}
-    {{ $description = . }}
+  {{/* {{ warnf "%s[%s] not home: $page.IsHome=%v" $page $template $page.IsHome }} */}}
+  {{ with $page.Title }}
+    {{ $title = . }}
+  {{ else }}
+    {{ if $page.Param "claris.hints" }}
+      {{ $pagePath := "" }}
+      {{ with .File }}
+        {{ $pagePath = .Path }}
+      {{ else }}
+        {{ $pagePath = .Path }}
+      {{ end }}
+      {{ if not $pagePath }}
+        {{ $languageSuffix := (cond
+          (not (not site.LanguagePrefix))
+          (printf ".%s" (strings.TrimLeft "/" site.LanguagePrefix))
+          ""
+        ) }}
+        {{ $pagePath = printf "index%s" $languageSuffix }}
+      {{ end }}
+      {{ warnf "%s[%s]: Invalid title=%q. Please add a title to the page at %q"
+          $page $template $title $pagePath }}
+    {{ end }}
   {{ end }}
 {{ end }}
-{{ $description = $description | $page.RenderString }}
 
-{{ with $page.Params.tagline }}
-  {{ $tagline = $tagline | $page.RenderString }}
-{{ end }}
+{{ with and $title $page }}
+  {{ $supertitleTitleSep := ": " }}
+  {{ $supertitleSepLen := len $supertitleTitleSep }}
+  {{ $subtitleTitleSep := " – " }}
+  {{ $subtitleSepLen := len $subtitleTitleSep }}
 
-{{/* We only process the title if there is a subtitle or a supertitle
-    or if the page is a taxonomy page
-    or if the page is a term page */}}
+  {{ $title      := default "" .Title             | .RenderString }}
+  {{ $subtitle   := default "" .Params.subtitle   | .RenderString }}
+  {{ $supertitle := default "" .Params.supertitle | .RenderString }}
 
-{{ if or $supertitlePlain $subtitlePlain }}
+  {{/* Derive a plain text, sanitized version of title, subtitle and supertitle for length calculations */}}
+  {{ $titlePlain      := $title      | partial "claris/_functions/sanitize" }}
+  {{ $titleLen        := len $titlePlain }}
+  {{ $supertitlePlain := $supertitle | partial "claris/_functions/sanitize" }}
+  {{ $supertitleLen   := len $supertitlePlain }}
+  {{ $subtitlePlain   := $subtitle   | partial "claris/_functions/sanitize" }}
+  {{ $subtitleLen     := len $subtitlePlain }}
 
-  {{ $min := default 10 (index (page.Param "meta.headline.targetlength") 0) }}
-  {{ $max := default 60 (index (page.Param "meta.headline.targetlength") 1) }}
-  {{ if le $titleLen $max }}
-    {{ if $debug }}
-      {{ warnf "%s[%s]: Title='%v'[%d] targetlength=[%d,%d] supertitle='%v'[%d], subtitle='%v'[%d]"
-          $page $template $title $titleLen $min $max $supertitle $supertitleLen $subtitle $subtitleLen }}
+  {{/* If we add the supertitle or subtitle to the title, we move it from ...Outside to ...Inside */}}
+  {{ $supertitleOutside := $supertitle }}
+  {{ $subtitleOutside   := $subtitle }}
+  {{ $supertitleInside  := "" }}
+  {{ $subtitleInside    := "" }}
+
+  {{ $headline := $title }}
+  {{ $tagline := "" }}
+  {{ $description := "" }}
+
+  {{ with .Description }}
+      {{ $description = . }}
+  {{ else }}
+    {{ with .Summary }}
+      {{ $description = . }}
     {{ end }}
+  {{ end }}
+  {{ $description = $description | .RenderString }}
 
-    {{ if $supertitlePlain }}
+  {{ with .Params.tagline }}
+    {{ $tagline = $tagline | .RenderString }}
+  {{ end }}
 
-      {{/* We only consider the supertitle if we can add it to the title without exceeding the max length */}}
-      {{ if le (add $supertitleLen $supertitleSepLen $titleLen) $max }}
-        {{/* We can add at least the supertitle to the title without exceeding the max length */}}
-        {{ $supertitleInside = $supertitleOutside }}
-        {{ $supertitleOutside = "" }}
-        {{ if and $subtitle (le (add $supertitleLen $supertitleSepLen $titleLen $subtitleSepLen $subtitleLen) $max) }}
-          {{/* We can add both the supertitle and the subtitle to the title without exceeding the max length */}}
-          {{ $subtitleInside = $subtitleOutside }}
-          {{ $subtitleOutside = "" }}
-          {{ $headline = printf "%s%s%s%s%s" $supertitle $supertitleTitleSep $title $subtitleTitleSep $subtitle }}
-        {{ else }}
-          {{/* We can only add the supertitle to the title without exceeding the max length */}}
-          {{ $headline = printf "%s%s%s" $supertitle $supertitleTitleSep $title }}
-        {{ end }}
+  {{/* We only process the title if there is a subtitle or a supertitle
+      or if the page is a taxonomy page
+      or if the page is a term page */}}
+
+  {{ if or $supertitlePlain $subtitlePlain }}
+
+    {{ $min := default 10 (index (.Param "meta.headline.targetlength") 0) }}
+    {{ $max := default 60 (index (.Param "meta.headline.targetlength") 1) }}
+    {{ if le $titleLen $max }}
+      {{ if $debug }}
+        {{ warnf "%s[%s]: Title='%v'[%d] targetlength=[%d,%d] supertitle='%v'[%d], subtitle='%v'[%d]"
+            $page $template $title $titleLen $min $max $supertitle $supertitleLen $subtitle $subtitleLen }}
       {{ end }}
 
-    {{ else }}
+      {{ if $supertitlePlain }}
 
-      {{/* We only consider the subtitle if we can add it to the title without exceeding the max length */}}
-      {{ if le (add $titleLen $subtitleSepLen $subtitleLen) $max }}
-        {{ $subtitleInside = $subtitleOutside }}
-        {{ $subtitleOutside = "" }}
-        {{ $headline = printf "%s%s%s" $title $supertitleTitleSep $subtitle }}
+        {{/* We only consider the supertitle if we can add it to the title without exceeding the max length */}}
+        {{ if le (add $supertitleLen $supertitleSepLen $titleLen) $max }}
+          {{/* We can add at least the supertitle to the title without exceeding the max length */}}
+          {{ $supertitleInside = $supertitleOutside }}
+          {{ $supertitleOutside = "" }}
+          {{ if and $subtitle (le (add $supertitleLen $supertitleSepLen $titleLen $subtitleSepLen $subtitleLen) $max) }}
+            {{/* We can add both the supertitle and the subtitle to the title without exceeding the max length */}}
+            {{ $subtitleInside = $subtitleOutside }}
+            {{ $subtitleOutside = "" }}
+            {{ $headline = printf "%s%s%s%s%s" $supertitle $supertitleTitleSep $title $subtitleTitleSep $subtitle }}
+          {{ else }}
+            {{/* We can only add the supertitle to the title without exceeding the max length */}}
+            {{ $headline = printf "%s%s%s" $supertitle $supertitleTitleSep $title }}
+          {{ end }}
+        {{ end }}
+
       {{ else }}
-        {{/* Determine if we have an impossible constellation:
-            - title alone is too short (less than $min)
-            - title with either subtitle or supertitle is too long (greater than $max) */}}
-        {{ if lt (len $headline) $min }}
-          {{ if $debug }}
-            {{ warnf "%s[%s]: Title=%v [%d characters] < min=%d: adding separator and supertitle or subtitle would exceed max=%d characters"
-                $page $template $title $titleLen $min $max }}
-            {{ if $supertitlePlain }}
-              {{ warnf "%s[%s]: Adding separator and supertitle: '%v%v' [%d characters]: %d characters too many"
-                  $page $template $supertitleTitleSep $supertitle (add $titleLen $supertitleLen $supertitleSepLen) }}
-            {{ end }}
-            {{ if $subtitlePlain }}
-              {{ warnf "%s[%s]: Adding separator and subtitle:   '%v%v' [%d characters]: %d characters too many"
-                  $page $template $subtitleTitleSep $subtitle (add $titleLen $subtitleLen $subtitleSepLen) }}
+
+        {{/* We only consider the subtitle if we can add it to the title without exceeding the max length */}}
+        {{ if le (add $titleLen $subtitleSepLen $subtitleLen) $max }}
+          {{ $subtitleInside = $subtitleOutside }}
+          {{ $subtitleOutside = "" }}
+          {{ $headline = printf "%s%s%s" $title $supertitleTitleSep $subtitle }}
+        {{ else }}
+          {{/* Determine if we have an impossible constellation:
+              - title alone is too short (less than $min)
+              - title with either subtitle or supertitle is too long (greater than $max) */}}
+          {{ if lt (len $headline) $min }}
+            {{ if $debug }}
+              {{ warnf "%s[%s]: Title=%v [%d characters] < min=%d: adding separator and supertitle or subtitle would exceed max=%d characters"
+                  $page $template $title $titleLen $min $max }}
+              {{ if $supertitlePlain }}
+                {{ warnf "%s[%s]: Adding separator and supertitle: '%v%v' [%d characters]: %d characters too many"
+                    $page $template $supertitleTitleSep $supertitle (add $titleLen $supertitleLen $supertitleSepLen) }}
+              {{ end }}
+              {{ if $subtitlePlain }}
+                {{ warnf "%s[%s]: Adding separator and subtitle:   '%v%v' [%d characters]: %d characters too many"
+                    $page $template $subtitleTitleSep $subtitle (add $titleLen $subtitleLen $subtitleSepLen) }}
+              {{ end }}
             {{ end }}
           {{ end }}
         {{ end }}
+
       {{ end }}
 
-    {{ end }}
-
-  {{ else }}
-    {{ warnf "%s[%s]: Title=%v [%d characters] > targetlength=%d: %v"
-        page $template $title $titleLen $max (substr $title 0 $max) }}
-  {{ end }}
-
-{{ else if in (slice "taxonomy" "term") .Kind }}
-
-  {{ if in (slice "taxonomy") .Kind }}
-
-    {{ $title = default .Data.Plural (T (printf "all_%s" .Data.Plural) ) | strings.FirstUpper }}
-    {{ $description = printf "%s %s" (T "taxonomy_index_description") (T .Data.Singular ) | strings.FirstUpper }}
-
-    {{/* {{ if $debug }}
-      {{ warnf "%s[%s]: %s: Title='%s' Headline='%s' [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
-          $page $template (strings.ToUpper .Kind) $title $headline
-          .Data.Singular .Data.Plural .Section .Title }}
-    {{ end }} */}}
-
-  {{ else if in (slice "term") .Kind }}
-
-    {{ $termTitle := default $title (T $title 1) }}
-    {{ $headline = default .Data.Singular $termTitle }}
-    {{ if in (slice "tag") .Data.Singular }}
-      {{ $supertitle = printf "%s %s" (T "articles_with_taxonomy") (T .Data.Singular 1) | strings.FirstUpper }}
-      {{ $description = printf "%s %s %s %s" (T "term_index_description") (T "articles_with_taxonomy") (T .Data.Singular 1) $termTitle | strings.FirstUpper }}
     {{ else }}
-      {{ $supertitle = printf "%s %s" (T "articles_in_taxonomy") (T .Data.Singular 1) | strings.FirstUpper }}
-      {{ $description = printf "%s %s %s %s" (T "term_index_description") (T "articles_in_taxonomy") (T .Data.Singular 1) $termTitle | strings.FirstUpper }}
+      {{ warnf "%s[%s]: Title=%v [%d characters] > targetlength=%d: %v"
+          page $template $title $titleLen $max (substr $title 0 $max) }}
     {{ end }}
-    {{/* {{ $headline = printf "%s %s %s" (humanize $supertitle) (T .Data.Plural 1) ($page.RenderString (printf "*%s*" (default $title (T (lower $title) ) ) ) ) | safeHTML }} */}}
-    {{ $title = $termTitle }}
-    {{ $headline = printf "%s: %s" $supertitle $title | strings.FirstUpper }}
 
-    {{/* {{ if $debug }}
-      {{ warnf "%s[%s]: %s: Title='%s' Supertitle='%v' Headline='%s' [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
-          $page $template (strings.ToUpper .Kind) $title $supertitle $headline
-          .Data.Singular .Data.Plural .Section .Title }}
-    {{ end }} */}}
+  {{ else if in (slice "taxonomy" "term") .Kind }}
+
+    {{ if in (slice "taxonomy") .Kind }}
+
+      {{ $title = default .Data.Plural (T (printf "all_%s" .Data.Plural) ) | strings.FirstUpper }}
+      {{ $description = printf "%s %s" (T "taxonomy_index_description") (T .Data.Singular ) | strings.FirstUpper }}
+
+      {{/* {{ if $debug }}
+        {{ warnf "%s[%s]: %s: Title='%s' Headline='%s' [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
+            $page $template (strings.ToUpper .Kind) $title $headline
+            .Data.Singular .Data.Plural .Section .Title }}
+      {{ end }} */}}
+
+    {{ else if in (slice "term") .Kind }}
+
+      {{ $termTitle := default $title (T $title 1) }}
+      {{ $headline = default .Data.Singular $termTitle }}
+      {{ if in (slice "tag") .Data.Singular }}
+        {{ $supertitle = printf "%s %s" (T "articles_with_taxonomy") (T .Data.Singular 1) | strings.FirstUpper }}
+        {{ $description = printf "%s %s %s %s" (T "term_index_description") (T "articles_with_taxonomy") (T .Data.Singular 1) $termTitle | strings.FirstUpper }}
+      {{ else }}
+        {{ $supertitle = printf "%s %s" (T "articles_in_taxonomy") (T .Data.Singular 1) | strings.FirstUpper }}
+        {{ $description = printf "%s %s %s %s" (T "term_index_description") (T "articles_in_taxonomy") (T .Data.Singular 1) $termTitle | strings.FirstUpper }}
+      {{ end }}
+      {{/* {{ $headline = printf "%s %s %s" (humanize $supertitle) (T .Data.Plural 1) (.RenderString (printf "*%s*" (default $title (T (lower $title) ) ) ) ) | safeHTML }} */}}
+      {{ $title = $termTitle }}
+      {{ $headline = printf "%s: %s" $supertitle $title | strings.FirstUpper }}
+
+      {{/* {{ if $debug }}
+        {{ warnf "%s[%s]: %s: Title='%s' Supertitle='%v' Headline='%s' [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
+            $page $template (strings.ToUpper .Kind) $title $supertitle $headline
+            .Data.Singular .Data.Plural .Section .Title }}
+      {{ end }} */}}
+
+    {{ end }}
+
+    {{ $supertitleOutside = $supertitle  }}
+    {{ $supertitlePlain = $supertitle | partial "claris/_functions/sanitize" }}
+    {{ $subtitleOutside = $subtitle  }}
+    {{ $subtitlePlain   = $subtitle | partial "claris/_functions/sanitize" }}
 
   {{ end }}
 
-  {{ $supertitleOutside = $supertitle  }}
-  {{ $supertitlePlain = $supertitle | partial "claris/_functions/sanitize" }}
-  {{ $subtitleOutside = $subtitle  }}
-  {{ $subtitlePlain   = $subtitle | partial "claris/_functions/sanitize" }}
-
-{{ end }}
-
-{{/* Allow overriding the headline */}}
-{{ with $page.Params.headline }}
-  {{ $headline = . }}
-{{ end }}
-
-{{ $headlinePlain := $headline | partial "claris/_functions/sanitize" }}
-{{ $taglinePlain := $tagline | partial "claris/_functions/sanitize" }}
-{{ $descriptionPlain := $description | partial "claris/_functions/sanitize" }}
-
-{{/* Append site title if titleSeparator is defined */}}
-{{ if $title }}
-  {{ with $page.Param "titleSeparator" }}
-    {{ $title = printf "%s %s %s" $title (safeHTML .) site.Title }}
+  {{/* Allow overriding the headline */}}
+  {{ with .Params.headline }}
+    {{ $headline = . }}
   {{ end }}
-{{ else }}
-  {{ $title = site.Title }}
-{{ end }}
 
-{{ $titleVariant = (dict
-  "Data" (dict
-    "Title" $titlePlain
-    "Supertitle" $supertitlePlain
-    "Subtitle" $subtitlePlain
-    "Headline" $headlinePlain
-    "Tagline" $taglinePlain
-    "Description" $descriptionPlain
-  )
-  "Formatted" (dict
-    "Title" $title
-    "Supertitle" $supertitle
-    "SupertitleInside" $supertitleInside
-    "SupertitleOutside" $supertitleOutside
-    "Subtitle" $subtitle
-    "SubtitleInside" $subtitleInside
-    "SubtitleOutside" $subtitleOutside
-    "Headline" $headline
-    "Tagline" $tagline
-    "Description" $description
-  )
-) }}
+  {{ $headlinePlain := $headline | partial "claris/_functions/sanitize" }}
+  {{ $taglinePlain := $tagline | partial "claris/_functions/sanitize" }}
+  {{ $descriptionPlain := $description | partial "claris/_functions/sanitize" }}
+
+  {{/* Append site title if titleSeparator is defined */}}
+  {{ if $title }}
+    {{ with .Param "titleSeparator" }}
+      {{ $title = printf "%s %s %s" $title (safeHTML .) site.Title }}
+    {{ end }}
+  {{ else }}
+    {{ $title = site.Title }}
+  {{ end }}
+
+  {{ $titleVariant = (dict
+    "Data" (dict
+      "Title" $titlePlain
+      "Supertitle" $supertitlePlain
+      "Subtitle" $subtitlePlain
+      "Headline" $headlinePlain
+      "Tagline" $taglinePlain
+      "Description" $descriptionPlain
+    )
+    "Formatted" (dict
+      "Title" $title
+      "Supertitle" $supertitle
+      "SupertitleInside" $supertitleInside
+      "SupertitleOutside" $supertitleOutside
+      "Subtitle" $subtitle
+      "SubtitleInside" $subtitleInside
+      "SubtitleOutside" $subtitleOutside
+      "Headline" $headline
+      "Tagline" $tagline
+      "Description" $description
+    )
+  ) }}
+{{ end }}
 
 {{ if $debug }}
-  {{ warnf "%s[%s]: .Kind=%s Title='%v' Supertitle='%v' Subtitle='%v' Headline='%v' [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
-      $page $template (strings.ToUpper .Kind) $titleVariant.Formatted.Title
-      $titleVariant.Formatted.Supertitle $titleVariant.Formatted.Subtitle $titleVariant.Formatted.Headline
-      .Data.Singular .Data.Plural .Section .Title }}
+  {{ if false }}
+    {{ warnf "%s[%s]: .Kind=%s Title='%v' Supertitle='%v' Subtitle='%v' Headline='%v' [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
+        $page $template (strings.ToUpper .Kind) $titleVariant.Formatted.Title
+        $titleVariant.Formatted.Supertitle $titleVariant.Formatted.Subtitle $titleVariant.Formatted.Headline
+        .Data.Singular .Data.Plural .Section .Title }}
+  {{ end }}
+  {{ range $type := slice "Data" "Formatted" }}
+    {{ range $key := slice "Title" "Headline" }}
+      {{ with $value := index $titleVariant.Data . }}
+      {{ else }}
+        {{ if $page.Title }}
+          {{ warnf "%s[%s]: Invalid %v at %v.%v='%v' based on $title=%q"
+              $page $template $key $type $key $value $title }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
 {{ end }}
 
-{{ if not $titleVariant.Data.Headline }}
-  {{ errorf "%s[%s]: invalid $titleVariant.Data.Headline='%v'" $page $template $titleVariant.Data.Headline }}
-{{ end }}
 {{ return $titleVariant }}

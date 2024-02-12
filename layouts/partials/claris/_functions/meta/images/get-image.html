@@ -14,10 +14,12 @@
 {{ $imageAspect := .aspect }}
 {{ $return := default false (lower .return) }}
 
+{{- $getImageParams := . }}
 {{ if $debug }}
+  {{- $getImageParams = merge . (dict "Page" "omitted")}}
   {{ warnf "%s lang=%v key=.Data.Images.%v.variant.%v.version.%v with imageAspect=%v based on arguments\n%v"
       $dbg site.Language.Lang $imageKind $imageVariant $imageVersion $imageAspect
-      (jsonify (dict "indent" "  ") (merge . (dict "Page" "omitted") ) ) }}
+      (jsonify (dict "indent" "  ") $getImageParams) }}
 {{ end }}
 
 {{ $result := false }}
@@ -64,45 +66,48 @@
     {{ warnf `%s cannot find any meta for lang=%v matching key=".Data.Images.%v" nor ".%v":\n%v`
         $dbg site.Language.Lang $imageKind $defaultKey (jsonify (dict "indent" "  ") . ) }}
   {{ end }}
-{{ else }}
-  {{ warnf `%s cannot find any meta matching key ".Data.Images" for lang=%v:\n%v`
-      $dbg site.Language.Lang (jsonify (dict "indent" "  ") . ) }}
 {{ end }}
-{{ with $return }}
-  {{ if in (slice "urls" "canonicalurls") . }}
-    {{ $imageMeta = slice }}
-    {{ if not $results }}
-      {{ $results = slice $result }}
-    {{ end }}
-    {{ $urlTypeString := "" }}
-    {{ if in (slice "canonicalurls") . }}
-      {{ $urlTypeString = "canonical" }}
-      {{ range $results }}
-        {{ $imageMeta = append (partial "claris/_functions/canonical-url" .resource) $imageMeta }}
+{{- if or $result $results}}
+  {{ with $return }}
+    {{ if in (slice "urls" "canonicalurls") . }}
+      {{ $imageMeta = slice }}
+      {{ if not $results }}
+        {{ $results = slice $result }}
+      {{ end }}
+      {{ $urlTypeString := "" }}
+      {{ if in (slice "canonicalurls") . }}
+        {{ $urlTypeString = "canonical" }}
+        {{ range $results }}
+          {{ $imageMeta = append (partial "claris/_functions/canonical-url" .resource) $imageMeta }}
+        {{ end }}
+      {{ else }}
+        {{ $imageMeta = $results }}
+      {{ end }}
+      {{ if $debug }}
+        {{ warnf "%s returning list of %vURLs for lang=%v matching kind=%v variant=%v version=%v:\n%v"
+            $dbg $urlTypeString site.Language.Lang $imageKind $imageVariant $imageVersion
+            (jsonify (dict "indent" "  ") $imageMeta) }}
       {{ end }}
     {{ else }}
-      {{ $imageMeta = $results }}
-    {{ end }}
-    {{ if $debug }}
-      {{ warnf "%s returning list of %vURLs for lang=%v matching kind=%v variant=%v version=%v:\n%v"
-          $dbg $urlTypeString site.Language.Lang $imageKind $imageVariant $imageVersion
-          (jsonify (dict "indent" "  ") $imageMeta) }}
+      {{ errorf "%s invalid value for .return: '%v'" $dbg . }}
     {{ end }}
   {{ else }}
-    {{ errorf "%s invalid value for .return: '%v'" $dbg . }}
+    {{ $variantMetaWithoutVersions := merge $variantMeta (dict "version" nil) }}
+    {{ $imageURLs := (dict
+      "url" $result.resource.RelPermalink
+      "canonicalurl" (partial "claris/_functions/canonical-url" $result.resource.RelPermalink)
+    ) }}
+    {{ $imageMeta = merge $variantMetaWithoutVersions $imageURLs $result }}
+    {{ if $debug }}
+      {{ warnf "%s returning augmented imageMeta for lang=%v matching kind=%v variant=%v version=%v:\n%v"
+          $dbg site.Language.Lang $imageKind $imageVariant $imageVersion
+          (jsonify (dict "indent" "  ") $imageMeta)
+          }}
+    {{ end }}
   {{ end }}
-{{ else }}
-  {{ $variantMetaWithoutVersions := merge $variantMeta (dict "version" nil) }}
-  {{ $imageURLs := (dict
-    "url" $result.resource.RelPermalink
-    "canonicalurl" (partial "claris/_functions/canonical-url" $result.resource.RelPermalink)
-  ) }}
-  {{ $imageMeta = merge $variantMetaWithoutVersions $imageURLs $result }}
-  {{ if $debug }}
-    {{ warnf "%s returning augmented imageMeta for lang=%v matching kind=%v variant=%v version=%v:\n%v"
-        $dbg site.Language.Lang $imageKind $imageVariant $imageVersion
-        (jsonify (dict "indent" "  ") $imageMeta)
-        }}
-  {{ end }}
-{{ end }}
+{{- else }}
+  {{- $getImageParams = merge . (dict "Page" "omitted")}}
+  {{ warnf "%s cannot find any meta matching key '.Data.Images' for lang=%v:\n%v"
+      $dbg site.Language.Lang (jsonify (dict "indent" "  ") $getImageParams) }}
+{{- end }}
 {{ return $imageMeta }}

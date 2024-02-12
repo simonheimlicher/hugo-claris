@@ -1,19 +1,27 @@
 {{- $page := .Page }}
 {{- $template := "claris/_functions/meta/single" }}
-{{- $debug := false }}
+{{- $debug := or false .Debug }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{- /* $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/(de/)?transformation/why-okr` $page.RelPermalink) ) ) */ -}}
 {{- /* $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/_error` $page.RelPermalink) ) ) */ -}}
+{{- $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
-{{/* {{- warnf "%s[%s]: .Page=%T page=%T" $page $template .Page page }} */}}
+{{ with $page.Title }}
+{{ else }}
+  {{ warnf "%s missing title: .Page=%v[%T] page=%v[%T] .Page.Title=%q[%T] page.Title=%q[%T]"
+      $dbg .Page .Page page page .Page.Title .Page.Title page.Title page.Title }}
+{{ end }}
+
 {{- $singleMeta := dict -}}
 
 {{/* {{- $assetVariant := partial "claris/_functions/asset-variant" $page }} */}}
 {{- $assetVariant := .AssetVariant }}
 {{- if not $assetVariant }}
-  {{/* {{- warnf "%s[%s]: .AssetVariant is unset" $page $template }} */}}
+  {{/* {{- warnf "%s .AssetVariant is unset" $dbg }} */}}
   {{- $assetVariant = partial "claris/_functions/asset-variant" $page }}
 {{- end }}
+
+{{- $headMetaParams := (dict "Page" $page "AssetVariant" $assetVariant "Debug" $debug) }}
 
 {{- with $page }}
 
@@ -24,28 +32,29 @@
 
   {{- $defaultMetaPartial := "claris/_functions/meta/head.html" }}
   {{- if $debug }}
-    {{- warnf "%s[%s]: Calling default meta partial %v"
-        $page $template $defaultMetaPartial }}
+    {{- warnf "%s Calling default meta partial %v"
+        $dbg $defaultMetaPartial }}
   {{- end }}
-  {{- $metaVariant = merge $metaVariant (partial $defaultMetaPartial $page) }}
+  {{- $metaVariant = merge $metaVariant (partialCached $defaultMetaPartial $headMetaParams .Permalink) }}
 
   {{- with $assetVariant.ContentType }}
     {{- $contentTypeMetaPartial := printf "partials/%s/head/meta.html" . }}
     {{- if templates.Exists $contentTypeMetaPartial }}
       {{- if $debug }}
-        {{- warnf "%s[%s]: contentType=%v: Calling meta partial %v"
-            $page $template . $contentTypeMetaPartial }}
+        {{- warnf "%s contentType=%v: Calling meta partial %v"
+            $dbg . $contentTypeMetaPartial }}
       {{- end }}
-      {{- $contentTypeMetaVariant := partial $contentTypeMetaPartial (dict
-          "Page" $page
-          "meta" $metaVariant
-      ) }}
+      {{- $contentTypeMetaVariant := partialCached $contentTypeMetaPartial (merge $headMetaParams
+        (dict
+            "meta" $metaVariant
+        )
+      ) .Permalink }}
       {{- $metaVariant = merge $metaVariant $contentTypeMetaVariant }}
     {{- end }}
   {{- else }}
     {{/* {{- if $debug }} */}}
-      {{- errorf "%s[%s]: invalid $assetVariant=%v: missing .ContentType"
-          $page $template $assetVariant }}
+      {{- errorf "%s invalid $assetVariant=%v: missing .ContentType"
+          $dbg $assetVariant }}
     {{/* {{- end }} */}}
   {{- end }}
 
@@ -56,24 +65,24 @@
       {{- if (in $mainSections .Section) }}
         {{- $itemType = "article" }}
         {{- if $debug }}
-          {{- warnf "%s[%s]: .Kind=%v .Section=%v in mainSections=%v"
-              $page $template .Kind .Section $mainSections }}
+          {{- warnf "%s .Kind=%v .Section=%v in mainSections=%v"
+              $dbg .Kind .Section $mainSections }}
         {{- end }}
       {{- /* else }}
         {{- if $debug }}
-          {{- warnf "%s[%s]: .Kind=%v .Section=%v not in mainSections=%v"
-              $page $template .Kind .Section $mainSections }}
+          {{- warnf "%s .Kind=%v .Section=%v not in mainSections=%v"
+              $dbg .Kind .Section $mainSections }}
         {{- end */ -}}
       {{- end }}
     {{- else if in (slice "home" "section" "taxonomy") .Kind }}
       {{- $itemType = "section" }}
     {{- else }}
       {{- if $debug }}
-        {{- warnf "%s[%s]: Unexpected .Kind=%v" $page $template .Kind }}
+        {{- warnf "%s Unexpected .Kind=%v" $dbg .Kind }}
       {{- end }}
     {{- end }}
   {{- else }}
-    {{- errorf "%s[%s]: no .Page: $page=%v [type=%T] .Page=%v [type=%T]" $page $template $page $page .Page .Page }}
+    {{- errorf "%s no .Page: $page=%v [type=%T] .Page=%v [type=%T]" $dbg $page $page .Page .Page }}
   {{- end }}
 
   {{- $authorMeta := partialCached "claris/_functions/meta/author" (dict "Page" $page "Debug" $debug) $page.Permalink }}
@@ -98,8 +107,8 @@
       {{- $locale = printf "%s-%s" (lower (index . 0) ) (upper (index . 1) )  }}
     {{- end }}
   {{- else }}
-    {{- errorf "%s[%s]: Invalid locale=%v does not match %v"
-        $page $template $locale $localeRE }}
+    {{- errorf "%s Invalid locale=%v does not match %v"
+        $dbg $locale $localeRE }}
   {{- end }}
 
   {{- $alternativeLanguages := slice }}
@@ -149,12 +158,12 @@
 {{- end }}
 
 {{- if $debug }}
-  {{/* {{- warnf "%s[%s]: returning .Data=\n%v" $page $template
+  {{/* {{- warnf "%s returning .Data=\n%v" $dbg
       (jsonify (dict "indent" "  ") $singleMeta.Single.Data) }} */}}
-  {{- warnf "%s[%s]: returning %v" $page $template
+  {{- warnf "%s returning %v" $dbg
       $singleMeta }}
 {{- end }}
 {{- /* if not $singleMeta.Single.Data.Headline }}
-  {{- errorf "%s[%s]: invalid $singleMeta.Single.Data.Headline='%v'" $page $template $singleMeta.Single.Data.Headline }}
+  {{- errorf "%s invalid $singleMeta.Single.Data.Headline='%v'" $dbg $singleMeta.Single.Data.Headline }}
 {{- end */ -}}
 {{- return (dict "Single" $singleMeta) }}
