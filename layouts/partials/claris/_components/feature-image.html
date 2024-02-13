@@ -1,5 +1,13 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
+{{- $template := "claris/_components/feature-image" }}
+
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
+{{- /* $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `technology/$` $page.RelPermalink) ) ) ) */ -}}
+{{- /* $debug = or $debug (eq $page.Kind "home" ) */ -}}
+{{- $dbg := printf "%s%s[%s]" site.LanguagePrefix (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
 {{- $title := .Title }}
 {{- $fetchPriority := "high" }}
 {{- if reflect.IsMap . }}
@@ -9,13 +17,6 @@
 {{- end }}
 
 {{- $featureImageStyle := default "wide" ($page.Param "image.feature.style") }}
-{{- $template := "claris/_components/feature-image" }}
-
-{{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- /* $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `quantum-supremacy|about` $page.RelPermalink) ) ) ) */ -}}
-{{- /* $debug = or $debug (eq $page.Kind "home" ) */ -}}
-{{- $dbg := printf "%s[%s]" (replaceRE `.*?([^/]+)/?$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $featureImage := false }}
 {{- with $meta.Single.Data.Images }}

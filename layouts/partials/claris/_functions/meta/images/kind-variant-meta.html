@@ -3,8 +3,8 @@
 {{- $template := "claris/_functions/meta/image/kind-variant-meta" }}
 {{- $debug := default false .Debug }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo)?leadership/$` $page.RelPermalink) ) ) }} */}}
-{{ $dbg := printf "%s[%s]" (replaceRE `.*?([^/]+)/?$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{/* {{ $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `quantum-supremacy/` $page.RelPermalink) ) ) ) }} */}}
+{{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $processAllImages := true }}
 {{- $imageKindVariantMeta := .imagekindvariantmeta }}

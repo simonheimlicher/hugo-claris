@@ -5,7 +5,7 @@
 {{ $debug := default false .Debug }}
 {{/* $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `quantum-supremacy|about` $page.RelPermalink) ) ) ) */}}
 {{/* $debug = or $debug (eq $page.Kind "home" ) */}}
-{{ $dbg := printf "%s[%s]" (replaceRE `.*?([^/]+)/?$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{ $entityParams := merge . (dict "Debug" $debug) }}
 

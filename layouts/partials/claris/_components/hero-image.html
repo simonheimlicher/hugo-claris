@@ -1,11 +1,12 @@
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $imagesMeta := $meta.Single.Data.Images }}
 {{- $template := "partials/hero-image" }}
+{{- $page := page }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{- /* $debug = or $debug (not (not (findRE `/about` page.RelPermalink) ) ) */ -}}
-{{- /* $debug = or $debug (and (eq page.Kind "home" ) (not site.LanguagePrefix) ) */ -}}
-{{- $dbg := printf "%s[%s]" (replaceRE `.*?([^/]+)/?$` `$1` page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{- /* $debug = or $debug (and (eq page.Kind "home") (not site.LanguagePrefix) ) */ -}}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $fetchPriority := "low" }}
 {{- if reflect.IsMap . }}

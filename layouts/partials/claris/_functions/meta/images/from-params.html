@@ -4,10 +4,9 @@
 {{- $paramsImage := .Params.image }}
 {{- $debug := default false .Debug }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `quantum-supremacy|about` $page.RelPermalink) ) ) ) */}}
 {{/* $debug = or $debug (and (not site.LanguagePrefix) (eq $page.Kind "home" ) ) */}}
 {{/* $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `quantum-supremacy` $page.RelPermalink) ) ) ) */}}
-{{ $dbg := printf "%s[%s]" (replaceRE `.*?([^/]+)/?$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- with $paramsImage }}
   <!-- Grab images provided by .Params.image

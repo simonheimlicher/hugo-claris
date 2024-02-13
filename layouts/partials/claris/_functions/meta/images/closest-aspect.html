@@ -15,7 +15,7 @@
 {{- $debug = default $debug .Debug }}
 {{- /* $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `responsive-image` $page.RelPermalink) ) ) ) */ -}}
 {{- /* $debug = or $debug (and (not site.LanguagePrefix) (eq $page.Kind "home" ) ) */ -}}
-{{- $dbg := printf "%s[%s]" (replaceRE `.*?([^/]+)/?$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{/* {{- warnf "%s %v" $dbg (jsonify (dict "indent" "  ") (merge . (dict "Page" "omitted"))) }} */}}
 
