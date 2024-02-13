@@ -1,45 +1,45 @@
-{{- $page := .Page }}
-{{- $template := "claris/_functions/meta/author" }}
-{{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^/(?:[^/]*-demo/)?(.*powerful|$)` $page.RelPermalink) ) ) }} */}}
+{{ $page := .Page }}
+{{ $template := "claris/_functions/meta/author" }}
+{{ $debug := false }}
+{{/* {{ $debug = page.Scratch.Get "clarisdebug" }} */}}
+{{/* {{ $debug = or $debug (not (not (findRE `^/(?:[^/]*-demo/)?(.*powerful|$)` $page.RelPermalink) ) ) }} */}}
 
-{{- $author := default false .Author }}
+{{ $author := default false .Author }}
 
-{{- $authorMeta := dict -}}
+{{ $authorMeta := dict }}
 
-{{- with $page }}
+{{ with $page }}
 
-  {{- $socialMeta := partialCached "claris/_functions/meta/social" (dict "Page" $page "Debug" $debug) }}
+  {{ $socialMeta := partialCached "claris/_functions/meta/social" (dict "Page" $page "Debug" $debug) }}
 
-  {{- $authorProfilePagePath := "about" }}
-  {{- with $author }}
-  {{- else }}
-    {{- with $author =  ($page.Param "siteAuthor") | default site.Author.name }}
-      {{- with site.Param "authors" }}
-        {{- with index . (anchorize $author) }}
-          {{- $author = .name }}
-          {{- with index . "profilepage" }}
-            {{- $authorProfilePagePath = . }}
-          {{- end }}
-        {{- end }}
-      {{- end }}
-    {{- end }}
-  {{- end }}
+  {{ $authorProfilePagePath := "about" }}
+  {{ with $author }}
+  {{ else }}
+    {{ with $author =  ($page.Param "siteAuthor") | default site.Author.name }}
+      {{ with site.Param "authors" }}
+        {{ with index . (anchorize $author) }}
+          {{ $author = .name }}
+          {{ with index . "profilepage" }}
+            {{ $authorProfilePagePath = . }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
 
-  {{- $authorProfilePage := site.GetPage $authorProfilePagePath }}
-  {{- if $debug }}
-    {{- warnf "%s[%s]: authorProfilePagePath=%v authorProfilePage=%v" $page $template $authorProfilePagePath $authorProfilePage  }}
-  {{- end }}
-  {{- $description := $authorProfilePage.Params.description | default $authorProfilePage.Summary | default $author }}
-  {{- $description = $description | partial `claris/_functions/sanitize` }}
+  {{ $authorProfilePage := site.GetPage $authorProfilePagePath }}
+  {{ if $debug }}
+    {{ warnf "%s[%s]: authorProfilePagePath=%v authorProfilePage=%v" $page $template $authorProfilePagePath $authorProfilePage  }}
+  {{ end }}
+  {{ $description := $authorProfilePage.Params.description | default $authorProfilePage.Summary | default $author }}
+  {{ $description = $description | partial `claris/_functions/sanitize` }}
 
-  {{- $authorProfileURL := $authorProfilePage.RelPermalink }}
-  {{- $authorProfileCanonicalURL := (partial "claris/_functions/canonical-url" $authorProfilePage) }}
-  {{- $contentContainerID := "contentContainer" }}
+  {{ $authorProfileURL := $authorProfilePage.RelPermalink }}
+  {{ $authorProfileCanonicalURL := (partial "claris/_functions/canonical-url" $authorProfilePage) }}
+  {{ $contentContainerID := "contentContainer" }}
 
-  {{- $avatarImage := default site.Params.logo (index site.Params.authors $author).avatar }}
-  {{- $authorMeta = (dict
+  {{ $avatarImage := default site.Params.logo (index site.Params.authors $author).avatar }}
+  {{ $authorMeta = (dict
     "Name" $author
     "ID" (printf "%s#%s" $authorProfileCanonicalURL $contentContainerID)
     "URL" $authorProfileURL
@@ -48,11 +48,11 @@
     "Description" $description
     "Avatar" $avatarImage
     "Social" $socialMeta
-  ) -}}
-{{- end }}
+  ) }}
+{{ end }}
 
-{{- if $debug }}
-  {{- warnf "%s[%s]: returning %v" $page $template
-      (jsonify (dict "indent" "  ") $authorMeta) -}}
-{{- end }}
-{{- return $authorMeta }}
+{{ if $debug }}
+  {{ warnf "%s[%s]: returning %v" $page $template
+      (jsonify (dict "indent" "  ") $authorMeta) }}
+{{ end }}
+{{ return $authorMeta }}

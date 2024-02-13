@@ -1,59 +1,59 @@
-{{- $page := .Page }}
-{{- $template := "claris/_functions/meta/site" }}
-{{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `/$` $page.RelPermalink) ) ) }} */}}
+{{ $page := .Page }}
+{{ $template := "claris/_functions/meta/site" }}
+{{ $debug := false }}
+{{/* {{ $debug = page.Scratch.Get "clarisdebug" }} */}}
+{{/* {{ $debug = or $debug (not (not (findRE `/$` $page.RelPermalink) ) ) }} */}}
 
-{{- $homePage := (site.GetPage "/") }}
+{{ $homePage := (site.GetPage "/") }}
 
-{{- $siteMeta := dict -}}
+{{ $siteMeta := dict }}
 
-{{- $metaSchemaOrg := site.Params.robots.index }}
-{{- $metaOpengraph := site.Params.robots.index }}
-{{- $metaTwitterCard := site.Params.robots.index }}
+{{ $metaSchemaOrg := site.Params.robots.index }}
+{{ $metaOpengraph := site.Params.robots.index }}
+{{ $metaTwitterCard := site.Params.robots.index }}
 
-{{- $author := default site.Author.name ($page.Param "siteAuthor") }}
-{{- with $author }}
-  {{- with site.Param "authors" }}
-    {{- with index . (anchorize $author) }}
-      {{- $author = .name }}
-    {{- end }}
-  {{- end }}
-{{- end }}
-{{- $authorMeta := partialCached "claris/_functions/meta/author" (dict "Page" $homePage "Author" $author "Debug" $debug) $homePage.Permalink }}
-{{- $socialMeta := partialCached "claris/_functions/meta/social" (dict "Page" $homePage "Author" $author "Debug" $debug) $homePage.Permalink }}
+{{ $author := default site.Author.name ($page.Param "siteAuthor") }}
+{{ with $author }}
+  {{ with site.Param "authors" }}
+    {{ with index . (anchorize $author) }}
+      {{ $author = .name }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ $authorMeta := partialCached "claris/_functions/meta/author" (dict "Page" $homePage "Author" $author "Debug" $debug) $homePage.Permalink }}
+{{ $socialMeta := partialCached "claris/_functions/meta/social" (dict "Page" $homePage "Author" $author "Debug" $debug) $homePage.Permalink }}
 
-{{- $name := default site.Title site.Params.website.name }}
+{{ $name := default site.Title site.Params.website.name }}
 
-{{- $title := site.Title | $page.RenderString }}
-{{- $titlePlain := $title | partial `claris/_functions/sanitize` }}
+{{ $title := site.Title | $page.RenderString }}
+{{ $titlePlain := $title | partial `claris/_functions/sanitize` }}
 
-{{- $tagline := site.Params.website.tagline | $page.RenderString }}
-{{- $taglinePlain := $tagline | partial `claris/_functions/sanitize` }}
-{{- $headline := $title }}
-{{- with $tagline }}
-  {{- $headline = printf "%s: %s" $title $tagline }}
-{{- end }}
-{{- $headlinePlain := $headline | partial `claris/_functions/sanitize` }}
+{{ $tagline := site.Params.website.tagline | $page.RenderString }}
+{{ $taglinePlain := $tagline | partial `claris/_functions/sanitize` }}
+{{ $headline := $title }}
+{{ with $tagline }}
+  {{ $headline = printf "%s: %s" $title $tagline }}
+{{ end }}
+{{ $headlinePlain := $headline | partial `claris/_functions/sanitize` }}
 
-{{- $description := site.Params.website.description | partial `claris/_functions/sanitize` }}
-{{- if and (not $description) site.Params.claris.hints }}
-  {{- warnf "%s[%s]: Missing website description. To include a description of your website, add it to site.Params.website.description" $page $template }}
-{{- end }}
+{{ $description := site.Params.website.description | partial `claris/_functions/sanitize` }}
+{{ if and (not $description) site.Params.claris.hints }}
+  {{ warnf "%s[%s]: Missing website description. To include a description of your website, add it to site.Params.website.description" $page $template }}
+{{ end }}
 
-{{- $organization := site.Params.organization.name }}
+{{ $organization := site.Params.organization.name }}
 
-{{- $currentYear := (string now.Year) }}
-{{- $copyright := default (T "copyright") (printf "%s %s %s. %s" (string now.Year) $author (T "all_rights") ) }}
-{{- with site.Params.website.established }}
-  {{- $copyright = printf "%s %s–%s %s. %s" (T "copyright") (string .) $currentYear $author (T "all_rights" ) }}
-{{- end }}
+{{ $currentYear := (string now.Year) }}
+{{ $copyright := default (T "copyright") (printf "%s %s %s. %s" (string now.Year) $author (T "all_rights") ) }}
+{{ with site.Params.website.established }}
+  {{ $copyright = printf "%s %s–%s %s. %s" (T "copyright") (string .) $currentYear $author (T "all_rights" ) }}
+{{ end }}
 
-{{- $licenseText := "" }}
-{{- $licenseHTML := "" }}
+{{ $licenseText := "" }}
+{{ $licenseHTML := "" }}
 
-{{- with site.Params.website.license.identifier }}
-  {{- $licenseParams := (dict
+{{ with site.Params.website.license.identifier }}
+  {{ $licenseParams := (dict
       "Count" 1
       "WebsiteName" $name
       "SiteAuthor" $author
@@ -66,38 +66,38 @@
         "URL" (site.Params.website.license.URL | safeHTML | safeJS)
       )
     ) }}
-  {{- (T "license_website" $licenseParams) }}
-  {{- (T "license_website_HTML" $licenseParams) }}
-  {{- if $debug }}
-    {{- warnf "%s[%s]: licenseHTML=%s [licenseParams=%v]" $page $template
+  {{ (T "license_website" $licenseParams) }}
+  {{ (T "license_website_HTML" $licenseParams) }}
+  {{ if $debug }}
+    {{ warnf "%s[%s]: licenseHTML=%s [licenseParams=%v]" $page $template
         $licenseHTML $licenseParams }}
-  {{- end }}
-{{- end }}
+  {{ end }}
+{{ end }}
 
-{{- $language := site.Language.Lang }}
+{{ $language := site.Language.Lang }}
 
-{{- $alternativeLanguages := slice }}
-{{- range site.Languages }}
-  {{- if not (eq . site.Language.Lang) }}
-    {{- $alternativeLanguages = append (slice .Lang) $alternativeLanguages }}
-  {{- end }}
-{{- end }}
+{{ $alternativeLanguages := slice }}
+{{ range site.Languages }}
+  {{ if not (eq . site.Language.Lang) }}
+    {{ $alternativeLanguages = append (slice .Lang) $alternativeLanguages }}
+  {{ end }}
+{{ end }}
 
-{{- $canonicalBaseURL := ( site.Params.canonicalBaseURL | default site.Params.BaseURL ) }}
-{{- $canonicalURL := partialCached "claris/_functions/canonical-url" $homePage $canonicalBaseURL }}
+{{ $canonicalBaseURL := ( site.Params.canonicalBaseURL | default site.Params.BaseURL ) }}
+{{ $canonicalURL := partialCached "claris/_functions/canonical-url" $homePage $canonicalBaseURL }}
 
 <!-- HTML 'id' attribute of the DOM container of the main content -->
-{{- $websiteID := "mainContainer" }}
+{{ $websiteID := "mainContainer" }}
 
-{{- $metaImagesParams := (dict
+{{ $metaImagesParams := (dict
   "Page" $homePage
   "Params" (merge $homePage.Params site.Params)
   "Debug" $debug
 ) }}
 
-{{- $metaImages := partialCached "claris/_functions/meta/images/from-params" $metaImagesParams $metaImagesParams }}
+{{ $metaImages := partialCached "claris/_functions/meta/images/from-params" $metaImagesParams $metaImagesParams }}
 
-{{- $siteMeta = (dict
+{{ $siteMeta = (dict
   "Site" (dict
     "Classification" (dict
       "Robots" site.Params.robots
@@ -133,9 +133,9 @@
   )
 ) }}
 
-{{- if $debug }}
-  {{- warnf "%s[%s]: returning %v" $page $template
+{{ if $debug }}
+  {{ warnf "%s[%s]: returning %v" $page $template
       (jsonify (dict "indent" "  " "noHTMLEscape" true) $siteMeta) }}
-{{- end }}
+{{ end }}
 
-{{- return $siteMeta }}
+{{ return $siteMeta }}

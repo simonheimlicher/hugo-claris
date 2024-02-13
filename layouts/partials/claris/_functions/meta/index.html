@@ -1,38 +1,38 @@
-{{- $page := .Page }}
-{{- $template := "claris/_functions/meta/index" }}
-{{- $debug := or false .Debug }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^/$` $page.RelPermalink) ) ) }} */}}
+{{ $page := .Page }}
+{{ $template := "claris/_functions/meta/index" }}
+{{ $debug := or false .Debug }}
+{{/* {{ $debug = page.Scratch.Get "clarisdebug" }} */}}
+{{/* {{ $debug = or $debug (not (not (findRE `^/$` $page.RelPermalink) ) ) }} */}}
 
-{{- $assetVariant := .AssetVariant }}
-{{- if not $assetVariant }}
-  {{- $assetVariant = partial "claris/_functions/asset-variant" $page }}
-{{- end }}
+{{ $assetVariant := .AssetVariant }}
+{{ if not $assetVariant }}
+  {{ $assetVariant = partial "claris/_functions/asset-variant" $page }}
+{{ end }}
 
-{{- $metaParams := (dict "Page" $page "AssetVariant" $assetVariant "Template" $template "Debug" $debug) }}
+{{ $metaParams := (dict "Page" $page "AssetVariant" $assetVariant "Template" $template "Debug" $debug) }}
 
-{{- $siteMeta := partialCached "claris/_functions/meta/site" $metaParams site.BaseURL }}
-{{- $singleMeta := partialCached "claris/_functions/meta/single" $metaParams $page.Permalink }}
+{{ $siteMeta := partialCached "claris/_functions/meta/site" $metaParams site.BaseURL }}
+{{ $singleMeta := partialCached "claris/_functions/meta/single" $metaParams $page.Permalink }}
 
-{{- $outputMeta := (dict "Output" (dict
+{{ $outputMeta := (dict "Output" (dict
     "Format" $assetVariant.OutputFormat.Name
   )
 ) }}
 
-{{- $classificationMeta := partialCached "claris/_functions/meta/classification" $metaParams $page.Permalink $assetVariant.OutputFormat }}
+{{ $classificationMeta := partialCached "claris/_functions/meta/classification" $metaParams $page.Permalink $assetVariant.OutputFormat }}
 
-{{- $meta := (merge
+{{ $meta := (merge
   $siteMeta
   $singleMeta
   $outputMeta
   $classificationMeta
 ) }}
 
-{{- /* {{- if (and $assetVariant.OutputFormat (strings.Contains (lower $assetVariant.OutputFormat.Name) "print") ) }}
-  {{- warnf "%s[%s]: $assetVariant.OutputFormat=%v: meta.Output=\n%v\n.Classification=\n%v"
+{{/* f (and $assetVariant.OutputFormat (strings.Contains (lower $assetVariant.OutputFormat.Name) "print") ) }}
+  {{ warnf "%s[%s]: $assetVariant.OutputFormat=%v: meta.Output=\n%v\n.Classification=\n%v"
     $page $template $assetVariant.OutputFormat.Name
     (jsonify (dict "indent" "  ") $meta.Format)
     (jsonify (dict "indent" "  ") $meta.Classification ) }}
-{{- end }} */ -}}
+{{ end */ -}}
 
-{{- return $meta }}
+{{ return $meta }}

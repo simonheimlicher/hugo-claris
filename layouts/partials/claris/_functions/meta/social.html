@@ -1,11 +1,11 @@
-{{- $socialMeta := dict }}
-{{- $page := .Page }}
-{{- $template := "claris/_functions/meta/social" }}
-{{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^/(?:[^/]*-demo/)?(.*powerful|$)` $page.RelPermalink) ) ) }} */}}
+{{ $socialMeta := dict }}
+{{ $page := .Page }}
+{{ $template := "claris/_functions/meta/social" }}
+{{ $debug := false }}
+{{/* {{ $debug = page.Scratch.Get "clarisdebug" }} */}}
+{{/* {{ $debug = or $debug (not (not (findRE `^/(?:[^/]*-demo/)?(.*powerful|$)` $page.RelPermalink) ) ) }} */}}
 
-{{- $socialSites := (dict
+{{ $socialSites := (dict
   "twitter" (dict
     "URLTemplate" "https://twitter.com/%s"
     "Name" "Twitter"
@@ -37,35 +37,35 @@
     "Icon" "crossvalidated"
   )
 ) }}
-{{- with $page }}
+{{ with $page }}
 
-  {{- $otherProfileURLs := slice }}
+  {{ $otherProfileURLs := slice }}
 
-  {{- with site.Params.social }}
-    {{- range $site, $profile := . }}
-      {{- $siteTemplate := index $socialSites $site "URLTemplate" }}
-      {{- with $siteTemplate }}
-        {{- $profileURL := (printf $siteTemplate $profile.id) }}
-        {{- $otherProfileURLs = append (slice $profileURL) $otherProfileURLs }}
-        {{- $socialMeta = merge $socialMeta (dict $site (merge
+  {{ with site.Params.social }}
+    {{ range $site, $profile := . }}
+      {{ $siteTemplate := index $socialSites $site "URLTemplate" }}
+      {{ with $siteTemplate }}
+        {{ $profileURL := (printf $siteTemplate $profile.id) }}
+        {{ $otherProfileURLs = append (slice $profileURL) $otherProfileURLs }}
+        {{ $socialMeta = merge $socialMeta (dict $site (merge
           (index $socialSites $site)
           (dict "Profile" (merge $profile (dict "URL" $profileURL) )
         ))) }}
-        {{- if $debug }}
-          {{- warnf "%s[%s]: profileURL=%q [siteTemplate=%q profile=%q]"
+        {{ if $debug }}
+          {{ warnf "%s[%s]: profileURL=%q [siteTemplate=%q profile=%q]"
               $page $template $profileURL $siteTemplate $profile }}
-        {{- end }}
-      {{- else }}
-        {{- warnf "%s[%s]: No siteTemplate for site=%q profile=%q"
+        {{ end }}
+      {{ else }}
+        {{ warnf "%s[%s]: No siteTemplate for site=%q profile=%q"
             $page $template $site $profile }}
-      {{- end }}
-    {{- end }}
-  {{- end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
 
-{{- end }}
+{{ end }}
 
-{{- if $debug }}
-  {{- warnf "%s[%s]: returning %v"
+{{ if $debug }}
+  {{ warnf "%s[%s]: returning %v"
       $page $template (jsonify (dict "indent" "  ") $socialMeta) }}
-{{- end }}
-{{- return $socialMeta }}
+{{ end }}
+{{ return $socialMeta }}

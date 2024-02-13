@@ -1,159 +1,159 @@
-{{- $page := .Page }}
-{{- $rootPage := default $page .RootPage }}
-{{- $template := "claris/_functions/meta/list" }}
-{{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?(/de)?/$` $page.RelPermalink) ) ) }} */}}
+{{ $page := .Page }}
+{{ $rootPage := default $page .RootPage }}
+{{ $template := "claris/_functions/meta/list" }}
+{{ $debug := false }}
+{{/* $debug = page.Scratch.Get "clarisdebug" */}}
+{{/* $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?(/de)?/$` $page.RelPermalink) ) ) */}}
 
-{{- if $debug }}
-  {{- warnf "%s[%s]: .ListItems=%v .ListParams=%v" $page $template .ListItems .ListParams }}
-{{- end }}
+{{ if $debug }}
+  {{ warnf "%s[%s]: .ListItems=%v .ListParams=%v" $page $template .ListItems .ListParams }}
+{{ end }}
 
-{{- $limit := 0 }}
+{{ $limit := 0 }}
 
-{{- $assetVariant := .AssetVariant }}
+{{ $assetVariant := .AssetVariant }}
 
-{{- $ephemeralSections := default slice ($page.Param "ephemeralSections") }}
-{{- $listMeta := dict -}}
-{{- $candidateListItems := false }}
-{{- $validListItems := slice }}
-{{- $listMetaItems := slice }}
+{{ $ephemeralSections := default slice ($page.Param "ephemeralSections") }}
+{{ $listMeta := dict }}
+{{ $candidateListItems := false }}
+{{ $validListItems := slice }}
+{{ $listMetaItems := slice }}
 
-{{- with .ListItems }}
-  {{- $validListItems = . }}
-  {{- warnf "%s[%s]: listing items provided in .ListItems=%v" $page $template . }}
-{{- else }}
-  {{- with .ListParams }}
-    {{/* {{- warnf "%s[%s]: listing items according to ListParams=%v" $page $template . }} */}}
-    {{- with .SectionsToShow }}
-      {{- $candidateListItems = sort (where $page.Pages "Section" "in" .) "Weight" }}
-      {{/* {{- partial "html-comment" (printf "[%s]: listing SectionsToShow: %v" $template $candidateListItems) }} */}}
-      {{/* {{- warnf "%s[%s]: listing sections provided by SectionsToShow=%v: %v" $page $template . $candidateListItems }} */}}
-    {{- end }}
-    {{- with .Section }}
-      {{- $candidateListItems = where site.RegularPages.ByDate.Reverse "Section" "eq" . }}
-      {{/* {{- warnf "%s[%s]: listing pages in .Section=%v: %v" $page $template . $candidateListItems }} */}}
-    {{- end }}
-    {{- with .IncludeSections }}
-      {{- $candidateListItems = where site.RegularPages.ByDate.Reverse "Section" "in" . }}
-      {{/* {{- warnf "%s[%s]: listing pages in any of the .IncludeSections=%v: %v" $page $template . $candidateListItems }} */}}
-    {{- end }}
-    {{- with .Limit }}
-      {{- $limit = . }}
-      {{/* {{- warnf "%s[%s]: limiting number of pages to list to .Limit=%v" $page $template . }} */}}
-    {{- end }}
-  {{- end }}
-{{- end }}
+{{ with .ListItems }}
+  {{ $validListItems = . }}
+  {{ warnf "%s[%s]: listing items provided in .ListItems=%v" $page $template . }}
+{{ else }}
+  {{ with .ListParams }}
+    {{/* {{ warnf "%s[%s]: listing items according to ListParams=%v" $page $template . }} */}}
+    {{ with .SectionsToShow }}
+      {{ $candidateListItems = sort (where $page.Pages "Section" "in" .) "Weight" }}
+      {{/* {{ partial "html-comment" (printf "[%s]: listing SectionsToShow: %v" $template $candidateListItems) }} */}}
+      {{/* {{ warnf "%s[%s]: listing sections provided by SectionsToShow=%v: %v" $page $template . $candidateListItems }} */}}
+    {{ end }}
+    {{ with .Section }}
+      {{ $candidateListItems = where site.RegularPages.ByDate.Reverse "Section" "eq" . }}
+      {{/* {{ warnf "%s[%s]: listing pages in .Section=%v: %v" $page $template . $candidateListItems }} */}}
+    {{ end }}
+    {{ with .IncludeSections }}
+      {{ $candidateListItems = where site.RegularPages.ByDate.Reverse "Section" "in" . }}
+      {{/* {{ warnf "%s[%s]: listing pages in any of the .IncludeSections=%v: %v" $page $template . $candidateListItems }} */}}
+    {{ end }}
+    {{ with .Limit }}
+      {{ $limit = . }}
+      {{/* {{ warnf "%s[%s]: limiting number of pages to list to .Limit=%v" $page $template . }} */}}
+    {{ end }}
+  {{ end }}
+{{ end }}
 
-{{- $recentMaxYears := default 5 ($page.Param "recentMaxYears") }}
+{{ $recentMaxYears := default 5 ($page.Param "recentMaxYears") }}
 
-{{- if eq $candidateListItems false }}
-  {{- $candidateListItems = $page.Pages.ByDate.Reverse }}
-  {{- if $debug }}
-    {{- warnf "%s[%s]: List all pages from .Pages=%v: candidateListItems=%v" $page $template $page.Pages $candidateListItems }}
-  {{- end }}
-{{- end }}
+{{ if eq $candidateListItems false }}
+  {{ $candidateListItems = $page.Pages.ByDate.Reverse }}
+  {{ if $debug }}
+    {{ warnf "%s[%s]: List all pages from .Pages=%v: candidateListItems=%v" $page $template $page.Pages $candidateListItems }}
+  {{ end }}
+{{ end }}
 
-{{- with $candidateListItems }}
-  {{- $validListItems = $candidateListItems }}
-  {{- if in $ephemeralSections $page.Section }}
+{{ with $candidateListItems }}
+  {{ $validListItems = $candidateListItems }}
+  {{ if in $ephemeralSections $page.Section }}
     <!-- Limit list of articles to last n years -->
-    {{- $itemsRecent := where $candidateListItems "Lastmod" "ge" (now.AddDate (int (sub 0 $recentMaxYears)) 0 0) }}
-    {{- if $debug }}
-      {{- warnf "%s[%s]: itemsRecent: %#v" $page $template $itemsRecent }}
-    {{- end }}
+    {{ $itemsRecent := where $candidateListItems "Lastmod" "ge" (now.AddDate (int (sub 0 $recentMaxYears)) 0 0) }}
+    {{ if $debug }}
+      {{ warnf "%s[%s]: itemsRecent: %#v" $page $template $itemsRecent }}
+    {{ end }}
 
-    {{- $itemsBeyondBestBefore := where $itemsRecent ".Params.BestBefore" "lt" (now) }}
-    {{- if $debug }}
-      {{- warnf "%s[%s]: itemsBeyondBestBefore: %#v" $page $template $itemsBeyondBestBefore }}
-    {{- end }}
+    {{ $itemsBeyondBestBefore := where $itemsRecent ".Params.BestBefore" "lt" (now) }}
+    {{ if $debug }}
+      {{ warnf "%s[%s]: itemsBeyondBestBefore: %#v" $page $template $itemsBeyondBestBefore }}
+    {{ end }}
 
-    {{- $validListItems = ($itemsRecent | complement $itemsBeyondBestBefore) }}
-  {{- else }}
-    {{- partial "html-comment" (printf "[%s]: .Section=%v is not in ephemeralSections=%v: listing all items=%v"
+    {{ $validListItems = ($itemsRecent | complement $itemsBeyondBestBefore) }}
+  {{ else }}
+    {{ partial "html-comment" (printf "[%s]: .Section=%v is not in ephemeralSections=%v: listing all items=%v"
         $page $template $page.Section $ephemeralSections $validListItems) }}
-    {{- if $debug }}
-      {{- warnf "%s[%s]: not ephemeral: .Section=%v is not in ephemeralSections=%v: listing all items=%v"
+    {{ if $debug }}
+      {{ warnf "%s[%s]: not ephemeral: .Section=%v is not in ephemeralSections=%v: listing all items=%v"
           $page $template $page.Section $ephemeralSections $validListItems }}
-    {{- end }}
-  {{- end }}
+    {{ end }}
+  {{ end }}
 
-  {{- if gt (len $validListItems) 0 }}
-    {{- with $limit }}
-      {{- $validListItems = first . $validListItems }}
-    {{- end }}
-    {{- if $debug }}
-      {{- warnf "%s[%s]: Found items to list: validListItems=%v" $page $template $validListItems }}
-    {{- end }}
-    {{- range $validListItems }}
-      {{- $listItemMetaParams := (dict "Page" . "AssetVariant" $assetVariant "Template" $template "Debug" $debug) }}
-      {{- $singleMeta := partialCached "claris/_functions/meta/single" $listItemMetaParams .Permalink }}
-      {{- $classificationMeta := partialCached "claris/_functions/meta/classification" $listItemMetaParams .Permalink }}
-      {{- $itemMeta := merge $singleMeta $classificationMeta }}
-      {{- if $debug }}
-        {{- warnf "%s[%s]: Page=%v .Kind=%v: itemMeta for page=%v:\n%v" $page $template . .Kind $itemMeta.Single.Page $itemMeta.Classification }}
-      {{- end }}
-      {{- if (eq .Kind "page") }}
-      {{- else }}
-        {{- if $debug }}
-          {{- warnf "%s[%s]: .Kind=%v: $page=%v $rootPage=%v" $page $template .Kind $page $rootPage }}
-        {{- end }}
-        {{- if (eq $rootPage $page) }}
-          {{- $itemListMeta := (partial "claris/_functions/meta/list" (dict "Page" . "RootPage" $rootPage "Debug" $debug) ) }}
-          {{- $itemMeta = merge $itemMeta $itemListMeta }}
-          {{- if $debug }}
-            {{- warnf "%s[%s]: .Kind=%v: added itemListMeta for %d items" $page $template .Kind (len $itemMeta.List.Data.Items) }}
-          {{- end }}
-        {{- end }}
-      {{- end }}
-      {{- $listMetaItems = append (slice $itemMeta) $listMetaItems }}
-    {{- end }}
-  {{- else }}
-    {{- if $debug }}
-      {{- warnf "%s[%s]: None of the candidate %v items remain to list %v"
+  {{ if gt (len $validListItems) 0 }}
+    {{ with $limit }}
+      {{ $validListItems = first . $validListItems }}
+    {{ end }}
+    {{ if $debug }}
+      {{ warnf "%s[%s]: Found items to list: validListItems=%v" $page $template $validListItems }}
+    {{ end }}
+    {{ range $validListItems }}
+      {{ $listItemMetaParams := (dict "Page" . "AssetVariant" $assetVariant "Template" $template "Debug" $debug) }}
+      {{ $singleMeta := partialCached "claris/_functions/meta/single" $listItemMetaParams .Permalink }}
+      {{ $classificationMeta := partialCached "claris/_functions/meta/classification" $listItemMetaParams .Permalink }}
+      {{ $itemMeta := merge $singleMeta $classificationMeta }}
+      {{ if $debug }}
+        {{ warnf "%s[%s]: Page=%v .Kind=%v: itemMeta for page=%v:\n%v" $page $template . .Kind $itemMeta.Single.Page $itemMeta.Classification }}
+      {{ end }}
+      {{ if (eq .Kind "page") }}
+      {{ else }}
+        {{ if $debug }}
+          {{ warnf "%s[%s]: .Kind=%v: $page=%v $rootPage=%v" $page $template .Kind $page $rootPage }}
+        {{ end }}
+        {{ if (eq $rootPage $page) }}
+          {{ $itemListMeta := (partial "claris/_functions/meta/list" (dict "Page" . "RootPage" $rootPage "Debug" $debug) ) }}
+          {{ $itemMeta = merge $itemMeta $itemListMeta }}
+          {{ if $debug }}
+            {{ warnf "%s[%s]: .Kind=%v: added itemListMeta for %d items" $page $template .Kind (len $itemMeta.List.Data.Items) }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+      {{ $listMetaItems = append (slice $itemMeta) $listMetaItems }}
+    {{ end }}
+  {{ else }}
+    {{ if $debug }}
+      {{ warnf "%s[%s]: None of the candidate %v items remain to list %v"
           $page $template $candidateListItems $validListItems }}
-    {{- end }}
-  {{- end }}
-{{- else }}
-  {{- if $debug }}
-    {{- warnf "%s[%s]: Nothing found to list" $page $template }}
-  {{- end }}
-{{- end }}
+    {{ end }}
+  {{ end }}
+{{ else }}
+  {{ if $debug }}
+    {{ warnf "%s[%s]: Nothing found to list" $page $template }}
+  {{ end }}
+{{ end }}
 
-{{- with $page }}
+{{ with $page }}
   <!-- HTML 'id' attribute of the DOM container of the list -->
-  {{- $listID := default "contentContainer" $page.Params.ListID }}
+  {{ $listID := default "contentContainer" $page.Params.ListID }}
 
-  {{- $pageTitle := .Title }}
-  {{- $listName := default $pageTitle $page.Params.ListTitle }}
-  {{- $listOrder := default "Most recent first" }}
+  {{ $pageTitle := .Title }}
+  {{ $listName := default $pageTitle $page.Params.ListTitle }}
+  {{ $listOrder := default "Most recent first" }}
 
 
-  {{- $itemType := "page" }}
+  {{ $itemType := "page" }}
 
-  {{- with (index $listMetaItems 0) }}
-    {{- $itemType = .Single.Data.ItemType }}
-  {{- end }}
+  {{ with (index $listMetaItems 0) }}
+    {{ $itemType = .Single.Data.ItemType }}
+  {{ end }}
 
-  {{- $canonicalURL := partial "claris/_functions/canonical-url" $page }}
+  {{ $canonicalURL := partial "claris/_functions/canonical-url" $page }}
 
-  {{- $images := slice }}
-  {{- range $listMetaItems }}
-    {{- if not $images }}
-      {{- if .Single.Data.Images }}
-        {{- if $debug }}
-          {{- warnf "%s[%s]: Using images from page=%v" $page $template .Single.Page }}
-        {{- end }}
-        {{- $images = .Single.Data.Images }}
-      {{- else }}
-        {{- if $debug }}
-          {{- warnf "%s[%s]: No images found for page=%v" $page $template .Single.Page }}
-        {{- end }}
-      {{- end }}
-    {{- end }}
-  {{- end }}
+  {{ $images := slice }}
+  {{ range $listMetaItems }}
+    {{ if not $images }}
+      {{ if .Single.Data.Images }}
+        {{ if $debug }}
+          {{ warnf "%s[%s]: Using images from page=%v" $page $template .Single.Page }}
+        {{ end }}
+        {{ $images = .Single.Data.Images }}
+      {{ else }}
+        {{ if $debug }}
+          {{ warnf "%s[%s]: No images found for page=%v" $page $template .Single.Page }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
 
-  {{- $listMeta = (dict
+  {{ $listMeta = (dict
     "List" (dict
       "Data" (dict
         "Name" $listName
@@ -166,9 +166,9 @@
     )
   ) }}
 
-{{- end }}
+{{ end }}
 
-{{- if $debug }}
-  {{- warnf "%s[%s]: returning meta for %v items" $page $template (len $listMeta.List.Data.Items) }}
-{{- end }}
-{{- return $listMeta }}
+{{ if $debug }}
+  {{ warnf "%s[%s]: returning meta for %v items" $page $template (len $listMeta.List.Data.Items) }}
+{{ end }}
+{{ return $listMeta }}

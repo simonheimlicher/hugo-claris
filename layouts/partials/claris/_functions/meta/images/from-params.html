@@ -27,6 +27,13 @@
 
   {{- $defaultKind := "default" }}
 
+  {{- $featureImageAspectRatioMin := $page.Param "assets.styles.images.feature.ratio.min" | default 2 }}
+  {{- $featureImageAspectRatioMax := $page.Param "assets.styles.images.feature.ratio.max" | default 4 }}
+  {{- if $debug }}
+    {{- warnf "%s featureImageAspectRatioMin=%v featureImageAspectRatioMax=%v"
+        $dbg $featureImageAspectRatioMin $featureImageAspectRatioMax }}
+  {{- end }}
+
   {{- $requiredImageVersions := (slice
     (dict "kind" "default"
       "generate" true
@@ -65,12 +72,10 @@
     (dict "kind" "feature"
       "generate" false
       "versions" (slice
+        (dict "id" "narrow"
+          "ratio" $featureImageAspectRatioMin)
         (dict "id" "wide"
-          "width" 3840 "height" 1920)
-        (dict "id" "aside"
-          "width" 1920 "height" 1920)
-        (dict "id" "background"
-          "width" 3840 "height" 1920)
+          "ratio" $featureImageAspectRatioMax)
       )
     )
     (dict "kind" "hero"
