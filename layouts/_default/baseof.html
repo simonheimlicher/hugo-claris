@@ -14,7 +14,7 @@
 
 {{- $assetVariant := partial "claris/_functions/asset-variant" . }}
 {{- $partialContext := (dict "Page" . "AssetVariant" $assetVariant) }}
-{{- partial "html-comment" (printf "%s[%s]: assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) }}
+{{- /* partial "html-comment" (printf "%s[%s]: assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) */ -}}
 
 {{- if $debug }}
   {{- warnf "%s[%s]: hugo.Environment=%v envDevel=%v envProd=%v"
