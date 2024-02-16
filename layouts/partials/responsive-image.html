@@ -8,21 +8,39 @@
 {{- $imageResourceArgs := merge . (dict
   "Debug" $debug
 ) -}}
-
-{{- $resourceSpec := .resource -}}
-{{- $variantSpec := .variant -}}
-{{- $caption := .caption -}}
-{{- $imgTitle := .title -}}
+{{- $resourceSpec := .resource }}
+{{- $variantSpec := .variant }}
+{{- $caption := .caption }}
+{{- $imgTitle := .title }}
 {{- $imgAlt := .alt }}
-{{- if or (not $imgAlt) (lt (len $imgAlt) 4) }}
+{{- $minAltLength := 4 }}
+{{- if or (not $imgAlt) (lt (len $imgAlt) $minAltLength) }}
   {{- $altSrc := "alt" }}
-  {{- if $variantSpec }}
+  {{- with and $variantSpec $variantSpec.default.alt }}
     {{- $altSrc = "variant.default.alt" }}
-    {{- $imgAlt = $variantSpec.default.alt | default $imgTitle | default (path.BaseName $variantSpec.default.resource | humanize | strings.FirstUpper) }}
+    {{- $imgAlt = . }}
   {{- else }}
-    {{- $imgAlt = $imgTitle | default (path.BaseName $resourceSpec | humanize | strings.FirstUpper) }}
+    {{- with $imgTitle }}
+      {{- $altSrc = "title" }}
+      {{- $imgAlt = . }}
+    {{- else }}
+      {{- with $caption }}
+        {{- $altSrc = "caption" }}
+        {{- $imgAlt = . }}
+      {{- else }}
+        {{- with $resourceSpec }}
+          {{- $altSrc = "resource" }}
+          {{- $imgAlt = default (path.BaseName . | humanize | strings.FirstUpper) $imgTitle }}
+        {{- else }}
+          {{- with $variantSpec.default.resource }}
+            {{- $altSrc = "variant.default.resource" }}
+            {{- $imgAlt = default (path.BaseName . | humanize | strings.FirstUpper) $imgTitle }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
   {{- end }}
-  {{- if or (not $imgAlt) (lt (len $imgAlt) 4) }}
+  {{- if lt (len $imgAlt) $minAltLength }}
     {{- warnf "%s Invalid 'alt' attribute imgAlt=%v from .%v=%v with imageResourceArgs:\n%v"
         $dbg $imgAlt $altSrc (index $imageResourceArgs $altSrc)
         (jsonify (dict "indent" " ") (merge $imageResourceArgs (dict "Page" nil) ) ) }}

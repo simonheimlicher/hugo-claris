@@ -26,5 +26,5 @@
   "borderradius" (.Get "border-radius")
   "aspectratio" (.Get "aspect-ratio")
 ) }}
-{{/* {{- warnf "%s[%s]: %#v" $page $template $args -}} */}}
-{{- partialCached "responsive-image" $args .Page $args }}
+{{- /* warnf "%s[%s]: calling responsive-image with args: %#v" $page $template $args */ -}}
+{{- partialCached "responsive-image" $args (merge $args (dict "Page" false)) }}
