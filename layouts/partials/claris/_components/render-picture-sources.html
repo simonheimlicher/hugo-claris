@@ -1,0 +1,18 @@
+{{- $template := "claris/_components/render-picture-sources" }}
+{{- $args := . }}
+{{- range .formats }}
+  {{- with merge $args . }}
+    <source type="{{ safeHTMLAttr .resource.MediaType }}"
+    {{- with .media }}
+        media="{{ safeCSS . }}"
+    {{- end }}
+    {{- with .style }}
+        style="{{ safeCSS . }}"
+    {{- end }}
+    {{- if .srcset }}
+        srcset="{{ safeHTMLAttr .srcset }}"
+        sizes="{{ safeHTMLAttr .sizes }}"
+    {{- end }}
+    >
+  {{- end }}
+{{- end }}

@@ -1,0 +1,24 @@
+{{- $template := "claris/_components/render-image-source" }}
+{{- $srcURL := .resource.RelPermalink }}
+<img     src="{{ safeHTMLAttr $srcURL }}"
+       width="{{ .resource.Width }}" height="{{ .resource.Height }}"
+  {{- with .class }}
+       class="{{ . }}"
+  {{- end }}
+  {{- with .media }}
+       media="{{ safeCSS . }}"
+  {{- end }}
+  {{- with .style }}
+       style="{{ safeCSS . }}"
+  {{- end }}
+  {{- with .title }}
+       title="{{ partial `claris/_functions/sanitize` . | safeHTMLAttr }}"
+  {{- end }}
+  {{- with .alt }}
+         alt="{{ partial `claris/_functions/sanitize` . | safeHTMLAttr }}"
+  {{- end }}
+  {{- if .srcset }}
+      srcset="{{ safeHTMLAttr .srcset }}"
+       sizes="{{ safeHTMLAttr .sizes }}"
+  {{- end }}
+>
