@@ -3,6 +3,9 @@
 {{- $template := "partials/hero-image" }}
 {{- $page := page }}
 {{- $debug := false }}
+{{- with and (reflect.IsMap . ) . }}
+  {{- $page = default $page .Page }}
+{{- end }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{- /* $debug = or $debug (not (not (findRE `/about` page.RelPermalink) ) ) */ -}}
 {{- /* $debug = or $debug (and (eq page.Kind "home") (not site.LanguagePrefix) ) */ -}}

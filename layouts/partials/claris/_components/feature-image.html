@@ -4,9 +4,9 @@
 
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- /* $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `technology/$` $page.RelPermalink) ) ) ) */ -}}
+{{- /* $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `feature-image/$` $page.RelPermalink) ) ) ) */ -}}
 {{- /* $debug = or $debug (eq $page.Kind "home" ) */ -}}
-{{- $dbg := printf "%s%s[%s]" site.LanguagePrefix (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $title := .Title }}
 {{- $fetchPriority := "high" }}
@@ -18,18 +18,37 @@
 
 {{- $featureImageStyle := default "wide" ($page.Param "image.feature.style") }}
 
-{{- $featureImage := false }}
+{{- $featureImage := "" }}
 {{- with $meta.Single.Data.Images }}
   {{- with $featureImage = .feature.variant.default }}
     {{- $classPrefix := printf "feature-image" }}
     {{- $featureImageAspectRatioMin := $page.Param "assets.styles.images.feature.ratio.min" | default 2 }}
     {{- $featureImageAspectRatioMax := $page.Param "assets.styles.images.feature.ratio.max" | default 4 }}
 
+    {{- $resource := default .version.default.resource (index .version $featureImageStyle).resource }}
+    {{- $alt := default ($resource.Name | humanize | strings.FirstUpper) $featureImage.alt }}
+
+            {{/* "landscape" (dict
+              "resource" $resource
+              "position" $featureImage.position
+              "aspectratio" $featureImageAspectRatioMax
+              "media" "min-aspect-ratio: 1"
+            ) */}}
+
     {{- $featureImageArgs := (dict
-      "resource" (default .version.default.resource (index .version $featureImageStyle).resource)
-      "position" $featureImage.position
-      "aspectratio" (printf "%dx1" $featureImageAspectRatioMin)
-      "alt" $featureImage.alt
+      "variant" (dict
+        "default" (dict
+          "version" (dict
+            "default" (dict
+              "resource" $resource
+              "position" $featureImage.position
+              "aspectratio" $featureImageAspectRatioMin
+              "media" "max-aspect-ratio: 1"
+            )
+          )
+        )
+      )
+      "alt" $alt
       "title" $featureImage.title
       "credit" $featureImage.credit
       "fullbleedhorizontal" true
@@ -42,7 +61,8 @@
     {{- if $debug }}
       {{- warnf "%s Feature image data: featureImage=%v\n" $dbg
           (jsonify (dict "indent" "  ") $featureImage) -}}
-      {{- warnf "%s Now calling responsive-image with featureImageArgs=%v" $dbg
+      {{- warnf "%s Now calling responsive-image with resource=%v and featureImageArgs=%v"
+          $dbg $resource
           (jsonify (dict "indent" "  ") $featureImageArgs) -}}
     {{- end }}
 
@@ -52,6 +72,6 @@
 {{- end }}
 {{- if not $featureImage }}
   {{- if $debug }}
-    {{- warnf "%s No feature image found: %v" $dbg (jsonify (dict "indent" "  ") $featureImage) -}}
+    {{- warnf "%s No feature image found for page=%v" $dbg $page -}}
   {{- end }}
 {{- end }}

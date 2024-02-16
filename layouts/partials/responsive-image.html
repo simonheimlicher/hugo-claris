@@ -11,10 +11,24 @@
 
 {{- $resourceSpec := .resource -}}
 {{- $variantSpec := .variant -}}
-{{- $caption := default "" .caption -}}
-{{- $imgAlt := default (humanize (path.BaseName $resourceSpec) ) .alt -}}
-{{- $imgTitle := default $imgAlt .title -}}
-{{- $imgCredit := default false .credit -}}
+{{- $caption := .caption -}}
+{{- $imgTitle := .title -}}
+{{- $imgAlt := .alt }}
+{{- if or (not $imgAlt) (lt (len $imgAlt) 4) }}
+  {{- $altSrc := "alt" }}
+  {{- if $variantSpec }}
+    {{- $altSrc = "variant.default.alt" }}
+    {{- $imgAlt = $variantSpec.default.alt | default $imgTitle | default (path.BaseName $variantSpec.default.resource | humanize | strings.FirstUpper) }}
+  {{- else }}
+    {{- $imgAlt = $imgTitle | default (path.BaseName $resourceSpec | humanize | strings.FirstUpper) }}
+  {{- end }}
+  {{- if or (not $imgAlt) (lt (len $imgAlt) 4) }}
+    {{- warnf "%s Invalid 'alt' attribute imgAlt=%v from .%v=%v with imageResourceArgs:\n%v"
+        $dbg $imgAlt $altSrc (index $imageResourceArgs $altSrc)
+        (jsonify (dict "indent" " ") (merge $imageResourceArgs (dict "Page" nil) ) ) }}
+  {{- end }}
+{{- end }}
+{{- $imgCredit := .credit -}}
 {{- $fullBleedHorizontal := default false .fullbleedhorizontal }}
 {{- $includePlaceholder := default false .includeplaceholder }}
 
@@ -25,7 +39,10 @@
 {{- /* The attribute 'sizes' is mandatory when specifying a 'srcset' attribute */ -}}
 {{- $defaultSizes := "100vw" }}
 
-{{- $figureClass := cond (ne "" $caption) "caption" "" -}}
+{{- $figureClass := "" }}
+{{- with $caption }}
+  {{- $figureClass = printf "%s %s" $figureClass "caption" }}
+{{- end }}
 {{- with .figureclass -}}
   {{- $figureClass = trim (printf "%s %s" $figureClass .) " " -}}
 {{- end }}
@@ -33,11 +50,6 @@
 
 {{- $defaultVersionName := "default" }}
 
-{{- if or (and $resourceSpec (not $imgAlt)) (and $variantSpec (not $variantSpec.default.alt) ) }}
-  {{- warnf "%s Missing attribute .alt in .resource=%v and .variant.default=\n%v"
-  $dbg $resourceSpec
-  (jsonify (dict "indent" "  ") $variantSpec.default ) }}
-{{- end }}
 {{- /* {{- warnf "%s .resource has type [%T]" $dbg $resourceSpec -}} */ -}}
 
 {{- with .float -}}
@@ -131,7 +143,6 @@
       "height" .height
       "aspectratio" .aspectratio
       "targetformats" .targetformats
-      "processingparams" .processingparams
     ) }}
   {{- end }}
   {{- if $variantSpec }}
@@ -142,47 +153,71 @@
       {{- $resMedia := .media }}
       {{- $imgTitle = .title }}
       {{- $imgSizes = default $defaultSizes .sizes }}
-      {{- $imgPosition = default $defaultPosition .position }}
+      {{- $variantPosition := default $defaultPosition .position }}
       {{- $variantInlineStyleAttr := printf "object-fit: cover; object-position: %s%s"
-          $imgPosition
+          $variantPosition
           (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") -}}
-      {{- $imgAlt = default $imgTitle .alt }}
-      {{- $imgCredit = default $imgTitle .credit }}
+      {{- $imgAlt = .alt | default $imgAlt }}
+      {{- $imgCredit = .credit }}
       {{- if $debug }}
-        {{- warnf "%s Available versions: \n%v" $dbg (jsonify (dict "indent" "  ") .) }}
+        {{- warnf "%s Processing variant=%v with .version:\n%v" $dbg
+            $variantName (jsonify (dict "indent" "  ") $variantMeta.version) }}
       {{- end }}
       {{- /* If there are multiple versions of the image, the partial
             `claris/_functions/meta/images/kind-variant-meta.html`
              will have made them available under the `version` key and named them
              by their aspect ratio, e.g., `aspect_16x9` for the version with a 16:9
              aspect ratio */ -}}
-      {{- /* $version := default $defaultVersionName .aspect }}
-      {{- $res := (index .version $version).resource | default .resource */ -}}
-      {{- $res := (index .version $defaultVariantName).resource | default .resource }}
-      {{- $imageResourceArgs = merge $imageResourceArgs (dict "resource" $res ) }}
-      {{- with (partialCached "claris/_functions/resources/images/image-srcset" $imageResourceArgs $res $imageResourceVariant) }}
-        {{- $pictureResources = append $pictureResources (slice (dict
-          "variant" $variantName
-          "media" $resMedia
-          "style" $variantInlineStyleAttr
-          "sizes" $imgSizes
-          "position" $imgPosition
-          "formatsrcsets" .
-          "title" $imgTitle
-          "alt" $imgAlt
-          "credit" $imgCredit
-        ) ) }}
-      {{- /* else }}
-        {{- warnf "%s failed to get srcSet with %v" $dbg $imageResourceArgs */ -}}
+
+      {{- $imagesMetaKindVariantVersion := .version }}
+
+      {{- $versionName := default $defaultVersionName .aspect }}
+      {{- with $versionName }}
+        {{- with index $imagesMetaKindVariantVersion $versionName }}
+          {{- $imagesMetaKindVariantVersion = (dict $versionName . ) }}
+          {{- if $debug }}
+            {{- warnf "%s use only versionName=%v with .resource=%v from .version:\n%v"
+                $dbg $versionName .resource
+                (jsonify (dict "indent" "  ") $variantMeta.version) -}}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+
+      {{- range $versionName, $versionMeta := $imagesMetaKindVariantVersion }}
+        {{- $imageResourceArgs = merge $imageResourceArgs $versionMeta }}
+        {{- $versionPosition := default $variantPosition .position }}
+        {{- $versionInlineStyleAttr := printf "object-fit: cover; object-position: %s%s"
+            $versionPosition
+            (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") -}}
+        {{- if $debug }}
+          {{- warnf "%s Processing version=%v with .resource=%v in versionMeta:\n%v" $dbg
+              $versionName $versionMeta.resource (jsonify (dict "indent" "  ") $versionMeta) }}
+        {{- end }}
+        {{- with partialCached "claris/_functions/resources/images/image-srcset"
+              $imageResourceArgs (merge $imageResourceArgs (dict "Page" nil) ) }}
+          {{- $pictureResources = append $pictureResources (slice (dict
+            "variant" $variantName
+            "media" $resMedia
+            "style" $versionInlineStyleAttr
+            "sizes" $imgSizes
+            "position" $versionPosition
+            "formatsrcsets" .
+            "title" $imgTitle
+            "alt" $imgAlt
+            "credit" $imgCredit
+          ) ) }}
+        {{- else }}
+          {{- warnf "%s failed to get srcSet with %v" $dbg $imageResourceArgs -}}
+        {{- end }}
       {{- end }}
     {{- end }}
     {{- /* If none of the .media values match $defaultVariantName, take the first image as the default */ -}}
     {{- if (not (where $pictureResources "variant" $defaultVariantName) ) }}
       {{- with (index $variantSpec $defaultVariantName) }}
         {{- $imgTitle = .title }}
-        {{- $imgAlt = default $imgTitle .alt }}
-        {{- $imgCredit = default $imgTitle .credit }}
-        {{- $res := .version.default.resource | default .resource }}
+        {{- $imgAlt = .alt | default $imgAlt }}
+        {{- $imgCredit = .credit }}
+        {{- $res := .version.default.resource }}
         {{- $imgPosition = default $defaultPosition .position }}
         {{- $variantInlineStyleAttr := printf "object-fit: cover; object-position: %s%s"
             $imgPosition
@@ -191,7 +226,8 @@
           {{- warnf "%s imgPosition=%v in defaultVariant=%v" $dbg $imgPosition . }}
         {{- end }}
         {{- $imageResourceArgs = merge $imageResourceArgs (dict "resource" $res ) }}
-        {{- with (partialCached "claris/_functions/resources/images/image-srcset" $imageResourceArgs $res $imageResourceVariant) }}
+        {{- with partialCached "claris/_functions/resources/images/image-srcset"
+            $imageResourceArgs (merge $imageResourceArgs (dict "Page" nil) ) }}
           {{- $pictureResources = append $pictureResources (slice (dict
             "variant" $defaultVariantName
             "media" $defaultMedia
@@ -208,7 +244,7 @@
       {{- end }}
     {{- end }}
   {{- else }}
-    {{- with (partialCached "claris/_functions/resources/images/image-srcset" $imageResourceArgs $resourceSpec $imageResourceVariant) }}
+    {{- with partialCached "claris/_functions/resources/images/image-srcset" $imageResourceArgs (merge $imageResourceArgs (dict "Page" nil) ) }}
       {{- $variantInlineStyleAttr := printf "object-fit: cover; object-position: %s%s"
           $imgPosition
           (cond (not (not $imgInlineStyle)) (printf "; %s" $imgInlineStyle) "") -}}
@@ -231,8 +267,15 @@
 
   {{- with $pictureResources }}
     {{- if $debug }}
-      {{- warnf "%s pictureResources=%v"
-          $dbg (jsonify (dict "indent" "  ") . ) }}
+      {{- $pictureResourcesSummary := slice }}
+      {{- range $k, $v := . }}
+        {{- $resourceSummary := (dict
+          "variant" .variant
+        ) }}
+       {{- $pictureResourcesSummary = append (jsonify (dict "indent" "  ") $resourceSummary ) $pictureResourcesSummary }}
+      {{- end }}
+      {{- warnf "%s pictureResources: %d\n%v"
+          $dbg (len .) (delimit $pictureResourcesSummary "\n") }}
     {{- end }}
     {{- $defaultSrcURL := "" }}
     {{- with (where $pictureResources "variant" "eq" $defaultVariantName) }}
@@ -258,7 +301,7 @@
           {{- $dominantColorsHEX := (index (first 1 .formatsrcsets.formats) 0).resource.Colors }}
           {{- $dominantColorHEX := index $dominantColorsHEX 0 }}
           {{- $backgroundLeftInlineStyle = printf "--background_dominant-color: %s;" (index $dominantColorsHEX 0) -}}
-          {{- $backgroundRightInlineStyle = printf "--background_dominant-color: %s;" (index $dominantColorsHEX 0) -}}
+          {{- $backgroundRightInlineStyle = printf "--background_dominant-color: %s;" (index $dominantColorsHEX 0) }}
         <div class="background left" {{ printf `style="%s"` $backgroundLeftInlineStyle | safeHTMLAttr }}></div>
         {{- end }}
       {{- end }}
@@ -270,7 +313,7 @@
       {{- $multiVariant = true }}
       {{- $media := .media }}
       {{- $variantInlineStyleAttr := .style }}
-      {{- if $debug }}
+      {{- if and false $debug }}
         {{- warnf "%s media=%v: pictureResource=%v"
             $dbg .media (jsonify (dict "indent" "  ") . ) }}
       {{- end }}
@@ -298,7 +341,7 @@
       {{- $numFormats := len .formatsrcsets.formats }}
       {{- if gt $numFormats 1 }}
         {{- $nonDefaultFormats := first (sub $numFormats 1) .formatsrcsets.formats }}
-        {{- if $debug }}
+        {{- if and false $debug }}
           {{- warnf "%s media=%v: nonDefaultFormats=%v"
               $dbg $media (jsonify (dict "indent" "  ") $nonDefaultFormats ) }}
         {{- end }}

@@ -70,10 +70,17 @@
     )
     (dict "kind" "feature"
       "generate" false
+    )
+    (dict "kind" "hero"
+      "generate" false
+    )
+  ) }}
+    {{/* (dict "kind" "feature"
+      "generate" false
       "versions" (slice
-        (dict "id" "narrow"
+        (dict "id" "portrait"
           "ratio" $featureImageAspectRatioMin)
-        (dict "id" "wide"
+        (dict "id" "landscape"
           "ratio" $featureImageAspectRatioMax)
       )
     )
@@ -83,8 +90,7 @@
         (dict "id" "default"
           "width" 3840 "height" 3840)
       )
-    )
-  ) }}
+    ) */}}
   {{/* {{- $requiredImageVersions = (slice
     (dict "kind" "feature"
       "versions" (slice)

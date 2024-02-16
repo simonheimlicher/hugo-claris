@@ -12,9 +12,12 @@
 
 {{- $imageResourceBaseArgs := (dict
   "Page" $page
-  "processingparams" (default false .processingparams)
-  "format" (default false .format)
 ) }}
+{{- with .format }}
+  {{ $imageResourceBaseArgs = merge $imageResourceBaseArgs (dict
+    "format" .
+  ) }}
+{{- end }}
 
 <!--
 Parse $paramsImage and for each kind, extract available image meta data

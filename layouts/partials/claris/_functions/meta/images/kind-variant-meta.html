@@ -60,17 +60,21 @@
 
     {{- $processedVersionMeta := dict }}
 
-    {{- $versionsStringList := slice }}
+    {{- $versionDimensionStrings := slice }}
     {{- if $debug }}
       {{- range $verSpec := $versions }}
-        {{- $versionsStringList = append (printf "%dx%d" .width .height) $versionsStringList }}
+        {{- $dim := "unknown" }}
+        {{- with .ratio }}
+          {{- $dim = printf "ratio=%v" . }}
+        {{- else }}
+          {{- $dim = printf "%dx%d" .width .height }}
+        {{- end }}
+        {{- $versionDimensionStrings = append $dim $versionDimensionStrings }}
       {{- end }}
     {{- end }}
 
     {{- range $verIdx, $verSpec := $versions }}
-      {{- $verSpecString := index $versionsStringList $verIdx }}
-
-
+      {{- $verSpecString := index $versionDimensionStrings $verIdx }}
       {{- $closestAspectParams := merge $variantMeta (dict
         "width" nil
         "height" nil
@@ -144,7 +148,7 @@
           {{- if $debug }}
             {{- warnf "%s %v/%v/%v: Added %v resource=%v[%vx%v] that matches version=%v in required versions [%v] to processedVersionMeta:\n%v"
                 $dbg $imageKind $variantName $verSpecString $origin
-                .Name .Width .Height  $verSpecString (delimit $versionsStringList ", ")
+                .Name .Width .Height  $verSpecString (delimit $versionDimensionStrings ", ")
                 (jsonify (dict "indent" "  ") $processedVersionMeta) }}
           {{- end }}
         {{- end }}
