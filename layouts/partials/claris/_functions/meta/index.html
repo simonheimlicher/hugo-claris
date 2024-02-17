@@ -1,8 +1,6 @@
 {{ $page := .Page }}
 {{ $template := "claris/_functions/meta/index" }}
-{{ $debug := or false .Debug }}
-{{/* {{ $debug = page.Scratch.Get "clarisdebug" }} */}}
-{{/* {{ $debug = or $debug (not (not (findRE `^/$` $page.RelPermalink) ) ) }} */}}
+{{ $debug := false }}
 
 {{ $assetVariant := .AssetVariant }}
 {{ if not $assetVariant }}

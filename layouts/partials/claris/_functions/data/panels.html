@@ -1,10 +1,6 @@
 {{- $panels := slice }}
 {{- $template := "claris/_functions/data/panels" }}
 {{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/$` page.RelPermalink) ) ) }} */}}
-
-{{/* {{- $listParams := default dict .ListParams }} */}}
 
 {{- $headingLevel := default 2 .HeadingLevel }}
 {{- $containerClass := default "content_multicolumn content" .ContainerClass }}

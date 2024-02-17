@@ -2,8 +2,7 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/_functions/schema-org/_entities/article" }}
-{{- $debug := .Debug }}
-{{/* {{- $debug = or $debug (not (not (findRE `powerful` $page.RelPermalink) ) ) }} */}}
+{{- $debug := false }}
 {{- $entityParams := merge . (dict "Debug" $debug) }}
 
 <!-- [Schema.org entity Article](https://schema.org/Article)

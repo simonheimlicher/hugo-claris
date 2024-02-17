@@ -1,7 +1,6 @@
 {{- define "main" }}
 {{- $template := "_default/list" }}
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/tags/` .RelPermalink) ) ) }} */}}
 {{- $assetVariant := partial "claris/_functions/asset-variant" . }}
 
 {{ partial "html-comment" (printf "[%s]: BEGIN define main" $template) }}

@@ -5,9 +5,6 @@
 {{- $template := "_default/baseof" }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/(de/)?transformation/why-okr` $page.RelPermalink) ) ) }} */}}
-{{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/(de/)?.*?/resume` $page.RelPermalink) ) ) -}} */}}
-{{- .Scratch.Set "clarisdebug" $debug }}
 
 {{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
 {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}

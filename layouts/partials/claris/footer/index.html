@@ -2,8 +2,6 @@
 {{- $meta := $page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/footer/index" }}
 {{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- /* $debug = or $debug (not (not (findRE `^(?:\S+-demo)?/$` $page.RelPermalink) ) ) */ -}}
 
 {{- /* The footer of each page comprises several elements.
     Its main part is fed from individual pages that are merged.

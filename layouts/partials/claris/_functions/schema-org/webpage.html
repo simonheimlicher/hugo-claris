@@ -2,9 +2,7 @@
 {{ $meta := page.Scratch.Get "clarismeta" }}
 {{ $entityParams := . }}
 {{ $template := "claris/_functions/schema-org/webpage" }}
-{{ $debug := default false .Debug }}
-{{/* $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `quantum-supremacy|about` $page.RelPermalink) ) ) ) */}}
-{{/* $debug = or $debug (eq $page.Kind "home" ) */}}
+{{ $debug := false }}
 {{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{ $entityParams := merge . (dict "Debug" $debug) }}

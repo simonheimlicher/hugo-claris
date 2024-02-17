@@ -1,6 +1,9 @@
 {{- $bestMatchVersion := false }}
 {{- $template := "claris/_functions/meta/images/closest-aspect" }}
 {{- $page := .Page }}
+{{- $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
 {{- $matchParams := dict }}
 {{- range $k, $v := . }}
   {{- if and $v (not (in (slice "Page" "version" "alt" "title") $k) ) }}
@@ -10,14 +13,6 @@
 {{- $versions := .version }}
 {{- $targetWidth := default false .width }}
 {{- $targetHeight := default false .height }}
-
-{{- $debug := false }}
-{{- $debug = default $debug .Debug }}
-{{- /* $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `responsive-image` $page.RelPermalink) ) ) ) */ -}}
-{{- /* $debug = or $debug (and (not site.LanguagePrefix) (eq $page.Kind "home" ) ) */ -}}
-{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
-
-{{/* {{- warnf "%s %v" $dbg (jsonify (dict "indent" "  ") (merge . (dict "Page" "omitted"))) }} */}}
 
 {{- with $targetAspect := partial "claris/_functions/resources/images/parse-aspect-ratio" . }}
 

@@ -1,12 +1,10 @@
 {{- $imageMeta := dict }}
 {{- $page := .Page }}
+{{- $template := "claris/_functions/meta/images/available-image-meta" }}
 {{- $paramsImage := .ParamsImage }}
 {{- $requiredImageVersions := .RequiredVersions }}
 {{- $defaultKind := .DefaultKind }}
 {{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?$` $page.RelPermalink) ) ) }} */}}
-{{- $template := "claris/_functions/meta/images/available-image-meta" }}
 
 {{ $defaultVariantName := "default" }}
 

@@ -1,9 +1,7 @@
 {{- $kindVariantMeta := dict }}
 {{- $page := .Page }}
-{{- $template := "claris/_functions/meta/image/kind-variant-meta" }}
-{{- $debug := default false .Debug }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{ $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `quantum-supremacy/` $page.RelPermalink) ) ) ) }} */}}
+{{- $template := "claris/_functions/meta/images/kind-variant-meta" }}
+{{- $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
 {{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $processAllImages := true }}
@@ -213,7 +211,6 @@
   {{- end }}
 
   <!-- Ensure that a default version exists -->
-  {{/* {{- with $processedImageKindVariantMeta }} */}}
   {{- range $variantName, $variantMeta := $processedImageKindVariantMeta }}
     {{- if $debug }}
       {{- warnf "%s %v/%v/*: Looking for version with versionID=%v in variantMeta:\n%v"
@@ -256,12 +253,9 @@
         (jsonify (dict "indent" "  ") $processedImageKindVariantMeta)
         (jsonify (dict "indent" "  ") $kindVariantMeta) }}
   {{- end }}
-  {{/* {{- end }} */}}
-  {{/* {{- if $debug }}
     {{- warnf "%s kind=%v: returning \n%v\n"
         $dbg $imageKind
         (jsonify (dict "indent" "  ") $kindVariantMeta) }}
-  {{- end }} */}}
 {{- else }}
   {{- if $debug }}
     {{- errorf "%s kind=%v: Invalid imageKindVariantMeta: \n%v"

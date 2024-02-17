@@ -1,10 +1,7 @@
 {{- $template := "partials/render-images" }}
-{{- $page := .Page }}
+{{- $page := default page .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
-{{- $debug := false }}
-{{- $debug = or $debug .Debug }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- /* $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `feature-image/` $page.RelPermalink) ) ) ) */ -}}
+{{- $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
 {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 {{- $renderImageArgs := merge . (dict
   "Debug" $debug

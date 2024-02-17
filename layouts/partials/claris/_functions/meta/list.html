@@ -2,8 +2,6 @@
 {{ $rootPage := default $page .RootPage }}
 {{ $template := "claris/_functions/meta/list" }}
 {{ $debug := false }}
-{{/* $debug = page.Scratch.Get "clarisdebug" */}}
-{{/* $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?(/de)?/$` $page.RelPermalink) ) ) */}}
 
 {{ if $debug }}
   {{ warnf "%s[%s]: .ListItems=%v .ListParams=%v" $page $template .ListItems .ListParams }}

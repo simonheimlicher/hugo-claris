@@ -2,6 +2,7 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/head/index" }}
+{{- $debug := false }}
 
 {{- $assetVariant := .AssetVariant -}}
 {{- $backgroundLight := default site.Params.colors.colorBackgroundLit ($page.Param "colors.colorBackgroundLit") }}
@@ -11,9 +12,6 @@
   {{- $backgroundDark = default site.Params.colors.surfacePrimaryDim ($page.Param "colors.surfacePrimaryDim") }}
 {{- end }}
 
-{{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- /* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/de/transformation/why-okr` $page.RelPermalink) ) ) }} */ -}}
 {{- with $page }}
     {{- /* partial "html-comment" (printf "%s[%s]: assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) */ -}}
     <meta charset="utf-8">

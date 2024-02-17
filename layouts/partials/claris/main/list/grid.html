@@ -1,9 +1,8 @@
 {{- $template := "partials/claris/main/list/grid" }}
+{{- $debug := false }}
+
 {{- $headingLevel := default 2 .HeadingLevel }}
 {{- $itemType := .ItemType }}
-{{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- /* {{- $debug = or $debug (not (not (findRE `leadership` page.RelPermalink) ) ) }} */ -}}
 
 {{- $listPartialParams := (dict
   "ItemType" $itemType

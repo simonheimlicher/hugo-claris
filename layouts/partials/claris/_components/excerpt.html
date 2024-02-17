@@ -1,6 +1,7 @@
 {{- $page := .Page }}
 {{- $excerptMeta := .Meta }}
 {{- $template := "claris/_components/excerpt" }}
+{{- $debug := false }}
 
 {{- $scratchExcerptRenderedKey := "claris.page.excerpt-rendered" }}
 {{- if not ($page.Scratch.Get $scratchExcerptRenderedKey) }}
@@ -27,10 +28,6 @@
 {{- $containerRelativeWidth := default false .ContainerRelativeWidth }}
 {{- $fetchPriority := default false .FetchPriority }}
 
-{{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- /* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo/)?/leadership/` $page.RelPermalink) ) ) -}} */ -}}
-{{- /* {{- $debug = or $debug (eq $page.Kind "home") -}} */ -}}
 
 {{- $plainTitle := partial `claris/_functions/sanitize` $title }}
 

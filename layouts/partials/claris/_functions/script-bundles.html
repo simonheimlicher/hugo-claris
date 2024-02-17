@@ -2,9 +2,7 @@
 {{- $page := .Page }}
 {{- $template := "claris/_functions/script-bundles" }}
 {{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- /* $debug = or $debug (not (not (findRE `.` $page.RelPermalink) ) ) */ -}}
-{{- /* $debug = or $debug (and (eq $page.Type "_error") (eq site.Language.Lang "en") ) */ -}}
+
 {{- $skeletonOnly := false }}
 
 {{- $assetVariant := .AssetVariant -}}

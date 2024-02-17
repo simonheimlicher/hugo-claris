@@ -1,10 +1,7 @@
 {{ $page := .Page }}
 {{ $template := "claris/_functions/meta/classification" }}
 {{ $debug := false }}
-{{/* debug = page.Scratch.Get "clarisdebug" */}}
-{{/* $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?(/de)?/$` $page.RelPermalink) ) ) */}}
 
-{{/* warnf "%s[%s]: .Page=%T page=%T" $page $template .Page page */}}
 {{ $classificationMeta := dict }}
 
 {{ with $page }}

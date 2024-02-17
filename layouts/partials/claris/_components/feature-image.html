@@ -3,9 +3,6 @@
 {{- $template := "claris/_components/feature-image" }}
 
 {{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- /* $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `feature-image/$` $page.RelPermalink) ) ) ) */ -}}
-{{- /* $debug = or $debug (eq $page.Kind "home" ) */ -}}
 {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $title := .Title }}

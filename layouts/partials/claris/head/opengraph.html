@@ -2,9 +2,6 @@
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/head/opengraph" }}
 {{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- /* $debug = or $debug (and (not site.LanguagePrefix) (not (not (findRE `quantum-supremacy|about` $page.RelPermalink) ) ) ) */ -}}
-{{- /* $debug = or $debug (and (not site.LanguagePrefix) (eq $page.Kind "home" ) ) */ -}}
 
 {{- $dateLocalISO8601 := "2006-01-02T15:04:05-07:00" -}}
 

@@ -2,10 +2,6 @@
 {{- $page := .Page }}
 {{- $template := "claris/_functions/style-bundles" }}
 {{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?` $page.RelPermalink) ) ) }} */}}
-{{/* {{- $debug = or $debug (not (not (findRE `^(/[^/]+-demo)?/(de/)?.*?/resume` $page.RelPermalink) ) ) -}} */}}
-{{/* {{- $debug = or $debug (eq site.Language.Lang "en") }} */}}
 
 {{- $assetVariant :=.AssetVariant -}}
 
