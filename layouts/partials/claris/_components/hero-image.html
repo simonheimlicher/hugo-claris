@@ -1,5 +1,4 @@
-{{- $meta := page.Scratch.Get "clarismeta" }}
-{{- $imagesMeta := $meta.Single.Data.Images }}
+{{- $heroImageMeta := . }}
 {{- $template := "partials/hero-image" }}
 {{- $page := page }}
 {{- $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
@@ -8,24 +7,31 @@
   {{- $page = default $page .Page }}
 {{- end }}
 
+{{- if $debug}}
+  {{- warnf "%s: heroImageMeta:\n%v"
+    $dbg (jsonify (dict "indent" "  ") $heroImageMeta) }}
+{{- end }}
+
 {{- $fetchPriority := "low" }}
 {{- if reflect.IsMap . }}
   {{- with .FetchPriority }}
     {{- $fetchPriority = . }}
   {{- end }}
 {{- end }}
-{{- with $imagesMeta.hero }}
-  {{- $imageParams := merge $imagesMeta.hero (dict
+{{- with $heroImageMeta }}
+  {{- $imageParams := merge $heroImageMeta (dict
       "Page" page
-      "figureclass" (printf "hero-image_%s_figure" $imagesMeta.hero.style)
-      "imgclass" (printf "hero-image_%s_img" $imagesMeta.hero.style)
+      "figureclass" (printf "hero-image_%s_figure" $heroImageMeta.style)
+      "imgclass" (printf "hero-image_%s_img" $heroImageMeta.style)
       "fetchpriority" $fetchPriority
       "Debug" $debug
     ) -}}
-  {{/* {{- warnf "%s[%s]: Calling responsive-image with .style=%v and .resource=%v'"
-      page $template .style .variant }} */}}
+  {{- if $debug}}
+    {{- warnf "%s: Calling responsive-image with imageParams:\n%v"
+      $dbg (jsonify (dict "indent" "  ") (merge $imageParams ( dict "Page" "omitted") ) ) }}
+  {{- end }}
   {{- partial "responsive-image" $imageParams }}
 {{- else }}
-  {{- errorf "%s[%s]: Invalid page meta .Single.Image.Data.Images.hero: %v'"
-      page $template $meta.Single.Data.Images.hero }}
+  {{- errorf "%s[%s]: Invalid arguments: %v'"
+      page $template . }}
 {{- end }}

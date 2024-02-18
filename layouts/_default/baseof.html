@@ -145,27 +145,26 @@
   {{- end }}
 
   {{- $meta := .Scratch.Get "clarismeta" }}
-
-  {{- $heroImageStyle := false }}
-  {{- with $meta.Single.Data.Images.hero }}
-    {{- $heroImageStyle = .style }}
+  {{- $heroImageMeta := $meta.Single.Data.Images.hero }}
+  {{- with $heroImageMeta }}
+    {{ $heroImageStyle := default "background" $heroImageMeta.style }}
     {{- if $debug }}
-      {{- warnf "%s[%s]: .hero.style=%v" $page $template .style }}
+      {{- warnf "%s[%s]: heroImageStyle=%v" $page $template $heroImageStyle }}
     {{- end }}
     {{- $mainClassList = append (slice (printf "hero-image_%s_main" $heroImageStyle) ) $mainClassList }}
   {{- end }}
   {{- /* FIXME: to top button needs to be rebuilt as it currently is not responsive */ -}}
   {{- $showToTopButton := default false ($page.Param "showToTopButton") }}
   {{ partial "html-comment" (printf "BASEOF [%s]: BEGIN define body" $template) }}
-    {{- with $heroImageStyle }}
+    {{- with $heroImageMeta }}
       {{ partial "claris/_components/hero-image" . }}
     {{- end }}
     <header class="header_claris">
     {{- partial "claris/header/index" . }}
     </header>
-    <main id="mainContainer" class="{{ delimit $mainClassList " " }}">
+    <main id="mainContainer" class="{{ delimit $mainClassList ` ` }}">
       {{- block "main" . -}}{{ end }}
-      {{- with $heroImageStyle }}
+      {{- with $heroImageMeta }}
         {{ partial "claris/_components/hero-image" . }}
       {{- end }}
       {{- if $showToTopButton -}}
