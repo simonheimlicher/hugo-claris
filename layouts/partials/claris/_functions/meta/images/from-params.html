@@ -31,13 +31,6 @@
   {{- end }}
 
   {{- $requiredImageVersions := (slice
-    (dict "kind" "default"
-      "generate" true
-      "versions" (slice
-        (dict "id" "default"
-          "width" 3840 "height" 2160)
-      )
-    )
     (dict "kind" "excerpt"
       "generate" true
       "versions" (slice
@@ -71,8 +64,18 @@
     (dict "kind" "hero"
       "generate" false
     )
+    (dict "kind" "default"
+      "generate" false
+    )
   ) }}
-    {{/* (dict "kind" "feature"
+    {{/*     (dict "kind" "default"
+      "generate" true
+      "versions" (slice
+        (dict "id" "default"
+          "width" 3840 "height" 2160)
+      )
+    )
+    (dict "kind" "feature"
       "generate" false
       "versions" (slice
         (dict "id" "portrait"
@@ -183,16 +186,13 @@
           merge $imageKindMetaParams (dict "Page" $page)
         ) ) }}
 
-        {{- with $imageKindMeta }}
-          {{- $imageMeta = merge $imageMeta (dict
-            $imageKind $imageKindMeta
-          ) }}
-          {{- if $debug }}
-            {{- warnf "%s kind=%v Added imageKindMeta:\n%v\nto imageMeta:\n%v"
-                $dbg $imageKind
-                (jsonify (dict "indent" "  ") $imageKindMeta)
-                (jsonify (dict "indent" "  ") $imageMeta) }}
-          {{- end }}
+        {{- $imageMeta = merge $imageMeta (dict $imageKind $imageKindMeta) }}
+
+        {{- if $debug }}
+          {{- warnf "%s kind=%v Added imageKindMeta:\n%v\nto imageMeta:\n%v"
+              $dbg $imageKind
+              (jsonify (dict "indent" "  ") $imageKindMeta)
+              (jsonify (dict "indent" "  ") $imageMeta) }}
         {{- end }}
       {{- else }}
         {{- if $debug }}

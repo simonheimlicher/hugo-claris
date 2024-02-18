@@ -77,7 +77,7 @@
         "width" nil
         "height" nil
         "aspect" nil
-         "ratio" nil) }}
+        "ratio" nil) }}
       {{- $closestAspectParams = merge $closestAspectParams $verSpec }}
 
       {{- if $debug }}
@@ -115,28 +115,21 @@
                   $versionResource (jsonify (dict "indent" "  ") $processImageArgs) }}
             {{- end }}
 
-            {{- $versionResource = partial "claris/_functions/resources/images/process-image" $processImageArgs }}
-
-            {{- with $versionResource }}
+            {{- with $generatedResource := partial "claris/_functions/resources/images/process-image" $processImageArgs }}
+              {{- $origin = "generated" }}
               {{- if $debug }}
-                {{- warnf "%s %v/%v/%v: Generated versionResource=%v [processImageArgs=%v]"
+                {{- warnf "%s %v/%v/%v: Generated [%dx%d %v] from %q[%dx%d %v] [processImageArgs=%v]"
                     $dbg $imageKind $variantName $verSpecString
-                    $versionResource $processImageArgs }}
+                    $generatedResource.Width $generatedResource.Height $generatedResource.MediaType.SubType
+                    $versionResource $versionResource.Width $versionResource.Height $versionResource.MediaType.SubType $processImageArgs }}
               {{- end }}
+              {{- $versionResource = $generatedResource }}
             {{- else }}
               {{- errorf "%s %v/%v/%v: Failed to generate imgResource from processImageArgs=%v"
                   $dbg $imageKind $variantName $verSpecString
                   $processImageArgs }}
             {{- end }}
           {{- end }}
-        {{- else }}
-          {{- errorf "%s %v/%v/%v: Could not find versionResource in result of closest-aspect with closestAspectParams=%v"
-              $dbg $imageKind $variantName $verSpecString
-              (jsonify (dict "indent" "  ") $closestAspectParams) }}
-        {{- end }}
-
-        {{- with $versionResource }}
-          {{- $origin = "generated" }}
 
           <!-- Only add `resource`, avoid referencing `.Permalink` as this would cause the image file to be copied
           to the output directory as-is -->
@@ -144,11 +137,16 @@
           {{- $processedVersionMeta = partial "claris/_functions/meta/images/version-meta" (dict "Page" $page "meta" $imgMeta) }}
 
           {{- if $debug }}
-            {{- warnf "%s %v/%v/%v: Added %v resource=%v[%vx%v] that matches version=%v in required versions [%v] to processedVersionMeta:\n%v"
+            {{- warnf "%s %v/%v/%v: Added %v [%vx%v %v] that matches %v in list of required versions [%v] to processedVersionMeta:\n%v"
                 $dbg $imageKind $variantName $verSpecString $origin
-                .Name .Width .Height  $verSpecString (delimit $versionDimensionStrings ", ")
+                $versionResource.Width $versionResource.Height $versionResource.MediaType.SubType
+                $verSpecString (delimit $versionDimensionStrings ", ")
                 (jsonify (dict "indent" "  ") $processedVersionMeta) }}
           {{- end }}
+        {{- else }}
+          {{- errorf "%s %v/%v/%v: Could not find versionResource in result of closest-aspect with closestAspectParams=%v"
+              $dbg $imageKind $variantName $verSpecString
+              (jsonify (dict "indent" "  ") $closestAspectParams) }}
         {{- end }}
 
       {{- else }}
@@ -224,23 +222,52 @@
               (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
         {{- end }}
     {{- else }}
+      {{- $revisedVersionMeta := dict }}
       {{- range $versionID, $versionMeta := $variantMeta.version }}
-        {{- if $debug }}
-          {{- warnf "%s %v/%v/%v: Before adding default versionID=%v: processedImageKindVariantMeta:\n%v"
-              $dbg $imageKind $variantName $versionID $defaultVersionID
-              (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
+        {{- if $revisedVersionMeta }}
+          {{- $revisedVersionMeta = merge $revisedVersionMeta (dict $versionID $versionMeta) }}
+          {{- if $debug }}
+            {{- warnf "%s %v/%v/%v: Keeping resource=%v in versionMeta=%#v as version %q[%vx%v]: revisedVersionMeta:\n%v"
+                $dbg $imageKind $variantName $versionID $versionMeta.resource $versionMeta
+                $versionID $versionMeta.resource.Width $versionMeta.resource.Height
+                (jsonify (dict "indent" "  ") $revisedVersionMeta) }}
+          {{- end }}
+        {{- else }}
+          {{- $revisedVersionMeta = merge $revisedVersionMeta (dict $defaultVersionID $versionMeta) }}
+          {{- if $debug }}
+            {{- warnf "%s %v/%v/%v: Using resource=%v in versionMeta=%#v as default version %q[%vx%v]: revisedVersionMeta:\n%v"
+                $dbg $imageKind $variantName $versionID $versionMeta.resource $versionMeta
+                $defaultVersionID $versionMeta.resource.Width $versionMeta.resource.Height
+                (jsonify (dict "indent" "  ") $revisedVersionMeta) }}
+          {{- end }}
         {{- end }}
-        {{- $cleanVariantMeta := merge $variantMeta (dict "version" false) }}
-        {{- $processedImageKindVariantMeta = merge $processedImageKindVariantMeta (dict
-          $variantName (merge (merge $variantMeta (dict "version" false)) (dict "version" (dict $defaultVersionID $versionMeta)) )
-        ) }}
-        {{- if $debug }}
-          {{- warnf "%s %v/%v/%v: Using %v in versionMeta=%v as default version %v[%vx%v]: processedImageKindVariantMeta:\n%v"
-              $dbg $imageKind $variantName $versionID $versionMeta.resource
-              (jsonify (dict "indent" "  ") $versionMeta)
-              $defaultVersionID $versionMeta.resource.Width $versionMeta.resource.Height
-              (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
-        {{- end }}
+      {{- end }}
+      {{/* Need to completely obliterate the $variantName variant in processedImageKindVariantMeta
+           to be able to rewrite its `version` key via `merge` */}}
+      {{- $revisedVariantMeta := merge $variantMeta (dict "version" false) }}
+      {{- if $debug }}
+        {{- warnf "%s %v/%v/*: Before updating .version in variant %q: revisedVariantMeta:\n%v"
+            $dbg $imageKind $variantName $variantName
+            (jsonify (dict "indent" "  ") $revisedVariantMeta) }}
+      {{- end }}
+      {{- $revisedVariantMeta = merge $revisedVariantMeta (dict "version" $revisedVersionMeta) }}
+      {{- if $debug }}
+        {{- warnf "%s %v/%v/*: After updating .version in variant %q: revisedVariantMeta:\n%v"
+            $dbg $imageKind $variantName $variantName
+            (jsonify (dict "indent" "  ") $revisedVariantMeta) }}
+      {{- end }}
+
+      {{- $processedImageKindVariantMeta = merge $processedImageKindVariantMeta (dict $variantName (dict "version" false) ) }}
+      {{- if $debug }}
+        {{- warnf "%s %v/%v/*: Before updating variant %q: processedImageKindVariantMeta:\n%v"
+            $dbg $imageKind $variantName $variantName
+            (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
+      {{- end }}
+      {{- $processedImageKindVariantMeta = merge $processedImageKindVariantMeta (dict $variantName $revisedVariantMeta) }}
+      {{- if $debug }}
+        {{- warnf "%s %v/%v/*: After updating variant %q: processedImageKindVariantMeta:\n%v"
+            $dbg $imageKind $variantName $variantName
+            (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
       {{- end }}
     {{- end }}
   {{- end }}
@@ -253,9 +280,12 @@
         (jsonify (dict "indent" "  ") $processedImageKindVariantMeta)
         (jsonify (dict "indent" "  ") $kindVariantMeta) }}
   {{- end }}
+
+  {{- if $debug }}
     {{- warnf "%s kind=%v: returning \n%v\n"
         $dbg $imageKind
         (jsonify (dict "indent" "  ") $kindVariantMeta) }}
+  {{- end }}
 {{- else }}
   {{- if $debug }}
     {{- errorf "%s kind=%v: Invalid imageKindVariantMeta: \n%v"
