@@ -96,7 +96,6 @@ $main-z-index: 1;
       padding-#{$key}: #{$value};
     }
   }
-  // }
 }
 
 @mixin inner_padding($padding-factor: 1) {
@@ -122,12 +121,16 @@ $main-z-index: 1;
   @include element-padding('inner', unset, $padding-factor);
 }
 
-@mixin inner_full-bleed_horizontal-padding($padding-factor: 0) {
-  @include element-padding('inner', unset, $padding-factor);
+@mixin body_horizontal-padding($padding-factor: 1) {
+  @include element-padding('body', unset, $padding-factor);
 }
 
-@mixin inner_full-bleed_left-padding($padding-factor: 1) {
-  @include element-padding('inner', unset, 0, unset, $padding-factor);
+@mixin body_full-bleed_horizontal-padding($padding-factor: 0) {
+  @include element-padding('body', unset, $padding-factor);
+}
+
+@mixin body_full-bleed_left-padding($padding-factor: 1) {
+  @include element-padding('body', unset, 0, unset, $padding-factor);
 }
 
 @mixin background_dark() {
@@ -289,7 +292,7 @@ $main-z-index: 1;
 }
 
 @mixin content_singlecolumn() {
-  @include inner_horizontal-padding;
+  @include body_horizontal-padding;
   @include content_base_centered;
   max-width: var(--content_max-width);
   // max-width: calc(min(100%, var(--content_max-width)));
@@ -297,7 +300,7 @@ $main-z-index: 1;
 
 // Content that has multiple columns
 @mixin content_multicolumn() {
-  @include inner_horizontal-padding;
+  @include body_horizontal-padding;
   @include content_base_centered;
   max-width: var(--content_max-width); // For IE 11
   @supports (display: grid) {
@@ -335,7 +338,7 @@ $main-z-index: 1;
 @mixin container_singlecolumn() {
   // @include inner_padding;
   // FIXME: Avoid large gap betweeen .content-title and .lede
-  @include inner_horizontal-padding;
+  @include body_horizontal-padding;
   max-width: var(--content_max-width);
 }
 
@@ -1312,9 +1315,13 @@ html {
   @include fluid-geometric-scale('font-size_root', 1rem, 1.25rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
   @include fluid-geometric-scale('font-size', 1rem, 1.25rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
   @include fluid-geometric-scale('font-size_heading', 1.25rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
-  @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
+  // @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
+  @include fluid-fractional-scale('body_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
+  @include fluid-fractional-scale('inner_margin', 0.75rem, 1.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
   // @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide, vw, 8);
-  @include fluid-fractional-scale('inner_padding', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
+  // @include fluid-fractional-scale('inner_padding', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
+  @include fluid-fractional-scale('body_padding', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
+  @include fluid-fractional-scale('inner_padding', 0.75rem, 1.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
 
   --font-size: var(--font-size-normal);
   --font-size-aside: var(--font-size_root-normal);
@@ -1366,9 +1373,9 @@ html {
   --content_multicolumn_max-width: #{$screenViewWidthChrome};
   --content_max-width: #{$screenViewColumnWidthMax};
   --content_wide_max-width: #{$screenViewColumnWidthWideMax};
-  @media screen and (min-width: #{$screenViewBreakpointWidthWide}) {
-    --content_max-width: #{$screenViewColumnWidthWideMax};
-  }
+  // @media screen and (min-width: #{$screenViewBreakpointWidthWide}) {
+  //   --content_max-width: #{$screenViewColumnWidthWideMax};
+  // }
 
   --screenViewNavHeight: #{$screenViewNavHeightNarrow};
   @media screen and (min-width: #{$screenViewBreakpointWidthNarrow}) {

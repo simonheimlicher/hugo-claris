@@ -13,12 +13,12 @@
       margin-top: 0;
       padding-top: 0;
     }
-    padding: 0 0 var(--inner_padding) 0;
+    padding: 0 0 var(--body_padding) 0;
   }
 }
 
 .content + .content {
-  padding-top: var(--inner_padding);
+  padding-top: var(--body_padding);
 }
 .content {
   @include content;
@@ -150,7 +150,7 @@
       max-width: var(--content_multicolumn_max-width);
     }
     &_content {
-      @include inner_horizontal-padding();
+      @include body_horizontal-padding();
     }
     .layout-grid & {
       &-1 {
@@ -289,8 +289,8 @@
   }
   // border-top: 1px solid var(--xhaze)
   // background: var(--footer-bg)
-  padding-top: var(--inner_padding);
-  // padding-bottom: var(--inner_padding)
+  padding-top: var(--body_padding);
+  // padding-bottom: var(--body_padding)
   @include list-style_indented(0, 0, 0, 0);
   z-index: ($main-z-index  - 1);
 
@@ -907,7 +907,7 @@
           max-height: 33vh;
         }
         .content-title {
-          @include inner_horizontal-padding;
+          @include body_horizontal-padding;
           margin: 0 auto;
           width: fit-content;
           grid-column: 4;
@@ -996,8 +996,15 @@
       display: none;
     }
     .article_content {
-      padding-top: var(--inner_padding_4-5);
+      padding-top: var(--body_padding_4-4);
+      padding-bottom: var(--body_padding_4-4);
       background: var(--choice-bg);
+      .article_body:first-child {
+        margin-top: calc( (1 - var(--line-height)) * 1em);
+      }
+    }
+    .article_aside, .sidebar {
+      display: none;
     }
     & ~ .footer_claris {
       position: relative;
@@ -1512,34 +1519,17 @@ svg.qrcode-svg {
   background: linear-gradient(0deg, transparent 0%, var(--haze) calc(100% - 2px), var(--xhaze) calc(100% - 2px));
   &_inner {
     position: relative;
-
-    // For IE 11
-    max-width: var(--content_max-width);
-    margin: 0 auto;
-
-    // For modern browsers
-    @supports (display: grid) {
-      max-width: unset;
-      margin: 0;
-    }
+    margin: 0;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-between;
 
-    // For IE 11
     & > *:not(:first-child) {
-      // Emulate `gap`
-      margin-left: var(--inner_margin);
+      margin-left: 0;
     }
+    gap: var(--inner_margin);
 
-    // For modern browsers
-    @supports (gap: 1px) {
-      & > *:not(:first-child) {
-        margin-left: 0;
-      }
-      gap: var(--inner_margin);
-    }
     @include color-scheme_transition;
     @include inner_horizontal-padding;
     @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
@@ -1563,7 +1553,7 @@ svg.qrcode-svg {
       flex-direction: column;
       justify-content: flex-end;
       &_inner {
-        @include inner_full-bleed_left-padding;
+        @include body_full-bleed_left-padding;
         @include inner_padding_4-2;
         background: linear-gradient(90deg, transparent 0%, var(--haze) calc(100% - 2px), var(--xhaze) calc(100% - 2px));
         margin: 0 calc(-1 * var(--inner_padding_4-2)) 0 calc(-1 * var(--inner_padding_4-2));
