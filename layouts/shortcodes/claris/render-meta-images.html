@@ -1,0 +1,17 @@
+{{- $page := .Page }}
+{{- $template := "shortcodes/render-meta-images" }}
+{{- $args := (dict
+  "Page" $.Page
+  "kind" (.Get "kind")
+  "variant" (.Get "variant")
+  "version" (.Get "version")
+  "aspect" (.Get "aspect")
+  "ratio" (.Get "ratio")
+  "aspectratio" (.Get "aspect-ratio" | default (.Get "aspectratio") )
+  "maxwidth"    (.Get "max-width"    | default (.Get "maxwidth") )
+  "maxheight"   (.Get "max-height"   | default (.Get "maxheight") )
+  "lazy" (default true (.Get "lazy") )
+  "quality" (.Get "quality")
+) }}
+{{/* {{- warnf "%s[%s]: %#v" $page $template $args -}} */}}
+{{- partialCached "claris/_components/render-meta-images" $args .Page $args }}

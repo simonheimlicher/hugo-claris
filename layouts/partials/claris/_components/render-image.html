@@ -1,0 +1,97 @@
+{{- $template := "partials/render-image" }}
+{{- $page := default page .Page }}
+{{- $meta := page.Scratch.Get "clarismeta" }}
+{{- $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{- $renderImageArgs := partial "claris/_functions/resources/images/parse-image-args" (merge . (dict "Page" $page) ) -}}
+{{- $renderImageArgs = merge $renderImageArgs (dict
+  "Debug" $debug
+) -}}
+
+{{- $pictureResources := slice -}}
+
+{{- with $img := partialCached "claris/_functions/resources/images/get-process-image" . -}}
+
+  {{- /* The attribute 'sizes' is mandatory when specifying a 'srcset' attribute */ -}}
+  {{- $defaultSizes := "100vw" }}
+  {{- $defaultPosition := "center center" }}
+  {{- $defaultMedia := "default" }}
+
+  {{- $classPrefix := "render-image_" }}
+
+  {{- $imgClass := printf "%simg" $classPrefix }}
+  {{- $styleAttr := printf "object-fit: cover; object-position: %s" $imgPosition }}
+
+
+  {{- if $debug }}
+    {{- warnf "%s Processing version=%v with versionMeta:\n%v" $dbg
+        $versionName (jsonify (dict "indent" "  ") $versionMeta) }}
+  {{- end }}
+
+  {{- $formatSrcSets := slice }}
+  {{- with $formatSrcSets = partialCached "claris/_functions/resources/images/image-srcset" . (merge . (dict "Page" nil) ) }}
+  {{- else }}
+    {{- warnf "%s failed to get srcSet with %v" $dbg $versionSrcSetArgs -}}
+  {{- end }}
+
+  {{- $pictureResources = append $pictureResources (slice (dict
+    "variant" $variantName
+    "imgargs" $variantImgArgs
+    "formatsrcsets" $variantFormatSrcSets
+  ) ) }}
+
+{{- end }}
+
+{{- with $pictureResources }}
+  {{- if $debug }}
+    {{- warnf "%s Rendering pictureResources:\n%v"
+        $dbg (jsonify (dict "indent" "  ") . ) }}
+  {{- end }}
+  {{- $defaultSrcURL := "" }}
+  {{- with (where $pictureResources "variant" "eq" $defaultVariantName) }}
+    {{- with last 1 (index . 0).formatsrcsets.formats }}
+      {{- $defaultSrcURL = (index . 0).resource.RelPermalink }}
+    {{- end }}
+  {{- end }}
+  {{- if not $defaultSrcURL }}
+    {{- warnf "%s Failed to determine defaultSrcURL from %v"
+        $dbg (jsonify (dict "indent" "  ") . ) -}}
+  {{- end }}
+
+  {{- $pictureClass := printf "%spicture" $classPrefix }}
+
+  <!-- HTML element `picture` is a grouping element and must not contain any styles -->
+  <picture{{ with $pictureClass }} class="{{ safeHTMLAttr . }}"{{ end }}>
+
+  {{- $multiVariant := false }}
+  {{- range $variant := where $pictureResources "variant" "ne" $defaultVariantName }}
+    {{- $pictureArgs := merge .imgargs (dict "placeholder" .formatsrcsets.placeholder) }}
+    {{- $multiVariant = true }}
+    {{- if $debug }}
+      {{- warnf "%s media=%v: pictureResource=%v"
+          $dbg .media (jsonify (dict "indent" "  ") . ) }}
+    {{- end }}
+    {{- range .formatsrcsets.formats }}
+      {{- partial "claris/_components/render-picture-sources" (merge $pictureArgs (dict "formats" . ) ) }}
+    {{- end }}
+  {{- end }}
+
+  {{- range $variant := where $pictureResources "variant" "eq" $defaultVariantName }}
+    {{- $pictureArgs := merge .imgargs (dict "placeholder" .formatsrcsets.placeholder) }}
+    {{- $numFormats := len .formatsrcsets.formats }}
+    {{- if gt $numFormats 1 }}
+      {{- $nonDefaultFormats := first (sub $numFormats 1) .formatsrcsets.formats }}
+      {{- if $debug }}
+        {{- warnf "%s media=%v: nonDefaultFormats=%v"
+            $dbg .media (jsonify (dict "indent" "  ") $nonDefaultFormats ) }}
+      {{- end }}
+      {{- partial "claris/_components/render-picture-sources" (merge $pictureArgs (dict "formats" $nonDefaultFormats ) ) }}
+    {{- end }}
+
+    {{- range (last 1 .formatsrcsets.formats) }}
+      {{- partial "claris/_components/render-img" (merge $pictureArgs . ) }}
+    {{- end }}
+  {{- end }}
+  </picture>
+
+{{- end }}

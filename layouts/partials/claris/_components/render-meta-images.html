@@ -1,21 +1,16 @@
-{{- $template := "partials/render-images" }}
+{{- $template := "partials/render-meta-images" }}
 {{- $page := default page .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
 {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
-{{- $renderImageArgs := merge . (dict
+{{- $renderImageArgs := partial "claris/_functions/resources/images/parse-image-args" (merge . (dict "Page" $page) ) -}}
+{{- $renderImageArgs = merge $renderImageArgs (dict
   "Debug" $debug
 ) -}}
 
 {{- $kindParam := .kind -}}
 {{- $variantParam := .variant -}}
 {{- $versionParam := .version -}}
-{{- $aspectParam := .aspect -}}
-{{- $ratioParam := .ratio -}}
-{{- $aspectRatioParam := .aspectratio -}}
-{{- $maxWidthParam := .maxwidth -}}
-{{- $maxHeightParam := .maxheight -}}
-{{- $qualityParam := .quality -}}
 
 {{- /* The attribute 'sizes' is mandatory when specifying a 'srcset' attribute */ -}}
 {{- $defaultSizes := "100vw" }}
@@ -23,28 +18,17 @@
 {{- $defaultMedia := "default" }}
 {{- $defaultVariantName := "default" }}
 
-{{- $variantSrcSetArgs := dict }}
-{{- with $renderImageArgs }}
-  {{- $variantSrcSetArgs = merge $variantSrcSetArgs (dict
-    "width" .width
-    "height" .height
-    "aspectratio" .aspectratio
-    "targetformats" .targetformats
-    "maxwidth" .maxwidth
-    "maxheight" .maxheight
-  ) }}
-{{- end }}
+{{- $variantSrcSetArgs := $renderImageArgs }}
 
 {{- $imageMeta := dict }}
 {{- with $meta.Single.Data.Images }}
   {{- $imageMeta = . }}
 {{- else }}
   {{- $metaImagesParams := (dict
-    "Page" $page
     "Params" $page.Params
     "Debug" false
   ) }}
-  {{- $imageMeta = partialCached "claris/_functions/meta/images/from-params" $metaImagesParams $metaImagesParams }}
+  {{- $imageMeta = partialCached "claris/_functions/meta/images/from-params" (merge $metaImagesParams (dict "Page" $page) ) $metaImagesParams }}
 {{- end }}
 
 {{- if and false $debug }}
@@ -131,7 +115,7 @@
       {{- end }}
 
       {{- with partialCached "claris/_functions/resources/images/image-srcset"
-            $versionSrcSetArgs (merge $versionSrcSetArgs (dict "Page" false)  ) }}
+            $versionSrcSetArgs (merge $versionSrcSetArgs (dict "Page" nil) ) }}
         {{- $variantFormats = append $variantFormats .formats }}
         {{- $variantPlaceholder = .placeholder }}
       {{- else }}
