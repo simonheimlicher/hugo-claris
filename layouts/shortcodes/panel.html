@@ -5,7 +5,7 @@
 {{- $subjectRef := .Get "page" | default (.Get 0) -}}
 {{- $subjectPage := false -}}
 
-{{- if strings.HasPrefix "/" $subjectRef }}
+{{- if strings.HasPrefix $subjectRef "/" }}
   {{- $subjectPage = site.GetPage $subjectRef -}}
 {{- else }}
   {{- $subjectRef = strings.TrimLeft "./" $subjectRef }}
