@@ -7,7 +7,7 @@
 
 {{ $imgMeta := .meta }}
 {{ $versionResource := $imgMeta.resource }}
-{{ if and (strings.Contains (printf "%T" $versionResource) "resources.resourceAdapter") (strings.HasPrefix $versionResource.MediaType "image/") }}
+{{ with partialCached "claris/_functions/resources/images/is-image" $versionResource $versionResource }}
   {{ $aspectRatio := partial "claris/_functions/resources/images/aspect-ratio" $versionResource }}
 
   {{ $versionName := printf "aspect_%s" $aspectRatio.human }}
