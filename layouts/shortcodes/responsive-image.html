@@ -1,30 +1,35 @@
 {{- $page := .Page }}
 {{- $template := "shortcodes/responsive-image" }}
-{{- $args := (dict
-  "Page" $.Page
-  "resource" (.Get "resource")
-  "position" (.Get "position")
-  "lazy" (default true (.Get "lazy") )
-  "fetchpriority" (.Get "fetchpriority")
-  "quality" (.Get "quality")
-  "lightbox" (.Get "lightbox")
-  "imgclass" (printf "shortcode_responsive-figure_img %s" (default "" (.Get "img_class")) )
-  "figureclass" (printf "shortcode_responsive-figure shortcode_responsive-figure_image %s" (default "" (.Get "figure_class")) )
-  "caption" (.Get "caption")
-  "title" (.Get "title")
-  "alt" (.Get "alt")
-  "float" (.Get "float")
-  "shape" (.Get "shape")
-  "relativewidth" (.Get "relative-width")
-  "width" (.Get "width")
-  "height" (.Get "height")
-  "minwidth" (.Get "min-width")
-  "maxwidth" (.Get "max-width")
-  "minheight" (.Get "min-height")
-  "maxheight" (.Get "max-height")
-  "background" (.Get "background")
-  "borderradius" (.Get "border-radius")
-  "aspectratio" (.Get "aspect-ratio")
-) }}
-{{- /* warnf "%s[%s]: calling responsive-image with args: %#v" $page $template $args */ -}}
-{{- partialCached "responsive-image" $args (merge $args (dict "Page" false)) }}
+{{- $resourceSpec := .Get "resource" }}
+{{- if $resourceSpec }}
+  {{- $args := (dict
+    "Page" $.Page
+    "resource" $resourceSpec
+    "position" (.Get "position")
+    "lazy" (default true (.Get "lazy") )
+    "fetchpriority" (.Get "fetchpriority")
+    "quality" (.Get "quality")
+    "lightbox" (.Get "lightbox")
+    "imgclass" (printf "shortcode_responsive-figure_img %s" (default "" (.Get "img_class")) )
+    "figureclass" (printf "shortcode_responsive-figure shortcode_responsive-figure_image %s" (default "" (.Get "figure_class")) )
+    "caption" (.Get "caption")
+    "title" (.Get "title")
+    "alt" (.Get "alt")
+    "float" (.Get "float")
+    "shape" (.Get "shape")
+    "relativewidth" (.Get "relative-width")
+    "width" (.Get "width")
+    "height" (.Get "height")
+    "minwidth" (.Get "min-width")
+    "maxwidth" (.Get "max-width")
+    "minheight" (.Get "min-height")
+    "maxheight" (.Get "max-height")
+    "background" (.Get "background")
+    "borderradius" (.Get "border-radius")
+    "aspectratio" (.Get "aspect-ratio")
+  ) }}
+  {{- /* warnf "%s[%s]: calling responsive-image with args: %#v" $page $template $args */ -}}
+  {{- partialCached "responsive-image" $args (merge $args (dict "Page" false)) }}
+{{- else }}
+  {{ errorf `%s[%s]: invalid argument "resource"=%q [type=%T]` $page $template $resourceSpec $resourceSpec }}
+{{- end }}
