@@ -28,18 +28,23 @@
       {{- else }}
         {{- with $resourceSpec }}
           {{- $altSrc = "resource" }}
-          {{- $imgAlt = default (path.BaseName . | humanize | strings.FirstUpper) $imgTitle }}
+          {{- $imgAlt = default (path.BaseName . | humanize | replaceRE `(.*?) [0-9]+[xX][0-9]+(.*)` `$1$2` | strings.FirstUpper) $imgTitle }}
+          {{- /* if $debug }}
+            {{- warnf "%s Generating 'alt' attribute imgAlt=%q from .%v=%v with imageResourceArgs:\n%v"
+                $dbg $imgAlt $altSrc (index $imageResourceArgs $altSrc)
+                (jsonify (dict "indent" " ") (merge $imageResourceArgs (dict "Page" nil) ) ) }}
+          {{- end */ -}}
         {{- else }}
           {{- with $variantSpec.default.resource }}
             {{- $altSrc = "variant.default.resource" }}
-            {{- $imgAlt = default (path.BaseName . | humanize | strings.FirstUpper) $imgTitle }}
+            {{- $imgAlt = default (path.BaseName . | humanize | replaceRE `(.*?) [0-9]+[xX][0-9]+(.*)` `$1$2` | strings.FirstUpper) $imgTitle }}
           {{- end }}
         {{- end }}
       {{- end }}
     {{- end }}
   {{- end }}
   {{- if lt (len $imgAlt) $minAltLength }}
-    {{- warnf "%s Invalid 'alt' attribute imgAlt=%v from .%v=%v with imageResourceArgs:\n%v"
+    {{- warnf "%s Invalid 'alt' attribute imgAlt=%q from .%v=%v with imageResourceArgs:\n%v"
         $dbg $imgAlt $altSrc (index $imageResourceArgs $altSrc)
         (jsonify (dict "indent" " ") (merge $imageResourceArgs (dict "Page" nil) ) ) }}
   {{- end }}
@@ -277,9 +282,11 @@
       {{- warnf "%s .resource: %v failed to get srcSet with %v" $dbg $resourceSpec $imageResourceArgs */ -}}
     {{- end -}}
   {{- end }}
-  {{- /* {{- warnf "%s .resource=%q[%T] with imageResourceVariant=%v with imageResourceArgs=%v: pictureResources:\n%v\n"
-      $dbg $imageResourceArgs.resource $imageResourceArgs.resource $imageResourceVariant
-      $imageResourceArgs $pictureResources -}} */ -}}
+  {{- if $debug }}
+    {{- warnf "%s .resource=%q[%T] with imageResourceVariant=%v with imageResourceArgs=%v: pictureResources:\n%v\n"
+        $dbg $imageResourceArgs.resource $imageResourceArgs.resource $imageResourceVariant
+        $imageResourceArgs $pictureResources -}}
+  {{- end }}
 
   {{- with $pictureResources }}
     {{- if $debug }}
