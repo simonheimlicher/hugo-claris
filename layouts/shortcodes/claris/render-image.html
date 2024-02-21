@@ -2,6 +2,7 @@
 {{- $template := "shortcodes/render-image" }}
 {{- $args := (dict
   "Page" $.Page
+  "src" (.Get "src")
   "aspect" (.Get "aspect")
   "ratio" (.Get "ratio")
   "aspectratio" (.Get "aspect-ratio" | default (.Get "aspectratio") )
@@ -11,5 +12,5 @@
   "format" (.Get "format")
   "quality" (.Get "quality")
 ) }}
-{{/* {{- warnf "%s[%s]: %#v" $page $template $args -}} */}}
-{{- partialCached "claris/_components/render-image" $args .Page $args }}
+{{- /* warnf "%s[%s]: %#v" $page $template $args */ -}}
+{{- partialCached "claris/_components/render-image" $args $args }}

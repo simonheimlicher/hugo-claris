@@ -246,7 +246,7 @@
         {{- if $debug }}
           {{- warnf "%s imgPosition=%v in defaultVariant=%v" $dbg $imgPosition . }}
         {{- end }}
-        {{- $imageResourceArgs = merge $imageResourceArgs (dict "resource" $res ) }}
+        {{- $imageResourceArgs = merge $imageResourceArgs (dict "src" $res ) }}
         {{- with partialCached "claris/_functions/resources/images/image-srcset"
             $imageResourceArgs (merge $imageResourceArgs (dict "Page" nil) ) }}
           {{- $pictureResources = append $pictureResources (slice (dict

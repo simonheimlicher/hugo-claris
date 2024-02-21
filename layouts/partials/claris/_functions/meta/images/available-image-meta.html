@@ -1,6 +1,7 @@
 {{- $imageMeta := dict }}
 {{- $page := .Page }}
 {{- $template := "claris/_functions/meta/images/available-image-meta" }}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 {{- $paramsImage := .ParamsImage }}
 {{- $requiredImageVersions := .RequiredVersions }}
 {{- $defaultKind := .DefaultKind }}
@@ -8,9 +9,7 @@
 
 {{ $defaultVariantName := "default" }}
 
-{{- $imageResourceBaseArgs := (dict
-  "Page" $page
-) }}
+{{- $imageResourceBaseArgs := dict "resourcetype" "image" }}
 {{- with .format }}
   {{ $imageResourceBaseArgs = merge $imageResourceBaseArgs (dict
     "format" .
@@ -114,22 +113,17 @@ $imageKindMeta = (dict
             $page $template $imageKind (jsonify (dict "indent" "  ") $variantParam) }}
       {{- end }} */}}
 
-      {{- $imgParam := false }}
       {{ $versionParamList := $variantParam }}
       {{- if not (reflect.IsSlice $variantParam) }}
         {{- $versionParamList = slice $variantParam }}
       {{- end }}
 
       {{- range $versionParam := $versionParamList }}
+        {{/* {{- $imgParam := false }}
         {{- $imgMeta := false }}
         {{- if (reflect.IsMap $versionParam) }}
           {{- with $res := .resource }}
             {{- $imgParam = $versionParam }}
-            {{/* {{- if $debug }}
-              {{- warnf "%s[%s]: kind=%v Valid .resource=%v in  versionParam=\n%v"
-                  $page $template $imageKind $res
-                  (jsonify (dict "indent" "  ") $versionParam) }}
-            {{- end }} */}}
           {{- else }}
               {{- errorf "%s[%s]: kind=%v Invalid versionParam=\n%v Lacks .resource"
                   $page $template $imageKind
@@ -173,36 +167,56 @@ $imageKindMeta = (dict
                   $page $template $imageKind $imageResourceArgs.resource }}
             {{- end }}
           {{- end }}
-        {{- end }}
+        {{- end }} */}}
 
-        {{- with $imgMeta }}
-          {{ $imgResource = .resource }}
-          {{- if and (strings.Contains (printf "%T" $imgResource) "resources.resourceAdapter") (strings.HasPrefix $imgResource.MediaType "image/") }}
-            {{- $imgVersionMeta := partial "claris/_functions/meta/images/version-meta" (dict "Page" $page "meta" $imgMeta) }}
-            {{- $imageKindVariantMeta = merge $imageKindVariantMeta (dict $variantName $imgVersionMeta) }}
-            <!-- We add the first variant that has valid image
-            resources as a duplicate under the $defaultVariantName
-            key until it is potentially overwritten by the meta data
-            from the variant named $defaultVariantName -->
-            {{- if not (isset $imageKindVariantMeta $defaultVariantName) }}
-              {{- $imageKindVariantMeta = merge $imageKindVariantMeta (dict $defaultVariantName $imgVersionMeta) }}
-            {{- end }}
-            {{- if $debug }}
-              {{- $versionName := false }}
-              {{- $versionResource := false }}
-              {{- range $k, $v := $imgVersionMeta }}
-                {{- $versionName = $k }}
-                {{- $versionResource = $v.resource }}
-              {{- end }}
-              {{- warnf "%s[%s]: kind=%v Added image version=%v with resource='%v'[%T] in imgVersionMeta=\n%v\nto imageKindVariantMeta=\n%v"
-                  $page $template $imageKind $versionName $versionResource $versionResource
-                  (jsonify (dict "indent" "  ") $imgVersionMeta)
-                  (jsonify (dict "indent" "  ") $imageKindVariantMeta) }}
-            {{- end }}
+        {{- $validVersionParam := false }}
+        {{- if (reflect.IsMap $versionParam) }}
+          {{- if .src }}
+            {{- $validVersionParam = $versionParam }}
+          {{- else }}
+              {{- errorf "%s[%s]: kind=%v Invalid versionParam=\n%v Is a map but lacks .src"
+                  $page $template $imageKind
+                  (jsonify (dict "indent" "  ") $versionParam) }}
           {{- end }}
         {{- else }}
-          {{- warnf `%s[%s]: kind=%v: invalid resource=%v [type=%T] .MediaType=%q must begin with "image/"`
-              $page $template $imageKind $imgResource $imgResource $imgResource.MediaType }}
+          {{- $validVersionParam = (dict "src" $versionParam) }}
+        {{- end }}
+
+        {{- $imgResource := false }}
+        {{- with $validVersionParam }}
+          {{- $imageResourceArgs := merge $imageResourceBaseArgs $validVersionParam }}
+          {{- $imgResource = partialCached "claris/_functions/resources/get-resource" (merge $imageResourceArgs (dict "Page" $page) ) $imageResourceArgs }}
+        {{- end }}
+
+        {{- with $imgResource }}
+          {{- $imgMeta := merge $validVersionParam (dict
+            "src" nil
+            "resource" $imgResource
+          ) }}
+          {{- $imgVersionMeta := partial "claris/_functions/meta/images/version-meta" (dict "Page" $page "meta" $imgMeta) }}
+          {{- $imageKindVariantMeta = merge $imageKindVariantMeta (dict $variantName $imgVersionMeta) }}
+          <!-- We add the first variant that has valid image
+          resources as a duplicate under the $defaultVariantName
+          key until it is potentially overwritten by the meta data
+          from the variant named $defaultVariantName -->
+          {{- if not (isset $imageKindVariantMeta $defaultVariantName) }}
+            {{- $imageKindVariantMeta = merge $imageKindVariantMeta (dict $defaultVariantName $imgVersionMeta) }}
+          {{- end }}
+          {{- if $debug }}
+            {{- $versionName := false }}
+            {{- $versionResource := false }}
+            {{- range $k, $v := $imgVersionMeta }}
+              {{- $versionName = $k }}
+              {{- $versionResource = $v.resource }}
+            {{- end }}
+            {{- warnf "%s[%s]: kind=%v Added image version=%v with resource='%v'[%T] in imgVersionMeta=\n%v\nto imageKindVariantMeta=\n%v"
+                $page $template $imageKind $versionName $versionResource $versionResource
+                (jsonify (dict "indent" "  ") $imgVersionMeta)
+                (jsonify (dict "indent" "  ") $imageKindVariantMeta) }}
+          {{- end }}
+        {{- else }}
+          {{- errorf "%s Failed to get image resource based on argument .resource=%v [type=%T] .src=%v [type=%T]" $dbg
+              .resource .resource .src .src }}
         {{- end }}
       {{- end }}
 

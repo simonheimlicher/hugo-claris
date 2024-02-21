@@ -1,7 +1,7 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 
-{{- $logoImagePath := default site.Params.logo site.Params.header.logo.resource }}
+{{- $logoImagePath := default site.Params.logo site.Params.header.logo.src }}
 {{- $logoImageWidth := 96 }}
 {{- $logoImageHeight := $logoImageWidth }}
 {{- $logoClass := .logoclass }}
@@ -19,7 +19,7 @@
   {{- with .padding }}
     {{- $logoClass = printf "%spadding-%d" (cond (not (not $logoClass)) $logoClass "")  (int .) }}
   {{- end }}
-  {{- with .resource }}
+  {{- with .src }}
     {{- $logoImagePath = . }}
   {{- end }}
   {{- with .width }}
@@ -33,14 +33,14 @@
 {{- $logoImageResource := false }}
 {{- with $logoImagePath }}
   {{- $logoImageParams := (dict
-    "resource" .
+    "src" .
     "width" $logoImageWidth
     "height" $logoImageHeight
   ) }}
   {{- $logoImageResource = partialCached "claris/_functions/resources/images/get-process-image" (merge $logoImageParams
       (dict "Page" $page)) $logoImageParams -}}
   {{- if not $logoImageResource }}
-    {{- errorf "[%s]: Logo image matching .resource='%v' not found" $template $logoImageResource }}
+    {{- errorf "[%s]: Logo image matching .src='%v' not found" $template $logoImageResource }}
   {{- end }}
 {{- end }}
     <div class="nav_brand">

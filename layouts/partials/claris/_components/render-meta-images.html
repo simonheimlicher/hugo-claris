@@ -1,4 +1,4 @@
-{{- $template := "partials/render-meta-images" }}
+{{- $template := "claris/_components/render-meta-images" }}
 {{- $page := default page .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
