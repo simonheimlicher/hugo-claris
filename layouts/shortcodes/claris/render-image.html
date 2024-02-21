@@ -5,12 +5,22 @@
   "src" (.Get "src")
   "aspect" (.Get "aspect")
   "ratio" (.Get "ratio")
-  "aspectratio" (.Get "aspect-ratio" | default (.Get "aspectratio") )
-  "maxwidth"    (.Get "max-width"    | default (.Get "maxwidth") )
-  "maxheight"   (.Get "max-height"   | default (.Get "maxheight") )
+  "aspectratio" (.Get "aspect-ratio")
+  "maxwidth"    (.Get "max-width")
+  "maxheight"   (.Get "max-height")
   "lazy" (default true (.Get "lazy") )
   "format" (.Get "format")
   "quality" (.Get "quality")
-) }}
+) -}}
+{{- $parsedArgs := dict }}
+{{- range $k, $v := $args }}
+  {{- if eq (printf "%T" $v) "string" }}
+    {{- if ne $v "" }}
+      {{- $parsedArgs = merge $parsedArgs (dict $k $v) }}
+    {{- end }}
+  {{- else }}
+    {{- $parsedArgs = merge $parsedArgs (dict $k $v) }}
+  {{- end }}
+{{- end }}
 {{- /* warnf "%s[%s]: %#v" $page $template $args */ -}}
-{{- partialCached "claris/_components/render-image" $args $args }}
+{{- partialCached "claris/_components/render-image" $parsedArgs $parsedArgs }}
