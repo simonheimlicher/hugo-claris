@@ -1,27 +1,32 @@
-{{- $imgVersionMeta := false }}
-{{- $template := "claris/_functions/meta/images/version-meta" }}
-{{- $page := page }}
-{{- $debug := false }}
-{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{ $imgVersionMeta := false }}
+{{ $template := "claris/_functions/meta/images/version-meta" }}
+{{ $page := page }}
+{{ $debug := false }}
+{{ $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
+{{ $dbg := printf "%s %q [%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .meta.resource (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
-{{- $imgMeta := .meta }}
-{{- $versionResource := $imgMeta.resource }}
-{{- $aspectRatio := partial "claris/_functions/resources/images/aspect-ratio" $versionResource }}
+{{ $imgMeta := .meta }}
+{{ $versionResource := $imgMeta.resource }}
+{{ if and (strings.Contains (printf "%T" $versionResource) "resources.resourceAdapter") (strings.HasPrefix $versionResource.MediaType "image/") }}
+  {{ $aspectRatio := partial "claris/_functions/resources/images/aspect-ratio" $versionResource }}
 
-{{- $versionName := printf "aspect_%s" $aspectRatio.human }}
-{{- range $k, $v := $imgMeta }}
-  {{- if (ne $k "resource") }}
-    {{- $imgVersionMeta = merge $imgVersionMeta (dict $k $v) }}
-  {{- end }}
-{{- end }}
-{{- $imgVersionMeta = merge $imgVersionMeta (dict "version" (dict
-    $versionName (dict
-      "resource" $versionResource
-      "aspect" $aspectRatio.human
-      "ratio" $aspectRatio.float
-      "format" $versionResource.MediaType.SubType
+  {{ $versionName := printf "aspect_%s" $aspectRatio.human }}
+  {{ range $k, $v := $imgMeta }}
+    {{ if (ne $k "resource") }}
+      {{ $imgVersionMeta = merge $imgVersionMeta (dict $k $v) }}
+    {{ end }}
+  {{ end }}
+  {{ $imgVersionMeta = merge $imgVersionMeta (dict "version" (dict
+      $versionName (dict
+        "resource" $versionResource
+        "aspect" $aspectRatio.human
+        "ratio" $aspectRatio.float
+        "format" $versionResource.MediaType.SubType
+      )
     )
-  )
-) }}
-
-{{- return $imgVersionMeta }}
+  ) }}
+{{ else }}
+  {{ errorf `%s: invalid resource=%v [type=%T] .MediaType=%q must begin with "image/"`
+      $dbg $versionResource $versionResource $versionResource.MediaType }}
+{{ end }}
+{{ return $imgVersionMeta }}
