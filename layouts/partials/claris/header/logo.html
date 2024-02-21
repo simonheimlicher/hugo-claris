@@ -1,7 +1,9 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 
-{{- $logoImageResource := default site.Params.logo site.Params.header.logo.resource }}
+{{- $logoImagePath := default site.Params.logo site.Params.header.logo.resource }}
+{{- $logoImageWidth := 96 }}
+{{- $logoImageHeight := $logoImageWidth }}
 {{- $logoClass := .logoclass }}
 
 {{- $template := "claris/header/logo" }}
@@ -11,25 +13,43 @@
   {{- $logoURL = printf "%s" . | relLangURL }}
 {{- end }}
 
-{{- $t := $meta.Site.Formatted.Title | default site.Title -}}
+{{- $siteTitle := $meta.Site.Formatted.Title | default site.Title -}}
 
 {{- with site.Params.header.logo }}
   {{- with .padding }}
     {{- $logoClass = printf "%spadding-%d" (cond (not (not $logoClass)) $logoClass "")  (int .) }}
   {{- end }}
   {{- with .resource }}
-    {{- $logoImageResource = . }}
+    {{- $logoImagePath = . }}
+  {{- end }}
+  {{- with .width }}
+    {{- $logoImageWidth . }}
+  {{- end }}
+  {{- with .height }}
+    {{- $logoImageHeight . }}
   {{- end }}
 {{- end }}
 
-{{- $logoImage := partialCached "claris/_functions/resources/images/logo-image" (dict "Page" $page "resource" $logoImageResource) -}}
+{{- $logoImageResource := false }}
+{{- with $logoImagePath }}
+  {{- $logoImageParams := (dict
+    "resource" .
+    "width" $logoImageWidth
+    "height" $logoImageHeight
+  ) }}
+  {{- $logoImageResource = partialCached "claris/_functions/resources/images/get-process-image" (merge $logoImageParams
+      (dict "Page" $page)) $logoImageParams -}}
+  {{- if not $logoImageResource }}
+    {{- errorf "[%s]: Logo image matching .resource='%v' not found" $template $logoImageResource }}
+  {{- end }}
+{{- end }}
     <div class="nav_brand">
-{{- with $logoImage }}
+{{- with $logoImageResource }}
   {{- with $logoURL }}
-        <a href='{{ . }}' title='{{ $t }}' class='nav_brand_logo_parent'>
+        <a href='{{ . }}' title='{{ $siteTitle }}' class='nav_brand_logo_parent'>
   {{- end }}
           <div class="nav_brand_logo{{ with $logoClass }} {{ . }}{{ end }}">
-            <img src="{{ .RelPermalink }}" class="logo" width="{{ .Width }}" height="{{ .Height }}" alt="{{ $t }}">
+            <img src="{{ .RelPermalink }}" class="logo" width="{{ .Width }}" height="{{ .Height }}" alt="{{ $siteTitle }}">
           </div>
   {{- if $logoURL }}
         </a>
@@ -37,9 +57,9 @@
 {{- else -}}
       <div class="nav_group nav_brand_text_parent">
       {{- with $logoURL }}
-        <a href='{{ . }}' title='{{ $t }}' class='nav_brand_text nav_item'>
+        <a href='{{ . }}' title='{{ $siteTitle }}' class='nav_brand_text nav_item'>
       {{- end }}
-          {{- $t -}}
+          {{- $siteTitle -}}
     {{- if $logoURL }}
         </a>
       </div>
