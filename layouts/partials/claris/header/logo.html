@@ -1,5 +1,8 @@
+{{ $template := "claris/header/logo" }}
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
+{{ $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
+{{ $dbg := printf "%s [%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $logoImagePath := default site.Params.logo site.Params.header.logo.src }}
 {{- $logoImageWidth := 96 }}
@@ -14,19 +17,13 @@
 {{- end }}
 
 {{- $siteTitle := $meta.Site.Formatted.Title | default site.Title -}}
-
-{{- with site.Params.header.logo }}
+{{- $siteLogoParams := false }}
+{{- with $siteLogoParams = site.Params.header.logo }}
   {{- with .padding }}
     {{- $logoClass = printf "%spadding-%d" (cond (not (not $logoClass)) $logoClass "")  (int .) }}
   {{- end }}
   {{- with .src }}
     {{- $logoImagePath = . }}
-  {{- end }}
-  {{- with .width }}
-    {{- $logoImageWidth . }}
-  {{- end }}
-  {{- with .height }}
-    {{- $logoImageHeight . }}
   {{- end }}
 {{- end }}
 
@@ -37,6 +34,16 @@
     "width" $logoImageWidth
     "height" $logoImageHeight
   ) }}
+
+  {{- with $siteLogoParams }}
+    {{- $logoImageParams = partial "claris/_functions/resources/images/parse-args" . }}
+    {{- if $debug }}
+      {{- warnf "%s logoImageParams:\n%v\nfrom site.Params.header.logo:\n%v" $dbg
+          (jsonify (dict "indent" "  ") $logoImageParams)
+          (jsonify (dict "indent" "  ") site.Params.header.logo) }}
+    {{- end }}
+  {{- end }}
+
   {{- $logoImageResource = partialCached "claris/_functions/resources/images/get-process-image" (merge $logoImageParams
       (dict "Page" $page)) $logoImageParams -}}
   {{- if not $logoImageResource }}
