@@ -1,7 +1,6 @@
 {{- $page := .Page }}
 {{- $template := "shortcodes/render-image" }}
 {{- $args := (dict
-  "Page" $.Page
   "src" (.Get "src")
 
   "imgclass" (printf "shortcode_responsive-figure_img %s" (default "" (.Get "img_class")) )
@@ -29,7 +28,7 @@
 
   "fetchpriority" (.Get "fetchpriority")
   "lightbox" (.Get "lightbox")
-  "lazy" (default true (.Get "lazy") )
+  "lazy" (.Get "lazy")
   "format" (.Get "format")
   "quality" (.Get "quality")
 ) -}}
@@ -44,4 +43,4 @@
   {{- end }}
 {{- end }}
 {{- /* warnf "%s[%s]: %#v" $page $template $args */ -}}
-{{- partialCached "claris/_components/render-image" $parsedArgs $parsedArgs }}
+{{- partialCached "claris/_components/render-image" (merge $parsedArgs (dict "Page" $page) ) $parsedArgs }}
