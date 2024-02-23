@@ -1331,7 +1331,8 @@ html {
   --font-size-lede: var(--font-size_root-larger-1);
 
   --font-size-meta: var(--font-size_root-smaller-1);
-  --font-size-button: var(--font-size-smaller-1);
+  // --font-size-button: var(--font-size-smaller-1);
+  --font-size-button: var(--font-size-normal);
 
   --font-size-title: var(--font-size_heading-larger-4);
   --font-size-supertitle: var(--font-size_heading-smaller-1);

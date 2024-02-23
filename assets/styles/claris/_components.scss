@@ -397,11 +397,11 @@
   background-color: var(--theme);
   color: var(--theme-text);
   display: inline-flex;
-  padding: 0.5em 1.5em 0.75em 1.5em;
+  padding: 0.5em 1em;
   // text-transform: uppercase
   text-transform: none;
   border: 1px solid var(--translucent);
-  border-radius: 1.5em;
+  border-radius: 99rem;
   font-size: var(--font-size-button);
   align-items: center;
   user-select: none;
@@ -484,7 +484,7 @@
   &_tag,
   &_meta_tag {
     // padding: 0 0.75em;
-    padding: 0.0625em 0.5em 0.125em 0.5em;
+    padding: 0.25em 0.75em;
     font-size: var(--font-size-meta);
   }
   &_tag,
@@ -1081,14 +1081,14 @@
     }
   }
   &_toggle {
-    margin-top: 0.5rem;
-    margin-left: 0.5rem;
+    margin: 0.5rem;
+    // margin-left: 0.5rem;
     cursor: pointer;
   }
   &_list {
     cursor: auto;
     background: var(--bg-hover);
-    padding: 4.5rem 1.5rem 1.5rem 1.5rem;
+    padding: 6rem 1.5rem 1.5rem 1.5rem;
     border-radius: 1rem;
     max-width: 40rem;
     margin: 0 auto;
@@ -1103,23 +1103,23 @@
   }
   &_hide {
     position: absolute;
-    top: 1rem;
-    right: 1.5rem;
+    top: 2rem;
+    right: 2rem;
     padding: 0.5rem;
     border-radius: 50%;
     cursor: pointer;
   }
   &_sort {
-    font-size: 1rem;
+    // font-size: 1rem;
     color: var(--text);
     background: var(--theme-bg);
     position: absolute;
-    top: 1.5rem;
-    left: 1.5rem;
-    border-radius: 1.5rem;
+    top: 2rem;
+    left: 2rem;
+    border-radius: 999rem;
     padding: 0.1rem 1rem;
     display: flex;
-    gap: 1.5rem;
+    gap: 2rem;
     &,
     &_button {
       user-select: none;
@@ -1128,7 +1128,7 @@
       display: inline-flex;
       justify-content: center;
       align-items: center;
-      height: 2rem;
+      height: 3rem;
       position: relative;
       z-index: 5;
       cursor: pointer;
@@ -1144,8 +1144,7 @@
         opacity: 0.5;
         background: var(--theme-bg);
         border: 1px solid var(--bg);
-        border-radius: 1.5rem;
-        // transition: 0.25s transform var(--ease);
+        border-radius: 999rem;
         transition: $taxonomy-overlay_transition_button;
       }
       &_alphabetically {
