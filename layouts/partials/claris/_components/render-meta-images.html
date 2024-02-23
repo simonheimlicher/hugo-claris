@@ -3,7 +3,9 @@
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
 {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
-{{- $renderImageArgs := partial "claris/_functions/resources/images/parse-image-args" (merge . (dict "Page" $page) ) -}}
+
+{{/* {{- $renderImageArgs := partial "claris/_functions/resources/images/parse-args" (merge . (dict "structured" true "Page" $page) ) -}} */}}
+{{- $renderImageArgs := . -}}
 {{- $renderImageArgs = merge $renderImageArgs (dict
   "Debug" $debug
 ) -}}
@@ -166,7 +168,7 @@
           $dbg .media (jsonify (dict "indent" "  ") . ) }}
     {{- end }}
     {{- range .formatsrcsets.formats }}
-      {{- partial "claris/_components/render-picture-sources" (merge $pictureArgs (dict "formats" . ) ) }}
+      {{- partial "claris/_components/render-picture-source" (merge $pictureArgs (dict "formats" . ) ) }}
     {{- end }}
   {{- end }}
 
@@ -179,11 +181,11 @@
         {{- warnf "%s media=%v: nonDefaultFormats=%v"
             $dbg .media (jsonify (dict "indent" "  ") $nonDefaultFormats ) }}
       {{- end }}
-      {{- partial "claris/_components/render-picture-sources" (merge $pictureArgs (dict "formats" $nonDefaultFormats ) ) }}
+      {{- partial "claris/_components/render-picture-child" (merge $pictureArgs (dict "formats" $nonDefaultFormats ) ) }}
     {{- end }}
 
     {{- range (last 1 .formatsrcsets.formats) }}
-      {{- partial "claris/_components/render-img" (merge $pictureArgs . ) }}
+      {{- partial "claris/_components/render-picture-child" (merge $pictureArgs . ) }}
     {{- end }}
   {{- end }}
   </picture>
