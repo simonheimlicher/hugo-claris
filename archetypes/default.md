@@ -7,22 +7,22 @@ featured: false
 # draft: true # When `draft` is set to `true`, this page bundle will not be rendered unless you pass the option `--buildDrafts` to `hugo`
 # image:
 #   feature: 
-#     resource: "images/hugo_theme_claris-feature"
+#     src: "images/hugo_theme_claris-feature"
 #     alt: Feature image
 #     title: 
 #     credit: ''
 #   excerpt: 
-#     resource: "images/hugo_theme_claris-thumbnail"
+#     src: "images/hugo_theme_claris-thumbnail"
 #     alt: Excerpt image
 #     title: 
 #     credit: ''
 #   share: 
-#     resource: "images/hugo_theme_claris-share"
+#     src: "images/hugo_theme_claris-share"
 #     alt: Image for social sharing
 #     title: 
 #     credit: ''
 #   search: 
-#     resource: "images/hugo_theme_claris-share"
+#     src: "images/hugo_theme_claris-share"
 #     alt: Image for use by search engines (note that Google often just picks one of the images visible on the page, ingoring the search image)
 #     title: 
 #     credit: ''
