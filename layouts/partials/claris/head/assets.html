@@ -11,7 +11,7 @@
       try { document.documentElement.dataset.colorScheme = window.localStorage.getItem('userSelectedColorScheme'); } catch (e) { }
     </script>
 
-{{- partial "html-comment" (printf "%s[%s]: assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) }}
+{{- /* partial "html-comment" (printf "%s[%s]: assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) */ -}}
 {{- $assets := partialCached "claris/_functions/asset-bundles" $ctx $assetVariant -}}
 
 {{- $scriptBundles := $assets.Scripts }}

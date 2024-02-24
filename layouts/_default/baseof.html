@@ -2,8 +2,9 @@
 {{- $page := . }}
 {{- $template := "_default/baseof" }}
 
-{{- $debug := false }}
+{{ $debug := and false ($page.Param "clarisdebug") }}
 {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
 {{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
 {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
 
@@ -84,16 +85,13 @@
   {{- with $openGraphNSDeclaration }} {{ safeHTMLAttr . }} {{ end -}}
 >
 <head>
-  {{ partial "html-comment" (printf "[%s]: .Type=%s .Layout=%s .MediaType=%s $assetVariant.OutputFormat=%s meta.Classification=%v]"
-    $template .Type .Layout .MediaType $assetVariant.OutputFormat.Name (jsonify (dict "indent" "  ") $meta.Classification)) }}
+  {{- /* partial "html-comment" (printf "[%s]: .Type=%s .Layout=%s .MediaType=%s $assetVariant.OutputFormat=%s meta.Classification=%v]"
+    $template .Type .Layout .MediaType $assetVariant.OutputFormat.Name (jsonify (dict "indent" "  ") $meta.Classification)) */ -}}
   {{- partial "claris/head/index" $partialContext }}
   {{- partialCached "claris/_hooks/head-end/index" $partialContext $assetVariant }}
 </head>
-{{ partial "html-comment" (printf "BASEOF [%s]: BEGIN body" $template) }}
 <body id="documentContainer" {{- block "body-data" . -}} {{- end -}}>
-  {{ partial "html-comment" (printf "BASEOF [%s]: BEGIN block body" $template) }}
   {{ block "body" . -}}{{ end }}
-  {{ partial "html-comment" (printf "BASEOF [%s]: END   block body" $template) }}
   {{- with site.Params.customJS }}
     {{- range . -}}
       <script src="{{ relURL . }}" ></script>
@@ -101,7 +99,6 @@
   {{- end }}
   {{- partialCached "claris/_hooks/body-end/index" $partialContext $assetVariant }}
 </body>
-{{ partial "html-comment" (printf "BASEOF [%s]: END  body" $template) }}
 </html>
 
 {{- define "body-data" }}
@@ -118,7 +115,7 @@
 
 {{- define "body" }}
   {{- $page := . }}
-  {{- $template := "_default/baseof" }}
+  {{- $template := "_default/baseof body" }}
   {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
   {{- $mainClassList := (slice "main_claris" (printf "main-kind_%s" (.Scratch.Get "claris.render.main.kind") ) ) }}
@@ -142,7 +139,7 @@
   {{- end }}
   {{- /* FIXME: to top button needs to be rebuilt as it currently is not responsive */ -}}
   {{- $showToTopButton := default false ($page.Param "showToTopButton") }}
-  {{ partial "html-comment" (printf "BASEOF [%s]: BEGIN define body" $template) }}
+  {{ partial "html-comment" (printf "BASEOF [%s]: BEGIN body" $template) }}
     {{- with $heroImageMeta }}
       {{ partial "claris/_components/hero-image" . }}
     {{- end }}
@@ -161,5 +158,5 @@
     <footer class="footer_claris">
       {{ partialCached "claris/footer/index" . .Kind .Type }}
     </footer>
-  {{ partial "html-comment" (printf "BASEOF [%s]: END   define body" $template) }}
+  {{ partial "html-comment" (printf "BASEOF [%s]: END   body" $template) }}
 {{ end -}}
