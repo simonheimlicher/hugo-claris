@@ -1,23 +1,19 @@
 {{- /* # https://gohugo.io/templates/template-debugging/ */ -}}
 {{- $page := . }}
-{{- $s := site.Params }}
-{{- $p := .Params }}
 {{- $template := "_default/baseof" }}
 
 {{- $debug := false }}
-
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 {{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
 {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
 
 {{- $assetVariant := partial "claris/_functions/asset-variant" . }}
 {{- $partialContext := (dict "Page" . "AssetVariant" $assetVariant) }}
-{{- /* partial "html-comment" (printf "%s[%s]: assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) */ -}}
+{{- /* partial "html-comment" (printf "%s assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) */ -}}
 
 {{- if $debug }}
-  {{- warnf "%s[%s]: hugo.Environment=%v envDevel=%v envProd=%v"
-      $page $template hugo.Environment $envDevel $envProd -}}
-  {{- warnf "%s[%s]: assetVariant=\n%v"
-      $page $template (jsonify (dict "indent" "  ") $assetVariant ) -}}
+  {{- warnf "%s hugo.Environment=%v envDevel=%v envProd=%v" $dbg hugo.Environment $envDevel $envProd -}}
+  {{- warnf "%s assetVariant=\n%v" $dbg (jsonify (dict "indent" "  ") $assetVariant ) -}}
 {{- end }}
 
 {{- $kindMap := (dict
@@ -29,20 +25,23 @@
 ) -}}
 {{- .Scratch.Set "claris.render.main.kind" (default "page" (index $kindMap .Kind) ) }}
 
-
 {{- .Scratch.Set "claris.module.qrcode.count" 0 }}
 {{- if in (slice "page") .Kind }}
-  {{- .Scratch.Set "claris.assets.font.main" ($page.Param "fontFamilySerif") }}
+  {{- .Scratch.Set "claris.assets.font.main" ($page.Param "assets.styles.fonts.family.serif") }}
 {{- else }}
-  {{- .Scratch.Set "claris.assets.font.main" ($page.Param "fontFamilySans") }}
+  {{- .Scratch.Set "claris.assets.font.main" ($page.Param "assets.styles.fonts.family.sans") }}
+{{- end }}
+{{- if $debug }}
+  {{- warnf "%s claris.assets.font.main=%v based on .Kind=%v" $dbg
+      (.Scratch.Get "claris.assets.font.main") .Kind }}
 {{- end }}
 
 {{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "Debug" $debug) $page.Permalink $assetVariant }}
 {{- .Scratch.Set "clarismeta" $meta }}
 
 {{- /* {{- if (and $assetVariant.OutputFormat (strings.Contains (lower $assetVariant.OutputFormat.Name) "print") ) }}
-  {{- warnf "%s[%s]: outputFormat=%v: meta.Output=\n%v\n.Classification=\n%v"
-    $page $template $assetVariant.OutputFormat.Name
+  {{- warnf "%s outputFormat=%v: meta.Output=\n%v\n.Classification=\n%v"
+    $dbg $assetVariant.OutputFormat.Name
     (jsonify (dict "indent" "  ") $meta.Output)
     (jsonify (dict "indent" "  ") $meta.Classification ) }}
 {{- end }} */ -}}
@@ -56,16 +55,15 @@
   {{- end -}}
 {{- end -}}
 {{- $forceColorScheme := false }}
-{{- with default false (default $p.enforceLightMode $s.enforceLightMode) }}
+{{- with .Param "enforceLightMode" }}
   {{- $forceColorScheme = " data-color-scheme=\"lit\"" }}
 {{- else }}
-  {{- with default false (default $p.enforceDarkMode $s.enforceDarkMode) }}
+  {{- with .Param "enforceDarkMode" }}
     {{- $forceColorScheme = " data-color-scheme=\"dim\"" }}
-  {{- else }}
-    {{- if (and $assetVariant.OutputFormat (strings.Contains (lower $assetVariant.OutputFormat.Name) "print") ) }}
-      {{- $forceColorScheme = " data-color-scheme=\"lit\"" }}
-    {{- end -}}
   {{- end -}}
+{{- end -}}
+{{- if (and $assetVariant.OutputFormat (strings.Contains (lower $assetVariant.OutputFormat.Name) "print") ) }}
+  {{- $forceColorScheme = " data-color-scheme=\"lit\"" }}
 {{- end -}}
 
 {{- $openGraphNSDeclaration := "" }}
@@ -75,7 +73,7 @@
 {{- end -}}
 
 <!DOCTYPE html>
-{{ partial "html-comment" (printf "BASEOF %s[%s]: BEGIN" $page $template) }}
+{{ partial "html-comment" (printf "BASEOF %s BEGIN" $dbg) }}
 <html lang="{{ .Lang }}"
   {{- with .Type }}{{ $htmlClassList = append (slice (printf "type-%s" . )) $htmlClassList }}{{ end -}}
   {{- with .Kind }}{{ $htmlClassList = append (slice (printf "kind-%s" . )) $htmlClassList }}{{ end -}}
@@ -96,7 +94,7 @@
   {{ partial "html-comment" (printf "BASEOF [%s]: BEGIN block body" $template) }}
   {{ block "body" . -}}{{ end }}
   {{ partial "html-comment" (printf "BASEOF [%s]: END   block body" $template) }}
-  {{- with $s.customJS }}
+  {{- with site.Params.customJS }}
     {{- range . -}}
       <script src="{{ relURL . }}" ></script>
     {{- end }}
@@ -107,25 +105,13 @@
 </html>
 
 {{- define "body-data" }}
-  {{- $s := site.Params }}
-  {{- $p := .Params }}
   {{- $maxCodeLines := 100 }}
-  {{- with $s.codeMaxLines }}
-    {{- $maxCodeLines = . }}
-  {{- end }}
-  {{- with $p.codeMaxLines }}
+  {{- with .Param "codeMaxLines" }}
     {{- $maxCodeLines = . }}
   {{- end }}
   {{- $codeLineNumbers := false }}
-  {{- with $s.codeLineNumbers }}
+  {{- with .Param "codeLineNumbers" }}
     {{- $codeLineNumbers = . }}
-  {{- end }}
-  {{- with $p.codeLineNumbers }}
-    {{- $codeLineNumbers = . }}
-    {{- else }}
-    {{- if eq $p.codeLineNumbers false }}
-      {{- $codeLineNumbers = false }}
-    {{- end }}
   {{- end }}
   data-code="{{ $maxCodeLines }}" data-lines="{{ $codeLineNumbers }}"
 {{- end }}
@@ -133,6 +119,7 @@
 {{- define "body" }}
   {{- $page := . }}
   {{- $template := "_default/baseof" }}
+  {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
   {{- $mainClassList := (slice "main_claris" (printf "main-kind_%s" (.Scratch.Get "claris.render.main.kind") ) ) }}
 
@@ -149,7 +136,7 @@
   {{- with $heroImageMeta }}
     {{ $heroImageStyle := default "background" $heroImageMeta.style }}
     {{- if $debug }}
-      {{- warnf "%s[%s]: heroImageStyle=%v" $page $template $heroImageStyle }}
+      {{- warnf "%s heroImageStyle=%v" $dbg $heroImageStyle }}
     {{- end }}
     {{- $mainClassList = append (slice (printf "hero-image_%s_main" $heroImageStyle) ) $mainClassList }}
   {{- end }}

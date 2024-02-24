@@ -68,9 +68,9 @@ $onSecondaryDim: {{ default "lighten(desaturate($colorSecondaryDim, 60%), 35%)" 
 $surfaceSecondaryLit: {{ default "lighten(desaturate($colorSecondaryLit, 50%), 45%)" ($page.Param "surfaceSecondaryLit") }};
 $surfaceSecondaryDim: {{ default "darken(desaturate($colorSecondaryDim, 60%), 35%)" ($page.Param "surfaceSecondaryDim") }};
 
-$fontFamilySans: '{{ default "Source Sans 3" ($page.Param "fontFamilySans") }}';
-$fontFamilySerif: '{{ default "Alegreya" ($page.Param "fontFamilySerif") }}';
-$fontFamilyMono: '{{ default "DM Mono" ($page.Param "fontFamilyMono") }}';
+$fontFamilySans: '{{ default "Source Sans 3" ($page.Param "assets.styles.fonts.family.sans") }}';
+$fontFamilySerif: '{{ default "Alegreya" ($page.Param "assets.styles.fonts.family.serif") }}';
+$fontFamilyMono: '{{ default "DM Mono" ($page.Param "assets.styles.fonts.family.mono") }}';
 
 $geometricScaleFactor: {{ default "math.pow(2.0, math.div(1, 4) )" ($page.Param "geometricScaleFactor") }};
 $fractionalScaleDenominator: {{ default 4 ($page.Param "fractionalScaleDenominator") }};
