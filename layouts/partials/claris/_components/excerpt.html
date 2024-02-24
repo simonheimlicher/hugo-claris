@@ -1,7 +1,11 @@
-{{- $page := .Page }}
+{{- $page := default page .Page }}
 {{- $excerptMeta := .Meta }}
 {{- $template := "claris/_components/excerpt" }}
-{{- $debug := false }}
+{{- $subjectPage := .SubjectPage }}
+{{- $debug := and false (or .Debug ($page.Param "clarisdebug") ($subjectPage.Param "clarisdebug") ) }}
+{{- $dbg := printf "%s subject=%s [%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink)
+    (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $subjectPage.RelPermalink)
+    (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $scratchExcerptRenderedKey := "claris.page.excerpt-rendered" }}
 {{- if not ($page.Scratch.Get $scratchExcerptRenderedKey) }}
@@ -12,7 +16,6 @@
 
 {{- $excerptImageKey := default "excerpt.variant.default.version.default" .ExcerptImageKey }}
 
-{{- $subjectPage := .SubjectPage }}
 {{- $title := default "" .Title }}
 {{- $showContent := default true .ShowContent }}
 {{- $showDate := default true .ShowDate }}
@@ -33,11 +36,14 @@
 
 {{- $excerptContent := false }}
 {{- if not $excerptMeta }}
-  {{- $excerptMeta = partialCached "claris/_functions/meta/single" (dict "Page" $subjectPage "AssetVariant" $assetVariant "Template" $template) $subjectPage.Permalink }}
+  {{- $excerptMeta = partialCached "claris/_functions/meta/single" (dict
+    "Page" $subjectPage
+    "AssetVariant" $assetVariant
+    "Template" $template) $subjectPage.Permalink }}
 {{- end }}
 
 {{- if $debug }}
-  {{- warnf "%s[%s]: .SubjectPage=%v[%T] $excerptMeta.Single.Page=%v" $page $template $subjectPage $subjectPage $excerptMeta.Single.Page }}
+  {{- warnf "%s excerptMeta.Single.Page=%v" $dbg $excerptMeta.Single.Page }}
 {{- end }}
 
 {{- $containerClassList := slice "excerpt_container" }}
@@ -58,9 +64,10 @@
 {{- end }}
 
 {{- if not (in ($page.Scratch.Get $scratchExcerptRenderedKey) $subjectPage) }}
-  {{- if $debug }}
-    {{- warnf "%s[%s]: %s is not in excerpts rendered=[%v]" $page $template $subjectPage (delimit ($page.Scratch.Get $scratchExcerptRenderedKey) ", ") }}
-  {{- end }}
+  {{- /* if $debug }}
+    {{- warnf "%s is not in excerpts rendered=[%v]" $dbg
+        (delimit ($page.Scratch.Get $scratchExcerptRenderedKey) ", ") }}
+  {{- end */ -}}
 
   {{- with $subjectPage }}
     {{- $excerptImage := false }}
@@ -70,35 +77,47 @@
         {{- $imageMeta = .Data.Images }}
       {{- end }}
     {{- end }}
-    {{- /* {{- if $debug }}
-      {{- warnf "%s[%s]: imageMeta=%v"
-          $subjectPage $template
-          (jsonify (dict "indent" "  ") $imageMeta) }}
-    {{- end }} */ -}}
+
     {{- with $imageMeta }}
       {{- with (index . (split $excerptImageKey ".")) }}
         {{- $excerptImage = .resource }}
         {{- if $debug }}
           {{- with $excerptImage }}
-            {{- warnf "%s[%s]: %s has excerptImage=%v"
-                $page $template $subjectPage $excerptImage -}}
+            {{- warnf "%s has excerptImage=%v" $dbg $excerptImage -}}
           {{- else }}
-            {{- warnf "%s[%s]: %s: no key '%s' in imageResources=%v"
-                $page $template $subjectPage $excerptImageKey (jsonify (dict "indent" "  ") .) -}}
+            {{- warnf "%s no key '%s' in imageResources=%v"
+                $dbg $excerptImageKey (jsonify (dict "indent" "  ") . ) -}}
           {{- end }}
         {{- end }}
       {{- end }}
     {{- end }}
 
     {{- if $showContent }}
-      {{- range (slice .Params.excerpt .Summary .Params.description .Params.summary) }}
-        {{- with . }}
-          {{- $excerptContent = . }}
+      {{- with $excerptContent = .Params.excerpt | default .Params.summary | default .Params.description }}
+        {{- $excerptContent = $subjectPage.RenderString $excerptContent }}
+        {{- if $debug }}
+          {{- warnf "%s excerptContent=%q from subjectPage.Params:\n%v" $dbg $excerptContent
+              (jsonify (dict "indent" "  ") $subjectPage.Params) }}
+        {{- end }}
+      {{- else }}
+        {{- $paragraphs := .Content | findRE `<p>.*?</p>` }}
+        {{- $excerptContent = index $paragraphs 0 | safeHTML }}
+        {{- with $excerptContent }}
+          {{- if $debug }}
+            {{- warnf "%s excerptContent=%q from .Content:\n%v" $dbg $excerptContent
+                (jsonify (dict "indent" "  ") $subjectPage.Content) }}
+          {{- end }}
+        {{- else }}
+          {{- $excerptContent = .Summary }}
+          {{- if $debug }}
+            {{- warnf "%s excerptContent=%q from subjectPage.Summary:\n%v" $dbg $excerptContent
+                (jsonify (dict "indent" "  ") $subjectPage.Summary) }}
+          {{- end }}
         {{- end }}
       {{- end }}
-      {{- with $excerptContent }}
-        {{- $excerptContent = . | partial `claris/_functions/sanitize` }}
-      {{- end }}
+      {{- /* with $excerptContent }}
+       {{- $excerptContent = partial `claris/_functions/sanitize` $excerptContent }}
+      {{- end */ -}}
     {{- end }}
     {{- $excerptTitle := $excerptMeta.Single.Formatted.Title | default $title }}
     {{- $excerptPlainTitle := $excerptMeta.Single.Data.Title | default $plainTitle }}
@@ -134,15 +153,13 @@
             </div>
           {{- end }}
           {{- with $excerptContent }}
-          <div class="excerpt_content">
-            {{- page.RenderString . -}}
-          </div>
+          <div class="excerpt_content">{{ . }}</div>
           {{- end }}
         </div>
         <div class="excerpt_footer">
           {{- $pageCount := 0 }}
           {{- /* {{- if $debug }}
-            {{- warnf "%s[%s]: Items in excerpt: %v" $subjectPage $template $excerptMeta.List }}
+            {{- warnf "%s Items in excerpt: %v" $dbg $excerptMeta.List }}
           {{- end }} */ -}}
           {{- with $excerptMeta.List }}
             {{- $pageCount = len .Data.Items }}
