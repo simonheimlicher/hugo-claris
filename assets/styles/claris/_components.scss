@@ -606,7 +606,8 @@
   display: none;
   position: sticky;
   // margin: 0.8rem 0 1rem auto
-  margin: 0 0 var(--inner_margin) auto;
+  // margin: 0 0 var(--inner_margin) auto;
+  margin: 0 auto var(--inner_margin) 0;
   // top: calc(#{$screenViewNavHeight} + 5vh)
   top: calc(#{$screenViewNavHeight} + #{$screenViewInnerPaddingOneColumn});
   align-self: start;

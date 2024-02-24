@@ -189,7 +189,10 @@ main img {
 // em {
 //   font-weight: var(--font-weight);
 // }
-
+// Avoid `pre` breaking width of grid columns
+pre {
+  min-width: 0;
+}
 b,
 strong {
   font-weight: var(--font-weight-strong);
