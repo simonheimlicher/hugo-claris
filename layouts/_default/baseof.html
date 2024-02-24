@@ -17,14 +17,7 @@
   {{- warnf "%s assetVariant=\n%v" $dbg (jsonify (dict "indent" "  ") $assetVariant ) -}}
 {{- end }}
 
-{{- $kindMap := (dict
-    "page" "page"
-    "home" "section"
-    "section" "section"
-    "taxonomy" "section"
-    "term" "section"
-) -}}
-{{- .Scratch.Set "claris.render.main.kind" (default "page" (index $kindMap .Kind) ) }}
+{{- .Scratch.Set "claris.render.main.kind" (default "page" $assetVariant.MainKind) }}
 
 {{- .Scratch.Set "claris.module.qrcode.count" 0 }}
 {{- if in (slice "page") .Kind }}

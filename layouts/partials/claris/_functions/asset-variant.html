@@ -8,6 +8,14 @@
   {{- $mediaTypeList = (slice $onlyMediaType) }}
 {{- end }}
 
+{{- $kindMap := (dict
+    "page" "page"
+    "home" "section"
+    "section" "section"
+    "taxonomy" "section"
+    "term" "section"
+) -}}
+{{- $mainKind := default "page" (index $kindMap $page.Kind) }}
 {{/* {{- warnf "%s[%s]: .Type=%v .Params.type=%v" $page $template .Type .Params.type }} */}}
 {{- $contentTypeList := partialCached "claris/_functions/alternative-type" (dict "Page" $page "All" true) "All" .Type }}
 {{/* {{- warnf "%s[%s]: contentTypeList=%v" $page $template $contentTypeList }} */}}
@@ -52,6 +60,7 @@
 {{- $minifyBundles := $envProd }}
 
 {{- $assetVariant = (dict
+  "MainKind" $mainKind
   "Language" site.Language.Lang
   "OutputFormat" $outputFormat
   "OnlyMediaType" ($page.Param "onlyMediaType")
