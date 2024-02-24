@@ -1,7 +1,8 @@
 {{- $template := "claris/_components/render-img" }}
 {{- $page := default page .Page }}
 {{- $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
-{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink)
+    (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $parsedArgs := merge . (dict
   "Page" nil
@@ -46,7 +47,7 @@
         {{- errorf "%s when passing `srcset`, `sizes` attribute is mandatory" $dbg }}
       {{- end }}
     {{- end }}
-    {{- with .imgclass }}
+    {{- with .class }}
         class="{{ safeHTMLAttr (delimit . ` ` ) }}"
     {{- end }}
     {{- with .media }}
@@ -56,11 +57,11 @@
         style="{{ safeCSS . }}"
     {{- end }}
     {{- if eq $elementName "img" }}
-      {{- with .title }}
-        title="{{ safeHTMLAttr . }}"
-      {{- end }}
       {{- with .alt }}
           alt="{{ safeHTMLAttr . }}"
+      {{- end }}
+      {{- with .title }}
+        title="{{ safeHTMLAttr . }}"
       {{- end }}
       {{- with .lightbox }}
 data-zoomable="{{ "true" | safeHTMLAttr }}"

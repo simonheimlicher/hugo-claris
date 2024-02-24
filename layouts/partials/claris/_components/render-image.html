@@ -1,62 +1,40 @@
 {{- $template := "claris/_components/render-image" }}
 {{- $page := default page .Page }}
-{{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
 {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
-{{- $defaultVariantName := "default" }}
+{{- with $imageAttributes := partialCached "claris/_functions/resources/images/gather-image-attributes" . (merge . (dict "Page" nil) ) }}
 
-{{- $parsedArgs := dict }}
-{{- with $parsedArgs = partial "claris/_functions/resources/images/parse-args" (merge . (dict "structured" true "Page" $page) ) -}}
-  {{- $parsedArgs = merge $parsedArgs (dict
-    "Debug" $debug
-  ) -}}
-
-{{- end }}
-
-{{- $variants := (dict
-  $defaultVariantName $parsedArgs
-) }}
-
-{{- $pictureResources := slice }}
-{{- range $variantName, $variantMeta := $variants }}
-
-  {{- $imgArgNames := slice "alt" "imgclass" "lazy" "sizes" }}
-  {{- $variantImgArgs := dict "variant" $variantName }}
-  {{- range $k, $v := $parsedArgs }}
-    {{- if in $imgArgNames $k }}
-      {{- $variantImgArgs = merge $variantImgArgs (dict $k .) }}
-    {{- end }}
+  {{- with .figure.class }}
+  <figure class="{{ safeHTMLAttr (delimit . ` ` ) }}">
   {{- end }}
 
-  {{- $variantSrcSetArgs := merge $parsedArgs.image $parsedArgs.processing }}
-  {{- with $variantFormatSrcSets := partial "claris/_functions/resources/images/image-srcset"
-      $variantSrcSetArgs $variantSrcSetArgs }}
-    {{- if and false $debug }}
-      {{- warnf "%s image-srcset with parsedArgs:\n%v\nreturned variantFormatSrcSets:\n%v" $dbg
-          (jsonify (dict "indent" "  ") (merge $parsedArgs
-            (dict "resource" (printf "%s [%s]" $parsedArgs.resource.Name
-              $parsedArgs.resource.MediaType))))
-          (jsonify (dict "indent" "  ") $variantFormatSrcSets) }}
+  <picture{{ with .picture.class }} class="{{ safeHTMLAttr (delimit . ` ` ) }}"{{ end }}>
+
+  {{- range $variantName, $variantAttributes := . }}
+
+    {{- if $debug }}
+      {{- warnf "%s rendering variant=%v:\n%v" $dbg .variant (jsonify (dict "indent" "  ") . ) }}
     {{- end }}
 
-    {{- $pictureResources = append (merge $variantImgArgs (dict
-      "formatsrcsets" $variantFormatSrcSets
-    ) ) $pictureResources }}
-  {{- else }}
-    {{- if not (or .src .resource) }}
-      {{- errorf "%s missing image resource=%#v.\n\nDid you pass the path to an image resource with the argument src=%v?\n\nParsed arguments for variant=%v:\n%v" $dbg
-          .resource .src $variantName (jsonify (dict "indent" "  ") $variantSrcSetArgs) -}}
-    {{- else }}
-      {{- errorf "%s failed to get srcSet with variantSrcSetArgs:\n%v" $dbg
-          (jsonify (dict "indent" "  ") $variantSrcSetArgs) -}}
+    {{- range .sources }}
+      {{- $sourceAttributes := merge $variantAttributes . }}
+      {{- if $debug }}
+        {{- warnf "%s rendering source as %q:\n%v" $dbg .elementname (jsonify (dict "indent" "  ") . ) }}
+      {{- end }}
+      {{- partialCached "claris/_components/render-picture-child" (merge $sourceAttributes (dict "Page" $page) ) $sourceAttributes }}
     {{- end }}
+
   {{- end }}
 
-{{- end }}
+  </picture>
+  {{- with .figure }}
+    {{- with .caption -}}
+      <figcaption>
+        {{- . | $page.RenderString -}}
+      </figcaption>
+    {{- end }}
+  </figure>
+  {{- end }}
 
-{{- with $pictureResources }}
-  {{- $renderPictureArgs := merge $parsedArgs (dict "sources" $pictureResources) }}
-  {{- partialCached "claris/_components/render-picture"
-      (merge $renderPictureArgs (dict "Page" $page)) $renderPictureArgs }}
 {{- end }}
