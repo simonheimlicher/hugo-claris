@@ -1,8 +1,8 @@
 {{ $template := "claris/header/logo" }}
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
-{{ $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
-{{ $dbg := printf "%s [%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{- $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
+{{- $dbg := printf "%s [%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $logoImagePath := default site.Params.logo site.Params.header.logo.src }}
 {{- $logoImageWidth := 96 }}
@@ -36,7 +36,7 @@
   ) }}
 
   {{- with $siteLogoParams }}
-    {{- $logoImageParams = partial "claris/_functions/resources/images/parse-args" . }}
+    {{- $logoImageParams = partial "claris/_functions/resources/images/parse-args" (merge . (dict "Page" $page) ) }}
     {{- if $debug }}
       {{- warnf "%s logoImageParams:\n%v\nfrom site.Params.header.logo:\n%v" $dbg
           (jsonify (dict "indent" "  ") $logoImageParams)
