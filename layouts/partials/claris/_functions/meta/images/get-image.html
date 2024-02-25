@@ -37,7 +37,7 @@
                   $dbg site.Language.Lang $imageKind $imageVariant $imageVersion $defaultKey (jsonify (dict "indent" "  ") . ) }}
             {{ end }}
           {{ else if $imageAspect }}
-            {{ with $bestMatchVersion := partial "claris/_functions/meta/images/closest-aspect" (dict
+            {{ with $bestMatchVersion := partial "claris/_functions/resources/images/closest-aspect" (dict
                 "Page" $page
                 "aspect" $imageAspect
                 "version" .
