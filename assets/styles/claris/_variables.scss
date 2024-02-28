@@ -648,11 +648,6 @@ $main-z-index: 1;
   }
 }
 
-html {
-  // --dim-image-filter: grayscale(30%);
-  --dim-image-filter: brightness(75%);
-}
-
 // Ensure to define a list. If there is only one fallback font, append a comma: ("Fallback Font", )
 $fallbackStackDefault: ("Arial", );
 
@@ -938,7 +933,7 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
                 }
               }
               @else if ($useStyle == all) and ($style == bold) {
-                bold, strong {
+                b, strong {
                   @each $key, $value in $defStyle {
                     #{$key}: var(--#{$targetPrefixStyle}#{$key});
                   }
@@ -962,9 +957,19 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
   }
 }
 
+/**
+This mixin takes the **font specificaiton** provided for the font family with the
+provided `fontFamilyID` and turns it into a **font definition**, i.e.,
+a map that comprises all the keys provided in `familyDefaultMap` and overrides
+those provided by the font specification.
+*/
 @mixin defineFontDefinition($definitionID: default, $fontFamilyID: default) {
 
-  $prefix: font-definition_#{$definitionID}_;
+  $prefix: font-definition_#{$definitionID};
+
+  // The values of some attributes such as `line-height` are required
+  // for calculations. List them in the following list to have them defined as CSS properties
+  $keysToDefineAsProperty: ("line-height", );
 
   // @include mapToCSSProperties($fontFamilyMap, fontFamilyMap);
 
@@ -992,8 +997,6 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
       styles: $specStyles
     )), map-get($familyDefaultMap, variants));
 
-    // $specVariants: $specVariantsDefault;
-    // $specVariants: map-get($specFamily, variants);
     $specVariants: updateMap($specVariantsDefault, map-get($specFamily, variants));
 
     // @include mapToCSSProperties($specStyles, specStyles);
@@ -1004,8 +1007,7 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
     @each $role, $specRole in $specRoles {
       $defRole: updateMap(map-get($specRoles, default), $specRole);
       // @include mapToCSSProperties($defRole, defRoleInitial_role-#{$role});
-      $prefixRole: $prefix;
-      $prefixRole: #{$prefix}#{$role}_;
+      $prefixRole: #{$prefix}_#{$role};
       // --#{$prefixRole}font-family_ID: #{$fontFamilyID}; // FIXME: Replace by defining fontDefinitionClass
 
       // @include mapToCSSProperties($specRole, specRole_role-#{$role});
@@ -1025,11 +1027,9 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
         // @include mapToCSSProperties($specVariant, specVariant_variant-#{$variant});
         $defVariant: updateMap(map-get($specVariants, default), (styles: $stylesRole));
         $defVariant: updateMap($defVariant, $specVariant);
-        // $defVariant: updateMap(updateMap(map-get($specVariants, default), $defRole), $specVariant);
         // @include mapToCSSProperties($defVariant, defVariantInitial_variant-#{$variant});
         // Prefix to use for this variant if it is not default
-        $prefixVariant: $prefixRole;
-        $prefixVariant: #{$prefixVariant}#{$variant}_;
+        $prefixVariant: #{$prefixRole}_#{$variant};
 
         // Variants may have different `font-family`
         $fontNameVariant: defaultTo($fontNameRole, map-get($specVariant, name));
@@ -1039,15 +1039,26 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
         $fontStackVariant: join( ($fontNameVariant), $fallbackStackVariant);
         // --#{$prefixVariant}font-family: #{inspect($fontStackVariant)};
 
-        @if ($variant == 'default') {
+        // Define font-family for variant `default`
+        @if ($variant == default) {
           $fontStackVariantDefault: $fontStackVariant;
-          .font-family_#{$fontFamilyID} {
+          // .font-family_#{$fontFamilyID} {
+          //   font-family: #{inspect($fontStackVariant)};
+          // }
+          .#{$prefixVariant} {
             font-family: #{inspect($fontStackVariant)};
           }
         }
         // Only output font stack if it differs from default
         @else if ($fontStackVariantDefault and $fontStackVariant != $fontStackVariantDefault) {
-          .font-family_#{$fontFamilyID}_#{$variant} {
+          // .#{$prefixVariant}_#{$fontFamilyID}_#{$variant} {
+          // .font-family_#{$fontFamilyID}_#{$variant} {
+          //   font-family: #{inspect($fontStackVariant)};
+          // }
+          .#{$prefixVariant} {
+            font-family: #{inspect($fontStackVariant)};
+          }
+          .text-article .font_small-caps {
             font-family: #{inspect($fontStackVariant)};
           }
         }
@@ -1063,12 +1074,14 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
           // @include mapToCSSProperties(map-get($stylesVariant, $style), stylesVariant_style-#{$style});
           // @include mapToCSSProperties($defStyle, defStyleInitial_style-#{$style});
 
-          $prefixStyle: #{$prefixVariant};
-          $prefixStyle: #{$prefixStyle}#{$style}_;
+          $prefixStyle: #{$prefixVariant}_#{$style};
 
           .#{$prefixStyle} {
             @each $key, $value in $defStyle {
-              #{$prefixStyle}#{$key}: #{$value};
+              @if ($key in $keysToDefineAsProperty ) {
+                --#{$key}: #{$value};
+              }
+              #{$key}: #{$value};
             }
           }
           // @include mapToCSSProperties($defStyle, defStyleFinal_style-#{$style});
@@ -1099,27 +1112,23 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
   // @warn(print-map($fontDefinitionMap));
 }
 
-:root {
-  @include defineFontDefinition(inherit, inherit);
-}
-
 @mixin useFontDefinition($definitionID: default, $useRole: default, $useVariant: default, $useStyle: all) {
 
   $originDefinitionID: $definitionID;
 
-  $prefix: font-definition_;
+  $prefix: font-definition;
   $targetPrefix: #{$prefix};
-  $originPrefix: #{$prefix}#{$definitionID}_;
+  $originPrefix: #{$prefix}_#{$definitionID};
   $defFamily: map-get($fontDefinitionMap, $originDefinitionID);
 
   @if ($definitionID == inherit) {
     $originDefinitionID: default;
-    $originPrefix: #{$prefix}#{$originDefinitionID}_;
+    $originPrefix: #{$prefix}_#{$originDefinitionID};
     // NOTE: the `!global` keyword ensures that we work with the global
     // variable defined in this file, i.e., `variables.scss`
     // $defFamily: $familyInheritMap !global;
     // @warn(print-map($fontDefinitionMap));
-    $defFamily: map-get($fontDefinitionMap, 'inherit');
+    $defFamily: map-get($fontDefinitionMap, inherit);
     // @warn(print-map($defFamily));
     // $defFamily: map-get($fontDefinitionMap, 'default');
     // @warn(print-map($defFamily));
@@ -1134,24 +1143,22 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
     // --#{$targetPrefix}font-family: var(--#{$originPrefix}font-family);
 
     @each $role, $defRole in map-get($defFamily, roles) {
-      $prefixRole: #{$role}_;
+      $prefixRole: #{$role};
 
       @each $variant, $defVariant in map-get($defRole, variants) {
-        $prefixVariant: #{$variant}_;
+        $prefixVariant: #{$variant};
 
         $defStyleMap: map-get($defVariant, styles);
         @if ($defStyleMap) {
           // @include mapToCSSProperties($defStyleMap, useFontDefinition_definitionID-#{$definitionID}__defStyleMap);
-          $originPrefixRoleVariant: #{$originPrefix}#{$prefixRole}#{$prefixVariant};
-          $targetPrefixRoleVariant: #{$targetPrefix}#{$prefixRole}#{$prefixVariant};
-          $defaultPrefixRoleVariant: #{$prefix}default_#{$prefixRole}#{$prefixVariant};
+          $originPrefixRoleVariant: #{$originPrefix}_#{$prefixRole}_#{$prefixVariant};
+          $targetPrefixRoleVariant: #{$targetPrefix}_#{$prefixRole}_#{$prefixVariant};
+          $defaultPrefixRoleVariant: #{$prefix}_default_#{$prefixRole}_#{$prefixVariant};
 
           @each $style, $defStyle in $defStyleMap {
-            $stylePrefix: #{$style}_;
-
-            $originPrefixStyle: #{$originPrefixRoleVariant}#{$stylePrefix};
-            $targetPrefixStyle: #{$targetPrefixRoleVariant}#{$stylePrefix};
-            $defaultPrefixStyle: #{$defaultPrefixRoleVariant}#{$stylePrefix};
+            $originPrefixStyle: #{$originPrefixRoleVariant}_#{$style};
+            $targetPrefixStyle: #{$targetPrefixRoleVariant}_#{$style};
+            $defaultPrefixStyle: #{$defaultPrefixRoleVariant}_#{$style};
 
             // @if ($originDefinitionID != default) {
             //   @each $key in (font-family) {
@@ -1168,7 +1175,10 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
                 @if (($useStyle == all) and ($style == default)) or ($style == $useStyle) {
                   // --useFontDefinition_definitionID-#{$definitionID}_useRole-#{$useRole}_useVariant-#{$useVariant}_useStyle-#{$useStyle}__originPrefixStyle: #{$originPrefixStyle};
                   // #{$key}: var(--#{$targetPrefixStyle}#{$key}); // FIXME: Replace by `@extend fontDefinitionClass;`
-                  @extend .font-family_#{$originDefinitionID} !optional;
+                  // @extend .font-family_#{$originDefinitionID} !optional;
+                  --useFontDefinition_definitionID-#{$definitionID}_useRole-#{$useRole}_useVariant-#{$useVariant}_useStyle-#{$useStyle}__originPrefixRoleVariant: #{$originPrefixRoleVariant};
+                  @extend .#{$originPrefixRoleVariant} !optional;
+                  // @extend .#{$originPrefixRoleVariant};
                 }
               }
             }
@@ -1188,16 +1198,18 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
               // }
 
               @if ($style == default) or ($style == $useStyle) {
-                @each $key, $value in $defStyle {
-                  // --useFontDefinition_definitionID-#{$definitionID}_useRole-#{$useRole}_useVariant-#{$useVariant}_useStyle-#{$useStyle}__originPrefixStyle: #{$originPrefixStyle};
-                  // #{$key}: var(--#{$targetPrefixStyle}#{$key}); // FIXME: Replace by `@extend fontDefinitionClass;`
-                }
+                // @each $key, $value in $defStyle {
+                //   --useFontDefinition_definitionID-#{$definitionID}_useRole-#{$useRole}_useVariant-#{$useVariant}_useStyle-#{$useStyle}__originPrefixStyle: #{$originPrefixStyle};
+                //   #{$key}: var(--#{$targetPrefixStyle}#{$key}); // FIXME: Replace by `@extend fontDefinitionClass;`
+                // }
+                @extend .#{$originPrefixStyle};
               }
               @else if ($useStyle == all) and ($style == bold) {
-                bold, strong {
-                  @each $key, $value in $defStyle {
-                    // #{$key}: var(--#{$targetPrefixStyle}#{$key}); // FIXME: Replace by `@extend fontDefinitionClass;`
-                  }
+                b, strong {
+                  // @each $key, $value in $defStyle {
+                  //   #{$key}: var(--#{$targetPrefixStyle}#{$key}); // FIXME: Replace by `@extend fontDefinitionClass;`
+                  // }
+                  @extend .#{$originPrefixStyle};
                 }
               }
               @else {
@@ -1289,28 +1301,32 @@ $fontFamilyMap: map-merge($fontFamilyMap, (inherit: $fontFamilyInheritSpec));
   }
 }
 
+$fontStyles: (inherit, default, sans, serif, mono);
+@each $style in $fontStyles {
+  @include defineFontDefinition($style, $style);
+}
+
+$fontDefinitions: (
+  (default, $fontTypeDefault),
+  (content, $fontTypeContent),
+  (article, $fontTypeArticle),
+  (code, $fontTypeCode),
+  (heading, $fontTypeHeading),
+  (meta, $fontTypeMeta)
+);
+// FIXME: debug with only one font style
+// $fontStyles: (default);
+// $fontDefinitions: ();
+
+@each $defID, $defSpec in $fontDefinitions {
+  @include defineFontDefinition($defID, $defSpec);
+}
+
 html {
+  // --dim-image-filter: grayscale(30%);
+  --dim-image-filter: brightness(75%);
+
   --to-be-eliminated-by-csspurge: black;
-
-  $fontStyles: (default, sans, serif, mono);
-  $fontDefinitions: (
-    (default, $fontTypeDefault),
-    (content, $fontTypeContent),
-    (article, $fontTypeArticle),
-    (code, $fontTypeCode),
-    (heading, $fontTypeHeading),
-    (meta, $fontTypeMeta)
-  );
-  // FIXME: debug with only one font style
-  // $fontStyles: (default);
-  // $fontDefinitions: ();
-
-  @each $style in $fontStyles {
-    @include defineFontDefinition($style, $style);
-  }
-  @each $defID, $defSpec in $fontDefinitions {
-    @include defineFontDefinition($defID, $defSpec);
-  }
 
   @include fluid-geometric-scale('font-size_root', 1rem, 1.25rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
   @include fluid-geometric-scale('font-size', 1rem, 1.25rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
