@@ -11,7 +11,8 @@
 }
 
 pre, code {
-  @include useFontDefinition(code);
+  // @include useFontDefinition(code);
+  @extend .font-code;
   word-break: break-word;
 }
 code {
