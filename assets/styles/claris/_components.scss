@@ -59,9 +59,11 @@
 .main-kind_page {
   .main_header,
   .content {
-    @include useFontDefinition(article);
+    // @include useFontDefinition(article);
+    @extend .font-article;
     h1, h2, h3, h4, h5, h6, .excerpt-title {
-      @include useFontDefinition(article, display, default, bold);
+      // @include useFontDefinition(article, display, default, bold);
+      // @extend .role-display;
     }
   }
 }
@@ -501,7 +503,8 @@
     // margin: calc(-1 * var(--inner_padding_4-1));
     margin: 0 calc(-1 * var(--inner_padding_4-1)) var(--inner_padding_4-3);
     color: var(--text-faint);
-    @include useFontDefinition(meta);
+    // @include useFontDefinition(meta);
+    @extend .font-meta;
     @include link-lvhfa;
     span {
       align-items: center;
@@ -710,9 +713,12 @@
     var(--initial_margin-bottom)
     var(--initial_margin-left);
   }
+  /*
   .initial-words {
-    @include useFontDefinition(inherit, default, small-caps, bold);
+    // @include useFontDefinition(inherit, default, small-caps, bold);
+    @extend .variant-small-caps;
   }
+  */
 }
 
 .main_header .feature-image {
@@ -743,6 +749,7 @@
     @include content_multicolumn;
     --title_line-height: calc(var(--font-size-title) * var(--line-height-heading));
     margin: calc(0.5 * var(--title_line-height)) auto;
+    @extend .role-display;
     @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
       // min-width: calc(var(--content_max-width) - var(--inner_margin) * 2);
       min-width: var(--content_max-width);
@@ -763,8 +770,11 @@
       font-size: var(--font-size-supertitle);
       // padding: 1.5rem 0 0.25rem 0;
       text-align: start;
-      // @include useFontDefinition(inherit, display, small-caps);
-      @include useFontDefinition(inherit, display, small-caps, bold);
+      // @include useFontDefinition(inherit, display, small-caps, bold);
+      @extend .variant-small-caps;
+    }
+    span.supertitle {
+      @extend .style-bold;
     }
     .subtitle {
       display: block;

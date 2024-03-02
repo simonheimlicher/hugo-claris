@@ -116,7 +116,10 @@
             {{- $initialWords = delimit $initialWordList " " }}
         {{- end }}
 
-        {{- $modifiedInitialPara := printf `<p class="initial"><span class="initial-letter">%s</span><span class="initial-words">%s</span> %s</p>` $initialLetter $initialWords (delimit $modifiedTokens " ") }}
+        {{- $initialLetterHTML := printf `<span class="initial-letter">%s</span>` $initialLetter }}
+        {{- $initialWordsHTML := printf `<span class="initial-words variant-small-caps">%s</span>` $initialWords }}
+        {{- $remainingWordsHTML := delimit $modifiedTokens " " }}
+        {{- $modifiedInitialPara := printf `<p class="initial">%s%s %s</p>` $initialLetterHTML $initialWordsHTML $remainingWordsHTML }}
         {{- $contentWithoutLede = replaceRE $initialParaRE $modifiedInitialPara $contentWithoutLede 1 }}
       {{- end }}
     {{- end }}
