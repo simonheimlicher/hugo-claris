@@ -13,7 +13,7 @@
 
 {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
 {{- if $displayTableOfContents }}
-  <aside class="article_aside">
+  <aside class="article_aside font-meta">
     {{ partial "claris/_components/table-of-contents" . }}
   </aside>
 {{- end }}

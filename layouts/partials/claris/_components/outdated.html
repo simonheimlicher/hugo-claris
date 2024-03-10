@@ -1,6 +1,6 @@
 {{- $ageYears := div (sub now.Unix .Date.Unix) 31556952 }}
 <div class="outdated_wrap">
-  <div class="outdated">
+  <div class="outdated font-meta">
     <h2>Beyond best before date...</h2>
     <p>
     This article was first published more than {{ $ageYears }} years ago

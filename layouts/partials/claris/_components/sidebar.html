@@ -42,7 +42,7 @@
         $page $template $numAvailableArticles $numRelationshipTypes $relatedArticles $featuredArticles $recentArticles }} */}}
 
     {{- if (gt $numRelationshipTypes 0) }}
-    <aside class="sidebar{{ with $containerClass }} {{ . }}{{ end }}">
+    <aside class="sidebar font-meta{{ with $containerClass }} {{ . }}{{ end }}">
       <div class="sidebar_inner">
         <div class="sidebar_item">
           {{- if (gt $numRelationshipTypes 1) }}

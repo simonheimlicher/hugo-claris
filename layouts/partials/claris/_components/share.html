@@ -1,5 +1,5 @@
 {{- $s := T "share_on" }}
-<div class="article_share">
+<div class="article_share font-meta">
   {{ $s }}:
   <a href="https://twitter.com/intent/tweet?text={{ .Title }}&url={{ .Permalink }}&tw_p=tweetbutton" class="twitter" title="{{ $s }} Twitter" target="_blank" rel="nofollow">
     {{ partial "sprite" (dict "icon" "twitter") }}

@@ -915,9 +915,6 @@ role, variant, and style definitions
   }
 }
 
-@mixin useFontDefinition($definitionID: default, $useRole: default, $useVariant: default, $useStyle: all) {
-}
-
 // Generating fluid font scales for copy-paste: https://www.fluid-type-scale.com/calculate https://utopia.fyi/type/calculator/
 // Using SASS: https://www.smashingmagazine.com/2022/10/fluid-typography-clamp-sass-functions/
 @function fluid($min-size, $max-size, $min-breakpoint: $screenViewBreakpointWidthMobile, $max-breakpoint: $screenViewBreakpointWidthWide, $unit: vw) {

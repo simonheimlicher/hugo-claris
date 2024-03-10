@@ -50,7 +50,7 @@
     {{- errorf "[%s]: Logo image matching .src='%v' not found" $template $logoImageResource }}
   {{- end }}
 {{- end }}
-    <div class="nav_brand">
+    <div class="nav_brand role-display variant-small-caps">
 {{- with $logoImageResource }}
   {{- with $logoURL }}
         <a href='{{ . }}' title='{{ $siteTitle }}' class='nav_brand_logo_parent'>

@@ -11,8 +11,8 @@
 }
 
 pre, code {
+  // Replaced by utility classes
   // @include useFontDefinition(code);
-  @extend .font-code;
   word-break: break-word;
 }
 code {
@@ -54,7 +54,8 @@ pre {
   border-radius: 0.2rem;
   margin: 1.5rem auto 0 auto;
   width: 100%;
-  @include useFontDefinition(meta);
+  // Replaced by utility classes
+  // @include useFontDefinition(meta);
   & + & {
     margin-top: 2.25rem;
   }
@@ -94,11 +95,11 @@ pre {
     // such as Go HTML Template
     // width: 7.5rem
     padding: 0.5rem 1rem;
+    @extend .font-meta;
     font-style: italic;
     text-transform: uppercase;
     font-size: 80%;
     opacity: 0;
-    color: var(--code-text);
   }
   &:hover .lang {
     opacity: 0.75;

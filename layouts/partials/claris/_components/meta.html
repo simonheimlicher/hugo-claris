@@ -9,7 +9,7 @@
 {{- $showAuthorAvatar := default false .AuthorAvatar }}
 {{- $relativeDates := default false .RelativeDates }}
 {{- $showTags := default true .ShowTags }}
-{{- $containerClass := "article_meta" }}
+{{- $containerClass := "article_meta font-meta role-display" }}
 {{- with .ContainerClass }}
   {{- $containerClass = printf "%s %s" . $containerClass }}
 {{- end }}
