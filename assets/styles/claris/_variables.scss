@@ -648,9 +648,6 @@ $main-z-index: 1;
   }
 }
 
-// Ensure to define a list. If there is only one fallback font, append a comma: ("Fallback Font", )
-$fallbackStackDefault: ("Arial", );
-
 $familyDefaultMap: (
   styles: (
     default: (
@@ -676,11 +673,50 @@ $familyDefaultMap: (
   )
 );
 
-// Mixin to apply styles from a styles map
-@mixin defineFontStyles($stylesRole, $stylesVariant) {
+// Utility mixin to apply style definitions by defining CSS custom properties
+// If $key is in $keysToDefineAsProperty, define the CSS custom property
+// Currently, this is used to ensure we can access the current `line-height`
+// to remove the line-height from the first line usinc `calc`
+@mixin generateFontStyleProperties($defStyle, $styleName) {
+  // To enable consistently using the same style rules, we make some definitions available
+  // as CSS custom properties.
+  // This is used for example to have the weight of `strong` style available in `--font-weight-strong`
   // The values of some attributes such as `line-height` are required
-  // for calculations. List them in the following list to have them defined as CSS properties
-  $keysToDefineAsProperty: ("line-height", );
+  // for calculations.
+  // List them in the following list to have them defined as CSS properties
+  $keysToDefineAsProperty: ("line-height", "font-weight");
+
+  @each $key, $value in $defStyle {
+    @if index($keysToDefineAsProperty, $key) {
+      $propertyName: $key;
+      @if ($styleName != default) {
+        $propertyName: #{$key}-#{$styleName};
+      }
+      --#{$propertyName}: #{$value};
+    }
+  }
+}
+
+// Utility mixin to apply style definitions by defining CSS rules if they differ from default
+@mixin generateFontStyleRules($defStyle, $defStyleDefault, $styleName) {
+  $overrideStyles: $defStyle;
+  @if ($styleName != default) {
+    // Determine, which values differ from default - if any
+    $overrideStyles: ();
+    @each $key, $value in $defStyle {
+      @if ($value != map-get($defStyleDefault, $key) ) {
+        $overrideStyles: map-merge($overrideStyles, ($key: $value) );
+      }
+    }
+  }
+
+  @each $key, $value in $overrideStyles {
+    #{$key}: #{$value};
+  }
+}
+
+// Mixin to apply styles from a styles map
+@mixin applyFontStyles($fontStackVariant, $stylesRole, $stylesVariant, $stylesStyle, $selector: null) {
 
   $defStyleDefault: null;
   @each $style, $specStyle in $stylesRole {
@@ -690,81 +726,125 @@ $familyDefaultMap: (
     $defStyle: updateMap(map-get($stylesRole, $style), map-get($stylesVariant, $style) );
     $defStyle: updateMap($defStyle, $specStyle);
 
-    @if ($style == default) {
-      $defStyleDefault: $defStyle;
-      @each $key, $value in $defStyle {
-        @if index($keysToDefineAsProperty, $key) {
-          // If $key is in $keysToDefineAsProperty, define the CSS custom property
-          // Currently, this is used to ensure we can access the current `line-height`
-          // to remove the line-height from the first line usinc `calc`
-          --#{$key}: #{$value};
+    @if ($selector == null) {
+      @if ($style == default) {
+        $defStyleDefault: $defStyle;
+        font-family: #{inspect($fontStackVariant)};
+        @include generateFontStyleProperties($defStyle, $style);
+        @include generateFontStyleRules($defStyle, $defStyleDefault, $style);
+      }
+      @else {
+        @include generateFontStyleProperties($defStyle, $style);
+        #{$style} {
+          @include generateFontStyleRules($defStyle, $defStyleDefault, $style);
         }
-        #{$key}: #{$value};
       }
     }
     @else {
-      // Determine, which values differ from default - if any
-      $overrideStyles: ();
-      @each $key, $value in $defStyle {
-        @if ($value != map-get($defStyleDefault, $key) ) {
-          $overrideStyles: map-merge($overrideStyles, ($key: $value) );
-        }
-      }
-      .style-#{$style} {
-        @each $key, $value in $overrideStyles {
-          @if index($keysToDefineAsProperty, $key) {
-            --#{$key}: #{$value};
-          }
-          #{$key}: #{$value};
-        }
-      }
-    }
-  }
-}
-
-// Mixin to apply styles from a variants map
-@mixin defineFontVariants($fontNameRole, $fallbackStackRole, $stylesRole, $specVariants) {
-  $fontStackVariantDefault: null;
-  // Go through all variants (default, small-caps, oldstyle-nums etc.)
-  // that are defined for this font family's specification
-  @each $variant, $specVariant in $specVariants {
-    // @include mapToCSSProperties($specVariant, specVariant_variant-#{$variant});
-    $defVariant: updateMap(map-get($specVariants, default), (styles: $stylesRole));
-    $defVariant: updateMap($defVariant, $specVariant);
-    // @include mapToCSSProperties($defVariant, defVariantInitial_variant-#{$variant});
-
-    // Variants may have different `font-family`
-    $fontNameVariant: defaultTo($fontNameRole, map-get($specVariant, name));
-    // Variants may have different fallback fonts
-    $fallbackStackVariant: defaultTo($fallbackStackRole, map-get($specVariant, fallback));
-    // --fallbackStackVariant: #{$fallbackStackVariant};
-    $fontStackVariant: join( ($fontNameVariant), $fallbackStackVariant);
-    // --#{$prefixVariant}font-family: #{inspect($fontStackVariant)};
-
-    // Define font-family for variant `default`
-    @if ($variant == default) {
-      $fontStackVariantDefault: $fontStackVariant;
-      font-family: #{inspect($fontStackVariant)};
-      // Define default styles
-      @include defineFontStyles($stylesRole, map-get($defVariant, styles));
-    }
-    @else {
-      // Prefix to use for this variant if it is not default
-      $prefixVariant: variant-#{$variant};
-
-      .#{$prefixVariant} {
-        // Only define `font-family` if the font stack differs from default
-        @if ($fontStackVariantDefault and $fontStackVariant != $fontStackVariantDefault) {
+      #{$selector} {
+        @if ($style == default) {
+          $defStyleDefault: $defStyle;
           font-family: #{inspect($fontStackVariant)};
+          @include generateFontStyleProperties($defStyle, $style);
+          @include generateFontStyleRules($defStyle, $defStyleDefault, $style);
         }
-        // Define variant styles
-        @include defineFontStyles($stylesRole, map-get($defVariant, styles));
+        @else {
+          @include generateFontStyleProperties($defStyle, $style);
+          #{$style} {
+            @include generateFontStyleRules($defStyle, $defStyleDefault, $style);
+          }
+        }
+      }
+      @if ($style != default) {
+        #{$style}#{$selector} {
+          @include generateFontStyleRules($defStyle, $defStyleDefault, $style);
+        }
       }
     }
   }
 }
 
-@mixin defineFontRoles($fallbackStackDefault, $specFamily) {
+// Utility mixin to generate CSS rules
+@mixin defineFontUtilityRules($fontStackVariant, $fallbackStack, $stylesRole, $stylesVariant, $stylesStyle, $baseClassNames, $nestedClassNames: null) {
+  @if length($baseClassNames) > 0 {
+    $baseSelector: '.' + joinArray($baseClassNames, '.');
+    @if $nestedClassNames != null and length($nestedClassNames) > 0 {
+      $nestedSelector: '.' + joinArray($nestedClassNames, '.');
+      @debug 'nestedSelector=#{$baseSelector} #{$nestedSelector}';
+      #{$baseSelector} {
+        @include applyFontStyles($fontStackVariant, $stylesRole, $stylesVariant, $stylesStyle, $nestedSelector);
+      }
+    }
+    @else {
+      @debug 'baseSelector=#{$baseSelector}';
+      #{$baseSelector} {
+        @include applyFontStyles($fontStackVariant, $stylesRole, $stylesVariant, $stylesStyle);
+      }
+    }
+  }
+  @else {
+    // Define the rules for the outermost element, typically HTML
+    @include applyFontStyles($fontStackVariant, $stylesRole, $stylesVariant, $stylesStyle);
+  }
+}
+
+// Mixin to handle className combinations and generate rules
+@mixin generateFontUtilityClasses($fontStackVariant, $fallbackStack, $stylesRole, $stylesVariant, $stylesStyle, $classNames) {
+  // Generate rule for combined class
+  @include defineFontUtilityRules($fontStackVariant, $fallbackStack, $stylesRole, $stylesVariant, $stylesStyle, $classNames);
+
+  // Generate rules for all permutations (nested classes)
+  $len: length($classNames);
+  @if $len > 1 {
+    @for $i from 1 through $len - 1 {
+      $baseClassNames: sliceArray($classNames, 1, $i);
+      $nestedClassNames: sliceArray($classNames, $i + 1, $len);
+      @include defineFontUtilityRules($fontStackVariant, $fallbackStack, $stylesRole, $stylesVariant, $stylesStyle, $baseClassNames, $nestedClassNames);
+    }
+  }
+}
+
+// Main mixin to define font styles
+@mixin defineFontStyles($fontStackVariant, $fallbackStackVariant, $stylesRole, $stylesVariant, $specStyles, $classNames) {
+  // Go through all styles
+  @each $style, $specStyle in $specStyles {
+    $stylesStyle: map-get($specStyle, 'styles');
+    // Note: To avoid an invalid CSS value error when $classNames is empty,
+    // we append an empty list to it
+    @debug 'defineFontStyles: call generateFontUtilityClasses(#{nth($fontStackVariant, 1)}, style=#{$style}, classNames=#{append($classNames, ())})';
+    // Generate rules
+    @include generateFontUtilityClasses($fontStackVariant, $fallbackStackVariant,
+        $stylesRole, $stylesVariant, $stylesStyle, $classNames);
+  }
+}
+
+// Main mixin to define font variants
+@mixin defineFontVariants($fontNameRole, $fallbackStackRole, $stylesRole, $specVariants, $classNames) {
+  // Go through all variants
+  @each $variant, $specVariant in $specVariants {
+    @if $variant != 'default' {
+      $classNames: append($classNames, variant- + $variant);
+    }
+
+    $specStyles: map-get($specVariant, styles);
+
+    $fontNameVariant: defaultTo($fontNameRole, map-get($specVariant, 'name'));
+    $fallbackStackVariant: defaultTo($fallbackStackRole, map-get($specVariant, 'fallback'));
+    $fontStackVariant: join(($fontNameVariant), $fallbackStackVariant);
+
+    $stylesVariant: map-get($specVariant, 'styles');
+    // Note: To avoid an invalid CSS value error when $classNames is empty,
+    // we append an empty list to it
+    @debug 'defineFontVariants: call defineFontStyles(#{$fontNameRole}, classNames=#{append($classNames, ())})';
+    @include defineFontStyles($fontStackVariant, $fallbackStackVariant, $stylesRole, $stylesVariant, $specStyles, $classNames);
+  }
+}
+
+@mixin defineFontRoles($specFamily, $classNames: () ) {
+  // Default fallback stack to be used if all else fails.
+  // Ensure to define a list here. If there is only one fallback font, append a comma: ('Fallback Font', )
+  $fallbackStackDefault: ('Arial', );
+
   $fontNameFamily: map-get($specFamily, name);
   $fallbackStackFamily: map-get($specFamily, fallback);
   $fallbackStackFamily: defaultTo($fallbackStackDefault, map-get($specFamily, fallback));
@@ -773,7 +853,7 @@ $familyDefaultMap: (
   $specStyles: updateMap(map-get($familyDefaultMap, styles), map-get($specFamily, styles));
 
   $specRolesDefault: updateMap((default: (styles: $specStyles)), map-get($familyDefaultMap, roles));
-  $specRoles:  updateMap($specRolesDefault,  map-get($specFamily, roles));
+  $specRoles: updateMap($specRolesDefault, map-get($specFamily, roles));
 
   $specVariantsDefault: updateMap((default: (
     name: $fontNameFamily,
@@ -782,32 +862,25 @@ $familyDefaultMap: (
   )), map-get($familyDefaultMap, variants));
 
   $specVariants: updateMap($specVariantsDefault, map-get($specFamily, variants));
-
   // @include mapToCSSProperties($specStyles, specStyles);
   // @include mapToCSSProperties($specRoles, specRoles);
   // @include mapToCSSProperties($specVariants, specVariants);
 
-  $defRoleMap: ();
-  // Go through all roles (default, display etc.)
-  // that are defined for this font family's specification
+  // Go through all roles (default, display etc.) that are defined
+  // for this font family's specification
   @each $role, $specRole in $specRoles {
     $defRole: updateMap(map-get($specRoles, default), $specRole);
-    // @include mapToCSSProperties($defRole, defRoleInitial_role-#{$role});
-
-    // @include mapToCSSProperties($specRole, specRole_role-#{$role});
     $fontNameRole: defaultTo($fontNameFamily, map-get($specRole, name));
     $fallbackStackRole: defaultTo($fallbackStackFamily, map-get($specRole, fallback));
 
     $stylesRole: updateMap($specStyles, map-get($specRole, styles));
-    // @include mapToCSSProperties($stylesRole, stylesRole_role-#{$role});
-    @if ($role == default) {
-      @include defineFontVariants($fontNameRole, $fallbackStackRole, $stylesRole, $specVariants);
+    @if $role != default {
+      $classNames: append($classNames, role- + $role);
     }
-    @else {
-      .role-#{$role} {
-        @include defineFontVariants($fontNameRole, $fallbackStackRole, $stylesRole, $specVariants);
-      }
-    }
+    // Note: To avoid an invalid CSS value error when $classNames is empty,
+    // we append an empty list to it
+    @debug 'defineFontRoles: call defineFontVariants(#{$fontNameRole}, classNames=#{append($classNames, ())})';
+    @include defineFontVariants($fontNameRole, $fallbackStackRole, $stylesRole, $specVariants, $classNames);
   }
 }
 
@@ -820,30 +893,25 @@ role, variant, and style definitions
 */
 @mixin defineFont($definitionID: default, $fontFamilyID: default) {
 
-  $prefix: font-#{$definitionID};
-
-  // @include mapToCSSProperties($fontFamilyMap, fontFamilyMap);
-
   // Get the specification of this font family
   $specFamily: map-get($fontFamilyMap, $fontFamilyID);
 
   @if ($specFamily) {
-
+    // The font family with ID == default is applied at the HTML level
     @if ($fontFamilyID == default) {
       html {
-        @include defineFontRoles($fallbackStackDefault, $specFamily);
+        @include defineFontRoles($specFamily);
       }
     }
     @else {
-      .#{$prefix} {
-        @include defineFontRoles($fallbackStackDefault, $specFamily);
-      }
+      // All other families generate utility classes with the font family ID
+      // Note: define a list by adding a comma before the closing parenthesis
+      $classNames: (font-#{$definitionID}, );
+      @include defineFontRoles($specFamily, $classNames);
     }
   }
   @else {
-    html {
-      --defineFont_fontFamilyId_undefined: #{$fontFamilyID};
-    }
+    @warn "@mixin defineFont: font ID '#{$fontFamilyID}' is undefined";
   }
 }
 
@@ -936,7 +1004,15 @@ $fontDefinitions: (
 );
 
 @each $defID, $defSpec in $fontDefinitions {
-  @include defineFont($defID, $defSpec);
+  // It is possible to define a font definition with the value `inherit`, e.g.,
+  // (heading, $fontTypeHeading)
+  // with `$fontTypeHeading` set to `inherit`
+  // FIXME: Determine, how to determine the value of `inherit`. For the time being,
+  // we simply treat it as a no-op, which will lead to the corresponding font utility
+  // classes not being generated
+  @if ($defSpec != inherit) {
+    @include defineFont($defID, $defSpec);
+  }
 }
 
 html {
