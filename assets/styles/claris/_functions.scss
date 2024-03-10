@@ -12,6 +12,71 @@
   @return $string;
 }
 
+// https://kittygiraudel.com/2013/08/08/advanced-sass-list-functions/
+@function joinArray($list, $glue: '', $is-nested: false) {
+  // Check if the argument is a list
+  @if type-of($list) != 'list' {
+    @warn "#{inspect($list)} is not a list.";
+    @return null;
+  }
+  $result: null;
+
+  @for $i from 1 through length($list) {
+    $e: nth($list, $i);
+
+    @if type-of($e) == list {
+      $result: $result#{to-string($e, $glue, true)};
+    } @else {
+      @if $e == '' {
+        @warn 'joinArray: adding empty e in list=[#{$list}] at position #{$i}';
+      }
+      // Note: need to wrap string concatenation in '' to avoid spurious spaces
+      $result: if(
+        $i != length($list) or $is-nested,
+        '#{$result}#{$e}#{$glue}',
+        '#{$result}#{$e}'
+      );
+      // @debug 'joinArray: added e="#{$e}" in list=[#{$list}] at position #{$i}: "#{$result}"';
+    }
+  }
+  @return $result;
+}
+
+// https://kittygiraudel.com/2013/08/08/advanced-sass-list-functions/
+@function sliceArray($list, $start: 1, $end: length($list)) {
+  $result: null;
+
+  @if type-of($start) != number or type-of($end) != number {
+    @warn "Either $start or $end are not a number for `slice`.";
+  }
+
+  @else if $start > $end {
+    @warn "The start index has to be lesser than or equals to the end index for `slice`.";
+  }
+
+  @else if $start < 1 or $end < 1 {
+    @warn "List indexes must be non-zero integers for `slice`.";
+  }
+
+  @else if $start > length($list) {
+    @warn "List index is #{$start} but list is only #{length($list)} item long for `slice`.";
+  }
+
+  @else if $end > length($list) {
+    @warn "List index is #{$end} but list is only #{length($list)} item long for `slice`.";
+  }
+
+  @else {
+    $result: ();
+
+    @for $i from $start through $end {
+      $result: append($result, nth($list, $i));
+    }
+  }
+
+  @return $result;
+}
+
 // https://stackoverflow.com/a/64863842
 @function colorVarToRGB($value) {
   /*
