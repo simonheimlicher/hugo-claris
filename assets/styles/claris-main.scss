@@ -86,7 +86,7 @@ $fontFamilySpec: (
       font-weight: 400,
       line-height: 1.4
     ),
-    bold: (
+    strong: (
       font-weight: 600,
     )
   ),
@@ -99,7 +99,7 @@ $fontFamilySpec: (
           font-weight: 400,
           line-height: 1.2
         ),
-        bold: (
+        strong: (
           font-weight: 600
         )
       )
@@ -135,12 +135,12 @@ $fontFamilySpec: (
 // name: Alegreya; // font-family
 // fallback: serif;
 //
-// Include additional settings such as font-weight for default, bold and italic
+// Include additional settings such as font-weight for default, strong and italic
 // styles: (
 //   default: (
 //     font-weight: 400
 //   )
-//   bold: (
+//   strong: (
 //     font-weight: 700
 //   )
 // );
@@ -153,7 +153,7 @@ $fontFamilySpec: (
 //         default: (
 //           font-weight: 400
 //         )
-//         bold: (
+//         strong: (
 //           font-weight: 700
 //         )
 //       )
@@ -169,7 +169,7 @@ $fontFamilySpec: (
 //       default: (
 //         font-weight: 400
 //       )
-//       bold: (
+//       strong: (
 //         font-weight: 700
 //       )
 //     );
