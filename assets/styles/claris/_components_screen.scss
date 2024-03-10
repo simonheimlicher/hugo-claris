@@ -161,7 +161,8 @@
   color: var(--text);
   white-space: nowrap;
   column-gap: var(--inner_margin);
-  @include useFontDefinition(sans, display);
+  // Replaced by utility classes
+  // @include useFontDefinition(sans, display);
   @include chrome;
   // FIXME: Overflow-y leads to scroll bars
   // Does not work because overlow-x and -y cannot be set independently
@@ -467,7 +468,9 @@
     }
     &_text {
       display: block;
-      @include useFontDefinition(inherit, display, small-caps, bold);
+      // Replaced by utility classes
+      // @include useFontDefinition(inherit, display, small-caps, bold);
+      font-weight: var(--font-weight-strong);
       color: var(--theme-text);
       line-height: ($screenViewNavHeightNarrow - 1.5rem);
       padding: math.div($screenViewNavHeightNarrow - 1rem, 2) 0.25rem;

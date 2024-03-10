@@ -44,7 +44,6 @@ body {
   background: var(--choice-bg);
   color: var(--text);
   font-size: var(--font-size);
-  @include useFontDefinition(default);
 
   font-kerning: normal;
   -webkit-font-smoothing: antialiased;
@@ -123,7 +122,12 @@ h6 {
   // padding: $heading-padding-top 0 calc(#{$heading-padding-top} * 0.25) 0;
   margin: $heading-margin-top 0 calc(#{$heading-margin-top} * 0.25) 0;
   color: var(--header-text);
-  @include useFontDefinition(default, display, default, bold);
+  // Replaced by utility classes
+  // @include useFontDefinition(default, display, default, strong);
+  // @extend .role-display;
+  // @extend strong;
+  // line-height: var(--line-height);
+  font-weight: var(--font-weight-strong);
   hyphens: manual;
   .icon,
   .icon svg {
@@ -301,7 +305,7 @@ blockquote {
     position: absolute;
     top: calc(var(--box-padding-top) + var(--quotation-mark-open-height));
     left: 0;
-    @extend .font-serif;
+    // @extend .font-serif;
     line-height: var(--quotation-mark-open-height);
     font-size: var(--quotation-mark-open-font-size);
     color: $blockquote-quotation-color-open;
@@ -313,7 +317,7 @@ blockquote {
     position: absolute;
     bottom: calc(0px - 0.5 * var(--quotation-mark-close-height));
     right: calc( var(--box-padding-right) - 0.5 * var(--quotation-mark-close-height));
-    @extend .font-serif;
+    // @extend .font-serif;
     line-height: var(--quotation-mark-close-height);
     font-size: calc(var(--quotation-mark-close-font-size));
     color: $blockquote-quotation-color-close;

@@ -111,7 +111,12 @@
   {{- $template := "_default/baseof body" }}
   {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
-  {{- $mainClassList := (slice "main_claris" (printf "main-kind_%s" (.Scratch.Get "claris.render.main.kind") ) ) }}
+  {{- $mainKind := .Scratch.Get "claris.render.main.kind" }}
+  {{- $mainClassList := (slice "main_claris" (printf "main-kind_%s" $mainKind ) ) }}
+  {{- if eq $mainKind "page" }}
+    {{- $fontTypeArticle := $page.Param "assets.styles.fonts.type.article" | default "serif" }}
+    {{- $mainClassList = append (printf "font-%s" $fontTypeArticle) $mainClassList }}
+  {{- end }}
 
   {{- $mainPartial := "main" }}
   {{- $debug := false }}

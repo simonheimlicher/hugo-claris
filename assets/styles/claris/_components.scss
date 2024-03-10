@@ -56,18 +56,6 @@
   }
 }
 
-.main-kind_page {
-  .main_header,
-  .content {
-    // @include useFontDefinition(article);
-    @extend .font-article;
-    h1, h2, h3, h4, h5, h6, .excerpt-title {
-      // @include useFontDefinition(article, display, default, bold);
-      // @extend .role-display;
-    }
-  }
-}
-
 .panel {
   &_container {
     // font-size: var(--font-size-larger-1);
@@ -504,7 +492,7 @@
     margin: 0 calc(-1 * var(--inner_padding_4-1)) var(--inner_padding_4-3);
     color: var(--text-faint);
     // @include useFontDefinition(meta);
-    @extend .font-meta;
+    // @extend .font-meta;
     @include link-lvhfa;
     span {
       align-items: center;
@@ -616,7 +604,8 @@
   align-self: start;
   border-radius: 0.25rem;
   // padding: 0.5rem 1rem 0 1rem
-  @include useFontDefinition(meta);
+  // Replaced by utility classes
+  // @include useFontDefinition(meta);
   // background: rgba(var(--RGB_bg), 0.9)
   // https://stackoverflow.com/a/66962139/617559
   // width: fit-content
@@ -654,7 +643,8 @@
     padding: 2em 0 0 0;
     position: relative;
     z-index: 1;
-    @include useFontDefinition(meta);
+    // Replaced by utility classes
+    // @include useFontDefinition(meta);
 
     h2 {
       font-size: 150%;
@@ -715,7 +705,7 @@
   }
   /*
   .initial-words {
-    // @include useFontDefinition(inherit, default, small-caps, bold);
+    // @include useFontDefinition(inherit, default, small-caps, strong);
     @extend .variant-small-caps;
   }
   */
@@ -749,7 +739,7 @@
     @include content_multicolumn;
     --title_line-height: calc(var(--font-size-title) * var(--line-height-heading));
     margin: calc(0.5 * var(--title_line-height)) auto;
-    @extend .role-display;
+    // @extend .role-display;
     @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
       // min-width: calc(var(--content_max-width) - var(--inner_margin) * 2);
       min-width: var(--content_max-width);
@@ -770,11 +760,11 @@
       font-size: var(--font-size-supertitle);
       // padding: 1.5rem 0 0.25rem 0;
       text-align: start;
-      // @include useFontDefinition(inherit, display, small-caps, bold);
-      @extend .variant-small-caps;
+      // @include useFontDefinition(inherit, display, small-caps, strong);
+      // @extend .variant-small-caps;
     }
     span.supertitle {
-      @extend .style-bold;
+      // @extend .style-bold;
     }
     .subtitle {
       display: block;
@@ -1060,7 +1050,8 @@
 //! purgecss end ignore
 
 .inline-separator-list {
-  @include useFontDefinition;
+  // Does not appear to have an effect
+  // @include useFontDefinition;
   p {
     color: var(--text-faint);
   }
@@ -1295,6 +1286,7 @@ svg.qrcode-svg {
   }
 }
 .link {
+  @extend .font-meta;
   opacity: 0;
   position: relative;
   &_yank {
@@ -1305,7 +1297,8 @@ svg.qrcode-svg {
       top: -2rem;
       background-color: var(--theme-hover);
       color: var(--theme-text-hover);
-      @include useFontDefinition(meta);
+      // Replaced by @extend
+      // @include useFontDefinition(meta);
       width: auto;
       white-space: nowrap;
       padding: 0.25rem 0.75rem;
@@ -1668,7 +1661,8 @@ kbd {
   display: inline-block;
   margin: 0 0.1rem;
   padding: 0.1rem 0.6rem;
-  @include useFontDefinition(meta);
+  // @include useFontDefinition(meta);
+  @extend .font-meta;
   background-clip: padding-box;
   border: 1px solid rgba(var(--RGB_text), 0.2);
   border-radius: 0.25rem;
@@ -1707,11 +1701,11 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
   padding: 0.5rem 1rem;
   position: relative;
   // z-index: ($main-z-index  + 1)
-  background: var(--neutral-haze);
+  // background: var(--neutral-haze);
   @include color-scheme_transition;
   color: var(--text);
-  @include useFontDefinition(default);
-  position: relative;
+  // Replaced by utility classes
+  // @include useFontDefinition(default);
   display: inline-block;
   background: transparent;
   width: 90%;
@@ -1904,7 +1898,8 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
     @include color-scheme_transition;
     padding: var(--inner_padding_4-2)  var(--inner_padding_4-2);
     color: var(--text);
-    @include useFontDefinition(meta);
+    // Replaced by utility classes
+    // @include useFontDefinition(meta);
     & > figcaption {
       width: 100%;
       padding: var(--inner_padding_4-2) 0 0 0;
