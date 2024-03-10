@@ -8,3 +8,5 @@ github.com/simonheimlicher/claris-resources v0.0.0-20240224180304-6e96eb1e0463 h
 github.com/simonheimlicher/claris-resources v0.0.0-20240224180304-6e96eb1e0463/go.mod h1:fTsqjCD6od8sEyDl5akBH5YZhO6uQJzJX3HpPbmcHwY=
 github.com/simonheimlicher/claris-resources v0.0.0-20240225230649-a50c48da2a49 h1:5FVENz7RWU7k4pfMIYwsZctu5/7BWmwvAHAxguxurVI=
 github.com/simonheimlicher/claris-resources v0.0.0-20240225230649-a50c48da2a49/go.mod h1:fTsqjCD6od8sEyDl5akBH5YZhO6uQJzJX3HpPbmcHwY=
+github.com/simonheimlicher/claris-resources v0.0.0-20240310230548-8a749748526c h1:qvXRNirYUMpO51AAFvomN2eeKC6BiAN8lekkbktraak=
+github.com/simonheimlicher/claris-resources v0.0.0-20240310230548-8a749748526c/go.mod h1:fTsqjCD6od8sEyDl5akBH5YZhO6uQJzJX3HpPbmcHwY=
