@@ -43,13 +43,23 @@ jobs:
           cd hugo-claris
           echo "${{ env.COMMIT_MESSAGE_PREFIX }}$(git log -1 --pretty=%B)" > ${{ env.COMMIT_MESSAGE_FILE }}
 
-      - name: Checkout hugo-claris-demo
-        uses: actions/checkout@v4
-        with:
-          repository: simonheimlicher/hugo-claris-demo
-          ref: ${{ env.BRANCH_NAME }}
-          token: ${{ secrets.GH_ACTIONS_PAT }}
-          path: hugo-claris-demo
+      # - name: Checkout hugo-claris-demo
+      #   uses: actions/checkout@v4
+      #   with:
+      #     repository: simonheimlicher/hugo-claris-demo
+      #     ref: ${{ env.BRANCH_NAME }}
+      #     token: ${{ secrets.GH_ACTIONS_PAT }}
+      #     path: hugo-claris-demo
+
+      # - name: Update Hugo Modules in hugo-claris-demo
+      #   run: |
+      #     cd hugo-claris-demo
+      #     hugo mod get
+      #     git config user.name "${{ env.EVENT_ACTOR_ID }}"
+      #     git config user.email "${{ env.EVENT_ACTOR_EMAIL }}"
+      #     git add .
+      #     git commit --file=${{ env.COMMIT_MESSAGE_FILE }}
+      #     git push
 
       - name: Checkout heimlicher.com
         uses: actions/checkout@v4
@@ -58,16 +68,6 @@ jobs:
           ref: ${{ env.BRANCH_NAME }}
           token: ${{ secrets.GH_ACTIONS_PAT }}
           path: heimlicher.com
-
-      - name: Update Hugo Modules in hugo-claris-demo
-        run: |
-          cd hugo-claris-demo
-          hugo mod get
-          git config user.name "${{ env.EVENT_ACTOR_ID }}"
-          git config user.email "${{ env.EVENT_ACTOR_EMAIL }}"
-          git add .
-          git commit --file=${{ env.COMMIT_MESSAGE_FILE }}
-          git push
 
       - name: Update Hugo Modules in heimlicher.com
         run: |
