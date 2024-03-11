@@ -760,11 +760,8 @@
       font-size: var(--font-size-supertitle);
       // padding: 1.5rem 0 0.25rem 0;
       text-align: start;
+      // Replaced by utility classes
       // @include useFontDefinition(inherit, display, small-caps, strong);
-      // @extend .variant-small-caps;
-    }
-    span.supertitle {
-      // @extend .style-bold;
     }
     .subtitle {
       display: block;

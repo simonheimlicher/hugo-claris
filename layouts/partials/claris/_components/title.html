@@ -23,11 +23,11 @@
 {{- if $title }}
         <div{{- with $titleClass }} class="{{ . }}"{{ end }}>
   {{- with $supertitleOutside -}}
-          <span class="supertitle">{{. }}<span class="visually-hidden">: </span></span>
+          <strong class="supertitle variant-small-caps">{{. }}<span class="visually-hidden">: </span></strong>
   {{- end -}}
         <h{{ $headingLevel }} id="articleTop">
   {{- with $supertitleInside -}}
-          <span class="supertitle">{{. }}<span class="visually-hidden">: </span></span>
+          <strong class="supertitle variant-small-caps">{{. }}<span class="visually-hidden">: </span></strong>
   {{- end -}}
 
   <span class="title">{{- $title -}}</span>
