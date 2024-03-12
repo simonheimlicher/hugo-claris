@@ -54,6 +54,7 @@ jobs:
       - name: Update Hugo Modules in hugo-claris-demo
         run: |
           cd hugo-claris-demo
+          sed -i '' -Ee 's!(github.com/simonheimlicher/hugo-claris) [^ ]+(.*)!\1 {{ env.BRANCH_NAME }}\2!' go.mod
           hugo mod get -u
           git config user.name "${{ env.EVENT_ACTOR_ID }}"
           git config user.email "${{ env.EVENT_ACTOR_EMAIL }}"
@@ -74,6 +75,7 @@ jobs:
       - name: Update Hugo Modules in heimlicher.com
         run: |
           cd heimlicher.com
+          sed -i '' -Ee 's!(github.com/simonheimlicher/hugo-claris) [^ ]+(.*)!\1 {{ env.BRANCH_NAME }}\2!' go.mod
           hugo mod get -u
           git config user.name "${{ env.EVENT_ACTOR_ID }}"
           git config user.email "${{ env.EVENT_ACTOR_EMAIL }}"
