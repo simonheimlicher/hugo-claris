@@ -69,7 +69,7 @@ $main-z-index: 1;
     $direction: direction($key);
     @if type-of($value) == 'number' {
       @if is-absolute-length(#{$value}) {
-        @debug "absolute-length: #{$value}";
+        // @debug "absolute-length: #{$value}";
         $pVar: map-merge($pVar, (
           #{$key}: calc( max(#{$value}, env(safe-area-inset-#{$key}, 0px) ) )
         ));
@@ -770,13 +770,13 @@ $familyDefaultMap: (
     $baseSelector: '.' + joinArray($baseClassNames, '.');
     @if $nestedClassNames != null and length($nestedClassNames) > 0 {
       $nestedSelector: '.' + joinArray($nestedClassNames, '.');
-      @debug 'nestedSelector=#{$baseSelector} #{$nestedSelector}';
+      // @debug 'nestedSelector=#{$baseSelector} #{$nestedSelector}';
       #{$baseSelector} {
         @include applyFontStyles($fontStackVariant, $stylesRole, $stylesVariant, $stylesStyle, $nestedSelector);
       }
     }
     @else {
-      @debug 'baseSelector=#{$baseSelector}';
+      // @debug 'baseSelector=#{$baseSelector}';
       #{$baseSelector} {
         @include applyFontStyles($fontStackVariant, $stylesRole, $stylesVariant, $stylesStyle);
       }
@@ -811,7 +811,7 @@ $familyDefaultMap: (
     $stylesStyle: map-get($specStyle, 'styles');
     // Note: To avoid an invalid CSS value error when $classNames is empty,
     // we append an empty list to it
-    @debug 'defineFontStyles: call generateFontUtilityClasses(#{nth($fontStackVariant, 1)}, style=#{$style}, classNames=#{append($classNames, ())})';
+    // @debug 'defineFontStyles: call generateFontUtilityClasses(#{nth($fontStackVariant, 1)}, style=#{$style}, classNames=#{append($classNames, ())})';
     // Generate rules
     @include generateFontUtilityClasses($fontStackVariant, $fallbackStackVariant,
         $stylesRole, $stylesVariant, $stylesStyle, $classNames);
@@ -835,7 +835,7 @@ $familyDefaultMap: (
     $stylesVariant: map-get($specVariant, 'styles');
     // Note: To avoid an invalid CSS value error when $classNames is empty,
     // we append an empty list to it
-    @debug 'defineFontVariants: call defineFontStyles(#{$fontNameRole}, classNames=#{append($classNames, ())})';
+    // @debug 'defineFontVariants: call defineFontStyles(#{$fontNameRole}, classNames=#{append($classNames, ())})';
     @include defineFontStyles($fontStackVariant, $fallbackStackVariant, $stylesRole, $stylesVariant, $specStyles, $classNames);
   }
 }
@@ -879,7 +879,7 @@ $familyDefaultMap: (
     }
     // Note: To avoid an invalid CSS value error when $classNames is empty,
     // we append an empty list to it
-    @debug 'defineFontRoles: call defineFontVariants(#{$fontNameRole}, classNames=#{append($classNames, ())})';
+    // @debug 'defineFontRoles: call defineFontVariants(#{$fontNameRole}, classNames=#{append($classNames, ())})';
     @include defineFontVariants($fontNameRole, $fallbackStackRole, $stylesRole, $specVariants, $classNames);
   }
 }
