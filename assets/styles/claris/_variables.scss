@@ -69,7 +69,7 @@ $main-z-index: 1;
     $direction: direction($key);
     @if type-of($value) == 'number' {
       @if is-absolute-length(#{$value}) {
-        @debug "absolute-length: #{$value}";
+        // @debug "absolute-length: #{$value}";
         $pVar: map-merge($pVar, (
           #{$key}: calc( max(#{$value}, env(safe-area-inset-#{$key}, 0px) ) )
         ));
@@ -678,7 +678,7 @@ $familyDefaultMap: (
 // Currently, this is used to ensure we can access the current `line-height`
 // to remove the line-height from the first line usinc `calc`
 @mixin generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef) {
-  @debug 'generateFontStyleProperties(#{$styleName}): defaultStyleDef: #{inspect($defaultStyleDef)} baseStyleDef: #{inspect($baseStyleDef)}';
+  // @debug 'generateFontStyleProperties(#{$styleName}): defaultStyleDef: #{inspect($defaultStyleDef)} baseStyleDef: #{inspect($baseStyleDef)}';
   // To enable consistently using the same style rules, we make some definitions available
   // as CSS custom properties.
   // This is used for example to have the weight of `strong` style available in `--font-weight-strong`
@@ -694,10 +694,10 @@ $familyDefaultMap: (
         $baseValue: map-get($baseStyleDef, $key);
       }
       @if $value == $baseValue {
-        @debug 'generateFontStyleProperties(#{$styleName}): value=#{$value} == #{$baseValue}';
+        // @debug 'generateFontStyleProperties(#{$styleName}): value=#{$value} == #{$baseValue}';
       }
       @else {
-        @debug 'generateFontStyleProperties(#{$styleName}): value=#{$value} != #{$baseValue}';
+        // @debug 'generateFontStyleProperties(#{$styleName}): value=#{$value} != #{$baseValue}';
         $propertyName: $key;
         @if ($styleName != default) {
           $propertyName: #{$key}-#{$styleName};
@@ -710,7 +710,7 @@ $familyDefaultMap: (
 
 // Utility mixin to apply style definitions by defining CSS rules if they differ from default
 @mixin generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef) {
-  @debug 'generateFontStyleRules(#{$styleName}): defaultStyleDef: #{inspect($defaultStyleDef)} baseStyleDef: #{inspect($baseStyleDef)}';
+  // @debug 'generateFontStyleRules(#{$styleName}): defaultStyleDef: #{inspect($defaultStyleDef)} baseStyleDef: #{inspect($baseStyleDef)}';
   $overrideStyles: $styleDef;
   @if ($styleName == default) {
     // Determine, which values differ from default - if any
@@ -718,10 +718,10 @@ $familyDefaultMap: (
     @each $key, $value in $styleDef {
       $baseValue: map-get($defaultStyleDef, $key);
       @if ($baseValue and $value == $baseValue) {
-        @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} == #{$baseValue}';
+        // @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} == #{$baseValue}';
       }
       @else {
-        @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} != #{$baseValue}';
+        // @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} != #{$baseValue}';
         $overrideStyles: map-merge($overrideStyles, ($key: $value) );
       }
     }
@@ -732,10 +732,10 @@ $familyDefaultMap: (
     @each $key, $value in $styleDef {
       $baseValue: map-get($baseStyleDef, $key);
       @if ($baseValue and $value == $baseValue) {
-        @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} == #{$baseValue}';
+        // @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} == #{$baseValue}';
       }
       @else {
-        @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} != #{$baseValue}';
+        // @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} != #{$baseValue}';
         $overrideStyles: map-merge($overrideStyles, ($key: $value) );
       }
     }
@@ -863,7 +863,7 @@ $familyDefaultMap: (
     // @debug 'defineFontStyles: defaultStyleDef: #{inspect($defaultStyleDef)} baseStyleDef: #{inspect($baseStyleDef)} styleDef: #{inspect($styleDef)}';
     // Note: To avoid an invalid CSS value error when $classNames is empty,
     // we append an empty list to it
-    @debug 'defineFontStyles: call generateFontUtilityClasses(#{nth($fontStackVariant, 1)}, styleName=#{$styleName}, classNames=#{append($classNames, ())})';
+    // @debug 'defineFontStyles: call generateFontUtilityClasses(#{nth($fontStackVariant, 1)}, styleName=#{$styleName}, classNames=#{append($classNames, ())})';
     // Generate rules
     @include generateFontUtilityClasses($fontStackVariant, $defaultStyle, $baseStyleDef, $styleName, $styleDef, $classNames);
   }
@@ -886,7 +886,7 @@ $familyDefaultMap: (
     $stylesVariant: map-get($specVariant, 'styles');
     // Note: To avoid an invalid CSS value error when $classNames is empty,
     // we append an empty list to it
-    @debug 'defineFontVariants: call defineFontStyles(#{$fontNameRole}, classNames=#{append($classNames, ())})';
+    // @debug 'defineFontVariants: call defineFontStyles(#{$fontNameRole}, classNames=#{append($classNames, ())})';
     @include defineFontStyles($fontStackVariant, $defaultStyleDef, $stylesRole, $stylesVariant, $specStyles, $classNames);
   }
 }
@@ -932,7 +932,7 @@ $familyDefaultMap: (
     }
     // Note: To avoid an invalid CSS value error when $classNames is empty,
     // we append an empty list to it
-    @debug 'defineFontRoles: call defineFontVariants(#{$fontNameRole}, classNames=#{append((), $classNames)})';
+    // @debug 'defineFontRoles: call defineFontVariants(#{$fontNameRole}, classNames=#{append((), $classNames)})';
     @include defineFontVariants($fontNameRole, $fallbackStackRole, $defaultStyleDef, $stylesRole, $specVariants, $classNames);
   }
 }
@@ -957,7 +957,7 @@ role, variant, and style definitions
       // Note: define a list by adding a comma before the closing parenthesis
       $classNames: (font-#{$definitionID}, );
     }
-    @debug 'defineFont: call defineFontRoles(#{$fontFamilyID}, classNames=#{append((), $classNames)})';
+    // @debug 'defineFont: call defineFontRoles(#{$fontFamilyID}, classNames=#{append((), $classNames)})';
     @include defineFontRoles($specFamily, $classNames);
   }
   @else {
