@@ -95,7 +95,7 @@ pre {
     // such as Go HTML Template
     // width: 7.5rem
     padding: 0.5rem 1rem;
-    @extend .font-meta;
+    @extend .font-meta !optional;
     font-style: italic;
     text-transform: uppercase;
     font-size: 80%;

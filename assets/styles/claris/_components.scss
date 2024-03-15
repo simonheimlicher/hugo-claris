@@ -760,11 +760,8 @@
       font-size: var(--font-size-supertitle);
       // padding: 1.5rem 0 0.25rem 0;
       text-align: start;
+      // Replaced by utility classes
       // @include useFontDefinition(inherit, display, small-caps, strong);
-      // @extend .variant-small-caps;
-    }
-    span.supertitle {
-      // @extend .style-bold;
     }
     .subtitle {
       display: block;
@@ -1286,7 +1283,7 @@ svg.qrcode-svg {
   }
 }
 .link {
-  @extend .font-meta;
+  @extend .font-meta !optional;
   opacity: 0;
   position: relative;
   &_yank {
@@ -1662,7 +1659,7 @@ kbd {
   margin: 0 0.1rem;
   padding: 0.1rem 0.6rem;
   // @include useFontDefinition(meta);
-  @extend .font-meta;
+  @extend .font-meta !optional;
   background-clip: padding-box;
   border: 1px solid rgba(var(--RGB_text), 0.2);
   border-radius: 0.25rem;
