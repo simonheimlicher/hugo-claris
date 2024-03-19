@@ -9,9 +9,9 @@
 	],
 	"settings": {
 		"files.associations": {
-            "*.html": "gohtml",
-            "*.js": "gojs",
-            "robots.txt": "gohtml",
+			"*.html": "gohtml",
+			"*.js": "javascript",
+			"robots.txt": "gohtml"
 		},
         "emmet.includeLanguages": {
             "gohtml": "html",
