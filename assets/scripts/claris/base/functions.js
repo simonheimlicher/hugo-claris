@@ -1,6 +1,5 @@
-// NOTE: To enable debug output, change `deb` to be `console.log`
-const deb = function () { }
-// const deb = console.log;
+const deb = function () { /* This function is empty and will be stripped by ESBuild */  }
+// NOTE: Uncomment this to enable debug output const deb = console.log;
 export { deb };
 
 export function isObj(obj) {
@@ -26,7 +25,7 @@ export function elems(selector, parent) {
 export function pushClass(el, targetClass) {
   if (isObj(el) && targetClass) {
     let elClass = el.classList;
-    elClass.contains(targetClass) ? false : elClass.add(targetClass);
+    elClass.contains(targetClass) || elClass.add(targetClass);
   }
 }
 
@@ -40,7 +39,7 @@ export function hasClasses(el) {
 export function deleteClass(el, targetClass) {
   if (isObj(el) && targetClass) {
     let elClass = el.classList;
-    elClass.contains(targetClass) ? elClass.remove(targetClass) : false;
+    elClass.contains(targetClass) && elClass.remove(targetClass);
   }
 }
 
@@ -55,7 +54,7 @@ export function modifyClass(el, targetClass) {
 
 export function containsClass(el, targetClass) {
   if (isObj(el) && targetClass && el !== document) {
-    return el.classList.contains(targetClass) ? true : false;
+    return el.classList.contains(targetClass);
   }
 }
 
@@ -65,7 +64,7 @@ export function elemAttribute(elem, attr, value) {
     elem.setAttribute(attr, value);
   } else {
     value = elem.getAttribute(attr);
-    return value ? value : false;
+    return value || false;
   }
 }
 
