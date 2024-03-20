@@ -18,25 +18,23 @@ export function taxonomyOverlayInit() {
     const tagsShowClass = 'jswidgetopen';
     const articleTagsWrapper = elem(`.${tagsShowClass}`);
     target = target === null ? articleTagsWrapper : target;
-    // console.log('toggleTags(): target=' + target);
     if (!target) return;
     const showingAllTags = target.matches(`.${tagsShowClass}`);
-    const isExandButton = target.matches(`.${tagsButtonClass}`);
+    const isExpandButton = target.matches(`.${tagsButtonClass}`);
     const isCloseButton = target.matches(`.${tagsButtonClass2}`) || target.closest(`.${tagsButtonClass2}`);
-    const isButton =  isExandButton || isCloseButton;
+    const isButton =  isExpandButton || isCloseButton;
     const isActionable = isButton || showingAllTags;
 
-    // console.log('toggleTags(): isActionable=' + isActionable + ' target=', target);
-    if(isActionable) {
-      if(isButton) {
-        if(isExandButton) {
+    if (isActionable) {
+      if (isButton) {
+        if (isExpandButton) {
           let allTagsWrapper = target.nextElementSibling
           pushClass(allTagsWrapper, tagsShowClass);
         } else {
           deleteClass(articleTagsWrapper, tagsShowClass);
         }
       } else {
-        isActionable ? deleteClass(target, tagsShowClass) : false;
+        deleteClass(target, tagsShowClass);
       }
     }
   }

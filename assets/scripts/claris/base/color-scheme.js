@@ -202,13 +202,11 @@ function setUserColorScheme(scheme, transition) {
     } else {
       updateColorScheme(storedColorScheme);
     }
-  } else {
-    if (scheme === true) {
-      changeColorScheme(isDarkColorScheme)
-    }
-    else {
-      updateSourceMedia();
-    }
+  } else if (scheme === true) {
+    changeColorScheme(isDarkColorScheme)
+  }
+  else {
+    updateSourceMedia();
   }
 }
 
@@ -218,7 +216,7 @@ export function colorSchemeInit() {
   const htmlRootClassNoCSSProperties = clarisHugoParams.htmlRootClassNoCSSProperties;
 
   if (containsClass(htmlRootElement, htmlRootClassNoCSSProperties)) {
-    deb(PREFIX, `${htmlRootElement} contains class ${htmlRootClassNoCSSProperties}}`);
+    deb(PREFIX, htmlRootElement, `contains class ${htmlRootClassNoCSSProperties}}`);
     return;
   }
 

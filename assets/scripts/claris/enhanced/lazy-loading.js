@@ -55,7 +55,7 @@ export function lazyLoadingInit() {
     // loop through <img>s setting the src attribute and srcset and sizes if present
     // but only if there is no data-media attribute
     for (let img of images) {
-      if (!img.dataset.media || !img.dataset.media.includes('prefers-color-scheme')) {
+      if (!img.dataset?.media.includes('prefers-color-scheme')) {
         deb(PREFIX, 'Swapping in src for ', img);
         try {
           img.src = img.dataset.src;
@@ -87,7 +87,7 @@ export function lazyLoadingInit() {
     // loop through <source>s setting the srcset attribute and sizes if present
     // but only if there is no data-media attribute
     for (let source of sources) {
-      if (!source.dataset.media || !source.dataset.media.includes('prefers-color-scheme')) {
+      if ( !source.dataset?.media.includes('prefers-color-scheme')) {
         try {
           source.srcset = source.dataset.srcset;
           if (!isSafariBrowser || lazyLoadingInitDone) {
@@ -119,20 +119,19 @@ export function lazyLoadingInit() {
     }
 
   // if loading attribute is not supported
-  } else {
-    // check we haven't already loaded the library
-    if (!lazyLoadingInitDone) {
-      // create script element with src pointing to our library and add to document
-      const lazySizesScript = document.createElement('script');
-      lazySizesScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js';
-      document.body.appendChild(lazySizesScript);
+  // check we haven't already loaded the library
+  } else if (!lazyLoadingInitDone) {
+    // create script element with src pointing to our library and add to document
+    const lazySizesScript = document.createElement('script');
+    lazySizesScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js';
+    document.body.appendChild(lazySizesScript);
 
-      const lazySizesParentFitScript = document.createElement('script');
-      lazySizesParentFitScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/plugins/parent-fit/ls.parent-fit.min.js';
-      document.body.appendChild(lazySizesParentFitScript);
+    const lazySizesParentFitScript = document.createElement('script');
+    lazySizesParentFitScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/plugins/parent-fit/ls.parent-fit.min.js';
+    document.body.appendChild(lazySizesParentFitScript);
 
-      deb(PREFIX, 'Browser does not support native lazy loading. Imported lazySizes=', lazySizesScript);
-    }
+    deb(PREFIX, 'Browser does not support native lazy loading. Imported lazySizes=', lazySizesScript);
+
   }
   lazyLoadingInitDone = true;
 }
