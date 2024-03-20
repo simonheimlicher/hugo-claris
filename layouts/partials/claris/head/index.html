@@ -42,7 +42,7 @@
     <link rel="canonical" type="text/html" href="{{ partial `claris/_functions/canonical-url` . }}" title="{{ (partial `claris/_functions/sanitize` $title) }}">
     {{- partialCached "claris/head/favicon" . }}
 
-{{- /* FIXME: To avoid creating the same bundle multiple times, we remove `.Kind` from the cache busters and only keep `$assetVariant` */ -}}
+{{- /* NOTE: To avoid creating the same bundle multiple times, we remove `.Kind` from the cache busters and only keep `$assetVariant` */ -}}
 {{- /* partialCached "claris/head/assets" . $assetVariant .Kind */ -}}
 {{- partialCached "claris/head/assets" $ctx $assetVariant -}}
     <noscript>

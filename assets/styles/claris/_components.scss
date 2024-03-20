@@ -170,11 +170,11 @@
       flex-direction: row;
       flex-wrap: wrap;
       gap: var(--inner_margin);
-      // FIXME: IE 11 bug
+      // NOTE: IE 11 bug
       // https://github.com/philipwalton/flexbugs/issues/75
       // Setting a min-height on the container (body does not work)
       // avoids scaled images taking up as much space as they would if not scaled
-      // FIXME: Does not work. responsive-figure images still blow up
+      // NOTE: Does not work. responsive-figure images still blow up
       @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
         & {
           justify-content: space-evenly;
@@ -260,7 +260,7 @@
   @include geometric-scale('font-size', var(--font-size-footer));
   font-size: var(--font-size-footer);
 
-  // FIXME: IE 11 bug
+  // NOTE: IE 11 bug
   // https://github.com/philipwalton/flexbugs/issues/75
   // Setting a min-height on the container (body does not work)
   // avoids scaled images taking up as much space as they would if not scaled
@@ -468,7 +468,7 @@
     margin-top: 2rem;
   }
   &_link.grid {
-    // FIXME: Height 100% required for Safari
+    // NOTE: Height 100% required for Safari
     height: 100%;
   }
   &_tag,
@@ -556,7 +556,7 @@
       margin-top: calc(2em * (var(--line-height) - 1));
     }
   }
-  // FIXME: Experiment with displaying h3 and lower headings inline
+  // NOTE: Experiment with displaying h3 and lower headings inline
   &_content, &_body {
     & > h2 {
       margin: calc(1em * (var(--line-height-heading) - 1) * 4) 0 calc(1em * (var(--line-height-heading) - 1)) 0;
@@ -877,7 +877,7 @@
             max-height: unset;
             width: auto;
             max-width: 40vw;
-            // FIXME: Minimal aspect ratio should be 1:3
+            // NOTE: Minimal aspect ratio should be 1:3
             max-width: calc(min(40vh, 33vw));
             height: 100%;
             object-fit: cover;
@@ -885,7 +885,7 @@
             border-radius: 0;
             @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
               max-width: 30vw;
-              // FIXME: Maximal aspect ratio should be 1:2
+              // NOTE: Maximal aspect ratio should be 1:2
               max-width: calc(min(30vw, 50vh));
             }
           }

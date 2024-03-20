@@ -135,7 +135,7 @@
     {{- end }}
     {{- $mainClassList = append (slice (printf "hero-image_%s_main" $heroImageStyle) ) $mainClassList }}
   {{- end }}
-  {{- /* FIXME: to top button needs to be rebuilt as it currently is not responsive */ -}}
+  {{- /* NOTE: to top button needs to be rebuilt as it currently is not responsive */ -}}
   {{- $showToTopButton := default false ($page.Param "showToTopButton") }}
   {{ partial "html-comment" (printf "BASEOF [%s]: BEGIN body" $template) }}
     {{- with $heroImageMeta }}

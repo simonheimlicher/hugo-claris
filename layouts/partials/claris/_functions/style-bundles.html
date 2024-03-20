@@ -80,7 +80,7 @@ that contains the `postcss.config.js` file - not the file itself. -->
 ) -}}
 
 {{/* {{- $tplParams := (dict "Page" $page "ContentTypeList" $contentTypeList "ContentTypeListID" $contentTypeListID) }} */}}
-{{- /* FIXME: Use key "AssetStyle instead of "Style" in the dict $tplParams. If the dict has a key named "Style", the following error occurs:
+{{- /* NOTE: Use key "AssetStyle instead of "Style" in the dict $tplParams. If the dict has a key named "Style", the following error occurs:
 error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main_all.scss" (text/x-scss): "styles/claris-vitae-main_all.scss:0:15": Expected expression.
 */ -}}
 {{- $tplParams := (dict "Page" $page

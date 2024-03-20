@@ -257,7 +257,7 @@ export function tableOfContentsInit() {
                         resetActiveNavigationElement(navigationElement);
                     }
                 }
-                // FIXME: Cannot change rootMargin of an active IntersectionObserver
+                // NOTE: Cannot change rootMargin of an active IntersectionObserver
                 // observer.rootMargin = (-initialVisibleTop).toString() + 'px 0px 0px';
             };
 

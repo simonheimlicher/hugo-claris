@@ -44,7 +44,7 @@ const pruneVar = require('postcss-prune-var')({
 module.exports = {
   plugins: [
     require("autoprefixer")({}),
-    // FIXME: Should pass the name of the environments in which to enable CSS purging
+    // NOTE: Should pass the name of the environments in which to enable CSS purging
     // as a parameter instead of hardcoding it as an array below
     // ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [purgeCSS] : []),
     // ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [varOptimize] : []),

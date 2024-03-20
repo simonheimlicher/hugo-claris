@@ -14,7 +14,7 @@ export function mediumZoomInit() {
   mediumZoom('[data-zoomable]', mediumZoomOptions);
 };
 
-// FIXME: The below does not appear to work
+// NOTE: The below does not appear to work
 // document.addEventListener("lazybeforeunveil", e => {
 //   mediumZoom("[data-zoomable]", mediumZoomOptions);
 // });

@@ -27,7 +27,7 @@
       {{- $permalink := (site.GetPage (printf "%s" .URL)) }}
       {{- /* partial "html-comment" (printf "site.GetPage '/resume/print':'%s' site.GetPage '%s':%s .Permalink:%s"
           (site.GetPage "/resume/print") (printf "%s" .URL) (site.GetPage (printf "%s" .URL)) $permalink ) */ -}}
-      {{- /* FIXME: site.GetPage seems to expect URLs without trailing slash */ -}}
+      {{- /* NOTE: site.GetPage seems to expect URLs without trailing slash */ -}}
       {{- if site.GetPage (strings.TrimRight "/" (printf "%s" .URL)) }}
         {{- $url = relLangURL .URL }}
       {{- end }}

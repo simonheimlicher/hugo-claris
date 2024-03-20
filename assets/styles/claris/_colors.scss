@@ -76,46 +76,17 @@ $theme-bg-dim: $surfacePrimaryDim;
 $theme-bg-active-dim: lighten(saturate($theme-bg-dim, 0%), 40%);
 $theme-bg-hover-dim: lighten(saturate($theme-bg-dim, 20%), 50%);
 
-// $theme-bg-hue-0-lit: scale-color($theme-bg-lit, $hue: (100/7 * 1));
-// $theme-bg-hue-1-lit: scale-color($theme-bg-lit, $hue: (100/7 * 2));
-// $theme-bg-hue-2-lit: scale-color($theme-bg-lit, $hue: (100/7 * 3));
-// $theme-bg-hue-3-lit: scale-color($theme-bg-lit, $hue: (100/7 * 4));
-// $theme-bg-hue-4-lit: scale-color($theme-bg-lit, $hue: (100/7 * 5));
-// $theme-bg-hue-5-lit: scale-color($theme-bg-lit, $hue: (100/7 * 6));
-
 $theme-bg-hue-0-lit: change-color(scale-color(#1b3348, $lightness: 60%), $alpha: 1.0);
 $theme-bg-hue-1-lit: change-color(scale-color(#2c3352, $lightness: 60%), $alpha: 1.0);
 $theme-bg-hue-2-lit: change-color(scale-color(#332b4f, $lightness: 60%), $alpha: 1.0);
 $theme-bg-hue-3-lit: change-color(scale-color(#382440, $lightness: 60%), $alpha: 1.0);
 $theme-bg-hue-4-lit: change-color(scale-color(#482a3a, $lightness: 60%), $alpha: 1.0);
 
-// $theme-bg-hue-0-dim: scale-color($theme-bg-dim, $hue: (100/7 * 1));
-// $theme-bg-hue-1-dim: scale-color($theme-bg-dim, $hue: (100/7 * 2));
-// $theme-bg-hue-2-dim: scale-color($theme-bg-dim, $hue: (100/7 * 3));
-// $theme-bg-hue-3-dim: scale-color($theme-bg-dim, $hue: (100/7 * 4));
-// $theme-bg-hue-4-dim: scale-color($theme-bg-dim, $hue: (100/7 * 5));
-// $theme-bg-hue-5-dim: scale-color($theme-bg-dim, $hue: (100/7 * 6));
-
 $theme-bg-hue-0-dim: change-color(#1b3348, $alpha: 1.0);
 $theme-bg-hue-1-dim: change-color(#2c3352, $alpha: 1.0);
 $theme-bg-hue-2-dim: change-color(#332b4f, $alpha: 1.0);
 $theme-bg-hue-3-dim: change-color(#382440, $alpha: 1.0);
 $theme-bg-hue-4-dim: change-color(#482a3a, $alpha: 1.0);
-
-// FIXME: scale-color does not accept argument $hue with dart SASS
-// $dark-bg-hue-0-lit: scale-color($theme-bg-lit, $hue: (100/7 * 4), $saturation: -60%, $lightness: -80%);
-// $dark-bg-hue-1-lit: scale-color($theme-bg-lit, $hue: (100/7 * 5), $saturation: -90%, $lightness: -70%);
-// $dark-bg-hue-2-lit: scale-color($theme-bg-lit, $hue: (100/7 * 6), $saturation: -60%, $lightness: -80%);
-// $dark-bg-hue-3-lit: scale-color($theme-bg-lit, $hue: (100/7 * 1), $saturation: -90%, $lightness: -70%);
-// $dark-bg-hue-4-lit: scale-color($theme-bg-lit, $hue: (100/7 * 2), $saturation: -60%, $lightness: -80%);
-// $dark-bg-hue-5-lit: scale-color($theme-bg-lit, $hue: (100/7 * 3), $saturation: -90%, $lightness: -70%);
-
-// $dark-bg-hue-0-dim: scale-color($theme-bg-dim, $hue: (100/7 * 4), $saturation: -60%, $lightness: -10%);
-// $dark-bg-hue-1-dim: scale-color($theme-bg-dim, $hue: (100/7 * 5), $saturation: -90%, $lightness: -0%);
-// $dark-bg-hue-2-dim: scale-color($theme-bg-dim, $hue: (100/7 * 6), $saturation: -60%, $lightness: -10%);
-// $dark-bg-hue-3-dim: scale-color($theme-bg-dim, $hue: (100/7 * 1), $saturation: -90%, $lightness: -0%);
-// $dark-bg-hue-4-dim: scale-color($theme-bg-dim, $hue: (100/7 * 2), $saturation: -60%, $lightness: -10%);
-// $dark-bg-hue-5-dim: scale-color($theme-bg-dim, $hue: (100/7 * 3), $saturation: -90%, $lightness: -0%);
 
 // $haze-lit: darken(desaturate($bg-lit, 15%), 2%);
 $haze-lit: $colorSurfaceLit;

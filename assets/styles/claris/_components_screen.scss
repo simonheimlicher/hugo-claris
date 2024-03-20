@@ -164,7 +164,7 @@
   // Replaced by utility classes
   // @include useFontDefinition(sans, display);
   @include chrome;
-  // FIXME: Overflow-y leads to scroll bars
+  // NOTE: Overflow-y leads to scroll bars
   // Does not work because overlow-x and -y cannot be set independently
   // https://stackoverflow.com/q/6421966/617559
   font-size: var(--font-size-nav);
@@ -195,7 +195,7 @@
       @include nav-active-background;
     }
   }
-  // FIXME: dart sass fails to convert "~ &"; it leaves out "~":
+  // NOTE: dart sass fails to convert "~ &"; it leaves out "~":
   // '~ &' becomes '.nav_active' instead of '~ .nav_active'
   // a:not(:has( ~ &), &).nav_active_in_section {
   a:not(:has( ~ .nav_active), &_active).nav_active_in_section {
@@ -203,10 +203,10 @@
     @include nav-active-section-background;
   }
   &_active {
-    // FIXME: Do not use position relative, otherwise alignment gets out of shape
+    // NOTE: Do not use position relative, otherwise alignment gets out of shape
     // position: relative
     @include nav-active-background;
-    // FIXME: dart sass fails to convert "~ &"; it leaves out "~":
+    // NOTE: dart sass fails to convert "~ &"; it leaves out "~":
     // '~ &' becomes '.nav_active' instead of '~ .nav_active'
     // a:not(:has( ~ &), &).nav_active_in_section {
     // a:not(:has( ~ .nav_active), .nav_active).nav_active_in_section {
@@ -221,7 +221,7 @@
     transform-origin: 50% 50%;
   }
   &_body {
-    // FIXME: Overflow-y leads to scroll bars
+    // NOTE: Overflow-y leads to scroll bars
     // overflow-x: auto
     position: fixed;
     max-width: unset;
@@ -613,7 +613,7 @@
 .footer_claris {
   // Footer shall stick to the bottom and reveal when body scrolls up
   // But only if positions: sticky is fully supported
-  // FIXME: Mobile Safari gets confused with position: sticky on footer
+  // NOTE: Mobile Safari gets confused with position: sticky on footer
   // Exclude mobile Safari with ''@supports (not (-webkit-touch-callout: none)'
   // https://browserstrangeness.bitbucket.io/css_hacks.html#safari
   // https://syntaxfix.com/question/5666/css-media-query-to-target-only-ios-devices
@@ -628,7 +628,7 @@
   }
 }
 
-// FIXME: Mobile Safari gets confused with position: sticky on footer
+// NOTE: Mobile Safari gets confused with position: sticky on footer
 // https://browserstrangeness.bitbucket.io/css_hacks.html#safari
 // https://syntaxfix.com/question/5666/css-media-query-to-target-only-ios-devices
 @supports (position: sticky) and (not (-webkit-touch-callout: none)) {
@@ -640,7 +640,7 @@
           min-height: 40vh;
           // (100svh - 60svh)
           min-height: 40svh;
-          // FIXME: Not sure why we had -3rem margin-top
+          // NOTE: Not sure why we had -3rem margin-top
           // It interferes with the hero image on the home page
           // margin: -3rem auto -100vh auto;
           margin: 0 auto -100vh auto;
@@ -895,7 +895,7 @@ $indicator-width: var(--toc_indicator_width)) {
 }
 
 // Icon: triangle
-// FIXME: Untested
+// NOTE: Untested
 @mixin table-of-contents_triangle($triangle-width: 0.5ch, $triangle-color: var(--text)) {
   &::after {
     content: '';

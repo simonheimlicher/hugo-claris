@@ -46,9 +46,6 @@ export function taxonomyOverlayInit() {
       const target = event.target;
       toggleTags(target)
     });
-
-    // FIXME: I doubt anyone discovers that it is possible to swipte left to hide tags...
-    // horizontalSwipe(doc, toggleTags, 'left');
   })();
 
   (function sortTags() {

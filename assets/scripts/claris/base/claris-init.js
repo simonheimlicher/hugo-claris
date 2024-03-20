@@ -1,5 +1,5 @@
 import * as params from "@params";
-import { pushClass, deleteClass } from "./functions";
+import { deleteClass } from "./functions";
 
 export const clarisHugoParams = {
   // Params passed to Hugo in the asset pipeline in `claris/_functions/script-bundles.html`
