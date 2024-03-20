@@ -16,7 +16,7 @@
     {{- end -}}
   {{- end -}}
 {{ end }}
-{{- /* FIXME: It appears that we need to wrap `{{ .Inner }}` in a <div> to keep the
+{{- /* NOTE: It appears that we need to wrap `{{ .Inner }}` in a <div> to keep the
 Markdown parser from closing the outer <div> when using unordered list in Markdown
 
 There is a [possibly related issue and discussion](https://discourse.gohugo.io/t/weird-stray-p-closing-paragraph-tags/14929/24)

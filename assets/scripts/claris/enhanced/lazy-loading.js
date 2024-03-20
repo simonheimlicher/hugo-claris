@@ -20,7 +20,7 @@ the value of `srcset` with the value of `data-srcset`
 NO: Load lazysizes from a CDN and let it take care of lazyloading using the
 value in the `data` attributes
 
-FIXME: Safari 16.4 does not reliably load images lazily when the `src` attribute
+NOTE: Safari 16.4 does not reliably load images lazily when the `src` attribute
 is set after 'DOMContentLoaded'. therefore, we additionally fire a second time
 on 'load'.
 
@@ -37,7 +37,7 @@ export function lazyLoadingInit() {
   const PREFIX = false; // 'lazy-loading:';
   // check if loading attribute supported
   if ('loading' in HTMLImageElement.prototype) {
-    // FIXME: Safari 16.4 does not respond to swapping in new value for `src`, therefore we schedule a
+    // NOTE: Safari 16.4 does not respond to swapping in new value for `src`, therefore we schedule a
     // second execution after the load event
     const isSafariBrowser = navigator.userAgent.indexOf('Safari') > -1 && navigator.userAgent.indexOf('Chrome') <= -1;
 

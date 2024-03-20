@@ -4,28 +4,6 @@
   padding: 0;
 }
 
-// FIXME: Avoid custom smooth scrolling
-// https://schepp.dev/posts/smooth-scrolling-and-page-search/
-// @keyframes smoothscroll-html {
-//   from,
-//   to {
-//     scroll-behavior: smooth;
-//   }
-// }
-// @keyframes smoothscroll-html-focus-within {
-//   from,
-//   to {
-//     scroll-behavior: smooth;
-//   }
-// }
-// html {
-//   animation: smoothscroll-html 1s;
-// }
-// html:focus-within {
-//   animation-name: smoothscroll-html-focus-within;
-//   scroll-behavior: smooth;
-// }
-
 html {
   font-kerning: normal;
   -webkit-text-size-adjust: 100%;
@@ -81,7 +59,7 @@ a {
   color: inherit;
   &:focus,
   &:focus-within {
-    // FIXME: Allow overrriding outline for accessibility
+    // Allow overrriding outline for accessibility
     outline: none; // !important;
   }
   &:hover {
@@ -266,7 +244,7 @@ blockquote {
   --box-margin-left: 0;
 
   --box-padding-top: 0.5rem;
-  // FIXME: It's important to avoid that the quotation mark sticks out on the right hand side
+  // NOTE: It's important to avoid that the quotation mark sticks out on the right hand side
   // This may induce a horizontal scoll bar with side effects such as the navigation bar
   // moving slightly even when 'position: fixed' is set
   --box-padding-right: 1.0rem;
@@ -288,7 +266,7 @@ blockquote {
   position: relative;
   // Setting overflow: hidden ensures that the blockquote only takes up
   // the available horizontal space when it is next to a float
-  // FIXME: This seems to trigger a but in Chrome v. 113: when scrolling to #fnref:2, e.g.,
+  // NOTE: This seems to trigger a bug in Chrome v. 113: when scrolling to #fnref:2, e.g.,
   // https://simon.heimlicher.com/transformation/why-okr-objectives-key-results-already-have-goals/#fnref:2
   // the content of the blockquote shifts upward.
   overflow: hidden;

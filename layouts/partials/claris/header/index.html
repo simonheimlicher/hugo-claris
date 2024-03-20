@@ -3,7 +3,7 @@
 {{- $contentType := default "claris" (partialCached "claris/_functions/alternative-type" . .Kind .Type) }}
 {{- $centerLogo := page.Param "centerLogo" }}
       <nav class="nav inner_horizontal inner_top-0 font-sans role-display">
-        {{- /* FIXME: partial "claris/header/logo" is required for mobile navigation to work. Otherwise, JS "theme/navigation-menu.js" will terminate early" */ -}}
+        {{- /* NOTE: partial "claris/header/logo" is required for mobile navigation to work. Otherwise, JS "theme/navigation-menu.js" will terminate early" */ -}}
         {{- if $centerLogo }}
           {{- partialCached "claris/header/logo" (dict "logoclass" "nav_hide" "Page" $page) }}
         {{- else }}

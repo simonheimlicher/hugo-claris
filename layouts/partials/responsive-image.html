@@ -152,7 +152,7 @@
 {{- with $page }}
   {{- $pictureResources := slice -}}
   <!-- Ensure we can use partialCached without accidentally re-using cached versions of the wrong image
-  FIXME: Using only a single dictionary as a "cache busting" 2nd argument to `partialCached`
+  NOTE: Using only a single dictionary as a "cache busting" 2nd argument to `partialCached`
   does not seem sufficient to avoid accidental re-use of image resources.
   In fact, passing both '$imageResourceVariant' and '$imageResourceVariant.resource'
   seems to avoid the issue, but it appears to be clearer to pass the

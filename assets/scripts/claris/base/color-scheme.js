@@ -25,7 +25,7 @@ catch (exception) {
 }
 
 /**
- * FIXME: Should use this approach
+ * Alternative approaches:
  * https://stackoverflow.com/a/75124760/617559
  * https://jsfiddle.net/35e0a97a/xmt1k659/78/
  */
@@ -232,7 +232,6 @@ export function colorSchemeInit() {
   document.querySelector('.nav_color-scheme_choice').addEventListener('click', function () {
     setUserColorScheme(true, true);
   });
-  // FIXME: Moved into claris/head/assets to allow loading
-  // variant images before JavaScript bundle has been fetchd
-  // setUserColorScheme();
+  // Note: Moved call to `setUserColorScheme` into `claris/head/assets`
+  // to allow loading variant images before JavaScript bundle has been fetchd
 }
