@@ -6,18 +6,23 @@
 {{ $dbg := printf "%s %q [%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .meta.resource (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{ $imgMeta := .meta }}
+{{ $versionName := $imgMeta.name }}
 {{ $versionResource := $imgMeta.resource }}
+{{ $versionIndex := $imgMeta.index }}
 {{ with partialCached "claris/_functions/resources/images/is-image" $versionResource $versionResource }}
   {{ $aspectRatio := partial "claris/_functions/resources/images/aspect-ratio" $versionResource }}
 
-  {{ $versionName := printf "aspect_%s" $aspectRatio.human }}
+  {{ if not $versionName }}
+    {{ $versionName = printf "aspect_%s" $aspectRatio.human }}
+  {{ end }}
   {{ range $k, $v := $imgMeta }}
-    {{ if (ne $k "resource") }}
+    {{ if not (in (slice "index" "name" "resource") $k) }}
       {{ $imgVersionMeta = merge $imgVersionMeta (dict $k $v) }}
     {{ end }}
   {{ end }}
   {{ $imgVersionMeta = merge $imgVersionMeta (dict "version" (dict
       $versionName (dict
+        "index" $versionIndex
         "resource" $versionResource
         "aspect" $aspectRatio.human
         "ratio" $aspectRatio.float

@@ -22,6 +22,7 @@
   -->
 
   {{- $defaultKind := "default" }}
+  {{- $defaultVersion := "default" }}
 
   {{- $featureImageAspectRatioMin := $page.Param "assets.styles.images.feature.ratio.min" | default 2 }}
   {{- $featureImageAspectRatioMax := $page.Param "assets.styles.images.feature.ratio.max" | default 4 }}
@@ -34,14 +35,14 @@
     (dict "kind" "excerpt"
       "generate" true
       "versions" (slice
-        (dict "id" "default"
+        (dict "id" $defaultVersion
           "width" 1200 "height" 675)
       )
     )
     (dict "kind" "search"
       "generate" true
       "versions" (slice
-        (dict "id" "default"
+        (dict "id" $defaultVersion
           "width" 1200 "height" 675)
         (dict "id" "aspect_4x3"
           "width" 1200 "height" 900)
@@ -52,7 +53,7 @@
     (dict "kind" "share"
       "generate" true
       "versions" (slice
-        (dict "id" "default"
+        (dict "id" $defaultVersion
           "width" 1200 "height" 675)
         (dict "id" "aspect_2x1"
           "width" 1200 "height" 600)
@@ -64,14 +65,14 @@
     (dict "kind" "hero"
       "generate" false
     )
-    (dict "kind" "default"
+    (dict "kind" $defaultKind
       "generate" false
     )
   ) }}
-    {{/*     (dict "kind" "default"
+    {{/*     (dict "kind" $defaultVersion
       "generate" true
       "versions" (slice
-        (dict "id" "default"
+        (dict "id" $defaultVersion
           "width" 3840 "height" 2160)
       )
     )
@@ -87,7 +88,7 @@
     (dict "kind" "hero"
       "generate" false
       "versions" (slice
-        (dict "id" "default"
+        (dict "id" $defaultVersion
           "width" 3840 "height" 3840)
       )
     ) */}}

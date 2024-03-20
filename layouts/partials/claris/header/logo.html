@@ -35,16 +35,7 @@
     "height" $logoImageHeight
   ) }}
 
-  {{- with $siteLogoParams }}
-    {{- $logoImageParams = partial "claris/_functions/resources/images/parse-args" (merge . (dict "Page" $page) ) }}
-    {{- if $debug }}
-      {{- warnf "%s logoImageParams:\n%v\nfrom site.Params.header.logo:\n%v" $dbg
-          (jsonify (dict "indent" "  ") $logoImageParams)
-          (jsonify (dict "indent" "  ") site.Params.header.logo) }}
-    {{- end }}
-  {{- end }}
-
-  {{- $logoImageResource = partialCached "claris/_functions/resources/images/get-process-image" (merge $logoImageParams
+  {{- $logoImageResource = partialCached "claris/_functions/resources/images/get-process-image" (merge $siteLogoParams
       (dict "Page" $page)) $logoImageParams -}}
   {{- if not $logoImageResource }}
     {{- errorf "[%s]: Logo image matching .src='%v' not found" $template $logoImageResource }}

@@ -71,6 +71,7 @@
       {{- end }}
     {{- end }}
 
+    {{- $defaultVersionMeta := false }}
     {{- range $verIdx, $verSpec := $versions }}
       {{- $verSpecString := index $versionDimensionStrings $verIdx }}
       {{- $closestAspectParams := merge $variantMeta (dict
@@ -134,6 +135,16 @@
           <!-- Only add `resource`, avoid referencing `.Permalink` as this would cause the image file to be copied
           to the output directory as-is -->
           {{- $imgMeta := (dict "resource" $versionResource) }}
+
+          {{- if not $defaultVersionMeta }}
+            {{- $imgMeta = merge $imgMeta (dict "name" $defaultVersionID) }}
+            {{- $defaultVersionMeta = true }}
+            {{- if $debug }}
+              {{- warnf "%s %v/%v/%v: passing name=%q with imgMeta:\n%v"
+                  $dbg $imageKind $variantName $verSpecString $imgMeta.name
+                      (jsonify (dict "indent" "  ") $imgMeta) }}
+            {{- end }}
+          {{- end }}
           {{- $processedVersionMeta = partial "claris/_functions/meta/images/version-meta" (dict "Page" $page "meta" $imgMeta) }}
 
           {{- if $debug }}
@@ -245,30 +256,30 @@
       {{/* Need to completely obliterate the $variantName variant in processedImageKindVariantMeta
            to be able to rewrite its `version` key via `merge` */}}
       {{- $revisedVariantMeta := merge $variantMeta (dict "version" false) }}
-      {{- if $debug }}
+      {{/* if $debug }}
         {{- warnf "%s %v/%v/*: Before updating .version in variant %q: revisedVariantMeta:\n%v"
             $dbg $imageKind $variantName $variantName
             (jsonify (dict "indent" "  ") $revisedVariantMeta) }}
-      {{- end }}
+      {{- end */}}
       {{- $revisedVariantMeta = merge $revisedVariantMeta (dict "version" $revisedVersionMeta) }}
-      {{- if $debug }}
+      {{/* if $debug }}
         {{- warnf "%s %v/%v/*: After updating .version in variant %q: revisedVariantMeta:\n%v"
             $dbg $imageKind $variantName $variantName
             (jsonify (dict "indent" "  ") $revisedVariantMeta) }}
-      {{- end }}
+      {{- end */}}
 
       {{- $processedImageKindVariantMeta = merge $processedImageKindVariantMeta (dict $variantName (dict "version" false) ) }}
-      {{- if $debug }}
+      {{/* if $debug }}
         {{- warnf "%s %v/%v/*: Before updating variant %q: processedImageKindVariantMeta:\n%v"
             $dbg $imageKind $variantName $variantName
             (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
-      {{- end }}
+      {{- end */}}
       {{- $processedImageKindVariantMeta = merge $processedImageKindVariantMeta (dict $variantName $revisedVariantMeta) }}
-      {{- if $debug }}
+      {{/* if $debug }}
         {{- warnf "%s %v/%v/*: After updating variant %q: processedImageKindVariantMeta:\n%v"
             $dbg $imageKind $variantName $variantName
             (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
-      {{- end }}
+      {{- end */}}
     {{- end }}
   {{- end }}
   {{- $kindVariantMeta = (dict
