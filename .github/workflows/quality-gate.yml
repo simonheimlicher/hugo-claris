@@ -1,10 +1,7 @@
 name: Quality gate
 
 on:
-  push:
-    branches:
-      - stage
-
+  workflow_dispatch:
 
 jobs:
   build:
