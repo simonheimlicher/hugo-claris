@@ -8,6 +8,7 @@
 {{- $debug := false }}
 
 {{ $defaultVariantName := "default" }}
+{{ $defaultVersionID := "default" }}
 
 {{- $imageResourceBaseArgs := dict "resourcetype" "image" }}
 {{- with .format }}
@@ -114,6 +115,7 @@ $imageKindMeta = (dict
       {{- end }} */}}
 
       {{ $versionParamList := $variantParam }}
+      {{ $versionIndex := 0 }}
       {{- if not (reflect.IsSlice $variantParam) }}
         {{- $versionParamList = slice $variantParam }}
       {{- end }}
@@ -189,9 +191,12 @@ $imageKindMeta = (dict
         {{- end }}
 
         {{- with $imgResource }}
+          {{- $versionName := cond (eq $versionIndex 0) $defaultVersionID false }}
           {{- $imgMeta := merge $validVersionParam (dict
             "src" nil
             "resource" $imgResource
+            "index" $versionIndex
+            "name" $versionName
           ) }}
           {{- $imgVersionMeta := partial "claris/_functions/meta/images/version-meta" (dict "Page" $page "meta" $imgMeta) }}
           {{- $imageKindVariantMeta = merge $imageKindVariantMeta (dict $variantName $imgVersionMeta) }}
@@ -202,6 +207,7 @@ $imageKindMeta = (dict
           {{- if not (isset $imageKindVariantMeta $defaultVariantName) }}
             {{- $imageKindVariantMeta = merge $imageKindVariantMeta (dict $defaultVariantName $imgVersionMeta) }}
           {{- end }}
+          {{ $versionIndex = add $versionIndex 1 }}
           {{- if $debug }}
             {{- $versionName := false }}
             {{- $versionResource := false }}

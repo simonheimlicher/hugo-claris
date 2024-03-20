@@ -1,9 +1,8 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/_components/feature-image" }}
-
-{{- $debug := false }}
-{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{- $debug := and true (page.Param "clarisdebug") }}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $title := .Title }}
 {{- $fetchPriority := "high" }}
@@ -18,31 +17,34 @@
 {{- $featureImage := "" }}
 {{- with $meta.Single.Data.Images }}
   {{- with $featureImage = .feature.variant.default }}
+    {{- if $debug }}
+      {{- warnf "%s Render feature image based on .feature.variant.default:\n%v" $dbg
+          (jsonify (dict "indent" "  ") $featureImage) -}}
+    {{- end }}
     {{- $classPrefix := printf "feature-image" }}
     {{- $featureImageAspectRatioMin := $page.Param "assets.styles.images.feature.ratio.min" | default 2 }}
     {{- $featureImageAspectRatioMax := $page.Param "assets.styles.images.feature.ratio.max" | default 4 }}
 
-    {{- $src := default .version.default.src (index .version $featureImageStyle).src }}
-    {{- $alt := default ($src.Name | humanize | strings.FirstUpper) $featureImage.alt }}
-
-            {{/* "landscape" (dict
-              "src" $src
-              "position" $featureImage.position
-              "aspectratio" $featureImageAspectRatioMax
-              "media" "min-aspect-ratio: 1"
-            ) */}}
+    {{- $resource := default .version.default.resource (index .version $featureImageStyle).resource }}
+    {{- /* if $debug }}
+      {{- warnf "%s .version.default.resource.Name=%v .version:\n%v" $dbg .version.default.resource.Name
+          (jsonify (dict "indent" "  ") .version) -}}
+    {{- end */ -}}
+    {{- $alt := default ($resource.Name | humanize | strings.FirstUpper) $featureImage.alt }}
 
     {{- $featureImageArgs := (dict
-      "variant" (dict
+      "version" (dict
         "default" (dict
-          "version" (dict
-            "default" (dict
-              "src" $src
-              "position" $featureImage.position
-              "aspectratio" $featureImageAspectRatioMin
-              "media" "max-aspect-ratio: 1"
-            )
-          )
+          "resource" $resource
+          "position" $featureImage.position
+          "aspectratio" $featureImageAspectRatioMin
+          "media" "max-aspect-ratio: 1"
+        )
+        "landscape" (dict
+          "resource" $resource
+          "position" $featureImage.position
+          "aspectratio" $featureImageAspectRatioMax
+          "media" "min-aspect-ratio: 1"
         )
       )
       "alt" $alt
@@ -56,14 +58,13 @@
       "Debug" $debug
     ) }}
     {{- if $debug }}
-      {{- warnf "%s Feature image data: featureImage=%v\n" $dbg
-          (jsonify (dict "indent" "  ") $featureImage) -}}
-      {{- warnf "%s Now calling render-image with src=%v and featureImageArgs=%v"
-          $dbg $src
-          (jsonify (dict "indent" "  ") $featureImageArgs) -}}
+      {{- warnf "%s Now calling render-image with featureImageArgs:\n%v"
+          $dbg (jsonify (dict "indent" "  ") $featureImageArgs) -}}
     {{- end }}
 
-    {{- partial "claris/_components/render-image" (merge $featureImageArgs (dict "Page" $page)) $featureImageArgs }}
+    {{- if $debug }}
+      {{- partial "claris/_components/render-image" (merge $featureImageArgs (dict "Page" $page)) $featureImageArgs }}
+    {{- end }}
 
   {{- end }}
 {{- end }}
