@@ -101,7 +101,7 @@ export function tableOfContentsInit() {
     }
 
     const resetActiveNavigationElement = function (navigationElement) {
-        if (navigationElement.classList && navigationElement.classList.contains('active')) {
+        if (navigationElement?.classList.contains('active')) {
             tableOfContentsNav.classList.remove('active');
             for (let idx = 0, el = navigationElements[0]; idx < navigationElements.length; el = navigationElements[++idx]) {
                 el.classList.remove('active');
@@ -125,7 +125,6 @@ export function tableOfContentsInit() {
         deb(PREFIX, 'Declare addScrollObserver');
         addScrollObserver = function(navigationElements, content) {
             deb(PREFIX, 'Run addScrollObserver()');
-            const navigationElementList = Array.from(navigationElements);
             const sectionHeadings = function (navigationElementList, content) {
                 const navigationElementIds = navigationElementList.map(elem => decodeURI(elem.querySelector('a').href.replace(/.*#([^#]+)/, '$1')));
                 // deb(PREFIX, "navigationElementIds:"); deb(PREFIX, navigationElementIds);
@@ -189,13 +188,12 @@ export function tableOfContentsInit() {
 
             const setVisibleNavigationElement = function (visibleTop, visibleBottom, className) {
                 let aboveSection, currentSection;
-                // let sectionAboveViewport = sectionHeadings[0];
                 deb(PREFIX, "setVisibleNavigationElement():");
-                for (let i = 0; i < sectionHeadings.length; ++i) {
-                    const pos = getSectionHeadingPosition(visibleTop, visibleBottom, sectionHeadings[i]);
-                    deb(PREFIX, "    Position of section " + sectionHeadings[i].id + ': ' + pos);
+                for (const element of sectionHeadings) {
+                    const pos = getSectionHeadingPosition(visibleTop, visibleBottom, element);
+                    deb(PREFIX, "    Position of section " + element.id + ': ' + pos);
                     if (pos == 'above') {
-                        aboveSection = sectionHeadings[i];
+                        aboveSection = element;
                         deb(PREFIX, "    pos=" + pos + " --> aboveSection=" + aboveSection.id);
                         continue;
                     }
@@ -205,20 +203,18 @@ export function tableOfContentsInit() {
                             deb(PREFIX, "        currentSection = aboveSection=" + aboveSection.id);
                         }
                         else {
-                            currentSection = sectionHeadings[i];
+                            currentSection = element;
                             deb(PREFIX, "        currentSection = currentSection=" + currentSection.id);
                         }
                         break;
                     }
+                    else if (aboveSection) {
+                        deb(PREFIX, "        currentSection = aboveSection=" + aboveSection.id);
+                        currentSection = aboveSection;
+                    }
                     else {
-                        if (aboveSection) {
-                            deb(PREFIX, "        currentSection = aboveSection=" + aboveSection.id);
-                            currentSection = aboveSection;
-                        }
-                        else {
-                            currentSection = sectionHeadings[i];
-                            deb(PREFIX, "        currentSection = currentSection=" + currentSection.id);
-                        }
+                        currentSection = element;
+                        deb(PREFIX, "        currentSection = currentSection=" + currentSection.id);
                     }
                     deb(PREFIX, "    pos=" + pos + " --> currentSection=" + currentSection.id);
                     break;

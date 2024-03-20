@@ -340,7 +340,7 @@ blockquote {
         margin: 0;
         padding: 0;
       }
-      + .highlight_wrap {
+      & + .highlight_wrap {
         margin-top: 2.25rem;
       }
     }
@@ -385,4 +385,4 @@ dt + dt + dd {
   dl {
     --dt-width: 25%;
   }
-};
+}
