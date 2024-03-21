@@ -52,7 +52,7 @@ export function tableOfContentsInit() {
                 for (let liIdx = 0, innerLI = innerLIs[0]; liIdx < innerLIs.length; innerLI = innerLIs[++liIdx]) {
                     if (innerLI && !innerLI.innerHTML) {
                         // Remove empty list item from DOM
-                        // deb(PREFIX, "Remove empty LI: ", innerLI, innerLI.parentElement);
+                        // Remove empty LI: ", innerLI, innerLI.parentElement
                         innerLI.remove();
                     }
                 }
@@ -60,12 +60,9 @@ export function tableOfContentsInit() {
                 for (let ulIdx = 0, innerUL = innerULs[0]; ulIdx < innerULs.length; innerUL = innerULs[++ulIdx]) {
                     if (innerUL && !(innerUL.innerHTML.trim())) {
                         // Remove empty unordered list from DOM
-                        // deb(PREFIX, "Remove empty UL: ", innerUL);
+                        // "Remove empty UL: ", innerUL
                         innerUL.remove();
                     }
-                    // else {
-                    //     deb(PREFIX, "Keep non-empty UL: '" + innerUL.innerHTML.trim() + "'");
-                    // }
                 }
                 navigationElementList.push(headingItem);
             }
@@ -126,15 +123,14 @@ export function tableOfContentsInit() {
         addScrollObserver = function(navigationElements, content) {
             deb(PREFIX, 'Run addScrollObserver()');
             const sectionHeadings = function (navigationElementList, content) {
-                const navigationElementIds = navigationElementList.map(elem => decodeURI(elem.querySelector('a').href.replace(/.*#([^#]+)/, '$1')));
-                // deb(PREFIX, "navigationElementIds:"); deb(PREFIX, navigationElementIds);
+                const navigationElementIds = navigationElementList.map(elem => decodeURI(elem.querySelector('a').hash));
 
                 let sectionHeadings = [];
 
                 for (let idx = 0, navId = navigationElementIds[0]; idx < navigationElementIds.length; navId = navigationElementIds[++idx]) {
                     let sectionHeading = document.getElementById(navId);
                     if (sectionHeading) {
-                        // deb(PREFIX, "    sectionHeading " + sectionHeading + " =  '" + navId + "'");
+                        // "    sectionHeading " + sectionHeading + " =  '" + navId + "'");
                         sectionHeadings.push(sectionHeading);
                     }
                     else {
@@ -243,10 +239,11 @@ export function tableOfContentsInit() {
                 const visibleTop = navigationBarRect.top == 0 ? navigationBarRect.bottom : 0;
                 const visibleBottom = window.innerHeight;
                 const currentClassName = 'visible';
-                // deb(PREFIX, "rootMargin=" + observer.rootMargin);
+                // "rootMargin=" + observer.rootMargin);
 
                 for (let idx = 0, entry = entries[0]; idx < entries.length; entry = entries[++idx]) {
-                    deb(PREFIX, "scrollHandler(target=" + entry.target.tagName + " id='" + entry.target.id + "'): intersectionRatio=" + entry.intersectionRatio);
+                  deb(PREFIX, "scrollHandler(target=" + entry.target.tagName + " id='" + entry.target.id
+                      + "'): intersectionRatio=" + entry.intersectionRatio);
                     setVisibleNavigationElement(visibleTop, visibleBottom, currentClassName);
                     if (!entry.isIntersecting) {
                         const navigationElement = getNavigationElement(entry.target.id);
@@ -273,146 +270,6 @@ export function tableOfContentsInit() {
             for (let idx = 0, sectionHeading = sectionHeadings[0]; idx < sectionHeadings.length; sectionHeading = sectionHeadings[++idx]) {
                 scrollObserver.observe(sectionHeading)
             }
-
-            /*
-            const scrollHandler = function (entries) {
-                // const visibleTop = document.querySelector('.header_claris').getBoundingClientRect().bottom;
-                const visibleTop = 120;
-                const visibleBottom = window.innerHeight;
-                const currentClassName = 'current';
-
-                entries.forEach(entry => {
-                    // deb(PREFIX, "scrollHandler(target=" + entry.target.tagName + " id='" + entry.target.id + "'): intersectionRatio=" + entry.intersectionRatio);
-                    var target = entry.target;
-                    if (target.id == "lastChildId") {
-                        deb(PREFIX, "scrollHandler(section.id='" + target.id + "'): intersectionRatio=" + entry.intersectionRatio);
-                        if (entry.isIntersecting) {
-                            const precedingNavigationElement = navigationElements.slice(-2)[0];
-                            precedingNavigationElement.classList.remove('visible');
-                            deb(PREFIX, "    removed visible from preceding element " + precedingNavigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
-                        }
-                        else {
-                            const precedingNavigationElement = navigationElements.slice(-2)[0];
-                            precedingNavigationElement.classList.add('visible');
-                            deb(PREFIX, "    added visible to preceding element " + precedingNavigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
-                        }
-                        return;
-                    }
-                    const sectionHeading = target;
-                    const sectionLink = tableOfContentsNav.querySelector(`a[href="#${target.id}"]`);
-                    if (!sectionLink) {
-                        if (DEBUG) {
-                            deb(PREFIX, "scrollHandler(section.id='" + target.id + "'): intersectionRatio=" + entry.intersectionRatio);
-                            deb(PREFIX, "    sectionLink:"); deb(PREFIX, sectionLink);
-                            deb(PREFIX, `    tableOfContentsNav = document.querySelector('.table_of_contents nav'); tableOfContentsNav.querySelector('a[href="#${target.id}"]')`);
-                        }
-                        return;
-                    }
-                    const navigationElement = sectionLink.parentElement;
-                    if (!navigationElement) return;
-
-                    if (entry.isIntersecting) {
-                        if (entry.boundingClientRect.top < visibleTop
-                            || (entry.boundingClientRect.top - visibleTop) < (visibleBottom - entry.boundingClientRect.bottom)) {
-                            const precedingNavigationElement = navigationElements[Math.max(0, navigationElements.indexOf(navigationElement) - 1)];
-                            if (DEBUG) {
-                                if (entry.boundingClientRect.top < visibleTop) {
-                                    // entered viewport at the top edge, hence scroll direction is up
-                                    deb(PREFIX, "scrollHandler('" + target.id + "'): entered from top");
-                                    // navigationElement.classList.add('from-top');
-                                }
-                                else {
-                                    // entered viewport at the top edge, hence scroll direction is up
-                                    deb(PREFIX, "scrollHandler('" + target.id + "'): likely entered from top");
-                                    // navigationElement.classList.add('likely-from-top');
-                                }
-                                deb(PREFIX, "    add visible to entering element " + navigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
-                                deb(PREFIX, "    add visible to preceding element " + precedingNavigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
-                            }
-                            navigationElement.classList.add('visible');
-                            precedingNavigationElement.classList.add('visible');
-                        }
-                        else if (entry.boundingClientRect.bottom > visibleBottom
-                            || (entry.boundingClientRect.top - visibleTop) >= (visibleBottom - entry.boundingClientRect.bottom)) {
-                            if (DEBUG) {
-                                if (entry.boundingClientRect.bottom > visibleBottom) {
-                                    // entered viewport at the top edge, hence scroll direction is up
-                                    deb(PREFIX, "scrollHandler('" + target.id + "'): entered from bottom");
-                                    // navigationElement.classList.add('from-bottom');
-                                }
-                                else {
-                                    // entered viewport at the top edge, hence scroll direction is up
-                                    deb(PREFIX, "scrollHandler('" + target.id + "'): likely entered from bottom");
-                                    // navigationElement.classList.add('likely-from-bottom');
-                                }
-                                deb(PREFIX, "    add visible to entering element " + navigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
-                            }
-                            navigationElement.classList.add('visible');
-                        }
-                        // console.print("scrollHandler('" + target.id + "'): entered from elsewhere:"
-                        //     + "\n  top=" + Math.round(entry.boundingClientRect.top)
-                        //     + "\n  top-visibleTop=" + Math.round(entry.boundingClientRect.top - visibleTop)
-                        //     + "\n  bottom=" + Math.round(visibleBottom)
-                        //     + "\n  visibleBottom-bottom=" + Math.round(visibleBottom - entry.boundingClientRect.bottom));
-                    }
-                    else {
-                        resetActiveNavigationElement(navigationElement);
-                        if ( entry.boundingClientRect.top < visibleTop
-                            || (entry.boundingClientRect.top - visibleTop) < (visibleBottom - entry.boundingClientRect.bottom)) {
-                            const idx = Math.max(0, navigationElements.indexOf(navigationElement));
-                            if (DEBUG) {
-                                if (entry.boundingClientRect.top < visibleTop) {
-                                    // left viewport at the top edge, hence scroll direction is down
-                                    deb(PREFIX, "scrollHandler('" + target.id + "'): left at top");
-                                    // navigationElement.classList.add('at-top');
-                                }
-                                else {
-                                    // left viewport at the top edge, hence scroll direction is down
-                                    deb(PREFIX, "scrollHandler('" + target.id + "'): likely left at top");
-                                    // navigationElement.classList.add('likely-at-top');
-                                }
-                                const precedingNavigationElements = navigationElements.slice(0, idx);
-                                deb(PREFIX, "scrollHandler('" + sectionHeading.id + "'): sectionLink=" + sectionLink.href.replace(/.*#([^#]+)/, '$1')
-                                    + " navigationElement=" + navigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1')
-                                    + " idx=" + idx + " precedingNavigationElements: ");
-                                deb(PREFIX, precedingNavigationElements);
-                            }
-
-                            // // Only considering the immediately preceding element is not sufficient
-                            // const precedingNavigationElement = navigationElements[Math.max(0, navigationElements.indexOf(navigationElement) - 1)];
-                            // precedingNavigationElement.classList.remove('visible');
-                            deb(PREFIX, "    removed visible from preceding element " + precedingNavigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
-                            for (let i=0; i < idx; ++i) {
-                                navigationElements[i].classList.remove('visible');
-                                // deb(PREFIX, "    removed visible from " + elem.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
-                            };
-                        }
-                        else if ( entry.boundingClientRect.bottom > visibleBottom
-                            || (entry.boundingClientRect.top - visibleTop) >= (visibleBottom - entry.boundingClientRect.bottom) ) {
-                            if (DEBUG) {
-                                if (entry.boundingClientRect.bottom > visibleBottom) {
-                                    // left viewport at the bottom edge, hence scroll direction is up
-                                    deb(PREFIX, "scrollHandler('" + target.id + "'): left at bottom");
-                                    // navigationElement.classList.add('at-bottom');
-                                }
-                                else {
-                                    // left viewport at the bottom edge, hence scroll direction is up
-                                    deb(PREFIX, "scrollHandler('" + target.id + "'): likely left at bottom");
-                                    // navigationElement.classList.add('likely-at-bottom');
-                                }
-                            }
-                            navigationElement.classList.remove('visible');
-                            deb(PREFIX, "    removed visible from leaving element " + navigationElement.querySelector('a').href.replace(/.*#([^#]+)/, '$1'));
-                        }
-                        // console.print("scrollHandler('" + target.id + "'): entered left to elsewhere:"
-                        //     + "\n  top=" + Math.round(entry.boundingClientRect.top)
-                        //     + "\n  top-visibleTop=" + Math.round(entry.boundingClientRect.top - visibleTop)
-                        //     + "\n  bottom=" + Math.round(visibleBottom)
-                        //     + "\n  visibleBottom-bottom=" + Math.round(visibleBottom - entry.boundingClientRect.bottom));
-                    }
-                });
-            };
-            */
         }
     }
     deb(PREFIX, "Declared addScollObserver");

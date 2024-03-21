@@ -67,7 +67,7 @@ function updateSourceMedia(scheme) {
         // independently of the preferred color scheme...
         if (source?.dataset.media.match(colorSchemeMatchRegex)) {
           source.media = source.dataset.media.replace(colorSchemeEliminateRegex, '') || 'all';
-          // deb(PREFIX, 'source.dataset.media=' + source.dataset.media + ' --> ' + source.media);
+          // 'source.dataset.media=' + source.dataset.media + ' --> ' + source.media
           source.srcset = source.dataset.srcset;
           variantStyleAttr = source.dataset.style;
         // ... otherwise, remove the 'srcset' attribute to hide the image

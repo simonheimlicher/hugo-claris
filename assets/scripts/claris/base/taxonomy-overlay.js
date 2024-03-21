@@ -47,7 +47,6 @@ export function taxonomyOverlayInit() {
   })();
 
   (function sortTags() {
-    // console.log("sortTags: add click event listener");
     doc.addEventListener('click', function(event){
       const activeClassName = `${taxonomyOverlayPrefix}active`;
       const tagsSortSelector = `.${taxonomyOverlayPrefix}sort`; // .tags_sort
@@ -58,14 +57,14 @@ export function taxonomyOverlayInit() {
 
       const target = event.target;
       const isSortButton = target.matches(tagsSortSelector) || target.matches(tagsSortButtonSelector);
-      // console.log('sortTags(): isSortButton=' + isSortButton + ' target=', target);
+      // isSortButton=' + isSortButton + ' target=', target
       if(isSortButton) {
         const tagsList = target.closest(tagsListSelector);
         const sortButton = target.closest(tagsSortSelector);
-        // console.log('sortTags(): modifyClass(sortButton, "sorted") with sortButton=', sortButton);
+        // modifyClass(sortButton, "sorted") with sortButton=', sortButton
         modifyClass(sortButton, tagsSortedClassName);
         const tags = elems(articleTagSelector, tagsList);
-        // console.log(`sortTags(): ${articleTagSelector} returned tags:`, tags);
+        // ${articleTagSelector} returned tags:`, tags
         for (let idx = 0, tag = tags[0]; idx < tags.length; tag = tags[++idx]) {
           const order = tag.dataset.position;
           const reverseSorting = containsClass(tag, activeClassName);
