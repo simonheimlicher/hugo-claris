@@ -1127,7 +1127,7 @@
       display: inline-flex;
       justify-content: center;
       align-items: center;
-      height: 3rem;
+      height: calc(2 * var(--icon-height) );
       position: relative;
       z-index: 5;
       cursor: pointer;
