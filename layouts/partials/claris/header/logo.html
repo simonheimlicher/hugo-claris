@@ -8,9 +8,6 @@
 {{- $logoImageWidth := 96 }}
 {{- $logoImageHeight := $logoImageWidth }}
 {{- $logoClass := .logoclass }}
-
-{{- $template := "claris/header/logo" }}
-
 {{- $logoURL := (site.GetPage "/").RelPermalink }}
 {{- with (page.Param "header.logo.linkpath") }}
   {{- $logoURL = printf "%s" . | relLangURL }}
@@ -29,14 +26,8 @@
 
 {{- $logoImageResource := false }}
 {{- with $logoImagePath }}
-  {{- $logoImageParams := (dict
-    "src" .
-    "width" $logoImageWidth
-    "height" $logoImageHeight
-  ) }}
-
   {{- $logoImageResource = partialCached "claris/_functions/resources/images/get-process-image" (merge $siteLogoParams
-      (dict "Page" $page)) $logoImageParams -}}
+      (dict "Page" $page)) -}}
   {{- if not $logoImageResource }}
     {{- errorf "[%s]: Logo image matching .src='%v' not found" $template $logoImageResource }}
   {{- end }}
