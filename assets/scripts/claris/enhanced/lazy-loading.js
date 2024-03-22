@@ -41,7 +41,7 @@ export function lazyLoadingInit() {
     // second execution after the load event
     const isSafariBrowser = navigator.userAgent.indexOf('Safari') > -1 && navigator.userAgent.indexOf('Chrome') <= -1;
 
-    // get all <img> and <source> elements
+    // get all <img> and <source> elements with `data-src` and `data-srcset` attributes
     const images = document.querySelectorAll('img[data-src]');
     const sources = document.querySelectorAll('source[data-srcset]');
 
@@ -55,7 +55,7 @@ export function lazyLoadingInit() {
     // loop through <img>s setting the src attribute and srcset and sizes if present
     // but only if there is no data-media attribute
     for (let img of images) {
-      if (!img.dataset?.media.includes('prefers-color-scheme')) {
+      if (!img.dataset.media?.includes('prefers-color-scheme')) {
         deb(PREFIX, 'Swapping in src for ', img);
         try {
           img.src = img.dataset.src;
@@ -87,7 +87,7 @@ export function lazyLoadingInit() {
     // loop through <source>s setting the srcset attribute and sizes if present
     // but only if there is no data-media attribute
     for (let source of sources) {
-      if ( !source.dataset?.media.includes('prefers-color-scheme')) {
+      if ( !source.dataset.media?.includes('prefers-color-scheme')) {
         try {
           source.srcset = source.dataset.srcset;
           if (!isSafariBrowser || lazyLoadingInitDone) {
