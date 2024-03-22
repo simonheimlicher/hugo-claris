@@ -21,7 +21,7 @@ $mediaType: '{{ .MediaType }}';
 {{- $colorBackgroundLit := default "hsl(200, 10%, 95%)" site.Params.colors.colorBackgroundLit }}
 {{- $colorBackgroundDim := default "hsl(200, 10%, 10%)" site.Params.colors.colorBackgroundDim }}
 {{- $onBackgroundLit := default "hsl(200, 10%, 13%)" site.Params.colors.onBackgroundLit }}
-{{- $onBackgroundDim := default "hsl(200, 10%, 95%)" site.Params.colors.onBackgroundDim }}
+{{- $onBackgroundDim := default "hsl(200, 10%, 100%)" site.Params.colors.onBackgroundDim }}
 
 {{- with ($page.Param "colorPrimaryLit") }}
 $colorPrimaryLit: {{ . }};

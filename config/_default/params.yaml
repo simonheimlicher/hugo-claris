@@ -186,7 +186,7 @@ colors:
   colorBackgroundLit: "hsl(200, 10%, 95%)"
   colorBackgroundDim: "hsl(200, 10%, 10%)"
   onBackgroundLit: "hsl(200, 10%, 13%)"
-  onBackgroundDim: "hsl(200, 10%, 95%)"
+  onBackgroundDim: "hsl(200, 10%, 100%)"
 
 meta:
   favicon:

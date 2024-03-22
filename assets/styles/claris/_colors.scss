@@ -62,8 +62,8 @@ $link-hover-lit: darken($colorPrimaryLit, 10%);
 $link-focus-lit: darken($colorPrimaryLit, 0%);
 $link-active-lit: darken($colorPrimaryLit, 0%);
 
-$link-dim: lighten($colorPrimaryDim, 20%);
-$link-visited-dim: lighten(desaturate(adjust-hue($colorPrimaryDim, 30), 50%), 30%);
+$link-dim: darken($colorPrimaryDim, 5%);
+$link-visited-dim: lighten(desaturate(adjust-hue($colorPrimaryDim, 30), 50%), 20%);
 $link-hover-dim: lighten($colorPrimaryDim, 30%);
 $link-focus-dim: lighten($colorPrimaryDim, 0%);
 $link-active-dim: lighten($colorPrimaryDim, 0%);
