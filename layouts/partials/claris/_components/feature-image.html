@@ -1,7 +1,7 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/_components/feature-image" }}
-{{- $debug := and true (page.Param "clarisdebug") }}
+{{- $debug := and false (page.Param "clarisdebug") }}
 {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $title := .Title }}
@@ -38,13 +38,12 @@
           "resource" $resource
           "position" $featureImage.position
           "aspectratio" $featureImageAspectRatioMin
-          "media" "max-aspect-ratio: 1"
         )
-        "landscape" (dict
+        "portrait" (dict
           "resource" $resource
           "position" $featureImage.position
           "aspectratio" $featureImageAspectRatioMax
-          "media" "min-aspect-ratio: 1"
+          "media" "(min-aspect-ratio: 2/1)"
         )
       )
       "alt" $alt
@@ -62,9 +61,7 @@
           $dbg (jsonify (dict "indent" "  ") $featureImageArgs) -}}
     {{- end }}
 
-    {{- if $debug }}
-      {{- partial "claris/_components/render-image" (merge $featureImageArgs (dict "Page" $page)) $featureImageArgs }}
-    {{- end }}
+    {{- partial "claris/_components/render-image" (merge $featureImageArgs (dict "Page" $page)) $featureImageArgs }}
 
   {{- end }}
 {{- end }}
