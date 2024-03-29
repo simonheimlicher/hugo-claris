@@ -84,6 +84,16 @@
 
 {{- with partialCached "claris/_functions/asset-bundles" $ctx $assetVariant -}}
   {{- with .Scripts.body.resource }}
-    <script type="module" src="{{ .RelPermalink }}" fetchpriority="low" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
+    <script>
+      window.addEventListener("load", function () {
+          const script = document.createElement("script");
+          script.type = "module";
+          script.src = "{{ .RelPermalink }}";
+          script.fetchpriority = "low";
+          script.integrity = "{{ .Data.Integrity }}"
+          script.crossorigin = "anonymous";
+          document.head.appendChild(script);
+      });
+    </script>
   {{- end -}}
 {{- end -}}
