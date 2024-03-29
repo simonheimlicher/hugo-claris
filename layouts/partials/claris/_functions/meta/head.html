@@ -163,7 +163,7 @@
 
     {{ else if in (slice "term") .Kind }}
 
-      {{ $termTitle := default $title (T $title 1) }}
+      {{ $termTitle := default $title (T (lower $title) 1) }}
       {{ $headline = default .Data.Singular $termTitle }}
       {{ if in (slice "tag") .Data.Singular }}
         {{ $supertitle = printf "%s %s" (T "articles_with_taxonomy") (T .Data.Singular 1) | strings.FirstUpper }}
