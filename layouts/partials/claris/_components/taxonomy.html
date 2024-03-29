@@ -33,15 +33,17 @@
     {{- end }}
     {{- $recentTagsInfo := $recentTagsScratch.Get "tagsInfo" }}
     {{- if gt $recentTagsInfo 0 }}
-      <div class="sidebar_item">
-        {{ printf "<h%v class=\"taxonomy\" id=\"%s-section\">" $headingLevel $key | safeHTML }}{{ T $key | default $key | strings.FirstUpper }}{{ printf "</h%v>" $headingLevel | safeHTML }}
-        <nav class="taxonomy-overlay_nav">
+        <div class="sidebar_item">
+          {{ printf "<h%v class=\"taxonomy\" id=\"%s-section\">" $headingLevel $key | safeHTML }}{{ default $key (T $key) | strings.FirstUpper }}{{ printf "</h%v>" $headingLevel | safeHTML }}
+          <nav class="taxonomy-overlay_nav">
           {{- $slicedTags := sort (sort (sort $recentTagsInfo "lastArticleDate" "desc") "recentCount" "desc") "tagName" "desc" | first $tagsLimit }}
           {{- $taxonomyPageURL := relLangURL $key -}}
           {{- range $slicedTags }}
             {{- $tag := .tag }}
             {{- $tagTitle := $tag.Page.Title }}
-            {{- with T $tagTitle }}
+            {{- /* `$tag.Page.Title` returns the capitalized version of the tag.
+                Therefore, we need to lowercase it again to look up its translation */ -}}
+            {{- with T (lower $tagTitle) }}
               {{- $tagTitle = . }}
             {{- else }}
               {{- $tagTitle = strings.FirstUpper $tagTitle }}
@@ -57,15 +59,17 @@
             </a>
           {{- end }}
           {{- if (or $taxonomyListComplete (gt (len $taxonomy.ByCount) $tagsLimit) ) }}
-          <br>
-          <div class="taxonomy-overlay_toggle button button_translucent">{{ T (printf "all_%s" (lower $key)) }}</div>
+            <br>
+            <div class="taxonomy-overlay_toggle button button_translucent">{{ T (printf "all_%s" (lower $key)) }}</div>
           {{- $tagsInfo := newScratch }}
-          <div class="taxonomy-overlay_container">
-            <div class="taxonomy-overlay_list">
+            <div class="taxonomy-overlay_container">
+              <div class="taxonomy-overlay_list">
               {{- range $taxonomy.Alphabetical }}
                 {{- $tagsInfo.Add "tagsInfo" (slice .Name .Count)}}
                 {{- $tagTitle := .Page.Title }}
-                {{- with T $tagTitle }}
+                {{- /* `$tag.Page.Title` returns the capitalized version of the tag.
+                    Therefore, we need to lowercase it again to look up its translation */ -}}
+                {{- with T (lower $tagTitle) }}
                   {{- $tagTitle = . }}
                 {{- else }}
                   {{- $tagTitle = strings.FirstUpper $tagTitle }}
@@ -79,18 +83,18 @@
                   <span class="button_tally">{{ .Count }}</span>
                 </a>
               {{- end }}
-              <div class="taxonomy-overlay_sort">
-                <span class="taxonomy-overlay_sort_button taxonomy-overlay_sort_button_alphabetically" title="{{ T `taxonomy-overlay_sort_alphabetically` }}">{{ T `taxonomy-overlay_sort_alphabetically` }}</span>
-                <span class="taxonomy-overlay_sort_button taxonomy-overlay_sort_button_frequency" title="{{ T `taxonomy-overlay_sort_frequency` }}">{{ T `taxonomy-overlay_sort_frequency` }}</span>
+                <div class="taxonomy-overlay_sort">
+                  <span class="taxonomy-overlay_sort_button taxonomy-overlay_sort_button_alphabetically" title="{{ T `taxonomy-overlay_sort_alphabetically` }}">{{ T `taxonomy-overlay_sort_alphabetically` }}</span>
+                  <span class="taxonomy-overlay_sort_button taxonomy-overlay_sort_button_frequency" title="{{ T `taxonomy-overlay_sort_frequency` }}">{{ T `taxonomy-overlay_sort_frequency` }}</span>
+                </div>
+                <span class="taxonomy-overlay_hide"><svg class="icon">
+                  <use xlink:href="#closeme"></use>
+                </svg></span>
               </div>
-              <span class="taxonomy-overlay_hide"><svg class="icon">
-              <use xlink:href="#closeme"></use>
-            </svg></span>
             </div>
-          </div>
-        </nav>
-      </div>
+          </nav>
+        </div>
       {{- end }}
     {{- end }}
   {{- end }}
-{{- end }}
+{{- end -}}
