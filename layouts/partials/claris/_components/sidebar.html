@@ -6,16 +6,16 @@
   {{- $recentMaxYears := default 5 ($page.Param "recentMaxYears") }}
   {{- $relatedIndices := default (slice "tags" "keywords") ($page.Param "relatedIndices") }}
   {{- $numRelated := default 3 ($page.Param "numberOfRelatedArticles") }}
-  {{ if (ne ($page.Param "sidebar") false) }}
+  {{- if (ne ($page.Param "sidebar") false) }}
 
     {{- $articles := where (where site.RegularPages "Permalink" "!=" .Permalink) "Type" "in" ($page.Param "mainSections") }}
     {{- /* The below is supported from hugo version 0.111.0 onwards
         See: https://gohugo.io/content-management/related/ */ -}}
-    {{ $relatedOpts := (dict
+    {{- $relatedOpts := (dict
       "indices" $relatedIndices
       "document" $page
     ) }}
-    {{ $relatedArticles := site.RegularPages.Related $relatedOpts }}
+    {{- $relatedArticles := site.RegularPages.Related $relatedOpts }}
     {{- $freshRelatedArticles := (where
         (where $relatedArticles "PublishDate" "ge" (now.AddDate (int (sub 0 $recentMaxYears)) 0 0))
         "Params.featured" "<>" true) }}
@@ -38,8 +38,8 @@
       (dict "relationship" "recent" "length" (len $recentArticles)) ) }}
     {{- $numRelationshipTypes := (len (where $numAvailableArticles "length" "gt" 0) ) }}
 
-    {{/* {{- warnf "%s[%s]: numAvailableArticles:%v numRelationshipTypes:%d [related:%d featured:%d recent:%d]"
-        $page $template $numAvailableArticles $numRelationshipTypes $relatedArticles $featuredArticles $recentArticles }} */}}
+    {{- /* warnf "%s[%s]: numAvailableArticles:%v numRelationshipTypes:%d [related:%d featured:%d recent:%d]"
+        $page $template $numAvailableArticles $numRelationshipTypes $relatedArticles $featuredArticles $recentArticles */ -}}
 
     {{- if (gt $numRelationshipTypes 0) }}
     <aside class="sidebar font-meta{{ with $containerClass }} {{ . }}{{ end }}">

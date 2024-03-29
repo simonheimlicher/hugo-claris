@@ -55,7 +55,7 @@
     {{- partial "claris/_components/title" . }}
   </header>
   <div class="{{ delimit $mainInnerClassList ` ` }}" id="contentContainer">
-    {{ partial (printf "%s/main/%s" $type $mainKind) $componentParams }}
+    {{- partial (printf "%s/main/%s" $type $mainKind) $componentParams }}
     {{- if $sidebar }}
       {{ partial "claris/_components/sidebar" (merge $componentParams (dict
         "HeadingLevel" 2
@@ -63,4 +63,4 @@
     {{- end }}
   </div>
   {{ partial "html-comment" (printf "[%s]: END" $template) }}
-{{- end }}
+{{- end -}}
