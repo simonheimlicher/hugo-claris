@@ -42,7 +42,7 @@
     "Template" $template) $subjectPage.Permalink }}
 {{- end }}
 
-{{- if $debug }}
+{{- if and false $debug }}
   {{- warnf "%s excerptMeta.Single.Page=%v" $dbg $excerptMeta.Single.Page }}
 {{- end }}
 
@@ -81,7 +81,7 @@
     {{- with $imageMeta }}
       {{- with (index . (split $excerptImageKey ".")) }}
         {{- $excerptImage = .resource }}
-        {{- if $debug }}
+        {{- if and false $debug }}
           {{- with $excerptImage }}
             {{- warnf "%s has excerptImage=%v" $dbg $excerptImage -}}
           {{- else }}
@@ -95,7 +95,7 @@
     {{- if $showContent }}
       {{- with $excerptContent = .Params.excerpt | default .Params.summary | default .Params.description }}
         {{- $excerptContent = $subjectPage.RenderString $excerptContent }}
-        {{- if $debug }}
+        {{- if and false $debug }}
           {{- warnf "%s excerptContent=%q from subjectPage.Params:\n%v" $dbg $excerptContent
               (jsonify (dict "indent" "  ") $subjectPage.Params) }}
         {{- end }}
@@ -103,13 +103,13 @@
         {{- $paragraphs := .Content | findRE `<p>.*?</p>` }}
         {{- $excerptContent = index $paragraphs 0 | safeHTML }}
         {{- with $excerptContent }}
-          {{- if $debug }}
+          {{- if and false $debug }}
             {{- warnf "%s excerptContent=%q from .Content:\n%v" $dbg $excerptContent
                 (jsonify (dict "indent" "  ") $subjectPage.Content) }}
           {{- end }}
         {{- else }}
           {{- $excerptContent = .Summary }}
-          {{- if $debug }}
+          {{- if and false $debug }}
             {{- warnf "%s excerptContent=%q from subjectPage.Summary:\n%v" $dbg $excerptContent
                 (jsonify (dict "indent" "  ") $subjectPage.Summary) }}
           {{- end }}
@@ -143,13 +143,13 @@
         <div class="excerpt_main{{ if $excerptImage }} image{{ end }}{{ if $excerptContent }} content{{ end }}">
           {{- with $excerptImage }}
             <div class="excerpt_thumbnail">
-                {{ partial "responsive-image" (dict
-                  "Page" $page
-                  "resource" .
-                  "title" $excerptPlainTitle
-                  "alt" (default $excerptPlainTitle $imageMeta.excerpt.variant.default.alt)
-                  "fetchpriority" $fetchPriority
-                ) }}
+            {{ partial "claris/_components/render-image" (dict
+              "Page" $page
+              "resource" .
+              "title" $excerptPlainTitle
+              "alt" (default $excerptPlainTitle $imageMeta.excerpt.variant.default.alt)
+              "fetchpriority" $fetchPriority
+            ) }}
             </div>
           {{- end }}
           {{- with $excerptContent }}

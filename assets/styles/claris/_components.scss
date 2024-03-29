@@ -1393,6 +1393,7 @@ svg.qrcode-svg {
       min-height: 4rem;
       max-height: 8rem;
       @supports (aspect-ratio: 2 / 1) {
+        object-fit: cover;
         aspect-ratio: 16 / 9;
         height: auto;
         min-height: unset;
