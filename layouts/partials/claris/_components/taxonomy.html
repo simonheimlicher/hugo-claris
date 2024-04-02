@@ -8,11 +8,11 @@
   {{- $sidebarTaxonomies = . }}
 {{- end }}
 {{- $section := lower $page.Section }}
-{{- range $key, $taxonomy := site.Taxonomies }}
-  {{- if in $sidebarTaxonomies $key }}
+{{- range $taxonomyID, $taxonomy := site.Taxonomies }}
+  {{- if in $sidebarTaxonomies $taxonomyID }}
     {{- $recentTagsScratch := newScratch }}
     {{- $taxonomyListComplete := true }}
-    {{- range $tag := $taxonomy.Alphabetical }}
+    {{- range $term := $taxonomy.Alphabetical }}
       {{- $taxonomyListComplete := true }}
       {{- $recentPages := where (where .Pages "Section" "eq" $section) "Lastmod" "ge" (now.AddDate (int (sub 0 $taxonomyMaxYears)) 0 0) }}
       {{- $recentTagsScratch.Set "recentTagCounter" 0 }}
@@ -26,7 +26,7 @@
       {{- if gt ($recentTagsScratch.Get "recentTagCounter") 0 }}
         {{- $recentCount := ($recentTagsScratch.Get "recentTagCounter") }}
         {{- $lastArticleDate := ($recentTagsScratch.Get "lastArticleDate") }}
-        {{- $recentTagsScratch.SetInMap "tagsInfo" $tag.Name (dict "tagName" $tag.Name "lastArticleDate" $lastArticleDate "recentCount" $recentCount "tag" $tag) }}
+        {{- $recentTagsScratch.SetInMap "tagsInfo" $term.Name (dict "tagName" $term.Name "lastArticleDate" $lastArticleDate "recentCount" $recentCount "term" $term) }}
       {{- else }}
         {{- $taxonomyListComplete = false }}
       {{- end }}
@@ -34,52 +34,30 @@
     {{- $recentTagsInfo := $recentTagsScratch.Get "tagsInfo" }}
     {{- if gt $recentTagsInfo 0 }}
         <div class="sidebar_item">
-          {{ printf "<h%v class=\"taxonomy\" id=\"%s-section\">" $headingLevel $key | safeHTML }}{{ default $key (T $key) | strings.FirstUpper }}{{ printf "</h%v>" $headingLevel | safeHTML }}
+          {{ printf "<h%v class=\"taxonomy\" id=\"%s-section\">" $headingLevel $taxonomyID | safeHTML }}{{ default $taxonomyID (T $taxonomyID) | strings.FirstUpper }}{{ printf "</h%v>" $headingLevel | safeHTML }}
           <nav class="taxonomy-overlay_nav">
           {{- $slicedTags := sort (sort (sort $recentTagsInfo "lastArticleDate" "desc") "recentCount" "desc") "tagName" "desc" | first $tagsLimit }}
-          {{- $taxonomyPageURL := relLangURL $key -}}
+          {{- $taxonomyPageURL := relLangURL $taxonomyID -}}
           {{- range $slicedTags }}
-            {{- $tag := .tag }}
-            {{- $tagTitle := $tag.Page.Title }}
-            {{- /* `$tag.Page.Title` returns the capitalized version of the tag.
-                Therefore, we need to lowercase it again to look up its translation */ -}}
-            {{- with T (lower $tagTitle) }}
-              {{- $tagTitle = . }}
-            {{- else }}
-              {{- $tagTitle = strings.FirstUpper $tagTitle }}
-            {{- end }}
-            {{- $linkTitle := $tagTitle }}
-            {{- with T "articles_with_taxonomy" }}
-              {{- $linkTitle = printf "%s %s '%s'" (strings.FirstUpper .) (T $key (dict "Count" 1) ) $tagTitle }}
-            {{- end }}
             {{- $recentCount := .recentCount }}
-            <a href='{{ $taxonomyPageURL }}/{{ (replace $tag.Name "#" "%23") | urlize }}/' class="article_meta_tag button button_translucent" title="{{ $linkTitle }}">
-              {{- $tagTitle }}
-              <span class="button_tally">{{ $tag.Count }}</span>
+            {{- $term := .term }}
+            {{- $titleMap := partial "partials/claris/_components/taxonomy/title.html" (dict "taxonomy" $taxonomyID "term" $term) }}
+            <a href='{{ $taxonomyPageURL }}/{{ (replace $term.Name "#" "%23") | urlize }}/' class="article_meta_tag button button_translucent" title="{{ $titleMap.link }}">
+              {{- $titleMap.term }}
+              <span class="button_tally">{{ $term.Count }}</span>
             </a>
           {{- end }}
           {{- if (or $taxonomyListComplete (gt (len $taxonomy.ByCount) $tagsLimit) ) }}
             <br>
-            <div class="taxonomy-overlay_toggle button button_translucent">{{ T (printf "all_%s" (lower $key)) }}</div>
+            <div class="taxonomy-overlay_toggle button button_translucent">{{ T (printf "all_%s" (lower $taxonomyID)) }}</div>
           {{- $tagsInfo := newScratch }}
             <div class="taxonomy-overlay_container">
               <div class="taxonomy-overlay_list">
-              {{- range $taxonomy.Alphabetical }}
+              {{- range $term := $taxonomy.Alphabetical }}
                 {{- $tagsInfo.Add "tagsInfo" (slice .Name .Count)}}
-                {{- $tagTitle := .Page.Title }}
-                {{- /* `$tag.Page.Title` returns the capitalized version of the tag.
-                    Therefore, we need to lowercase it again to look up its translation */ -}}
-                {{- with T (lower $tagTitle) }}
-                  {{- $tagTitle = . }}
-                {{- else }}
-                  {{- $tagTitle = strings.FirstUpper $tagTitle }}
-                {{- end }}
-                {{- $linkTitle := $tagTitle }}
-                {{- with T "articles_with_taxonomy" }}
-                  {{- $linkTitle = printf "%s %s '%s'" (strings.FirstUpper .) (T $key (dict "Count" 1) ) $tagTitle }}
-                {{- end }}
-                <a href='{{ $taxonomyPageURL }}/{{ (replace .Name "#" "%23") | urlize }}/' class="article_meta_tag button button_translucent" data-position={{ .Count }} title="{{ $linkTitle }}">
-                  {{- $tagTitle -}}
+                {{- $titleMap := partial "partials/claris/_components/taxonomy/title.html" (dict "taxonomy" $taxonomyID "term" $term) }}
+                <a href="{{ $taxonomyPageURL }}/{{ (replace .Name `#` `%23`) | urlize }}/" class="article_meta_tag button button_translucent" data-position="{{ .Count }}" title="{{ $titleMap.link }}">
+                  {{- $titleMap.term -}}
                   <span class="button_tally">{{ .Count }}</span>
                 </a>
               {{- end }}
@@ -98,3 +76,27 @@
     {{- end }}
   {{- end }}
 {{- end -}}
+
+{{ define "partials/claris/_components/taxonomy/title.html" }}
+  {{ $template := "claris/_components/taxonomy/title" }}
+  {{ $dbg := printf "%s%v [%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` page.RelPermalink)
+    (replaceRE `.*?([^/]+)$` `$1` $template) }}
+  {{ $titleMap := dict }}
+
+  {{ $taxonomy := $.taxonomy }}
+  {{ $tagTitle := $.term.Page.Title }}
+
+  {{/* `$term.Page.Title` returns a capitalized version of the tag.
+      Therefore, we need to lowercase it when looking up its translation */}}
+  {{ with T (lower $tagTitle) }}
+    {{- $tagTitle = . }}
+  {{ else }}
+    {{- $tagTitle = strings.FirstUpper $tagTitle }}
+  {{ end }}
+  {{ $linkTitle := $tagTitle }}
+  {{ with T "articles_with_taxonomy" }}
+    {{- $linkTitle = printf "%s %s '%s'" (strings.FirstUpper .) (T $taxonomy (dict "Count" 1) ) $tagTitle }}
+  {{ end }}
+  {{ $titleMap = (dict "term" $tagTitle "link" $linkTitle) }}
+  {{ return $titleMap }}
+{{ end }}
