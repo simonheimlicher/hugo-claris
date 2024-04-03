@@ -16,7 +16,7 @@
     {{ $versionName = printf "aspect_%s" $aspectRatio.human }}
   {{ end }}
   {{ range $k, $v := $imgMeta }}
-    {{ if not (in (slice "index" "name" "resource") $k) }}
+    {{ if not (in (slice "Page" "index" "name" "resource") $k) }}
       {{ $imgVersionMeta = merge $imgVersionMeta (dict $k $v) }}
     {{ end }}
   {{ end }}
@@ -31,7 +31,8 @@
     )
   ) }}
 {{ else }}
-  {{ errorf `%s: invalid resource=%v [type=%T] .MediaType=%q must begin with "image/"`
-      $dbg $versionResource $versionResource $versionResource.MediaType }}
+  {{ errorf "%s: invalid resource=%v [type=%T]. You need to pass a valid image resource as .meta.resource. Initial args:\n%v"
+      $dbg $versionResource $versionResource
+      (jsonify (dict "indent" "  ") (merge $ (dict "Page" "omitted") )) }}
 {{ end }}
 {{ return $imgVersionMeta }}
