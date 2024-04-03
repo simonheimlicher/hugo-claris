@@ -1,7 +1,7 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/_components/feature-image" }}
-{{- $debug := and false (page.Param "clarisdebug") }}
+{{- $debug := and true (page.Param "clarisdebug") }}
 {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $title := .Title }}
@@ -24,31 +24,8 @@
     {{- $classPrefix := printf "feature-image" }}
     {{- $featureImageAspectRatioMin := $page.Param "assets.styles.images.feature.ratio.min" | default 2 }}
     {{- $featureImageAspectRatioMax := $page.Param "assets.styles.images.feature.ratio.max" | default 4 }}
-
-    {{- $resource := default .version.default.resource (index .version $featureImageStyle).resource }}
-    {{- /* if $debug }}
-      {{- warnf "%s .version.default.resource.Name=%v .version:\n%v" $dbg .version.default.resource.Name
-          (jsonify (dict "indent" "  ") .version) -}}
-    {{- end */ -}}
-    {{- $alt := default ($resource.Name | humanize | strings.FirstUpper) $featureImage.alt }}
-
-    {{- $featureImageArgs := (dict
-      "version" (dict
-        "default" (dict
-          "resource" $resource
-          "position" $featureImage.position
-          "aspectratio" $featureImageAspectRatioMin
-        )
-        "portrait" (dict
-          "resource" $resource
-          "position" $featureImage.position
-          "aspectratio" $featureImageAspectRatioMax
-          "media" "(min-aspect-ratio: 2/1)"
-        )
-      )
-      "alt" $alt
-      "title" $featureImage.title
-      "credit" $featureImage.credit
+    {{- $featureImageArgs := merge $featureImage (dict
+      "ratio" (slice $featureImageAspectRatioMin $featureImageAspectRatioMax)
       "fullbleedhorizontal" true
       "includeplaceholder" true
       "figureclass" (printf "%s_figure" $classPrefix)
