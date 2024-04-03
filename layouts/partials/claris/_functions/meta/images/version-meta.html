@@ -2,7 +2,7 @@
 {{ $template := "claris/_functions/meta/images/version-meta" }}
 {{ $page := page }}
 {{ $debug := false }}
-{{ $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
+{{ $debug := and true (or .Debug ($page.Param "clarisdebug") ) }}
 {{ $dbg := printf "%s %q [%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .meta.resource (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{ $imgMeta := .meta }}
