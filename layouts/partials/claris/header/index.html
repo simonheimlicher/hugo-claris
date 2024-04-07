@@ -1,14 +1,9 @@
 {{- $page := . }}
 {{- $template := "partials/header" }}
 {{- $contentType := default "claris" (partialCached "claris/_functions/alternative-type" . .Kind .Type) }}
-{{- $centerLogo := page.Param "centerLogo" }}
       <nav class="nav inner_horizontal inner_top-0 font-sans role-display">
         {{- /* NOTE: partial "claris/header/logo" is required for mobile navigation to work. Otherwise, JS "theme/navigation-menu.js" will terminate early" */ -}}
-        {{- if $centerLogo }}
-          {{- partialCached "claris/header/logo" (dict "logoclass" "nav_hide" "Page" $page) }}
-        {{- else }}
-          {{- partialCached "claris/header/logo" (dict "Page" $page) }}
-        {{- end }}
+        {{- partialCached "claris/header/logo" (dict "Page" $page) }}
         {{- partialCached "claris/header/nav-menu" (dict "logoclass" "" "Page" $page) }}
         <div class='nav_body nav_body_{{ default "right" (page.Param "mobileNavigation") }}'>
           {{- $menuData := site.Data.menu }}
@@ -16,9 +11,6 @@
             {{ partial "claris/header/nav" (dict "ctx" $page "Page" $page "Menu" $menuData) }}
           {{- else }}
             {{ partial "claris/header/nav" (dict "ctx" $page "Page" . "Menu" site.Menus.main) }}
-          {{- end }}
-          {{- if $centerLogo }}
-            {{ partial "claris/header/logo" (dict "logoclass" "nav_center" "Page" $page) }}
           {{- end }}
           {{- with site.Menus.social }}
           <div class="nav_group nav_group_follow">
