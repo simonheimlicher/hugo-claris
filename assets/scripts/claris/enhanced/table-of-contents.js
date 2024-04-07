@@ -123,7 +123,12 @@ export function tableOfContentsInit() {
         addScrollObserver = function(navigationElements, content) {
             deb(PREFIX, 'Run addScrollObserver()');
             const sectionHeadings = function (navigationElementList, content) {
-                const navigationElementIds = navigationElementList.map(elem => decodeURI(elem.querySelector('a').hash));
+                const navigationElementIds = navigationElementList.map(elem => {
+                    // Each 'elem' contains an <a> tag with an href like '#someId'
+                    const href = elem.querySelector('a')?.hash;
+                    // Remove the leading '#' to get the actual id value
+                    return href ? decodeURI(href.substring(1)) : '';
+                  });
 
                 let sectionHeadings = [];
 
