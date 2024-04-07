@@ -437,6 +437,7 @@
       // Setting min-height is required to avoid nav bar incl. burger menu icon from collapsing
       height: $screenViewNavHeightNarrow;
       img {
+        padding: 0.5rem 0;
         max-height: 100%;
         width: auto;
         max-width: unset;

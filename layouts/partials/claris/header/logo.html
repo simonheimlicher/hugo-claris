@@ -1,7 +1,7 @@
 {{ $template := "claris/header/logo" }}
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
-{{- $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
+{{- $debug := and false (and .Debug (eq site.LanguagePrefix "") ) }}
 {{- $dbg := printf "%s [%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $logoImagePath := default site.Params.logo site.Params.header.logo.src }}
@@ -16,29 +16,25 @@
 {{- $siteTitle := $meta.Site.Formatted.Title | default site.Title -}}
 {{- $siteLogoParams := false }}
 {{- with $siteLogoParams = site.Params.header.logo }}
-  {{- with .padding }}
-    {{- $logoClass = printf "%spadding-%d" (cond (not (not $logoClass)) $logoClass "")  (int .) }}
-  {{- end }}
-  {{- with .src }}
-    {{- $logoImagePath = . }}
+  {{- if not .alt }}
+    {{ $siteLogoParams = merge $siteLogoParams (dict
+      "alt" $siteTitle
+    ) }}
   {{- end }}
 {{- end }}
 
-{{- $logoImageResource := false }}
-{{- with $logoImagePath }}
-  {{- $logoImageResource = partialCached "claris/_functions/resources/images/get-process-image" (merge $siteLogoParams
-      (dict "Page" $page)) -}}
-  {{- if not $logoImageResource }}
-    {{- errorf "[%s]: Logo image matching .src='%v' not found" $template $logoImageResource }}
-  {{- end }}
-{{- end }}
-    <div class="nav_brand role-display variant-small-caps">
-{{- with $logoImageResource }}
+    <div class="nav_brand">
+{{- with $siteLogoParams }}
   {{- with $logoURL }}
         <a href='{{ . }}' title='{{ $siteTitle }}' class='nav_brand_logo_parent'>
   {{- end }}
           <div class="nav_brand_logo{{ with $logoClass }} {{ . }}{{ end }}">
-            <img src="{{ .RelPermalink }}" class="logo" width="{{ .Width }}" height="{{ .Height }}" alt="{{ $siteTitle }}">
+            {{- if $debug }}
+            {{- warnf "%s calling render-image with siteLogoParams:\n%v" $dbg
+                (jsonify (dict "indent" "  ") $siteLogoParams) }}
+            {{- end }}
+            {{- partialCached "claris/_components/render-image"
+                (merge $siteLogoParams (dict "Page" $page "Debug" $debug) ) $siteLogoParams }}
           </div>
   {{- if $logoURL }}
         </a>
