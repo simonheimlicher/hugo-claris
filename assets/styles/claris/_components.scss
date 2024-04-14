@@ -858,8 +858,8 @@
             }
           }
           &_img {
-            max-height: var(--feature-image_max-height);
-            max-width: var(--feature-image_max-width);
+            height: var(--feature-image_max-height);
+            width: min(100%, var(--feature-image_max-width));
           }
         }
       }
