@@ -187,9 +187,9 @@ export function codeBlocksInit () {
   }
 
   function toggleLineNumbers(lines) {
-    for (let idx = 0; idx < lines.length; ++idx) {
+    for (let line of lines) {
       // mark the code element when there are no lines
-      modifyClass(lines[idx], 'pre_linenumbers')
+      modifyClass(line, 'pre_linenumbers')
     }
     restrainCodeBlockHeight(lines);
   }

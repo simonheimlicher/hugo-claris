@@ -12,8 +12,7 @@ export function createEl(element) {
 
 export function elem(selector, parent) {
   parent = parent || document;
-  let elem = parent.querySelector(selector);
-  return elem != false ? elem : false;
+  return parent.querySelector(selector);
 }
 
 export function elems(selector, parent) {
@@ -86,23 +85,15 @@ export function deleteChars(str, subs) {
 }
 
 export function copyToClipboard(str) {
-  let copy, selection, selected;
-  copy = createEl("textarea");
-  copy.value = str;
-  copy.setAttribute("readonly", "");
-  copy.style.position = "absolute";
-  copy.style.left = "-9999px";
-  selection = document.getSelection();
-  document.documentElement.appendChild(copy);
-  // check if there is any selected content
-  selected = selection.rangeCount > 0 ? selection.getRangeAt(0) : false;
-  copy.select();
-  document.execCommand("copy");
-  document.documentElement.removeChild(copy);
-  if (selected) {
-    // if a selection existed before copying
-    selection.removeAllRanges(); // unselect existing selection
-    selection.addRange(selected); // restore the original selection
+  if (navigator.clipboard) {
+    navigator.clipboard
+      .writeText(str)
+      .then(function () {
+      })
+      .catch(function () {
+        // Unexpected error
+        alert("Failed to copy text to clipboard");
+      });
   }
 }
 
