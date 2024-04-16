@@ -127,7 +127,7 @@ export function codeBlocksInit () {
 
   function restrainCodeBlockHeight(lines) {
     const lastLine = lines[maxLines - 1];
-    let maxCodeBlockHeight = fullHeight;
+    let maxCodeBlockHeight;
     if (lastLine) {
       // Cannot use the offsetTop of the lastLine element
       // because it is the line number, which may be hidden
@@ -209,7 +209,7 @@ export function codeBlocksInit () {
   function copyCode(codeElement) {
     const lineNumbers = elems('.ln', codeElement);
     // remove line numbers before copying
-    if (lineNumbers && lineNumbers.length) {
+    if (lineNumbers?.length) {
       for (let idx = 0, line = lineNumbers[idx]; idx < lineNumbers.length; line = lineNumbers[++idx]) {
         line.remove();
       }
