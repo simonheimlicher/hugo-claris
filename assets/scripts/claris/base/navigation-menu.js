@@ -40,7 +40,7 @@ export function navigationMenuInit() {
     if (!target.closest('.nav') && elem(`.${open}`)) {
       modifyClass(htmlRootElement, open);
       const navIsOpen = containsClass(htmlRootElement, open);
-      !navIsOpen ? modifyClass(navToggle, 'isopen') : false;
+      !navIsOpen && modifyClass(navToggle, 'isopen');
     }
 
     const isNavItem = target.matches(`.${navItem}`);
@@ -55,7 +55,7 @@ export function navigationMenuInit() {
         const children = thisItem.parentNode.parentNode.children;
         for (let idx = 0, item = children[0]; idx < children.length; item = children[++idx]) {
           const targetItem = item.firstElementChild;
-          targetItem != thisItem ? deleteClass(targetItem, parentWithOpenSubMenu) : false;
+          targetItem != thisItem && deleteClass(targetItem, parentWithOpenSubMenu);
         }
         modifyClass(thisItem, parentWithOpenSubMenu);
         modifyClass(hasNext, subMenuIsOpen);

@@ -77,8 +77,8 @@ export function codeBlocksInit () {
     if (codeBlocks) {
       for (let idx = 0, codeBlock = codeBlocks[idx]; idx < codeBlocks.length; codeBlock = codeBlocks[++idx]) {
         // Fix for orgmode inline code, leave 'verbatim' alone as well
-        containsClass(codeBlock, 'verbatim') ? pushClass(codeBlock, 'noClass') : false;
-        hasClasses(codeBlock) ? false : pushClass(codeBlock, 'noClass');
+        containsClass(codeBlock, 'verbatim') && pushClass(codeBlock, 'noClass');
+        ! hasClasses(codeBlock) && pushClass(codeBlock, 'noClass');
       }
     }
   })();
@@ -177,7 +177,7 @@ export function codeBlocksInit () {
       btn.href = '#';
       btn.title = button.title;
       btn.className = `icon panel_icon panel_${button.id}`;
-      button.show ? false : pushClass(btn, panelHide);
+      ! button.show && pushClass(btn, panelHide);
       // load icon inside button
       loadSvg(button.icon, btn);
       // append button on panel
@@ -251,9 +251,9 @@ export function codeBlocksInit () {
       const codeElement = target.closest(`.${highlightClass}`).firstElementChild.firstElementChild;
       let lineNumbers = elems('.ln', codeElement);
 
-      isWrapIcon ? toggleLineWrap(codeElement) : false;
+      isWrapIcon && toggleLineWrap(codeElement);
 
-      isLinesIcon ? toggleLineNumbers(lineNumbers) : false;
+      isLinesIcon && toggleLineNumbers(lineNumbers);
 
       if (isExpandIcon) {
         let thisCodeBlock = codeElement.firstElementChild;
@@ -280,7 +280,7 @@ export function codeBlocksInit () {
   for (let idx = 0, block = blocks[idx]; idx < blocks.length; block = blocks[++idx]) {
     // disable line numbers if disabled globally
     const showLines = bodyElement.dataset.lines;
-    parseBoolean(showLines) === true ? enableCodeLineNumbers(block) : false;
+    parseBoolean(showLines) && enableCodeLineNumbers(block);
 
     const highlightElement = block.parentNode.parentNode;
     const highlightInnerElement = createEl('div');
@@ -290,7 +290,7 @@ export function codeBlocksInit () {
     const panel = actionPanel();
     // show wrap icon only if the code block needs wrapping
     const wrapIcon = elem(`.${wrapId}`, panel);
-    codeBlockFits(block) ? false : deleteClass(wrapIcon, panelHide);
+    ! codeBlockFits(block) && deleteClass(wrapIcon, panelHide);
 
     // append buttons
     highlightElement.appendChild(panel);
