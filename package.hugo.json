@@ -2,11 +2,10 @@
   "author": "Simon Heimlicher",
   "dependencies": {
     "esbuild": "^0.12.5",
-    "lazysizes": "^5.3.2",
     "medium-zoom": "^1.0.6",
     "posthog-js": "^1.94.2"
   },
-  "description": "This repository offers an example site for [Hugo](https://gohugo.io/) and also it provides the default content for demos hosted on the [Hugo Themes Showcase](https://themes.gohugo.io/).",
+  "description": "The professional website of Simon Heimlicher",
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^5.0.0",
     "autoprefixer": "^10.4.14",
@@ -16,11 +15,9 @@
     "postcss-var-optimize": "^8.1.0"
   },
   "keywords": [],
-  "license": "ISC",
-  "main": "babel.config.js",
   "name": "claris",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "version": "1.0.0"
+  "version": "0.1.0"
 }
