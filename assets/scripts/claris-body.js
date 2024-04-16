@@ -1,5 +1,3 @@
-// console.log('BEGIN claris-body');
-
 /* File='scripts/claris-body.js': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .MediaType='{{ .MediaType }}' */
 
 // NOTE: JavaScript code in this file is executed as a module at the bottom of the <body>
@@ -22,8 +20,7 @@ import { mediumZoomInit } from "scripts/claris/optional/medium-zoom";
 optionalModules.push(mediumZoomInit);
 {{- end }}
 
-// import "./qrcode-svg"; // Not used
-// import "./web-vitals-analytics"; // Not needed
+// Additional modules that can be imported: "./qrcode-svg", "./web-vitals-analytics"
 
 {{- if and (page.Param "assets.scripts.posthog.key") (page.Param "assets.scripts.posthog.host")  }}
 import { postHogAnalyticsInit } from "scripts/claris/optional/posthog-analytics";
@@ -31,5 +28,3 @@ optionalModules.push(postHogAnalyticsInit);
 {{- end }}
 
 onDOMContentLoaded(...optionalModules);
-
-// console.log('END   claris-body');
