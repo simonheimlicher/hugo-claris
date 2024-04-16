@@ -1196,7 +1196,6 @@
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  margin: 0 0.5rem;
   &,
   img,
   svg {
@@ -1800,9 +1799,6 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
   &_wrap {
     position: relative;
     z-index: ($main-z-index  + 1);
-  }
-  + highlight_wrap {
-    margin-top: 2.25rem;
   }
   h2 {
     font-size: 150%;

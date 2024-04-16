@@ -45,7 +45,6 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background-size: 100% 10%;
     background: $background;
     border: 0.125em solid $border;
     height: unset;
@@ -53,7 +52,6 @@
   }
   @media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
     .nav_group_menu &::after {
-      background-size: 100% 100%;
       background: $background;
       border: none;
       border-bottom: 0.25em solid $underline;
@@ -62,12 +60,11 @@
     }
   }
   .icon {
-    // filter: invert(100%)
     fill: $color;
   }
 }
-@mixin nav-active-background($color: var(--text), $background: var(--theme-xxhaze), $border: var(--theme-xxhaze), $underline: var(--theme-haze) ) {
-  @include nav-background($color, $background, $border);
+@mixin nav-active-background($color: var(--text), $background: var(--theme-xxhaze), $border: var(--theme-xxhaze), $underline: var(--theme-bg-active) ) {
+  @include nav-background($color, $background, $border, $underline);
   cursor: default;
   &:hover {
     color: $color;
@@ -76,8 +73,8 @@
 @mixin nav-active-section-background($color: var(--text), $background: transparent, $border: var(--theme-haze), $underline: var(--theme-haze) ) {
   @include nav-background($color, $background, $border);
 }
-@mixin nav-hover-background($color: var(--theme-text-hover), $background: var(--theme-bg-hover), $border: var(--theme), $underline: var(--theme-haze) ) {
-  @include nav-background($color, $background, $border);
+@mixin nav-hover-background($color: var(--theme-text-hover), $background: var(--theme-bg-hover), $border: var(--theme), $underline: var(--theme-bg-hover)) {
+  @include nav-background($color, $background, $border, $underline);
 }
 @mixin nav-open-background($color: var(--theme-text), $background: var(--theme-bg), $border: var(--theme-bg), $underline: var(--theme-haze) ) {
   @include nav-background($color, $background, $border);
@@ -219,6 +216,7 @@
     margin: auto 0.5rem auto 0.5rem;
     transition: transform 0.3s var(--ease);
     transform-origin: 50% 50%;
+    transform: rotate(180deg);
   }
   &_body {
     // NOTE: Overflow-y leads to scroll bars
@@ -294,13 +292,9 @@
     position: relative;
     display: flex;
     align-items: center;
-    border-radius: 0.5rem;
-    // Required for IE 11
-    z-index: ($main-z-index + 1);
     padding: math.div($screenViewNavHeightNarrow - 1.5rem, 2) 0.25rem;
     padding: math.div($screenViewNavHeightNarrow - 1.5rem, 2) var(--inner_padding_4-1);
     border-radius: 0;
-    align-items: center;
     @media (any-hover: hover) {
       &:not(.nav_active):hover, a.nav_active_in_section:hover {
         @include nav-hover-background;
@@ -356,11 +350,11 @@
     z-index: 999;
     overflow: auto;
     border-radius: 0.5rem;
-    padding-bottom: 0.5rem;
     padding: 0;
     @media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
       color: var(--text);
       background: transparent;
+      min-width: 100%;
       width: auto;
       white-space: nowrap;
       color: var(--text);
@@ -393,7 +387,7 @@
   }
   &_open &_icon {
     color: var(--theme-text-hover);
-    transform: rotate(180deg);
+    transform: rotate(0deg);
   }
   &_sub &_item {
     &:not(.nav_child) {
@@ -584,9 +578,6 @@
       flex: 1;
       align-items: center;
       justify-content: center;
-      + follow {
-        flex: 0 1 auto;
-      }
     }
   }
   &_sub {
@@ -778,7 +769,7 @@
     &_sub {
       position: absolute;
       left: 0;
-      top: 3rem;
+      top: 3.5rem;
       width: 100%;
       height: 0;
       z-index: 20;
@@ -789,9 +780,6 @@
       flex: 1;
       align-items: center;
       justify-content: center;
-      + follow {
-        flex: 0 1 auto;
-      }
     }
     &_hide,
     &_mobile_toggle {
