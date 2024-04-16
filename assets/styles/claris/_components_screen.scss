@@ -202,7 +202,7 @@
     // z-index: ($main-z-index + 1)
     @include nav-active-section-background;
   }
-  &_active {
+  &_active, &_active_page {
     // NOTE: Do not use position relative, otherwise alignment gets out of shape
     // position: relative
     @include nav-active-background;
