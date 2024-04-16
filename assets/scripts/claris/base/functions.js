@@ -107,7 +107,6 @@ export function copyToClipboard(str) {
 }
 
 export function parseBoolean(string) {
-  let bool;
   string = string.trim().toLowerCase();
   switch (string) {
     case "true":

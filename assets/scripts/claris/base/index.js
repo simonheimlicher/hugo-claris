@@ -1,8 +1,4 @@
-import { clarisHugoParams, clarisInit } from 'scripts/claris/base/claris-init';
-import {
-  deb,
-  pushClass
-} from './functions';
+import { clarisInit } from 'scripts/claris/base/claris-init';
 
 // Ensure we load all modules in the right order and exactly once
 // Earliest when DOMContentLoaded fires

@@ -4,12 +4,9 @@ import posthog from "posthog-js";
 const postHogParamsPath = "assets.scripts.posthog";
 
 export function postHogAnalyticsInit() {
-  // const postHogKey = params?.site?.assets?.scripts?.posthog?.key;
-  // const postHogHost = params?.site?.assets?.scripts?.posthog?.host;
-
   // Function to access nested object value by string path
   const getValueByPath = (obj, path) => {
-    return path.split('.').reduce((acc, part) => (acc && acc[part] ? acc[part] : undefined), obj);
+    return path.split('.').reduce((acc, part) => (acc[part]), obj);
   };
 
   const postHogParams = getValueByPath(params?.site, postHogParamsPath);

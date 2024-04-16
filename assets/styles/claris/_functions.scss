@@ -79,38 +79,15 @@
 
 // https://stackoverflow.com/a/64863842
 @function colorVarToRGB($value) {
-  /*
-  @if str-slice(#{$value}, 1, 1) == "#" {
-    @debug "colorVarToRGB(#{inspect($value)}): HEX: red=#{red($value)} hue: '#{hue($value)}'";
-  }
-  @else if str-slice(#{$value}, 1, 4) == "rgba" {
-    @debug "colorVarToRGB(#{inspect($value)}): RGBA: red=#{red($value)} hue: '#{hue($value)}'";
-  }
-  @else if str-slice(#{$value}, 1, 3) == "rgb" {
-    @debug "colorVarToRGB(#{inspect($value)}): RGB: red=#{red($value)} hue: '#{hue($value)}'";
-  }
-  @else if str-slice(#{$value}, 1, 4) == "hsla" {
-    @debug "colorVarToRGB(#{inspect($value)}): HSLA: red=#{red($value)} hue: '#{hue($value)}'";
-  }
-  @else if str-slice(#{$value}, 1, 3) == "hsl" {
-    @debug "colorVarToRGB(#{inspect($value)}): HSL: red=#{red($value)} hue: '#{hue($value)}'";
-  }
-  @else {
-    $value: #00ff00;
-    @debug "colorVarToRGB(#{inspect($value)}): DEFAULTING TO GREEN: #{inspect($value)}";
-  }
-  */
   @return round(red($value)), round(green($value)), round(blue($value));
 }
 
 @function mapColorVarToRGB($colors, $value) {
-  // @debug "mapColorVarToRGB($colors, #{$value})";
   $color_value: $value;
   @if str-slice(#{$value}, 1, 3) == "var" {
     $color_key: str-replace($value, 'var(--');
     $color_key: str-replace($color_key, ')');
     $color_value: map-get($colors, $color_key);
-    // @debug "    var key='#{$color_key}' value='#{$color_value}'";
     @if $color_value == null {
       $color_value: #ff0000;
       @debug "mapColorVarToRGB($colors, #{$value})";
@@ -132,13 +109,11 @@
 }
 
 @function mapColorVarToHSL($colors, $value) {
-  // @debug "mapColorVarToRGB($colors, #{$value})";
   $color_value: $value;
   @if str-slice(#{$value}, 1, 3) == "var" {
     $color_key: str-replace($value, 'var(--');
     $color_key: str-replace($color_key, ')');
     $color_value: map-get($colors, $color_key);
-    // @debug "    var key='#{$color_key}' value='#{$color_value}'";
     @if $color_value == null {
       $color_value: #ff0000;
       @debug "mapColorVarToRGB($colors, #{$value})";
@@ -215,6 +190,5 @@
       $str: "#{$str} \000D\000A#{$prefix}#{$k}: #{$v}, ";
     }
   } // each
-  // $len: str-length($str);
   @return str-slice($str, 0, -3);
 } // @function print-map
