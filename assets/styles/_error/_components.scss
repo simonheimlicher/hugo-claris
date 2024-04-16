@@ -116,18 +116,6 @@ h2 {
 body {
   background: var(--bg);
 }
-/*
-h1 {
-  margin: auto auto auto auto;
-  color: var(--text);
-}
-h2 {
-  margin: 20px auto 30px auto;
-  font-size: 1.5rem;
-  font-weight: 200;
-  text-align: center;
-}
-*/
 h1, h2 {
   -webkit-transition: opacity 0.5s linear, margin-top 0.5s linear; /* Safari */
   transition: opacity 0.5s linear, margin-top 0.5s linear;
@@ -137,13 +125,8 @@ h1, h2 {
   opacity: 0;
 }
 
-.error_back-button {
-
-}
 .gears {
   position: relative;
-  // margin: auto;
-  // width: auto;
   height: calc(var(--unit) * 35);
 }
 .gear {
@@ -182,14 +165,24 @@ h1, h2 {
 }
 .gear.one {
   left: var(--gear-one-left);
+  animation: anticlockwiseErrorStop 2s linear infinite;
 }
 .gear.two {
   top: var(--gear-two-top);
+  animation: anticlockwiseError 2s linear infinite;
 }
 .gear.three {
   top: var(--gear-three-top);
   left: var(--gear-three-left);
+  animation: clockwiseError 2s linear infinite;
 }
+.loading .gear.one, .loading .gear.three {
+  animation: clockwise 3s linear infinite;
+}
+.loading .gear.two {
+  animation: anticlockwise 3s linear infinite;
+}
+
 .gear .bar {
   position: absolute; left: var(--bar-pos-left); top: 50%;
   z-index: 0;
@@ -218,46 +211,31 @@ h1, h2 {
   transform: rotate(120deg);
   -webkit-transform: rotate(120deg);
 }
-@-webkit-keyframes clockwise {
+@keyframes clockwise {
   0% { -webkit-transform: rotate(0deg);}
   100% { -webkit-transform: rotate(360deg);}
 }
-@-webkit-keyframes anticlockwise {
+@keyframes anticlockwise {
   0% { -webkit-transform: rotate(360deg);}
   100% { -webkit-transform: rotate(0deg);}
 }
-@-webkit-keyframes clockwiseError {
+@keyframes clockwiseError {
   0% { -webkit-transform: rotate(0deg);}
   20% { -webkit-transform: rotate(30deg);}
   40% { -webkit-transform: rotate(25deg);}
   60% { -webkit-transform: rotate(30deg);}
   100% { -webkit-transform: rotate(0deg);}
 }
-@-webkit-keyframes anticlockwiseErrorStop {
+@keyframes anticlockwiseErrorStop {
   0% { -webkit-transform: rotate(0deg);}
   20% { -webkit-transform: rotate(-30deg);}
   60% { -webkit-transform: rotate(-30deg);}
   100% { -webkit-transform: rotate(0deg);}
 }
-@-webkit-keyframes anticlockwiseError {
+@keyframes anticlockwiseError {
   0% { -webkit-transform: rotate(0deg);}
   20% { -webkit-transform: rotate(-30deg);}
   40% { -webkit-transform: rotate(-25deg);}
   60% { -webkit-transform: rotate(-30deg);}
   100% { -webkit-transform: rotate(0deg);}
-}
-.gear.one {
-  -webkit-animation: anticlockwiseErrorStop 2s linear infinite;
-}
-.gear.two {
-  -webkit-animation: anticlockwiseError 2s linear infinite;
-}
-.gear.three {
-  -webkit-animation: clockwiseError 2s linear infinite;
-}
-.loading .gear.one, .loading .gear.three {
-  -webkit-animation: clockwise 3s linear infinite;
-}
-.loading .gear.two {
-  -webkit-animation: anticlockwise 3s linear infinite;
 }
