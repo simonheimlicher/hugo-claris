@@ -100,7 +100,6 @@ export function codeBlocksInit () {
   })();
 
   function loadSvg(file, parent, path = iconsPath) {
-    // const link = `${parentURL}${path}${file}.svg`;
     if (!path.startsWith('http')) {
       path = `${parentURL}${path}`;
     }
@@ -118,7 +117,7 @@ export function codeBlocksInit () {
     // return false if codeblock overflows
     const blockWidth = block.offsetWidth;
     const highlightBlockWidth = block.parentNode.parentNode.offsetWidth;
-    return blockWidth <= highlightBlockWidth ? true : false;
+    return blockWidth <= highlightBlockWidth;
   }
 
   function maxHeightIsSet(el) {
@@ -130,14 +129,12 @@ export function codeBlocksInit () {
     const lastLine = lines[maxLines - 1];
     let maxCodeBlockHeight = fullHeight;
     if (lastLine) {
-      // const lastLinePos = lastLine.offsetTop;
       // Cannot use the offsetTop of the lastLine element
       // because it is the line number, which may be hidden
       // and return an offsetTop value of 0
       const lastLinePos = lastLine.nextElementSibling.offsetTop
       if (lastLinePos !== 0) {
         maxCodeBlockHeight = `${lastLinePos}px`;
-        // const codeBlock = lines[0].parentNode;
         const codeBlock = lines[0].parentNode.closest('code');
         const outerBlock = codeBlock.closest(`.${highlightInnerClass}`);
         const isExpanded = containsClass(outerBlock, panelExpanded);
@@ -281,9 +278,6 @@ export function codeBlocksInit () {
   });
 
   for (let idx = 0, block = blocks[idx]; idx < blocks.length; block = blocks[++idx]) {
-    // collapse code blocks
-    // collapseCodeBlock(block);
-
     // disable line numbers if disabled globally
     const showLines = bodyElement.dataset.lines;
     parseBoolean(showLines) === true ? enableCodeLineNumbers(block) : false;

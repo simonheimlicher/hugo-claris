@@ -6,16 +6,13 @@ import {
   containsClass,
 } from './functions';
 
-// console.log('BEGIN claris/theme/navigation-menu');
 export function navigationMenuInit() {
-  // console.log('BEGIN claris/theme/navigation-menu: navToggle()');
   const doc = document.documentElement;
   const htmlRootElement = clarisHugoParams.htmlRootElement;
 
   const open = 'jsopen';
   const navToggleIconClass = '.nav_mobile_toggle';
   const navToggleOpenSelector = '.nav_mobile_toggle_open';
-  const navToggleCloseSelector = '.nav_mobile_toggle_close';
   const navItem = 'nav_item';
   const navSub = 'nav_sub';
   const parentWithOpenSubMenu = 'nav_open';
@@ -29,6 +26,7 @@ export function navigationMenuInit() {
   if (!navToggleOpenIcon) {
     return;
   }
+
   // Add click event listener to document element to also capture clicks outside the navigation menu
   doc.addEventListener('click', function (event) {
     const target = event.target;
@@ -73,15 +71,7 @@ export function navigationMenuInit() {
       const isNavOpenIcon = target.matches(navToggleOpenSelector) || target.closest(navToggleOpenSelector);
       if (isNavOpenIcon) {
         event.preventDefault();
-        // Scroll past the hero element to the content of the page
-        // const boundingClientRect = contentContainerElem.getBoundingClientRect();
-        // if (boundingClientRect.y > 0) {
-        //   contentContainerElem.scrollIntoView();
-        // }
       }
     });
   }
-  // console.log('END   claris/theme/navigation-menu: navToggle()');
 };
-
-// console.log('END   claris/theme/navigation-menu');

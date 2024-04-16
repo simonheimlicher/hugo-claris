@@ -3,8 +3,6 @@ export function obfuscatedLinkInit() {
   const nodeList = document.querySelectorAll('[' + obfuscatedLinkKeyOneTimePasswordAttr + ']');
   const nodesArray = Array.from(nodeList); // Convert NodeList to an array
 
-  // console.log("obfuscated-link: deobufscating links: ", nodeList);
-
   const indexToChar = [
     "+",
     "/",
@@ -158,7 +156,7 @@ export function obfuscatedLinkInit() {
     const oneTimePassword = node.dataset['obfuscatedLinkOneTimePassword'];
     const numSymbols = indexToChar.length;
     let decryptedEncoded = new Array();
-    for (var i = 0; i < encrypted.length; ++i) {
+    for (let i = 0; i < encrypted.length; ++i) {
       const encryptedIndex = charToIndex[encrypted[i]];
       const oneTimePasswordIndex = charToIndex[oneTimePassword[i]];
       const decryptedIndex = (encryptedIndex - oneTimePasswordIndex + numSymbols) % numSymbols;
@@ -169,8 +167,6 @@ export function obfuscatedLinkInit() {
     if (decrypted.startsWith(scheme)) {
       address = decrypted.substring(scheme.length);
     }
-    const url = new URL(decrypted);
-    // console.log('encrypted: ', encrypted, ' oneTimePassword: ', oneTimePassword, ' decryptedEncoded: ', decryptedEncoded, ' address: ', address);
     let unobfuscatedNode = document.createElement(node.tagName)
     const targetAttribute = (scheme.startsWith("http")) ? ' target="_blank" ' : '';
     unobfuscatedNode.innerHTML = '<' + 'a hr' + 'ef="' + scheme + address
@@ -180,14 +176,10 @@ export function obfuscatedLinkInit() {
     // Eliminate trailing newline if and only if it is followed by a non-letter character
     // based on the unicode category not begin "letter": `\P{L}`
     // Note: for this regex to work, we need to switch to unicode mode by appending `u`
-    // parentNode.innerHTML = parentNode.innerHTML.replace(/^(.*[^ ])\n/, '$1').replace(/\n+(.)$/, '$1')
-    // parentNode.innerHTML = parentNode.innerHTML.replace(/^(.*)\n/u, '$1');
     const searchPattern = String.raw`^(.*)\n(\P{L}+)`;
     const flags = 'us';
     const replacement = String.raw`$1$2`;
     const stripNewlineRE = new RegExp(searchPattern, flags);
-    // const replacementLog = `UUU$1VVV$2WWW`;
-    // console.log(parentNode.innerHTML.replace(stripNewlineRE, replacementLog));
     parentNode.innerHTML = parentNode.innerHTML.replace(stripNewlineRE, replacement);
   }
   if (postponedNodes.length > 0) {
