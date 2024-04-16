@@ -95,7 +95,7 @@
 </html>
 
 {{- define "body-data" }}
-  {{- $maxCodeLines := 100 }}
+  {{- $maxCodeLines := 10 }}
   {{- with .Param "codeMaxLines" }}
     {{- $maxCodeLines = . }}
   {{- end }}
