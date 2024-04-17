@@ -51,13 +51,13 @@
         {{- warnf "%s[%s]: %v" $page $template . }}
       {{- end }}
     {{- end }}
-  <div class="footer_main">
+  <div class="footer_main inner_horizontal">
   {{- range $id, $page := $footerPages }}
     {{- $inlineStyle := false }}
     {{- with .Params.flexbasis }}
       {{- $inlineStyle = printf ` style="flex-basis: %v"` . | safeHTMLAttr }}
     {{- end }}
-    <div class="footer_main-item inner_horizontal"{{ with $inlineStyle }}{{ . }}{{ end }}>
+    <div class="footer_main-item"{{ with $inlineStyle }}{{ . }}{{ end }}>
     {{- with .Title }}
       <h2 class="footer_title">{{ page.RenderString . }}</h2>
     {{- end }}

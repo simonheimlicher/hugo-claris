@@ -253,19 +253,9 @@
 
 .footer_claris {
   @include background_dark;
-  // For IE 11
-  // font-size: 1rem;
-  // font-size: var(--font-size-footer);
-
   @include geometric-scale('font-size', var(--font-size-footer));
   font-size: var(--font-size-footer);
 
-  // NOTE: IE 11 bug
-  // https://github.com/philipwalton/flexbugs/issues/75
-  // Setting a min-height on the container (body does not work)
-  // avoids scaled images taking up as much space as they would if not scaled
-  // For IE 11
-  min-height: 1px;
   h2,
   h3,
   h4,
@@ -277,18 +267,9 @@
   h2 {
     font-size: var(--font-size-larger-1);
   }
-  // border-top: 1px solid var(--xhaze)
-  // background: var(--footer-bg)
   padding-top: var(--body_padding);
-  // padding-bottom: var(--body_padding)
   @include list-style_indented(0, 0, 0, 0);
   z-index: ($main-z-index  - 1);
-
-  // @media screen and (min-width: $screenViewBreakpointWidthOneColumn) {
-  //   // For IE 11
-  //   font-size: 1rem;
-  //   font-size: var(--font-size-footer);
-  // }
 
   .footer {
     &_inner {
@@ -296,16 +277,6 @@
         margin-top: var(--inner_margin_4-2);
       }
       @include footer;
-      // ul {
-      //   margin: 0;
-      //   padding: 0;
-      // }
-      // ul > li {
-      //   list-style: none;
-      //   margin-left: 0;
-      //   padding-left: 0;
-      // }
-
       // https://codepen.io/tutsplus/details/yWrEgW
       .icon-link {
         display: flex;
@@ -327,6 +298,7 @@
     &_main {
       display: flex;
       flex-wrap: wrap;
+      column-gap: var(--inner_margin_4-4);
       @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
         justify-content: space-evenly;
       }
@@ -376,6 +348,9 @@
         }
       }
     }
+  }
+  .icon {
+    margin-inline-end: var(--inner_margin_4-2);
   }
 }
 
