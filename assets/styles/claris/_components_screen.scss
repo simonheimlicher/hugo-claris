@@ -292,7 +292,6 @@
     position: relative;
     display: flex;
     align-items: center;
-    padding: math.div($screenViewNavHeightNarrow - 1.5rem, 2) 0.25rem;
     padding: math.div($screenViewNavHeightNarrow - 1.5rem, 2) var(--inner_padding_4-1);
     border-radius: 0;
     @media (any-hover: hover) {
@@ -818,12 +817,11 @@
       }
     }
     &_item {
-      padding-top: math.div($screenViewNavHeight - 1.5rem, 2);
-      padding-bottom: math.div($screenViewNavHeight - 1.5rem, 2);
-      }
-    // &_mobile_toggle {
-    //   padding-right: $screenViewInnerPaddingOneColumn;
-    // }
+      padding: math.div($screenViewNavHeight - 1.5rem, 2) var(--inner_padding_4-2);
+    }
+    &_group_menu {
+      margin-left:  calc(0px - var(--inner_padding_4-2) );
+    }
     &_color-scheme_choice {
       &_mask,
       &_icon {
