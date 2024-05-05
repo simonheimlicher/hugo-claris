@@ -10,7 +10,7 @@
 {{ $versionResource := $imgMeta.resource }}
 {{ $versionIndex := $imgMeta.index }}
 {{ with partialCached "claris/_functions/resources/images/is-image" $versionResource $versionResource }}
-  {{ $aspectRatio := partial "claris/_functions/resources/images/aspect-ratio" $versionResource }}
+  {{ $aspectRatio := partial "claris/_functions/resources/images/get-ratio-fraction" $versionResource }}
 
   {{ if not $versionName }}
     {{ $versionName = printf "aspect_%s" $aspectRatio.human }}
