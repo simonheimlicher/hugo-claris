@@ -72,7 +72,7 @@
   {{- end -}}
 
   <!-- Facebook Page Admin ID for Domain Insights -->
-  {{- with site.Social.facebook_admin }}
+  {{- with site.Params.Social.facebook_admin }}
     <meta property="fb:admins" content="{{ . }}">
   {{- end }}
 

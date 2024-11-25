@@ -45,13 +45,13 @@
     {{- with (default $meta.Site.Data.Description .Description) }}
     <meta name="twitter:description" content="{{ . }}">
     {{- end }}
-  {{- with default site.Social.twitter site.Params.social.twitter.id }}
+  {{- with default site.Params.Social.twitter site.Params.social.twitter.id }}
     <meta name="twitter:creator" content="{{ . }}">
     <meta name="twitter:site" content="{{ . }}">
   {{- else }}
     {{- if site.Params.claris.hints }}
-      {{- warnf "%s[%s]: Missing Twitter handle: site.Social.twitter=%v site.Params.social.twitter.id=%v"
-          $page $template site.Social.twitter site.Params.social.twitter.id -}}
+      {{- warnf "%s[%s]: Missing Twitter handle: site.Params.Social.twitter=%v site.Params.social.twitter.id=%v"
+          $page $template site.Params.Social.twitter site.Params.social.twitter.id -}}
     {{- end }}
   {{- end }}
 {{- else }}
