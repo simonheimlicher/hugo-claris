@@ -22,7 +22,7 @@ jobs:
       EVENT_ACTOR_EMAIL: "${{ github.event.sender.id }}+${{ github.event.sender.login }}@users.noreply.github.com"
       COMMIT_MESSAGE_PREFIX: "chore: update ${{ github.repository }}@${{ github.ref_name }}\n\n"
       COMMIT_MESSAGE_FILE: ${{ github.workspace }}/website_commit_message.txt
-      HUGO_VERSION: 0.123.8
+      HUGO_VERSION: 0.139.2
 
     steps:
 
