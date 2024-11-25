@@ -14,12 +14,19 @@
 {{- end }}
 
 {{- $siteTitle := $meta.Site.Formatted.Title | default site.Title -}}
+
 {{- $siteLogoParams := false }}
 {{- with $siteLogoParams = site.Params.header.logo }}
-  {{- if not .alt }}
-    {{ $siteLogoParams = merge $siteLogoParams (dict
-      "alt" $siteTitle
-    ) }}
+  {{- if .src }}
+    {{- if not .alt }}
+      {{ $siteLogoParams = merge $siteLogoParams (dict
+        "alt" $siteTitle
+      ) }}
+    {{- end }}
+  {{- else }}
+    {{- warnf "%s missing attribute .src in site.Params.header.logo:\n%v"
+        $dbg (jsonify (dict "indent" "  ") site.Params.header.logo) }}
+    {{- $siteLogoParams = false }}
   {{- end }}
 {{- end }}
 

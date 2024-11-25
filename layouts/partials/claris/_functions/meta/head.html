@@ -1,24 +1,27 @@
 {{ $titleVariant := dict }}
 {{ $page := .Page }}
+{{ $headMeta := default .HeadMeta dict }}
 {{ $template := "claris/_functions/meta/head" }}
 {{ $debug := false }}
 
-{{ $title := "" }}
+{{ $initialTitle := "" }}
+
+{{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) $template (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{ if $page.IsHome }}
-  {{/* {{ warnf "%s[%s] home $page.IsHome=%v" $page $template $page.IsHome }} */}}
+  {{/* {{ warnf "%s[%s] home $page.IsHome=%v" $dbg $page.IsHome }} */}}
   {{ with $page.Site.Title }}
-    {{ $title = . }}
+    {{ $initialTitle = . }}
   {{ else }}
     {{ if $page.Param "claris.hints" }}
       {{ warnf "%s[%s]: Invalid site title=%q. Please configure the title of your site in hugo.{yaml|toml}"
-          $page $template $title }}
+          $dbg $initialTitle }}
     {{ end }}
   {{ end }}
 {{ else }}
-  {{/* {{ warnf "%s[%s] not home: $page.IsHome=%v" $page $template $page.IsHome }} */}}
+  {{/* {{ warnf "%s[%s] not home: $page.IsHome=%v" $dbg $page.IsHome }} */}}
   {{ with $page.Title }}
-    {{ $title = . }}
+    {{ $initialTitle = . }}
   {{ else }}
     {{ if $page.Param "claris.hints" }}
       {{ $pagePath := "" }}
@@ -36,20 +39,20 @@
         {{ $pagePath = printf "index%s" $languageSuffix }}
       {{ end }}
       {{ warnf "%s[%s]: Invalid title=%q. Please add a title to the page at %q"
-          $page $template $title $pagePath }}
+          $dbg $initialTitle $pagePath }}
     {{ end }}
   {{ end }}
 {{ end }}
 
-{{ with and $title $page }}
+{{ with and $initialTitle $page }}
   {{ $supertitleTitleSep := ": " }}
   {{ $supertitleSepLen := len $supertitleTitleSep }}
   {{ $subtitleTitleSep := " – " }}
   {{ $subtitleSepLen := len $subtitleTitleSep }}
 
-  {{ $title      := default "" .Title             | .RenderString }}
-  {{ $subtitle   := default "" .Params.subtitle   | .RenderString }}
-  {{ $supertitle := default "" .Params.supertitle | .RenderString }}
+  {{ $title      := default $headMeta.Formatted.title      | default $headMeta.Data.title      | default .Title             | .RenderString | default "" }}
+  {{ $subtitle   := default $headMeta.Formatted.subtitle   | default $headMeta.Data.subtitle   | default .Params.subtitle   | .RenderString | default "" }}
+  {{ $supertitle := default $headMeta.Formatted.supertitle | default $headMeta.Data.supertitle | default .Params.supertitle | .RenderString | default "" }}
 
   {{/* Derive a plain text, sanitized version of title, subtitle and supertitle for length calculations */}}
   {{ $titlePlain      := $title      | partial "claris/_functions/sanitize" }}
@@ -93,7 +96,7 @@
     {{ if le $titleLen $max }}
       {{ if $debug }}
         {{ warnf "%s[%s]: Title='%v'[%d] targetlength=[%d,%d] supertitle='%v'[%d], subtitle='%v'[%d]"
-            $page $template $title $titleLen $min $max $supertitle $supertitleLen $subtitle $subtitleLen }}
+            $dbg $title $titleLen $min $max $supertitle $supertitleLen $subtitle $subtitleLen }}
       {{ end }}
 
       {{ if $supertitlePlain }}
@@ -128,14 +131,14 @@
           {{ if lt (len $headline) $min }}
             {{ if $debug }}
               {{ warnf "%s[%s]: Title=%v [%d characters] < min=%d: adding separator and supertitle or subtitle would exceed max=%d characters"
-                  $page $template $title $titleLen $min $max }}
+                  $dbg $title $titleLen $min $max }}
               {{ if $supertitlePlain }}
                 {{ warnf "%s[%s]: Adding separator and supertitle: '%v%v' [%d characters]: %d characters too many"
-                    $page $template $supertitleTitleSep $supertitle (add $titleLen $supertitleLen $supertitleSepLen) }}
+                    $dbg $supertitleTitleSep $supertitle (add $titleLen $supertitleLen $supertitleSepLen) }}
               {{ end }}
               {{ if $subtitlePlain }}
                 {{ warnf "%s[%s]: Adding separator and subtitle:   '%v%v' [%d characters]: %d characters too many"
-                    $page $template $subtitleTitleSep $subtitle (add $titleLen $subtitleLen $subtitleSepLen) }}
+                    $dbg $subtitleTitleSep $subtitle (add $titleLen $subtitleLen $subtitleSepLen) }}
               {{ end }}
             {{ end }}
           {{ end }}
@@ -157,7 +160,7 @@
 
       {{/* {{ if $debug }}
         {{ warnf "%s[%s]: %s: Title='%s' Headline='%s' [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
-            $page $template (strings.ToUpper .Kind) $title $headline
+            $dbg (strings.ToUpper .Kind) $title $headline
             .Data.Singular .Data.Plural .Section .Title }}
       {{ end }} */}}
 
@@ -178,7 +181,7 @@
 
       {{/* {{ if $debug }}
         {{ warnf "%s[%s]: %s: Title='%s' Supertitle='%v' Headline='%s' [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
-            $page $template (strings.ToUpper .Kind) $title $supertitle $headline
+            $dbg (strings.ToUpper .Kind) $title $supertitle $headline
             .Data.Singular .Data.Plural .Section .Title }}
       {{ end }} */}}
 
@@ -233,24 +236,30 @@
   ) }}
 {{ end }}
 
-{{ if $debug }}
-  {{ if false }}
-    {{ warnf "%s[%s]: .Kind=%s Title='%v' Supertitle='%v' Subtitle='%v' Headline='%v' [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
-        $page $template (strings.ToUpper .Kind) $titleVariant.Formatted.Title
-        $titleVariant.Formatted.Supertitle $titleVariant.Formatted.Subtitle $titleVariant.Formatted.Headline
-        .Data.Singular .Data.Plural .Section .Title }}
-  {{ end }}
+{{ if and true $debug }}
+  {{ $titleVariantValid := dict }}
   {{ range $type := slice "Data" "Formatted" }}
+    {{ $typeValid := dict }}
     {{ range $key := slice "Title" "Headline" }}
       {{ with $value := index $titleVariant.Data . }}
+        {{ $typeValid = merge $typeValid (dict $key $value) }}
       {{ else }}
         {{ if $page.Title }}
-          {{ warnf "%s[%s]: Invalid %v at %v.%v='%v' based on $title=%q"
-              $page $template $key $type $key $value $title }}
+          {{ warnf "%s[%s]: Invalid %v at %v.%v='%v' based on $initialTitle=%q"
+              $dbg $key $type $key $value $initialTitle }}
         {{ end }}
+      {{ end }}
+      {{ with $typeValid }}
+        {{ $titleVariantValid = merge $titleVariantValid (dict $type $typeValid )}}
       {{ end }}
     {{ end }}
   {{ end }}
+
+  {{ warnf "%s .Kind=%s .Section=%v .Title=%v [.Singular=%v .Plural=%v] called with:\n%v\nReturning\n%v"
+      $dbg $page.Kind $page.Section $page.Title $page.Data.Singular $page.Data.Plural
+      (jsonify (dict "indent" "  ") $headMeta )
+      (jsonify (dict "indent" "  ") $titleVariantValid ) }}
+
 {{ end }}
 
 {{ return $titleVariant }}

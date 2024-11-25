@@ -26,31 +26,39 @@
       "Formatted" (dict "Title" (page.RenderString .Title))
   ) }}
 
-  {{ $defaultMetaPartial := "claris/_functions/meta/head.html" }}
-  {{ if $debug }}
-    {{ warnf "%s Calling default meta partial %v"
-        $dbg $defaultMetaPartial }}
-  {{ end }}
-  {{ $metaVariant = merge $metaVariant (partialCached $defaultMetaPartial $headMetaParams .Permalink) }}
-
   {{ with $assetVariant.ContentType }}
-    {{ $contentTypeMetaPartial := printf "partials/%s/head/meta.html" . }}
+    {{ $contentTypeMetaPartial := printf "partials/%s/_functions/meta/head.html" . }}
     {{ if templates.Exists $contentTypeMetaPartial }}
+      {{ $contentTypeHeadMetaParams := merge $headMetaParams
+        (dict
+            "HeadMeta" $metaVariant
+        )
+      }}
       {{ if $debug }}
-        {{ warnf "%s contentType=%v: Calling meta partial %v"
+        {{ warnf "%s contentType=%v: Calling contentType-specific head partial %v with:\n%v"
+            $dbg . $contentTypeMetaPartial (jsonify (dict "indent" "  ") $contentTypeHeadMetaParams) }}
+      {{ end }}
+      {{ $contentTypeMetaVariant := partialCached $contentTypeMetaPartial $contentTypeHeadMetaParams $page.Permalink }}
+      {{ $headMetaParams = merge $headMetaParams (dict
+            "HeadMeta" $contentTypeMetaVariant
+        ) }}
+    {{ else }}
+      {{ if $debug }}
+        {{ warnf "%s contentType=%v: No meta partial found at %v"
             $dbg . $contentTypeMetaPartial }}
       {{ end }}
-      {{ $contentTypeMetaVariant := partialCached $contentTypeMetaPartial (merge $headMetaParams
-        (dict
-            "meta" $metaVariant
-        )
-      ) .Permalink }}
-      {{ $metaVariant = merge $metaVariant $contentTypeMetaVariant }}
     {{ end }}
   {{ else }}
     {{ errorf "%s invalid $assetVariant=%v: missing .ContentType"
         $dbg $assetVariant }}
   {{ end }}
+
+  {{ $defaultMetaPartial := "claris/_functions/meta/head.html" }}
+  {{ if $debug }}
+    {{ warnf "%s Calling default head partial %v with headMetaParams:\n%v"
+        $dbg $defaultMetaPartial (jsonify (dict "indent" "  ") $headMetaParams) }}
+  {{ end }}
+  {{ $metaVariant = merge $metaVariant (partialCached $defaultMetaPartial $headMetaParams .Permalink) }}
 
   {{ $mainSections := $page.Param "mainSections" }}
   {{ $itemType := "page" }}
@@ -146,8 +154,8 @@
 
 {{ end }}
 
-{{ if $debug }}
+{{ if and false $debug }}
   {{ warnf "%s returning\n%v" $dbg
-      (jsonify (dict "indent" "  ") $singleMeta.Single.Data) }}
+      (jsonify (dict "indent" "  ") $singleMeta.Data) }}
 {{ end }}
 {{ return (dict "Single" $singleMeta) }}
