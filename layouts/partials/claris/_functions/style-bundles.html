@@ -26,7 +26,7 @@
      minifyOutput: false
      disableCSS: false
 
-2. resources.Minify: by piping the bundle produced by resources.ToCSS
+2. resources.Minify: by piping the bundle produced by css.Sass
    through resources.Minify, we can invoke the Go library tdewolff.Minify.
    This respects the configuration mentioned above.
 
@@ -154,7 +154,7 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
         $page $template $concatResource (substr $concatResource.Content 0 500) (substr $concatResource.Content -500) }} */}}
 
     {{- $toCSSoptions := merge $toCSSoptionsBase (dict "targetPath" $targetFile) -}}
-    {{- $bundle := $concatResource | resources.ToCSS $toCSSoptions }}
+    {{- $bundle := $concatResource | css.Sass $toCSSoptions }}
 
     {{- $bundleUnMinified := $bundle | resources.Fingerprint $fingerprintOptions }}
     {{- $bundleMinified := $bundleUnMinified }}
@@ -170,7 +170,7 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
         {{- $afterPostCSS := $bundle | resources.PostCSS $postCSSOptions }}
         {{- $afterMinify := $bundle | resources.PostCSS $postCSSOptions | resources.Minify }}
         {{- $afterPostProcess := $bundle | resources.PostCSS $postCSSOptions | resources.Minify | resources.PostProcess }}
-        {{- warnf "%s[%s]: Size of style bundle '%v':\n Concat=%7.3fkB [%v]\n      ToCSS=%7.3fkB [%v]\n    PostCSS=%7.3fkB [%v]\n     Minify=%7.3fkB [%v]\nPostProcess=%7.3fkB [%v]"
+        {{- warnf "%s[%s]: Size of style bundle '%v':\n Concat=%7.3fkB [%v]\n      css.Sass=%7.3fkB [%v]\n    PostCSS=%7.3fkB [%v]\n     Minify=%7.3fkB [%v]\nPostProcess=%7.3fkB [%v]"
             $page $template $resourceID
             (div (len $concatResource.Content) 1024.0) $concatResource.RelPermalink
             (div (len $bundle.Content) 1024.0) $bundle.RelPermalink

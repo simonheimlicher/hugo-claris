@@ -17,7 +17,7 @@ ignoreFiles:
   - "\\.frontmatter$"
   - "frontmatter\\.json$"
 
-paginate: 20
+pagination.pagerSize: 20
 
 # https://gohugo.io/getting-started/configuration/#enablemissingtranslationplaceholders
 enableMissingTranslationPlaceholders: true
