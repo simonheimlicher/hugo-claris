@@ -49,7 +49,36 @@ does not have an effect, as mentioned above.
 {{- $targetExt := "css" -}}
 {{- $fingerprintOptions := default "sha256" site.Params.resourceFingerprintOptions }}
 
-{{- $toCSSoptionsBase := (dict "transpiler" "dartsass" "includePaths" (slice "node_modules")) }}
+{{- $hugoParams := dict }}
+{{- range $categoryKey, $categoryParams := (dict
+    "colors" site.Params.colors
+    "fonts" site.Params.assets.styles.fonts
+    "dimensions" site.Params.responsive.dimensions
+    "breakpoints" site.Params.responsive.breakpoints
+  ) -}}
+  {{- range $outerKey, $outerValue := $categoryParams }}
+    {{- if reflect.IsMap $outerValue }}
+      {{- range $innerKey, $innerValue := $outerValue }}
+        {{- $hugoParams = merge $hugoParams (dict (printf "%s_%s_%s" $categoryKey $outerKey $innerKey) $innerValue) }}
+      {{- end }}
+    {{- else }}
+      {{- if ne $outerValue nil }}
+        {{- $hugoParams = merge $hugoParams (dict (printf "%s_%s" $categoryKey $outerKey) (printf "%v" $outerValue) ) }}
+      {{- else }}
+        {{- $hugoParams = merge $hugoParams (dict (printf "%s_%s" $categoryKey $outerKey) "null") }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- /* warnf "%v" (jsonify (dict "indent" "  ") $hugoParams) */ -}}
+
+{{- $toCSSoptionsBase := (dict
+    "transpiler" "dartsass"
+    "vars" $hugoParams
+    "includePaths" (slice "node_modules")
+)
+-}}
 {{- if $minifyCSS }}
   {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "compressed" "enableSourceMap" false) -}}
 {{- else }}
@@ -93,11 +122,11 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
   {{- $mediaType := default "all" $params.media }}
   {{- $fetchPriority := default "" $params.fetchpriority }}
   {{- if (in $mediaTypeList $mediaType) }}
-    {{/* {{- warnf "%s[%s]: Generating style bundle with contentTypeList=%s contentTypeListID=%s for MediaType=%s in MediaTypeList=%v"
-    $page $template $contentTypeList $contentTypeListID $mediaType $mediaTypeList }} */}}
+    {{- /* warnf "%s[%s]: Generating style bundle with contentTypeList=%s contentTypeListID=%s for MediaType=%s in MediaTypeList=%v"
+    $page $template $contentTypeList $contentTypeListID $mediaType $mediaTypeList */ -}}
     <!-- Parameters to pass to the hugoParamsFile and other top-level style files
       that are executed as templates -->
-    {{/* {{- warnf "%s[%s]: resourceID=%v params=%v $tplParams=%v" $page $template $resourceID $params $tplParams }} */}}
+    {{- /* warnf "%s[%s]: resourceID=%v params=%v $tplParams=%v" $page $template $resourceID $params $tplParams }} */ -}}
 
     <!-- Concat SASS -->
     {{- $executedResourceList := slice }}
@@ -117,7 +146,7 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
       {{- $mainFile := printf "%s-%s" $resourcePathPrefix $mainFileBaseName -}}
 
       <!-- Process these top-level files as Go Template language templates -->
-      {{- $sourceTemplates := (slice $hugoParamsFile $mainFile) }}
+      {{- $sourceTemplates := (slice $mainFile) }}
       {{- range $resourceFile := $sourceTemplates }}
         {{- with resources.GetMatch (printf "%s.*" $resourceFile ) -}}
           {{- $executedFile := printf "%s_%s%s.%s" $resourceFile $resourceID $executedSourceSuffix $sourceExt }}
@@ -134,13 +163,13 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
       {{- end -}}
     {{- end -}}
 
-    {{/* {{- if (gt (len $contentTypeList) 1) }}
+    {{- /* {{- if (gt (len $contentTypeList) 1) }}
       {{- warnf "%s[%s]: Multiple types=%v ID=%v resourceID=%s produced executedResourceList: "
           $page $template $contentTypeList $contentTypeListID $resourceID }}
       {{- range $idx, $resource := $executedResourceList }}
         {{- warnf "%s[%s]: %d --> %v .Name=%v .MediaType=%v" $page $template $idx $resource $resource.Name $resource.MediaType }}
       {{- end }}
-    {{- end }} */}}
+    {{- end }} */ -}}
 
     {{- $targetPathPrefix := printf "%s/%s" $resourcePathBase $contentTypeListID -}}
     {{- $targetFile := printf "%s/%s.%s" $targetPathPrefix $resourceID $targetExt }}
@@ -150,8 +179,12 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
 
     {{- $importFile := printf "%s/%s-%s.%s" $resourcePathBase $contentTypeListID $resourceID $sourceExt }}
     {{- $concatResource := $executedResourceList | resources.Concat $importFile }}
-    {{/* {{- warnf "%s[%s]: $concatResource '%s'.Content:\n%v\n...\n%v"
-        $page $template $concatResource (substr $concatResource.Content 0 500) (substr $concatResource.Content -500) }} */}}
+    {{- if $debug }}
+      {{- /* warnf "%s[%s]: $concatResource '%s'.Content:\n%v\n...\n%v"
+          $page $template $concatResource (substr $concatResource.Content 0 500) (substr $concatResource.Content -500) */ -}}
+      {{- /* warnf "%s[%s]: $concatResource '%s'.Content:\n%v"
+          $page $template $concatResource $concatResource.Content */ -}}
+    {{- end }}
 
     {{- $toCSSoptions := merge $toCSSoptionsBase (dict "targetPath" $targetFile) -}}
     {{- $bundle := $concatResource | css.Sass $toCSSoptions }}
@@ -159,8 +192,10 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
     {{- $bundleUnMinified := $bundle | resources.Fingerprint $fingerprintOptions }}
     {{- $bundleMinified := $bundleUnMinified }}
 
-    {{/* {{- warnf "%s[%s]: $bundle[%s] %#v: MediaType:%s Content:\n%v\n...\n%v"
-        $page $template $bundle $resourceID $bundle.MediaType (substr $bundle.Content 0 100) (substr $bundle.Content -100) }} */}}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: $bundle[%s] %#v: MediaType:%s Content:\n%v\n...\n%v"
+          $page $template $bundle $resourceID $bundle.MediaType (substr $bundle.Content 0 500) (substr $bundle.Content -500) }}
+    {{- end }}
 
     {{- if $minifyCSS }}
       <!-- We minify CSS using only css.PostCSS (PostCSS) as resources.Minify (tdewolff/minify)

@@ -1,3 +1,5 @@
+@use "hugo-vars" as hugo;
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -314,7 +316,7 @@ blockquote {
     }
   }
 }
-@media screen and (min-width: $screenViewBreakpointWidthOneColumn) and (min-height: $screenViewBreakpointHeightShallow) {
+@media screen and (min-width: hugo.$screenViewBreakpointWidthOneColumn) and (min-height: hugo.$screenViewBreakpointHeightShallow) {
   .view-screen {
     blockquote {
       --quotation-mark-open-height: 1rem;
@@ -324,7 +326,7 @@ blockquote {
     }
   }
 }
-@media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
+@media screen and (min-width: hugo.$screenViewBreakpointWidthTwoColumn) {
   .view-screen {
     blockquote {
       --quotation-mark-open-height: 1.2rem;
@@ -381,7 +383,7 @@ dt + dt + dd {
   /* own height including padding */
   padding-left: calc(var(--dt-padding-left));
 }
-@media screen and (min-width: $screenViewBreakpointWidthNarrow) {
+@media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
   dl {
     --dt-width: 25%;
   }

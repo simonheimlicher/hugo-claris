@@ -1,3 +1,7 @@
+@use "sass:meta";
+@use "sass:math";
+@use "hugo-vars" as hugo;
+
 @keyframes pulse {
   0% {
     opacity: 1;
@@ -114,7 +118,7 @@ pre {
     border-radius: 0.125rem;
     padding-top: 0.5rem;
     padding-bottom: 0.75rem;
-    @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
+    @media screen and (min-width: hugo.$screenViewBreakpointWidthTwoColumn) {
       padding-top: 1.5rem;
       padding-bottom: 2rem;
     }

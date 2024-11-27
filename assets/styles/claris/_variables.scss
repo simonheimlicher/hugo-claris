@@ -1,17 +1,11 @@
-/* Style sheet for content type '#{$contentType}' and media type '#{$mediaType}'
- * File='styles/claris/_variables.scss'
- */
-
 @use 'sass:math';
+@use 'hugo-vars' as hugo;
 
 $list-excerpt-width: 20rem;
-$list-excerpt-width: math.div(($screenViewBreakpointWidthOneColumn - (3 * $screenViewInnerPaddingOneColumn) ), 2);
+$list-excerpt-width: math.div((hugo.$screenViewBreakpointWidthOneColumn - (3 * hugo.$screenViewInnerPaddingOneColumn) ), 2);
 
 // $list-style-indent: 0.16667em;
 $list-style-indent: 1em;
-
-$screenViewNavHeightNarrow: 2.5rem;
-$screenViewNavHeight: 3rem;
 
 $heading-padding-top: 0.5rem;
 $heading-margin-top: 1.5rem;
@@ -387,7 +381,7 @@ $main-z-index: 1;
 
 @mixin aside() {
   @include content_base;
-  @media screen and (min-width: $screenViewBreakpointWidthWide) {
+  @media screen and (min-width: hugo.$screenViewBreakpointWidthWide) {
     @include geometric-scale('font-size', var(--font-size-aside));
   }
   font-size: var(--font-size-normal);
@@ -409,7 +403,7 @@ $main-z-index: 1;
   font-size: var(--font-size-normal);
 }
 
-// @mixin list-style_indented($margin-vertical: math.div($screenViewInnerPaddingMobile, 2), $padding-vertical: math.div($screenViewInnerPaddingMobile, 2), $indent: $list-style-indent) {
+// @mixin list-style_indented($margin-vertical: math.div(hugo.$screenViewInnerPaddingMobile, 2), $padding-vertical: math.div(hugo.$screenViewInnerPaddingMobile, 2), $indent: $list-style-indent) {
 @mixin list-style_indented($margin-horizontal: 0, $padding-horizontal: $list-style-indent, $margin-between: 0, $padding-between: 0.5em) {
     ul, ol {
     // list-style: disc outside none;;
@@ -627,7 +621,7 @@ $main-z-index: 1;
 // Other ideas: https://css-tricks.com/hash-tag-links-padding/, e.g.
 //   https://codepen.io/kirkgleffe/pen/DfvuE
 
-@mixin nav-bar-offset($offset: $screenViewNavHeight) {
+@mixin nav-bar-offset($offset: hugo.$screenViewNavHeight) {
   $anchor-offset: 1rem;
   .main_claris {
     padding-top: $offset;
@@ -641,9 +635,9 @@ $main-z-index: 1;
 }
 
 @mixin nav-bar-anchor-offset {
-  @include nav-bar-offset($screenViewNavHeightNarrow);
-  @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
-    @include nav-bar-offset($screenViewNavHeight);
+  @include nav-bar-offset(hugo.$screenViewNavHeightNarrow);
+  @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
+    @include nav-bar-offset(hugo.$screenViewNavHeight);
   }
 }
 
@@ -966,7 +960,7 @@ role, variant, and style definitions
 
 // Generating fluid font scales for copy-paste: https://www.fluid-type-scale.com/calculate https://utopia.fyi/type/calculator/
 // Using SASS: https://www.smashingmagazine.com/2022/10/fluid-typography-clamp-sass-functions/
-@function fluid($min-size, $max-size, $min-breakpoint: $screenViewBreakpointWidthMobile, $max-breakpoint: $screenViewBreakpointWidthWide, $unit: vw) {
+@function fluid($min-size, $max-size, $min-breakpoint: hugo.$screenViewBreakpointWidthMobile, $max-breakpoint: hugo.$screenViewBreakpointWidthWide, $unit: vw) {
   $slope: math.div($max-size - $min-size, $max-breakpoint - $min-breakpoint);
   $slope-to-unit: roundDec($slope * 100, 2);
   $intercept-rem: roundDec($min-size - $slope * $min-breakpoint, 2);
@@ -976,10 +970,10 @@ role, variant, and style definitions
 }
 
 @function geometric-scaled-prop($prop, $scale-factor, $shift: 0, $factor-normal: 1) {
-  @return calc(#{roundDec($factor-normal * math.pow($scale-factor, $shift), $fluidScaleDigits)} * var(--#{$prop}-base));
+  @return calc(#{roundDec($factor-normal * math.pow($scale-factor, $shift), hugo.$fluidScaleDigits)} * var(--#{$prop}-base));
 }
 
-@mixin geometric-scale($prop, $base-size, $scale-factor: $geometricScaleFactor, $base-shift: 0, $smallest: 9, $largest: 9) {
+@mixin geometric-scale($prop, $base-size, $scale-factor: hugo.$geometricScaleFactor, $base-shift: 0, $smallest: 9, $largest: 9) {
 
   $smaller-factor-idx-max: 5;
   $larger-factor-idx-max: 6;
@@ -993,8 +987,8 @@ role, variant, and style definitions
   }
 }
 
-@mixin fluid-geometric-scale($prop, $min-size, $max-size, $min-breakpoint: $screenViewBreakpointWidthMobile, $max-breakpoint: $screenViewBreakpointWidthWide, $unit: vw,
-    $scale-factor: $geometricScaleFactor, $base-shift: 0, $smallest: 9, $largest: 9) {
+@mixin fluid-geometric-scale($prop, $min-size, $max-size, $min-breakpoint: hugo.$screenViewBreakpointWidthMobile, $max-breakpoint: hugo.$screenViewBreakpointWidthWide, $unit: vw,
+    $scale-factor: hugo.$geometricScaleFactor, $base-shift: 0, $smallest: 9, $largest: 9) {
 
   $smaller-factor-idx-max: 3;
   $larger-factor-idx-max: 6;
@@ -1010,15 +1004,15 @@ role, variant, and style definitions
   }
 }
 
-@function fractional-scaled-prop($prop, $numerator: $fractionalScaleDenominator, $denominator: $fractionalScaleDenominator, $factor-normal: 1) {
+@function fractional-scaled-prop($prop, $numerator: hugo.$fractionalScaleDenominator, $denominator: hugo.$fractionalScaleDenominator, $factor-normal: 1) {
   @if ($numerator == $denominator) {
     @return var(--#{$prop}-base);
   }
-  @return calc(#{roundDec($factor-normal * math.div($numerator, $denominator), $fluidScaleDigits)} * var(--#{$prop}-base));
+  @return calc(#{roundDec($factor-normal * math.div($numerator, $denominator), hugo.$fluidScaleDigits)} * var(--#{$prop}-base));
 }
 
-@mixin fluid-fractional-scale($prop, $min-size, $max-size, $min-breakpoint: $screenViewBreakpointWidthMobile, $max-breakpoint: $screenViewBreakpointWidthWide, $unit: vw,
-    $denominator: $fractionalScaleDenominator, $base-shift: 0) {
+@mixin fluid-fractional-scale($prop, $min-size, $max-size, $min-breakpoint: hugo.$screenViewBreakpointWidthMobile, $max-breakpoint: hugo.$screenViewBreakpointWidthWide, $unit: vw,
+    $denominator: hugo.$fractionalScaleDenominator, $base-shift: 0) {
 
   // Define, up to how many times the $min-size we should define
   // E.g., with `$min-size: 1 rem`, `$denominator: 4` and `$numerator-max: 4 * $denominator`,
@@ -1041,16 +1035,16 @@ html {
 
   --to-be-eliminated-by-csspurge: black;
 
-  @include fluid-geometric-scale('font-size_root', 1rem, 1.25rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
-  @include fluid-geometric-scale('font-size', 1rem, 1.25rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
-  @include fluid-geometric-scale('font-size_heading', 1.25rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
-  // @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
-  @include fluid-fractional-scale('body_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
-  @include fluid-fractional-scale('inner_margin', 0.75rem, 1.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
-  // @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide, vw, 8);
-  // @include fluid-fractional-scale('inner_padding', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
-  @include fluid-fractional-scale('body_padding', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
-  @include fluid-fractional-scale('inner_padding', 0.75rem, 1.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
+  @include fluid-geometric-scale('font-size_root', 1rem, 1.25rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthOneColumn);
+  @include fluid-geometric-scale('font-size', 1rem, 1.25rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthOneColumn);
+  @include fluid-geometric-scale('font-size_heading', 1.25rem, 2rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthWide);
+  // @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthWide);
+  @include fluid-fractional-scale('body_margin', 0.75rem, 2.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthWide);
+  @include fluid-fractional-scale('inner_margin', 0.75rem, 1.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthOneColumn);
+  // @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthWide, vw, 8);
+  // @include fluid-fractional-scale('inner_padding', 0.75rem, 2.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthWide);
+  @include fluid-fractional-scale('body_padding', 0.75rem, 2.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthWide);
+  @include fluid-fractional-scale('inner_padding', 0.75rem, 1.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthOneColumn);
 
   --font-size: var(--font-size-normal);
   --font-size-aside: var(--font-size_root-normal);
@@ -1097,66 +1091,66 @@ html {
   --color-scheme-timing: ease;
   /*! purgecss end ignore */
 
-  --screenViewWidthChrome: #{$screenViewWidthChrome};
-  --screenViewWidthUltrawide: #{$screenViewWidthUltrawide};
+  --screenViewWidthChrome: #{hugo.$screenViewWidthChrome};
+  --screenViewWidthUltrawide: #{hugo.$screenViewWidthUltrawide};
 
-  --content_multicolumn_max-width: #{$screenViewWidthChrome};
-  --content_max-width: #{$screenViewColumnWidthMax};
-  --content_wide_max-width: #{$screenViewColumnWidthWideMax};
-  // @media screen and (min-width: #{$screenViewBreakpointWidthWide}) {
-  //   --content_max-width: #{$screenViewColumnWidthWideMax};
+  --content_multicolumn_max-width: #{hugo.$screenViewWidthChrome};
+  --content_max-width: #{hugo.$screenViewColumnWidthMax};
+  --content_wide_max-width: #{hugo.$screenViewColumnWidthWideMax};
+  // @media screen and (min-width: #{hugo.$screenViewBreakpointWidthWide}) {
+  //   --content_max-width: #{hugo.$screenViewColumnWidthWideMax};
   // }
 
-  --screenViewNavHeight: #{$screenViewNavHeightNarrow};
-  @media screen and (min-width: #{$screenViewBreakpointWidthNarrow}) {
-    --screenViewNavHeight: #{$screenViewNavHeight};
+  --screenViewNavHeight: #{hugo.$screenViewNavHeightNarrow};
+  @media screen and (min-width: #{hugo.$screenViewBreakpointWidthNarrow}) {
+    --screenViewNavHeight: #{hugo.$screenViewNavHeight};
   }
 
-  $screenViewBreakpoints: (
+$screenViewBreakpoints: (
     'width': (
-      'mobile': $screenViewBreakpointWidthMobile,
-      'narrow': $screenViewBreakpointWidthNarrow,
-      'onecolumn': $screenViewBreakpointWidthOneColumn,
-      'twocolumn': $screenViewBreakpointWidthTwoColumn,
-      'wide': $screenViewBreakpointWidthWide,
-      'ultrawide': $screenViewBreakpointWidthUltrawide,
+      'mobile': hugo.$screenViewBreakpointWidthMobile,
+      'narrow': hugo.$screenViewBreakpointWidthNarrow,
+      'onecolumn': hugo.$screenViewBreakpointWidthOneColumn,
+      'twocolumn': hugo.$screenViewBreakpointWidthTwoColumn,
+      'wide': hugo.$screenViewBreakpointWidthWide,
+      'ultrawide': hugo.$screenViewBreakpointWidthUltrawide,
     ),
     'height': (
-      'shallow': $screenViewBreakpointHeightShallow,
-      'tall': $screenViewBreakpointHeightTall,
+      'shallow': hugo.$screenViewBreakpointHeightShallow,
+      'tall': hugo.$screenViewBreakpointHeightTall,
     ),
   );
 
   $screenViewMargin: (
     'outer': (
-      'mobile': $screenViewBodyMarginMobile,
-      'narrow': $screenViewBodyMarginNarrow,
-      'onecolumn': $screenViewBodyMarginOneColumn,
+      'mobile': hugo.$screenViewBodyMarginMobile,
+      'narrow': hugo.$screenViewBodyMarginNarrow,
+      'onecolumn': hugo.$screenViewBodyMarginOneColumn,
     ),
     'inner': (
-      'mobile': $screenViewInnerMarginMobile,
-      'narrow': $screenViewInnerMarginNarrow,
-      'onecolumn': $screenViewInnerMarginOneColumn,
+      'mobile': hugo.$screenViewInnerMarginMobile,
+      'narrow': hugo.$screenViewInnerMarginNarrow,
+      'onecolumn': hugo.$screenViewInnerMarginOneColumn,
     ),
   );
 
   $screenViewPadding: (
     'outer': (
-      'mobile': $screenViewBodyPaddingMobile,
-      'narrow': $screenViewBodyPaddingNarrow,
-      'onecolumn': $screenViewBodyPaddingOneColumn,
+      'mobile': hugo.$screenViewBodyPaddingMobile,
+      'narrow': hugo.$screenViewBodyPaddingNarrow,
+      'onecolumn': hugo.$screenViewBodyPaddingOneColumn,
     ),
     'inner': (
-      'mobile': $screenViewInnerPaddingMobile,
-      'narrow': $screenViewInnerPaddingNarrow,
-      'onecolumn': $screenViewInnerPaddingOneColumn,
+      'mobile': hugo.$screenViewInnerPaddingMobile,
+      'narrow': hugo.$screenViewInnerPaddingNarrow,
+      'onecolumn': hugo.$screenViewInnerPaddingOneColumn,
     ),
   );
 
   // @mixin screen-margin-padding($breakpoint) {
   //   @each $where in ('outer', 'inner') {
-  //     $marginBase: map-get(map-get($screenViewMargin, $where), $breakpoint);
-  //     $paddingBase: map-get(map-get($screenViewPadding, $where), $breakpoint);
+  //     $marginBase: map-get(map-get(hugo.$screenViewMargin, $where), $breakpoint);
+  //     $paddingBase: map-get(map-get(hugo.$screenViewPadding, $where), $breakpoint);
   //     @if $paddingBase {
   //       @each $sizeDesc, $numQuarters in ('-1': 1, '-2': 2, '-3': 3, '': 4) {
   //         @each $direction in ('x', 'y') {
@@ -1168,11 +1162,11 @@ html {
   //   }
   // }
 
-  // $breakpointsWidth: map-get($screenViewBreakpoints, 'width');
+  // $breakpointsWidth: map-get(hugo.$screenViewBreakpoints, 'width');
   // @for $i from 1 through length($breakpointsWidth) {
   //   $breakpointKeys: map-keys($breakpointsWidth);
   //   $breakpoint: nth($breakpointKeys, $i);
-  //   $breakpointWidth: map-get(map-get($screenViewBreakpoints, 'width'), $breakpoint);
+  //   $breakpointWidth: map-get(map-get(hugo.$screenViewBreakpoints, 'width'), $breakpoint);
   //   @if $i == 1 {
   //     @include screen-margin-padding($breakpoint);
   //   }

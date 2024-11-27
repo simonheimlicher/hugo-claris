@@ -1,3 +1,7 @@
+@use "sass:meta";
+@use "sass:math";
+@use "hugo-vars" as hugo;
+
 // General navigation definition
 %upcaret {
   width: 0;
@@ -50,7 +54,7 @@
     height: unset;
     border-radius: 0.25rem;
   }
-  @media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
+  @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
     .nav_group_menu &::after {
       background: $background;
       border: none;
@@ -121,11 +125,11 @@
   left: 0;
   top: 0;
   width: 100%;
-  height: $screenViewNavHeightNarrow;
+  height: hugo.$screenViewNavHeightNarrow;
   z-index: 99;
   padding: 0;
   background: transparent;
-  line-height: ($screenViewNavHeight - 1.5rem);
+  line-height: (hugo.$screenViewNavHeight - 1.5rem);
 
   &::after {
     content: '';
@@ -151,8 +155,8 @@
 
 .nav {
   position: relative;
-  height: $screenViewNavHeightNarrow;
-  line-height: ($screenViewNavHeightNarrow - 1.5rem);
+  height: hugo.$screenViewNavHeightNarrow;
+  line-height: (hugo.$screenViewNavHeightNarrow - 1.5rem);
   display: flex;
   justify-content: space-between;
   color: var(--text);
@@ -165,7 +169,7 @@
   // Does not work because overlow-x and -y cannot be set independently
   // https://stackoverflow.com/q/6421966/617559
   font-size: var(--font-size-nav);
-  line-height: ($screenViewNavHeight - 1.5rem);
+  line-height: (hugo.$screenViewNavHeight - 1.5rem);
   .icon {
     width: var(--icon-height-nav);
     height: var(--icon-height-nav);
@@ -247,7 +251,7 @@
     &::after {
       content: '';
       position: absolute;
-      top: $screenViewNavHeightNarrow;
+      top: hugo.$screenViewNavHeightNarrow;
       left: 0;
       width: 100%;
       height: 100%;
@@ -292,7 +296,7 @@
     position: relative;
     display: flex;
     align-items: center;
-    padding: math.div($screenViewNavHeightNarrow - 1.5rem, 2) var(--inner_padding_4-1);
+    padding: math.div(hugo.$screenViewNavHeightNarrow - 1.5rem, 2) var(--inner_padding_4-1);
     border-radius: 0;
     @media (any-hover: hover) {
       &:not(.nav_active):hover, a.nav_active_in_section:hover {
@@ -329,7 +333,7 @@
     padding-bottom: 0.5rem;
     z-index: 3;
     & + a {
-      @media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
+      @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
         padding-top: 0.5rem;
       }
     }
@@ -350,7 +354,7 @@
     overflow: auto;
     border-radius: 0.5rem;
     padding: 0;
-    @media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
+    @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
       color: var(--text);
       background: transparent;
       min-width: 100%;
@@ -366,7 +370,7 @@
     &::before {
       @extend %upcaret;
       z-index: 1;
-      @media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
+      @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
         border-bottom: 0.5rem solid var(--choice-bg-menu);
       }
     }
@@ -377,7 +381,7 @@
       bottom: 0;
       border-radius: 0.5rem;
       background: var(--choice-bg-menu);
-      @media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
+      @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
         background: var(--choice-bg-menu);
         width: auto;
         white-space: nowrap;
@@ -428,7 +432,7 @@
       z-index: 999;
       width: min-content;
       // Setting min-height is required to avoid nav bar incl. burger menu icon from collapsing
-      height: $screenViewNavHeightNarrow;
+      height: hugo.$screenViewNavHeightNarrow;
       img {
         padding: 0.5rem 0;
         max-height: 100%;
@@ -466,9 +470,9 @@
       // @include useFontDefinition(inherit, display, small-caps, bold);
       font-weight: var(--font-weight-strong);
       color: var(--theme-text);
-      line-height: ($screenViewNavHeightNarrow - 1.5rem);
-      padding: math.div($screenViewNavHeightNarrow - 1rem, 2) 0.25rem;
-      padding: math.div($screenViewNavHeightNarrow - 1rem, 2) var(--inner_padding_4-1);
+      line-height: (hugo.$screenViewNavHeightNarrow - 1.5rem);
+      padding: math.div(hugo.$screenViewNavHeightNarrow - 1rem, 2) 0.25rem;
+      padding: math.div(hugo.$screenViewNavHeightNarrow - 1rem, 2) var(--inner_padding_4-1);
       padding-right: 1em;
       border-right: 2px solid var(--theme);
       border-radius: 0;
@@ -491,8 +495,8 @@
       // display: none;
       &_mask {
         position: relative;
-        width: $screenViewNavHeightNarrow;
-        height: $screenViewNavHeightNarrow;
+        width: hugo.$screenViewNavHeightNarrow;
+        height: hugo.$screenViewNavHeightNarrow;
       }
       &_icon {
         position: absolute;
@@ -572,7 +576,7 @@
   }
   &_center {
     display: none;
-    @media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
+    @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
       display: flex;
       flex: 1;
       align-items: center;
@@ -589,11 +593,11 @@
 .main_claris {
   @media screen {
     // Ensure .main_claris is under header_claris when header_claris is position: relative
-    padding-top: #{$screenViewNavHeightNarrow};
-    margin-top: - #{$screenViewNavHeightNarrow};
-    @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
-      padding-top: #{$screenViewNavHeight};
-      margin-top: - #{$screenViewNavHeight};
+    padding-top: #{hugo.$screenViewNavHeightNarrow};
+    margin-top: - #{hugo.$screenViewNavHeightNarrow};
+    @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
+      padding-top: #{hugo.$screenViewNavHeight};
+      margin-top: - #{hugo.$screenViewNavHeight};
     }
     min-height: 100vh;
     min-height: 100lvh;
@@ -610,7 +614,7 @@
   // https://syntaxfix.com/question/5666/css-media-query-to-target-only-ios-devices
   // Exclude any version of IE or other browsers that don't support @supports with '@supports (position: sticky)'
   @supports (position: sticky) and (not (-webkit-touch-callout: none)) {
-    @media screen and (min-width: $screenViewBreakpointWidthNarrow) and (min-height: $screenViewBreakpointHeightStickyFooter) {
+    @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) and (min-height: hugo.$screenViewBreakpointHeightStickyFooter) {
       position: sticky;
       bottom: 0;
       left: 0;
@@ -623,7 +627,7 @@
 // https://browserstrangeness.bitbucket.io/css_hacks.html#safari
 // https://syntaxfix.com/question/5666/css-media-query-to-target-only-ios-devices
 @supports (position: sticky) and (not (-webkit-touch-callout: none)) {
-  @media screen and (min-width: $screenViewBreakpointWidthNarrow) and (min-height: $screenViewBreakpointHeightStickyFooter) {
+  @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) and (min-height: hugo.$screenViewBreakpointHeightStickyFooter) {
     .hero-image_background {
       &_main {
         .main_inner {
@@ -655,12 +659,12 @@
         margin: 0;
         padding: 0;
         z-index: ($main-z-index + 1);
-        margin-top: (-1 * $screenViewNavHeight);
+        margin-top: (-1 * hugo.$screenViewNavHeight);
       }
     }
   }
 }
-@media screen and (max-width: #{$screenViewBreakpointWidthMobileMenu - 0.01}) {
+@media screen and (max-width: #{hugo.$screenViewBreakpointWidthMobileMenu - 0.01}) {
   html.jsopen {
     @include nav-bar-anchor-offset;
     .header_claris {
@@ -694,31 +698,31 @@
           .nav_item {
             // Maximize size of clickable area
             width: 100%;
-            padding-left: ($screenViewInnerPaddingMobile - 0.25rem);
-            padding-right: ($screenViewInnerPaddingMobile - 0.25rem);
+            padding-left: (hugo.$screenViewInnerPaddingMobile - 0.25rem);
+            padding-right: (hugo.$screenViewInnerPaddingMobile - 0.25rem);
           }
-          @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
+          @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
             .nav_item {
-              padding-left: ($screenViewInnerPaddingOneColumn - 0.5rem);
-              padding-right: ($screenViewInnerPaddingOneColumn - 0.5rem);
+              padding-left: (hugo.$screenViewInnerPaddingOneColumn - 0.5rem);
+              padding-right: (hugo.$screenViewInnerPaddingOneColumn - 0.5rem);
             }
           }
           &:first-child {
-            margin-top: ($screenViewNavHeightNarrow + $screenViewInnerPaddingOneColumn);
+            margin-top: (hugo.$screenViewNavHeightNarrow + hugo.$screenViewInnerPaddingOneColumn);
           }
         }
       }
       &_group_follow_color-scheme {
         flex-wrap: wrap;
         justify-content: space-between;
-        margin-top: $screenViewInnerPaddingOneColumn;
+        margin-top: hugo.$screenViewInnerPaddingOneColumn;
       }
     }
   }
 }
 
 // Narrow navigation menu bar
-@media screen and (min-width: $screenViewBreakpointWidthMobileMenu) {
+@media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
   .header_claris {
     font-size: var(--font-size-nav);
   }
@@ -793,31 +797,31 @@
 }
 
 // Full navigation menu bar
-@media screen and (min-width: $screenViewBreakpointWidthNarrow) {
+@media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
   .header_claris {
-    height: $screenViewNavHeight;
-    line-height: ($screenViewNavHeight - 1.5rem);
+    height: hugo.$screenViewNavHeight;
+    line-height: (hugo.$screenViewNavHeight - 1.5rem);
   }
   .nav {
-    height: $screenViewNavHeight;
+    height: hugo.$screenViewNavHeight;
     // &_item,
     // &_follow {
     //   padding: 0.5rem 0.5rem;
-    //   padding: calc( ($screenViewNavHeight - 2rem) / 2) var(--inner_padding_4-1);
+    //   padding: calc( (hugo.$screenViewNavHeight - 2rem) / 2) var(--inner_padding_4-1);
     // }
     &_brand {
       &_logo {
-        height: $screenViewNavHeight;
-        // margin-left: (-1 * $screenViewInnerPaddingOneColumn);
+        height: hugo.$screenViewNavHeight;
+        // margin-left: (-1 * hugo.$screenViewInnerPaddingOneColumn);
         margin-right: 0;
-        // padding-left: $screenViewInnerPaddingOneColumn;
+        // padding-left: hugo.$screenViewInnerPaddingOneColumn;
       }
       &_text {
-        line-height: ($screenViewNavHeight - 1.5rem);
+        line-height: (hugo.$screenViewNavHeight - 1.5rem);
       }
     }
     &_item {
-      padding: math.div($screenViewNavHeight - 1.5rem, 2) var(--inner_padding_4-2);
+      padding: math.div(hugo.$screenViewNavHeight - 1.5rem, 2) var(--inner_padding_4-2);
     }
     &_group_menu {
       margin-left:  calc(0px - var(--inner_padding_4-2) );
@@ -825,13 +829,13 @@
     &_color-scheme_choice {
       &_mask,
       &_icon {
-        width: $screenViewNavHeight;
-        height: $screenViewNavHeight;
+        width: hugo.$screenViewNavHeight;
+        height: hugo.$screenViewNavHeight;
       }
     }
     &_body {
       &::after {
-        top: $screenViewNavHeight;
+        top: hugo.$screenViewNavHeight;
       }
 
     }
@@ -1081,7 +1085,7 @@ $indicator-width: var(--toc_indicator_width)) {
 .footer_claris {
   @include link-lvhfa(false, dark);
 }
-@media screen and (min-height: $screenViewBreakpointHeightShallow) {
+@media screen and (min-height: hugo.$screenViewBreakpointHeightShallow) {
   html {
     @include nav-bar-anchor-offset;
     .header_claris {

@@ -1,0 +1,126 @@
+@use 'sass:meta';
+@use 'sass:math';
+@use 'hugo:vars' as hugo;
+
+$colorPrimaryLit: if(hugo.$colors_color_primary_lit != null, hugo.$colors_color_primary_lit, hsl(200, 100%, 50%));
+$colorPrimaryDim: if(hugo.$colors_color_primary_dim != null, hugo.$colors_color_primary_dim, hsl(200, 100%, 50%));
+$onPrimaryLit: if(hugo.$colors_on_primary_lit != null, hugo.$colors_on_primary_lit, hsl(200, 75%, 25%));
+$onPrimaryDim: if(hugo.$colors_on_primary_dim != null, hugo.$colors_on_primary_dim, hsl(200, 85%, 85%));
+$surfacePrimaryLit: if(hugo.$colors_surface_primary_lit != null, hugo.$colors_surface_primary_lit, hsl(200, 50%, 95%));
+$surfacePrimaryDim: if(hugo.$colors_surface_primary_dim != null, hugo.$colors_surface_primary_dim, hsl(200, 30%, 10%));
+
+$colorSurfaceLit: if(hugo.$colors_color_surface_lit != null, hugo.$colors_color_surface_lit, hsl(200, 20%, 98%));
+$colorSurfaceDim: if(hugo.$colors_color_surface_dim != null, hugo.$colors_color_surface_dim, hsl(200, 20%, 10%));
+$onSurfaceLit: if(hugo.$colors_on_surface_lit != null, hugo.$colors_on_surface_lit, hsl(200, 100%, 13%));
+$onSurfaceDim: if(hugo.$colors_on_surface_dim != null, hugo.$colors_on_surface_dim, hsl(200, 100%, 95%));
+$colorBackgroundLit: if(hugo.$colors_color_background_lit != null, hugo.$colors_color_background_lit, hsl(200, 10%, 95%));
+$colorBackgroundDim: if(hugo.$colors_color_background_dim != null, hugo.$colors_color_background_dim, hsl(200, 10%, 10%));
+$onBackgroundLit: if(hugo.$colors_on_background_lit != null, hugo.$colors_on_background_lit, hsl(200, 10%, 13%));
+$onBackgroundDim: if(hugo.$colors_on_background_dim != null, hugo.$colors_on_background_dim, hsl(200, 10%, 100%));
+
+$colorSecondaryLit: if(hugo.$colors_color_secondary_lit != null, hugo.$colors_color_secondary_lit, hsl(170, 100%, 50%));
+$colorSecondaryDim: if(hugo.$colors_color_secondary_dim != null, hugo.$colors_color_secondary_dim, hsl(170, 40%, 15%));
+
+$onSecondaryLit: if(hugo.$colors_on_secondary_lit != null, hugo.$colors_on_secondary_lit, darken(desaturate($colorSecondaryLit, 50%), 45%));
+$onSecondaryDim: if(hugo.$colors_on_secondary_dim != null, hugo.$colors_on_secondary_dim, lighten(desaturate($colorSecondaryDim, 60%), 35%));
+
+$surfaceSecondaryLit: if(hugo.$colors_surface_secondary_lit != null, hugo.$colors_surface_secondary_lit, lighten(desaturate($colorSecondaryLit, 50%), 45%));
+$surfaceSecondaryDim: if(hugo.$colors_surface_secondary_dim != null, hugo.$colors_surface_secondary_dim, darken(desaturate($colorSecondaryDim, 60%), 35%));
+
+$fontFamilySans: if(hugo.$fonts_family_sans != null, hugo.$fonts_family_sans, "Source Sans 3");
+$fontFamilySerif: if(hugo.$fonts_family_serif != null, hugo.$fonts_family_serif, "Alegreya");
+$fontFamilyMono: if(hugo.$fonts_family_mono != null, hugo.$fonts_family_mono, "DM Mono");
+
+$geometricScaleFactor: if(hugo.$fonts_geometric_scale_factor != "null", hugo.$fonts_geometric_scale_factor, math.pow(2.0, math.div(1, 4) ));
+$fractionalScaleDenominator: if(hugo.$fonts_fractional_scale_denominator != "null", hugo.$fonts_fractional_scale_denominator, 4);
+$fluidScaleDigits: if(hugo.$fonts_fluid_scale_digits != "null", hugo.$fonts_fluid_scale_digits, 2);
+
+// Adapt to width of screen
+// Maximum width for anything the user is supposed
+// to interact with (the "page chrome")
+$screenViewWidthChrome: if(hugo.$dimensions_width_chrome != null, hugo.$dimensions_width_chrome, 96rem);
+
+// Maximum widht of feature images
+$screenViewFeatureImageWidthMax: if(hugo.$dimensions_feature_image_width_max != null, hugo.$dimensions_feature_image_width_max, 3840px);
+
+// Padding around body up to narrow breakpoint
+$screenViewBodyMarginMobile: if(hugo.$dimensions_body_margin_mobile != null, hugo.$dimensions_body_margin_mobile, 0rem);
+// Padding around main elements (header, main, footer) up to narrow breakpoint
+$screenViewInnerMarginMobile: if(hugo.$dimensions_inner_margin_mobile != null, hugo.$dimensions_inner_margin_mobile, 0.75rem);
+
+// Padding around body up to narrow breakpoint
+$screenViewBodyPaddingMobile: if(hugo.$dimensions_body_padding_mobile != null, hugo.$dimensions_body_padding_mobile, 0rem);
+// Padding around main elements (header, main, footer) up to narrow breakpoint
+$screenViewInnerPaddingMobile: if(hugo.$dimensions_inner_padding_mobile != null, hugo.$dimensions_inner_padding_mobile, 0.75rem);
+
+// Parameters for layout with one column
+// Margin around body up to one-column breakpoint
+$screenViewInnerMarginNarrow: if(hugo.$dimensions_inner_margin_narrow != null, hugo.$dimensions_inner_margin_narrow, 1rem);
+// Margin around main elements (header, main, footer) up to one-column breakpoint
+$screenViewBodyMarginNarrow: if(hugo.$dimensions_body_margin_narrow != null, hugo.$dimensions_body_margin_narrow, 0rem);
+// Padding around body up to one-column breakpoint
+$screenViewInnerPaddingNarrow: if(hugo.$dimensions_inner_padding_narrow != null, hugo.$dimensions_inner_padding_narrow, 1rem);
+// Padding around main elements (header, main, footer) up to one-column breakpoint
+$screenViewBodyPaddingNarrow: if(hugo.$dimensions_body_padding_narrow != null, hugo.$dimensions_body_padding_narrow, 1rem);
+
+// Margin around body from one-column breakpoint upward
+$screenViewInnerMarginOneColumn: if(hugo.$dimensions_inner_margin_one_column != null, hugo.$dimensions_inner_margin_one_column, 1.5rem);
+// Margin around main elements (header, main, footer) from one-column breakpoint upward
+$screenViewBodyMarginOneColumn: if(hugo.$dimensions_body_margin_one_column != null, hugo.$dimensions_body_margin_one_column, 0rem);
+// Padding around body from one-column breakpoint upward
+$screenViewInnerPaddingOneColumn: if(hugo.$dimensions_inner_padding_one_column != null, hugo.$dimensions_inner_padding_one_column, 1.5rem);
+// Padding around main elements (header, main, footer) from one-column breakpoint upward
+$screenViewBodyPaddingOneColumn: if(hugo.$dimensions_body_padding_one_column != null, hugo.$dimensions_body_padding_one_column, 1rem);
+
+$screenViewNavHeightNarrow: 2.5rem;
+$screenViewNavHeight: 3rem;
+
+$screenViewColumnGap: if(hugo.$dimensions_column_gap != null, hugo.$dimensions_column_gap, 1rem);
+
+$screenViewWidthAsideMin: if(hugo.$dimensions_width_aside_min != null, hugo.$dimensions_width_aside_min, 12rem);
+
+// Breakpoints
+
+// From this width upward, the mobile menu is hidden
+// and the full menu bar is shown
+$screenViewBreakpointWidthMobileMenu: if(hugo.$breakpoints_width_mobile_menu != null, hugo.$breakpoints_width_mobile_menu, 28rem);
+
+// From this width upward, more than one content item is shown -
+// e.g., a floating image surrounded by text
+$screenViewBreakpointWidthMobile: if(hugo.$breakpoints_width_mobile != null, hugo.$breakpoints_width_mobile, 20rem);
+// Reset font size to regular size
+$screenViewBreakpointWidthNarrow: if(hugo.$breakpoints_width_narrow != null, hugo.$breakpoints_width_narrow, 36rem);
+
+// Fit content to iPad in portrait orientation: 768px = 48rem
+$screenViewBreakpointWidthOneColumn: if(hugo.$breakpoints_width_one_column != null, hugo.$breakpoints_width_one_column, 48rem);
+
+// Layout with one aside
+$screenViewBreakpointWidthTwoColumn: if(hugo.$breakpoints_width_two_column != null, hugo.$breakpoints_width_two_column, 60rem);
+
+// Layout with two asides
+$screenViewBreakpointWidthWide: if(hugo.$breakpoints_width_wide != null, hugo.$breakpoints_width_wide, 76rem);
+
+// Layout with two asides and wider sections in main column, e.g., for code or figures
+$screenViewBreakpointWidthUltrawide: if(hugo.$breakpoints_width_ultra_wide != null, hugo.$breakpoints_width_ultra_wide, 96rem);
+
+// Parameters for layout with two columns: main content and one aside
+$screenViewColumnWidthMin: ($screenViewBreakpointWidthTwoColumn - 2 * $screenViewBodyPaddingOneColumn - $screenViewWidthAsideMin - $screenViewColumnGap);
+// $screenViewColumnWidthMax: (#{$screenViewBreakpointWidthTwoColumn} - 2 * #{$screenViewBodyPaddingOneColumn});
+$screenViewColumnWidthMax: ($screenViewBreakpointWidthWide - $screenViewWidthAsideMin - 2 * $screenViewBodyPaddingOneColumn - $screenViewColumnGap);
+
+// // Parameters for layout with three columns: main content and two asides
+$screenViewColumnGapWide: if(hugo.$dimensions_column_gap_wide != null, hugo.$dimensions_column_gap_wide, 2rem);
+$screenViewColumnWidthWideMax: if(hugo.$dimensions_column_width_wide_max != null, hugo.$dimensions_column_width_wide_max, 60rem);
+$screenViewWidthWideAsideMin: if(hugo.$dimensions_width_aside_min_wide != null, hugo.$dimensions_width_aside_min_wide, 12rem);
+$screenViewWidthWideAsideMax: if(hugo.$dimensions_width_aside_max_wide != null, hugo.$dimensions_width_aside_max_wide, 19rem);
+$screenViewColumnWidthWideMin: ($screenViewBreakpointWidthWide - 2 * $screenViewWidthWideAsideMin - 2 * $screenViewBodyPaddingOneColumn - 2 * $screenViewColumnGapWide);
+
+// Parameters for layout with three columns: main content and two asides and wider sections in main column, e.g., for code or figures
+$screenViewWidthUltrawide: if(hugo.$dimensions_width_ultrawide != null, hugo.$dimensions_width_ultrawide, 57rem);
+
+$screenViewBreakpointHeightTall: if(hugo.$breakpoints_height_tall != null, hugo.$breakpoints_height_tall, 48rem);
+$screenViewBreakpointHeightShallow: if(hugo.$breakpoints_height_shallow != null, hugo.$breakpoints_height_shallow, 42rem);
+
+// From this height upward, the footer is layered beneath the main content
+// and revealed when scrolling up
+$screenViewBreakpointHeightStickyFooter: if(hugo.$breakpoints_height_sticky_footer != null, hugo.$breakpoints_height_sticky_footer, 42rem);

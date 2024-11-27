@@ -119,6 +119,9 @@ assets:
       #    by the corresponding file in `assets/styles/claris/fonts/...`
       # 3. Enable self hosted fonts by setting `style.fonts.selfhosted = true` below
       # selfhosted: true
+      geometric_scale_factor: null
+      fractional_scale_denominator: null
+      fluid_scale_digits: null
 
   scripts:
     # To enable the `Medium.com`-like zoom effect on responsive images,
@@ -147,11 +150,43 @@ typography:
   initialWordsIgnore: [the, and, der, die, das, und]
 
 responsive:
+  dimensions:
+    width:
+      chrome: 96rem
+      aside_min: 12rem
+      aside_min_wide: 12rem
+      aside_max_wide: 19rem
+      ultrawide: 57rem
+    feature_image:
+      width_max: 3840px
+    body_margin:
+      mobile: 0rem
+      narrow: 0rem
+      one_column: 0rem
+    # Padding around body
+    body_padding:
+      mobile: 0rem
+      narrow: 1rem
+      one_column: 1rem
+    # Margin around main elements (header, main, footer)
+    inner_margin:
+      mobile: 0.75rem
+      narrow: 1rem
+      one_column: 1.5rem
+    # Padding around main elements (header, main, footer)
+    inner_padding:
+      mobile: 0.75rem
+      narrow: 1rem
+      one_column: 1.5rem
+    column_gap: 1rem
+    column_gap_wide: 2rem
+    column_width_wide_max: 60rem
+
   breakpoints:
     width:
       # From this width upward, the mobile menu is hidden
       # and the full menu bar is shown
-      mobileMenu: 28rem
+      mobile_menu: 28rem
 
       # From this width upward, more than one content item is shown horizontally -
       # e.g., a floating image surrounded by text
@@ -161,32 +196,43 @@ responsive:
       narrow: 36rem
 
       # Fit content to iPad in portrait orientation: 768px: 48rem
-      oneColumn: 48rem
+      one_column: 48rem
 
       # Layout with one aside
-      twoColumn: 60rem
+      two_column: 60rem
 
       # Layout with two asides
       wide: 76rem
 
       # Layout with two asides and wider sections in main column, e.g., for code or figures
-      ultraWide: 96rem
+      ultra_wide: 96rem
+
+    height:
+      shallow: 42rem
+      tall: 48rem
+      sticky_footer: 42rem
 
 colors:
-  colorPrimaryLit: "hsl(200, 100%, 50%)"
-  colorPrimaryDim: "hsl(200, 100%, 50%)"
-  onPrimaryLit: "hsl(200, 50%, 25%)"
-  onPrimaryDim: "hsl(200, 85%, 85%)"
-  surfacePrimaryLit: "hsl(200, 50%, 95%)"
-  surfacePrimaryDim: "hsl(200, 30%, 10%)"
-  colorSurfaceLit: "hsl(200, 20%, 98%)"
-  colorSurfaceDim: "hsl(200, 20%, 10%)"
-  onSurfaceLit: "hsl(200, 100%, 13%)"
-  onSurfaceDim: "hsl(200, 100%, 95%)"
-  colorBackgroundLit: "hsl(200, 10%, 95%)"
-  colorBackgroundDim: "hsl(200, 10%, 10%)"
-  onBackgroundLit: "hsl(200, 10%, 13%)"
-  onBackgroundDim: "hsl(200, 10%, 100%)"
+  color_primary_lit: "hsl(200, 100%, 50%)"
+  color_primary_dim: "hsl(200, 100%, 50%)"
+  on_primary_lit: "hsl(200, 50%, 25%)"
+  on_primary_dim: "hsl(200, 85%, 85%)"
+  surface_primary_lit: "hsl(200, 50%, 95%)"
+  surface_primary_dim: "hsl(200, 30%, 10%)"
+  color_surface_lit: "hsl(200, 20%, 98%)"
+  color_surface_dim: "hsl(200, 20%, 10%)"
+  on_surface_lit: "hsl(200, 100%, 13%)"
+  on_surface_dim: "hsl(200, 100%, 95%)"
+  color_background_lit: "hsl(200, 10%, 95%)"
+  color_background_dim: "hsl(200, 10%, 10%)"
+  on_background_lit: "hsl(200, 10%, 13%)"
+  on_background_dim: "hsl(200, 10%, 100%)"
+  color_secondary_lit: "hsl(200, 100%, 50%)"
+  color_secondary_dim: "hsl(200, 100%, 50%)"
+  on_secondary_lit: "hsl(200, 50%, 25%)"
+  on_secondary_dim: "hsl(200, 85%, 85%)"
+  surface_secondary_lit: "hsl(200, 50%, 95%)"
+  surface_secondary_dim: "hsl(200, 30%, 10%)"
 
 meta:
   favicon:

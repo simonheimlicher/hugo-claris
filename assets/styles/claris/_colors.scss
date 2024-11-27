@@ -1,33 +1,33 @@
-$primary-hue-lit: hue($colorPrimaryLit);
-$primary-sat-lit: saturation($colorPrimaryLit);
-$primary-lum-lit: lightness($colorPrimaryLit);
+$primary-hue-lit: hue(hugo.$colorPrimaryLit);
+$primary-sat-lit: saturation(hugo.$colorPrimaryLit);
+$primary-lum-lit: lightness(hugo.$colorPrimaryLit);
 
-$primary-hue-dim: hue($colorPrimaryDim);
-$primary-sat-dim: saturation($colorPrimaryDim);
-$primary-lum-dim: lightness($colorPrimaryDim);
+$primary-hue-dim: hue(hugo.$colorPrimaryDim);
+$primary-sat-dim: saturation(hugo.$colorPrimaryDim);
+$primary-lum-dim: lightness(hugo.$colorPrimaryDim);
 
 $theme-sat-neutral-lit: 0%;
 $theme-sat-neutral-dim: 0%;
 
-$text-lit: $onBackgroundLit;
-$text-hover-lit: darken($onBackgroundLit, 20%);
+$text-lit: hugo.$onBackgroundLit;
+$text-hover-lit: darken(hugo.$onBackgroundLit, 20%);
 
-$text-dim: $onBackgroundDim;
-$text-hover-dim: darken($onBackgroundDim, 20%);
+$text-dim: hugo.$onBackgroundDim;
+$text-hover-dim: darken(hugo.$onBackgroundDim, 20%);
 
-$text-light-lit: $onBackgroundLit;
-$text-light-dim: $onBackgroundLit;
+$text-light-lit: hugo.$onBackgroundLit;
+$text-light-dim: hugo.$onBackgroundLit;
 
-$text-dark-lit: $onBackgroundDim;
-$text-dark-dim: $onBackgroundDim;
+$text-dark-lit: hugo.$onBackgroundDim;
+$text-dark-dim: hugo.$onBackgroundDim;
 
 $text-faint-lit: lighten(desaturate($text-lit, 0%), 25%);
 $text-faint-dim: darken(desaturate($text-dim, 0%), 15%);
 
-$bg-lit: $colorBackgroundLit;
+$bg-lit: hugo.$colorBackgroundLit;
 $bg-hover-lit: lighten(saturate($bg-lit, 50%), 10%);
 
-$bg-dim: $colorBackgroundDim;
+$bg-dim: hugo.$colorBackgroundDim;
 $bg-hover-dim: lighten(desaturate($bg-dim, 10%), 2%);
 
 $bg-light-lit: darken($bg-lit, 5%);
@@ -42,37 +42,37 @@ $bg-dark-hover-lit: lighten($bg-dark-lit, 20%);
 $bg-dark-dim: darken($bg-dim, 15%);
 $bg-dark-hover-dim: lighten($bg-dark-dim, 20%);
 
-$theme-lit: $colorPrimaryLit;
+$theme-lit: hugo.$colorPrimaryLit;
 $theme-hover-lit: darken($theme-lit, 10%);
 
-$theme-dim: $colorPrimaryDim;
+$theme-dim: hugo.$colorPrimaryDim;
 $theme-hover-dim: lighten($theme-dim, 10%);
 
-$theme-text-lit: $onPrimaryLit;
+$theme-text-lit: hugo.$onPrimaryLit;
 $theme-text-active-lit: lighten($theme-text-lit, 80%);
 $theme-text-hover-lit: lighten($theme-text-lit, 80%);
 
-$theme-text-dim: $onPrimaryDim;
+$theme-text-dim: hugo.$onPrimaryDim;
 $theme-text-active-dim: darken($theme-text-dim, 100%);
 $theme-text-hover-dim: darken($theme-text-dim, 100%);
 
-$link-lit: darken($colorPrimaryLit, 20%);
-$link-visited-lit: darken(desaturate(adjust-hue($colorPrimaryLit, 30), 50%), 10%);
-$link-hover-lit: darken($colorPrimaryLit, 10%);
-$link-focus-lit: darken($colorPrimaryLit, 0%);
-$link-active-lit: darken($colorPrimaryLit, 0%);
+$link-lit: darken(hugo.$colorPrimaryLit, 20%);
+$link-visited-lit: darken(desaturate(adjust-hue(hugo.$colorPrimaryLit, 30), 50%), 10%);
+$link-hover-lit: darken(hugo.$colorPrimaryLit, 10%);
+$link-focus-lit: darken(hugo.$colorPrimaryLit, 0%);
+$link-active-lit: darken(hugo.$colorPrimaryLit, 0%);
 
-$link-dim: darken($colorPrimaryDim, 5%);
-$link-visited-dim: lighten(desaturate(adjust-hue($colorPrimaryDim, 30), 50%), 20%);
-$link-hover-dim: lighten($colorPrimaryDim, 30%);
-$link-focus-dim: lighten($colorPrimaryDim, 0%);
-$link-active-dim: lighten($colorPrimaryDim, 0%);
+$link-dim: darken(hugo.$colorPrimaryDim, 5%);
+$link-visited-dim: lighten(desaturate(adjust-hue(hugo.$colorPrimaryDim, 30), 50%), 20%);
+$link-hover-dim: lighten(hugo.$colorPrimaryDim, 30%);
+$link-focus-dim: lighten(hugo.$colorPrimaryDim, 0%);
+$link-active-dim: lighten(hugo.$colorPrimaryDim, 0%);
 
-$theme-bg-lit: $surfacePrimaryLit;
+$theme-bg-lit: hugo.$surfacePrimaryLit;
 $theme-bg-active-lit: darken(saturate($theme-bg-lit, 0%), 50%);
 $theme-bg-hover-lit: darken(saturate($theme-bg-lit, 20%), 40%);
 
-$theme-bg-dim: $surfacePrimaryDim;
+$theme-bg-dim: hugo.$surfacePrimaryDim;
 $theme-bg-active-dim: lighten(saturate($theme-bg-dim, 0%), 40%);
 $theme-bg-hover-dim: lighten(saturate($theme-bg-dim, 20%), 50%);
 
@@ -89,25 +89,25 @@ $theme-bg-hue-3-dim: change-color(#382440, $alpha: 1.0);
 $theme-bg-hue-4-dim: change-color(#482a3a, $alpha: 1.0);
 
 // $haze-lit: darken(desaturate($bg-lit, 15%), 2%);
-$haze-lit: $colorSurfaceLit;
+$haze-lit: hugo.$colorSurfaceLit;
 $xhaze-lit: darken($haze-lit, 10%);
 $xxhaze-lit: darken($xhaze-lit, 10%);
 $xxxhaze-lit: darken($xxhaze-lit, 10%);
 
 // $haze-dim: lighten(desaturate($bg-dim, 10%), 10%);
-$haze-dim: $colorSurfaceDim;
+$haze-dim: hugo.$colorSurfaceDim;
 $xhaze-dim: lighten($haze-dim, 10%);
 $xxhaze-dim: lighten($xhaze-dim, 10%);
 $xxxhaze-dim: lighten($xxhaze-dim, 10%);
 
 // $theme-haze-lit: darken(saturate($theme-bg-lit, 20%), 5%);
-$theme-haze-lit: $surfacePrimaryLit;
+$theme-haze-lit: hugo.$surfacePrimaryLit;
 $theme-xhaze-lit: darken($theme-haze-lit, 5%);
 $theme-xxhaze-lit: darken($theme-xhaze-lit, 5%);
 $theme-xxxhaze-lit: darken($theme-xxhaze-lit, 5%);
 
 // $theme-haze-dim: lighten(saturate($theme-bg-dim, 10%), 10%);
-$theme-haze-dim: $surfacePrimaryDim;
+$theme-haze-dim: hugo.$surfacePrimaryDim;
 $theme-xhaze-dim: lighten($theme-haze-dim, 10%);
 $theme-xxhaze-dim: lighten($theme-xhaze-dim, 10%);
 $theme-xxxhaze-dim: lighten($theme-xxhaze-dim, 10%);

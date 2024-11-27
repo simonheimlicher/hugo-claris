@@ -1,8 +1,10 @@
 /* {{- $page := .Page }} {{- $mediaType := .MediaType }} {{- $template := "assets/styles/claris-main.scss" }} */
 /* File='styles/claris-main.scss': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .ContentTypeList='{{ printf "%v" .ContentTypeList }}' .ContentTypeListID='{{ .ContentTypeListID }}' .ContentType='{{ .ContentType }}' .MediaType='{{ .MediaType }}' */
 /* AssetStyle:
-{{ jsonify (dict "indent" "  ") .AssetStyle }}
+{{- jsonify (dict "indent" "  ") .AssetStyle -}}
 */
+
+@use 'hugo-vars' as hugo;
 
 // Core stylesheets that are included for all media types
 @import 'claris/functions';
@@ -39,7 +41,7 @@ $fontTypeMeta:    '{{ $fontTypeMeta }}';
   (dict "fontType" "sans"     "family" $fontFamilyNames.sans)
   (dict "fontType" "serif"    "family" $fontFamilyNames.serif)
   (dict "fontType" "mono"     "family" $fontFamilyNames.mono)
-) -}}
+) }}
 $fontFamilyMap: ();
 $fontDefinitionMap: () !default;
 $currentFontDefinition: default !default;
