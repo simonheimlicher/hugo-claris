@@ -9,10 +9,9 @@ export function postHogAnalyticsInit() {
     return path.split('.').reduce((acc, part) => (acc[part]), obj);
   };
 
-  const postHogParams = getValueByPath(params?.site, postHogParamsPath);
-  const postHogKey = postHogParams?.key;
-  const postHogHost = postHogParams?.host;
-  const postHogSite = postHogParams?.site;
+  const postHogKey = params.postHogParams?.key;
+  const postHogHost = params.postHogParams?.host;
+  const postHogSite = params.postHogParams?.site;
 
   if (posthog && postHogKey && postHogKey.length >= 8
     && postHogHost && postHogHost.length > 3
