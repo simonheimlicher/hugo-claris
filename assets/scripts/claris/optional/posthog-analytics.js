@@ -26,10 +26,5 @@ export function postHogAnalyticsInit() {
       }
     }
     capturePageview();
-  } else {
-    console.log(`Invalid params for PostHog Analytics at site.Params.${postHogParamsPath}`);
-    console.log(`postHogParams.key:`, postHogParams.key,
-      ` postHogParams.host:`, postHogParams.host,
-      ` postHogParams.site:`, postHogParams.site);
   }
 }
