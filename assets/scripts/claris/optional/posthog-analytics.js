@@ -4,11 +4,6 @@ import posthog from "posthog-js";
 const postHogParamsPath = "assets.scripts.posthog";
 
 export function postHogAnalyticsInit() {
-  // Function to access nested object value by string path
-  const getValueByPath = (obj, path) => {
-    return path.split('.').reduce((acc, part) => (acc[part]), obj);
-  };
-
   const postHogKey = params.postHogParams?.key;
   const postHogHost = params.postHogParams?.host;
   const postHogSite = params.postHogParams?.site;
