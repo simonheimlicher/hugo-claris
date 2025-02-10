@@ -104,7 +104,7 @@ title = "Hugo theme *Claris* Demo"
 
 #### Using YAML for your configuration files
 
-If you will use TOML, add the following block to your `config/_default/hugo.yaml`:
+If you will use YAML, add the following block to your `config/_default/hugo.yaml`:
 
 ```yaml
 baseURL: /
@@ -148,12 +148,16 @@ hugo mod get -u
 This should yield something along the following lines:
 
   ```zsh
-  module github.com/simonheimlicher/vitae
+module github.com/simonheimlicher/heimlicher.com
 
-  go 1.21.6
+go 1.23
 
-  require github.com/simonheimlicher/hugo-claris v0.0.0-20240125155746-88a461801fbe // indirect
-  ```
+require (
+  github.com/simonheimlicher/claris-resources v0.0.0-20240505124848-a527345b7de9 // indirect
+  github.com/simonheimlicher/hugo-claris v0.0.0-20241125145343-9821a3e92479 // indirect
+  github.com/simonheimlicher/hugo-fontawesome v0.0.0-20230505145305-a0afa1d13cf7 // indirect
+)
+```
   
   Before you try to go back to the above step, you need to temporarily rename your configuration, otherwise initializing the directory as Hugo Module will not work. To rectify the situation, you may proceed along the following lines:
 
@@ -167,7 +171,7 @@ This should yield something along the following lines:
 
 </details>
 
-#### 3.c Create the `index.md` for your site's home page
+#### 3.c Create the file `index.md` for your site's home page
 
 ```zsh
 hugo new content index.md
