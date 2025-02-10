@@ -12,8 +12,8 @@
 {{- $assetStyleSuffix := $assetVariant.AssetStyleSuffix }}
 
 <!-- NOTE: There are two ways to minify styles (CSS) in Hugo:
-1. resources.PostCSS: by passing (dict "config" "./relative/path/to/configDir")
-   resources.PostCSS, PostCSS will process the styles using the config file
+1. css.PostCSS: by passing (dict "config" "./relative/path/to/configDir")
+   css.PostCSS, PostCSS will process the styles using the config file
    "postcss.config.js" in the directory provided via "config" key.
    Perhaps surprisingly, the "config" does not refer to a configuration file
    but a directory.
@@ -61,7 +61,7 @@ does not have an effect, as mentioned above.
 {{- end }}
 {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "includePaths" $toCSSIncludePaths) }}
 <!-- NOTE: According to [the documentation](https://gohugo.io/hugo-pipes/postcss/#options),
-the resources.PostCSS function accepts a parameter indicating the *directory*
+the css.PostCSS function accepts a parameter indicating the *directory*
 that contains the `postcss.config.js` file - not the file itself. -->
 {{- $postCSSOptions := (dict "config" "assets/styles/claris/postcss" "noMap" $minifyCSS) -}}
 
@@ -163,13 +163,13 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
         $page $template $bundle $resourceID $bundle.MediaType (substr $bundle.Content 0 100) (substr $bundle.Content -100) }} */}}
 
     {{- if $minifyCSS }}
-      <!-- We minify CSS using only resources.PostCSS (PostCSS) as resources.Minify (tdewolff/minify)
+      <!-- We minify CSS using only css.PostCSS (PostCSS) as resources.Minify (tdewolff/minify)
       only further reduces the size by at most 3% -->
-      {{/* {{- $bundleMinified = $bundle | resources.PostCSS $postCSSOptions | resources.Minify | resources.Fingerprint $fingerprintOptions | resources.PostProcess }} */}}
+      {{/* {{- $bundleMinified = $bundle | css.PostCSS $postCSSOptions | resources.Minify | resources.Fingerprint $fingerprintOptions | resources.PostProcess }} */}}
       {{- if and false (eq $resourceID "main_all") }}
-        {{- $afterPostCSS := $bundle | resources.PostCSS $postCSSOptions }}
-        {{- $afterMinify := $bundle | resources.PostCSS $postCSSOptions | resources.Minify }}
-        {{- $afterPostProcess := $bundle | resources.PostCSS $postCSSOptions | resources.Minify | resources.PostProcess }}
+        {{- $afterPostCSS := $bundle | css.PostCSS $postCSSOptions }}
+        {{- $afterMinify := $bundle | css.PostCSS $postCSSOptions | resources.Minify }}
+        {{- $afterPostProcess := $bundle | css.PostCSS $postCSSOptions | resources.Minify | resources.PostProcess }}
         {{- warnf "%s[%s]: Size of style bundle '%v':\n Concat=%7.3fkB [%v]\n      css.Sass=%7.3fkB [%v]\n    PostCSS=%7.3fkB [%v]\n     Minify=%7.3fkB [%v]\nPostProcess=%7.3fkB [%v]"
             $page $template $resourceID
             (div (len $concatResource.Content) 1024.0) $concatResource.RelPermalink
@@ -179,8 +179,8 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
             (div (len $afterPostProcess.Content) 1024.0) $afterPostProcess.RelPermalink -}}
         {{- $bundleMinified = $afterPostProcess }}
     {{- else }}
-        {{/* {{- $bundleMinified = $bundle | resources.PostCSS $postCSSOptions | resources.Minify | resources.Fingerprint $fingerprintOptions | resources.PostProcess }} */}}
-        {{- $bundleMinified = $bundle | resources.PostCSS $postCSSOptions | resources.Fingerprint $fingerprintOptions }}
+        {{/* {{- $bundleMinified = $bundle | css.PostCSS $postCSSOptions | resources.Minify | resources.Fingerprint $fingerprintOptions | resources.PostProcess }} */}}
+        {{- $bundleMinified = $bundle | css.PostCSS $postCSSOptions | resources.Fingerprint $fingerprintOptions }}
       {{- end }}
     {{- end }}
 
