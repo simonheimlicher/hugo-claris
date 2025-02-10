@@ -8,9 +8,6 @@ export const clarisHugoParams = {
   envDevel: params.envDevel,
   envProd: params.envProd,
 
-  debugFunctionDefinition: params.debugFunctionDefinition,
-  debugFunction: eval(params.debugFunctionDefinition),
-
   // Params to be defined and re-used in other modules
   parentURL: window.location.protocol + "//" + window.location.host + "/",
   // The DOM element that we use to indicate properties of the browser and state of the page
