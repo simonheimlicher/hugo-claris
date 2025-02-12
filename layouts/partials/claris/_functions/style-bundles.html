@@ -1,7 +1,8 @@
 {{- $styleBundles := dict }}
 {{- $page := .Page }}
 {{- $template := "claris/_functions/style-bundles" }}
-{{- $debug := false }}
+{{- $debug := or true (page.Param "clarisdebug") }}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $assetVariant :=.AssetVariant -}}
 
@@ -49,33 +50,182 @@ does not have an effect, as mentioned above.
 {{- $targetExt := "css" -}}
 {{- $fingerprintOptions := default "sha256" site.Params.resourceFingerprintOptions }}
 
+{{- $fontParams := dict }}
+
+{{- $fontFamilyNames := (dict
+  "sans"  ($page.Param "assets.styles.fonts.family.sans"  | default "Source Sans 3")
+  "serif" ($page.Param "assets.styles.fonts.family.serif" | default "Alegreya")
+  "mono"  ($page.Param "assets.styles.fonts.family.mono"  | default "DM Mono")
+) -}}
+{{- $fontRoleTypeDefault := $page.Param "assets.styles.fonts.type.default" | default "sans" }}
+{{- $fontFamilyDefaultName := index $fontFamilyNames $fontRoleTypeDefault }}
+
+{{- $fontRoleTypes := (dict
+    "default" $fontRoleTypeDefault
+    "content" ($page.Param "assets.styles.fonts.type.content" | default ($page.Param "assets.styles.fonts.type.default"))
+    "article" ($page.Param "assets.styles.fonts.type.article" | default "serif")
+    "code"    ($page.Param "assets.styles.fonts.type.code"    | default "mono")
+    "heading" ($page.Param "assets.styles.fonts.type.heading" | default "inherit")
+    "meta"    ($page.Param "assets.styles.fonts.type.meta"    | default "sans")
+) -}}
+{{- range $fontRole, $fontType := $fontRoleTypes }}
+  {{- $roleKey := printf "role_%v" $fontRole }}
+  {{- $fontParams = merge $fontParams (dict
+      $roleKey $fontType
+  ) }}
+{{- end }}
+
+{{- $fontFamilies := (slice
+  (dict "fontType" "default"  "family" $fontFamilyDefaultName)
+  (dict "fontType" "sans"     "family" $fontFamilyNames.sans)
+  (dict "fontType" "serif"    "family" $fontFamilyNames.serif)
+  (dict "fontType" "mono"     "family" $fontFamilyNames.mono)
+) }}
+
+ {{- $defaultFallbackFonts := (dict
+  "sans" "arial"
+  "serif" "georgia"
+  "mono" "courier"
+ ) }}
+
+{{- $fontsSelfHosted := $page.Param "assets.styles.fonts.selfhosted" | default false }}
+{{- $assetStyleRoot := "styles" }}
+{{- $styleFontsPath := "claris/fonts" }}
+{{- $assetFontPath := printf "%s/%s" $assetStyleRoot $styleFontsPath }}
+{{- $hostedFontPath := default (relURL "fonts") ($page.Param "hostedFontPath") }}
+{{- $hostedFontFallbackPath := printf "%s/fallback" $hostedFontPath }}
+
+{{- $fontParams = merge $fontParams (dict
+    "hosted" $fontsSelfHosted
+) }}
+
+{{- $fontFamilyIDs := slice }}
+{{- range $fontFamilies }}
+  {{- $familyName := .family }}
+  {{- $fontFamilyID   := urlize $familyName }}
+
+  {{- $fontType := .fontType }}
+  {{- $familyNameKey := printf "type_%v_name" $fontType }}
+  {{- $familyIDKey := printf "type_%v_id" $fontType }}
+
+  {{- $fontFamilyIDs = $fontFamilyIDs | append $fontFamilyID | uniq }}
+  {{- $fontParams = merge $fontParams (dict
+      $familyNameKey $familyName
+      $familyIDKey $fontFamilyID
+  ) -}}
+
+  {{- if $fontsSelfHosted }}
+    {{- $fontSpecFileKey := printf "family_%v_spec" $fontFamilyID }}
+    {{- $fontSpecPathGlob := printf "%s/%s.scss" $assetFontPath $fontFamilyID }}
+    {{- with $fontSpecFile := resources.Get $fontSpecPathGlob }}
+      {{- if and false $debug }}
+        {{- warnf "%s Self-hosted font %v [%v] found: adding font file '%v' matching '%v' with familyIDKey=%v"
+          $dbg $familyName $fontFamilyID $fontSpecFile $fontSpecPathGlob $familyIDKey }}
+      {{- end }}
+      {{- $fontParams = merge $fontParams (dict
+          $fontSpecFileKey (printf "%s" $fontSpecFile)
+      ) }}
+    {{- else }}
+      {{- errorf "%s No self-hosted font %v [%v] found matching '%v' with familyIDKey=%v"
+          $dbg $familyName $fontFamilyID $fontSpecPathGlob $familyIDKey }}
+    {{- end }}
+
+    {{- $fallbackIDsKey := printf "family_%v_fallback_ids" $fontFamilyID }}
+    {{- $fallbackStack := slice }}
+    {{- $assetFallbackFontPath := printf "%s/fallback" $assetFontPath }}
+
+    {{- $fallbankFontSpecPathGlob := printf "%s/%s.*" $assetFallbackFontPath $fontFamilyID }}
+    {{- with $fallbackFontSpecFile := resources.GetMatch $fallbankFontSpecPathGlob }}
+      {{- if and false $debug }}
+        {{- warnf "%s Fallback font spec for %v [%v] found: examining fallback font file '%v' matching '%v'"
+          $dbg $familyName $fontFamilyID $fallbackFontSpecFile $fallbankFontSpecPathGlob }}
+      {{- end }}
+      {{- range $fallbackFontSuffix := (slice "fallback" "fallback-android") }}
+        {{- $fallbackFamilyID := printf "%s-%s" $fontFamilyID $fallbackFontSuffix }}
+        {{- $fallbackFontFamilyRegex := printf `(?i)font-family:\s*['"]?%s['"]?` $fallbackFamilyID }}
+        {{- with $fallbackMatch := findRE $fallbackFontFamilyRegex $fallbackFontSpecFile.Content }}
+          {{- $fallbackMatch = index $fallbackMatch 0 }}
+          {{- if and false $debug }}
+            {{- warnf "%s Fallback font family for %v [%v] found: adding fallbackFamilyID='%v'. Match: '%v'"
+              $dbg $familyName $fontFamilyID $fallbackFamilyID $fallbackMatch }}
+          {{- end }}
+          {{- $fallbackStack = append $fallbackFamilyID $fallbackStack }}
+          {{- $fallbackSpecFileKey := printf "family_%v_fallback_spec" $fontFamilyID }}
+          {{- $fontParams = merge $fontParams (dict
+              $fallbackIDsKey (delimit $fallbackStack " ")
+              $fallbackSpecFileKey (printf "%s" $fallbackFontSpecFile)
+          ) }}
+        {{- else }}
+          {{- if $debug }}
+            {{- warnf "%s No fallback font family for %v [%v] found matching fallbackFamilyID='%v'"
+              $dbg $familyName $fontFamilyID $fallbackFamilyID }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- else }}
+      {{- $fallbackFamilyID := index $defaultFallbackFonts $fontType }}
+      {{- if and false $debug }}
+        {{- warnf "%s No fallback font spec for %v [%v] found matching '%v': using default fallback family with familyID=%v via fontType=%v"
+          $dbg $fallbankFontSpecPathGlob $fontFamilyID $fallbankFontSpecPathGlob $fallbackFamilyID $fontType }}
+      {{- end }}
+      {{- $fallbackStack = append $fallbackFamilyID $fallbackStack }}
+    {{- end }}
+
+    {{/* {{- $fallbackStackString := printf `('%s')` (delimit $fallbackStack "', '") }} */}}
+    {{- $fontParams = merge $fontParams (dict
+        $fallbackIDsKey (delimit $fallbackStack " ")
+    ) }}
+
+  {{- end }}
+{{- end }}
+
+{{- $fontParams = merge $fontParams (dict
+    "family_ids" (delimit $fontFamilyIDs " ")
+    "geometric_scale_factor" ($page.Param "geometric_scale_factor")
+    "fractional_scale_denominator" ($page.Param "fractional_scale_denominator")
+    "fluid_scale_digits" ($page.Param "fluid_scale_digits")
+) }}
+
+{{- $imageParams := (dict
+    "feature_ratio_min" ($page.Param "assets.styles.images.feature.ratio.min" | default 2)
+    "feature_ratio_max" ($page.Param "assets.styles.images.feature.ratio.max" | default 4)
+    "feature_viewport_height_max" ($page.Param "assets.styles.images.feature.viewport.height.max" | default 0.5)
+) }}
+
 {{- $hugoParams := dict }}
 {{- range $categoryKey, $categoryParams := (dict
     "colors" site.Params.colors
-    "fonts" site.Params.assets.styles.fonts
+    "fonts" $fontParams
     "dimensions" site.Params.responsive.dimensions
     "breakpoints" site.Params.responsive.breakpoints
+    "images" $imageParams
   ) -}}
   {{- range $outerKey, $outerValue := $categoryParams }}
     {{- if reflect.IsMap $outerValue }}
       {{- range $innerKey, $innerValue := $outerValue }}
         {{- $hugoParams = merge $hugoParams (dict (printf "%s_%s_%s" $categoryKey $outerKey $innerKey) $innerValue) }}
       {{- end }}
+    {{- else if reflect.IsSlice $outerValue }}
+      {{- $hugoParams = merge $hugoParams (dict (printf "%s_%s" $categoryKey $outerKey) (delimit $outerValue " ") ) }}
     {{- else }}
-      {{- if ne $outerValue nil }}
+      {{- if (eq "string" (printf "%T" $outerValue) ) }}
+        {{- $hugoParams = merge $hugoParams (dict (printf "%s_%s" $categoryKey $outerKey) $outerValue) }}
+      {{- else if (eq "bool" (printf "%T" $outerValue) ) }}
         {{- $hugoParams = merge $hugoParams (dict (printf "%s_%s" $categoryKey $outerKey) (printf "%v" $outerValue) ) }}
-      {{- else }}
+      {{- else if (in (slice "int" "float64") (printf "%T" $outerValue) ) }}
+        {{- $hugoParams = merge $hugoParams (dict (printf "%s_%s" $categoryKey $outerKey) $outerValue) }}
+      {{- else if (in (slice "<nil>") (printf "%T" $outerValue) ) }}
         {{- $hugoParams = merge $hugoParams (dict (printf "%s_%s" $categoryKey $outerKey) "null") }}
+      {{- else }}
+        {{- errorf "%s Invalid type: cannot pass value %v for key %v"
+            $dbg (printf "%v [%T]" $outerValue $outerValue) (printf "%s_%s" $categoryKey $outerKey) }}
       {{- end }}
     {{- end }}
   {{- end }}
 {{- end }}
 
-{{- /* warnf "%v" (jsonify (dict "indent" "  ") $hugoParams) */ -}}
-
 {{- $toCSSoptionsBase := (dict
     "transpiler" "dartsass"
-    "vars" $hugoParams
     "includePaths" (slice "node_modules")
 )
 -}}
@@ -122,11 +272,17 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
   {{- $mediaType := default "all" $params.media }}
   {{- $fetchPriority := default "" $params.fetchpriority }}
   {{- if (in $mediaTypeList $mediaType) }}
-    {{- /* warnf "%s[%s]: Generating style bundle with contentTypeList=%s contentTypeListID=%s for MediaType=%s in MediaTypeList=%v"
-    $page $template $contentTypeList $contentTypeListID $mediaType $mediaTypeList */ -}}
+    {{- $hugoParams := merge $hugoParams (dict "media_type" $mediaType) }}
+    {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "vars" $hugoParams) }}
+    {{- if $debug }}
+      {{- warnf "toCSSoptionsBase:\n%v" (jsonify (dict "indent" "  ") $toCSSoptionsBase) -}}
+    {{- end }}
+
+    {{- /* warnf "%v Generating style bundle with contentTypeList=%s contentTypeListID=%s for MediaType=%s in MediaTypeList=%v"
+    $dbg $contentTypeList $contentTypeListID $mediaType $mediaTypeList */ -}}
     <!-- Parameters to pass to the hugoParamsFile and other top-level style files
       that are executed as templates -->
-    {{- /* warnf "%s[%s]: resourceID=%v params=%v $tplParams=%v" $page $template $resourceID $params $tplParams }} */ -}}
+    {{- /* warnf "%v resourceID=%v params=%v $tplParams=%v" $dbg $resourceID $params $tplParams }} */ -}}
 
     <!-- Concat SASS -->
     {{- $executedResourceList := slice }}
@@ -157,17 +313,17 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
           {{- $executedResourceList = append (slice $executedResource) $executedResourceList }}
         {{- else -}}
           {{- if (eq $contentType "claris") }}
-            {{- errorf "%s[%s]: resourceFile '%s' not found" $page $template $resourceFile }}
+            {{- errorf "%v resourceFile '%s' not found" $dbg $resourceFile }}
           {{- end -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}
 
     {{- /* {{- if (gt (len $contentTypeList) 1) }}
-      {{- warnf "%s[%s]: Multiple types=%v ID=%v resourceID=%s produced executedResourceList: "
-          $page $template $contentTypeList $contentTypeListID $resourceID }}
+      {{- warnf "%v Multiple types=%v ID=%v resourceID=%s produced executedResourceList: "
+          $dbg $contentTypeList $contentTypeListID $resourceID }}
       {{- range $idx, $resource := $executedResourceList }}
-        {{- warnf "%s[%s]: %d --> %v .Name=%v .MediaType=%v" $page $template $idx $resource $resource.Name $resource.MediaType }}
+        {{- warnf "%v %d --> %v .Name=%v .MediaType=%v" $dbg $idx $resource $resource.Name $resource.MediaType }}
       {{- end }}
     {{- end }} */ -}}
 
@@ -179,11 +335,11 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
 
     {{- $importFile := printf "%s/%s-%s.%s" $resourcePathBase $contentTypeListID $resourceID $sourceExt }}
     {{- $concatResource := $executedResourceList | resources.Concat $importFile }}
-    {{- if $debug }}
-      {{- /* warnf "%s[%s]: $concatResource '%s'.Content:\n%v\n...\n%v"
-          $page $template $concatResource (substr $concatResource.Content 0 500) (substr $concatResource.Content -500) */ -}}
-      {{- /* warnf "%s[%s]: $concatResource '%s'.Content:\n%v"
-          $page $template $concatResource $concatResource.Content */ -}}
+    {{- if and false $debug }}
+      {{- /* warnf "%v $concatResource '%s'.Content:\n%v\n...\n%v"
+          $dbg $concatResource (substr $concatResource.Content 0 500) (substr $concatResource.Content -500) */ -}}
+      {{- warnf "%v $concatResource '%s'.Content:\n%v"
+          $dbg $concatResource $concatResource.Content -}}
     {{- end }}
 
     {{- $toCSSoptions := merge $toCSSoptionsBase (dict "targetPath" $targetFile) -}}
@@ -192,9 +348,9 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
     {{- $bundleUnMinified := $bundle | resources.Fingerprint $fingerprintOptions }}
     {{- $bundleMinified := $bundleUnMinified }}
 
-    {{- if $debug }}
-      {{- warnf "%s[%s]: $bundle[%s] %#v: MediaType:%s Content:\n%v\n...\n%v"
-          $page $template $bundle $resourceID $bundle.MediaType (substr $bundle.Content 0 500) (substr $bundle.Content -500) }}
+    {{- if and false $debug }}
+      {{- warnf "%v $bundle[%s] %#v: MediaType:%s Content:\n%v\n...\n%v"
+          $dbg $bundle $resourceID $bundle.MediaType (substr $bundle.Content 0 500) (substr $bundle.Content -500) }}
     {{- end }}
 
     {{- if $minifyCSS }}
@@ -205,8 +361,8 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
         {{- $afterPostCSS := $bundle | css.PostCSS $postCSSOptions }}
         {{- $afterMinify := $bundle | css.PostCSS $postCSSOptions | resources.Minify }}
         {{- $afterPostProcess := $bundle | css.PostCSS $postCSSOptions | resources.Minify | resources.PostProcess }}
-        {{- warnf "%s[%s]: Size of style bundle '%v':\n Concat=%7.3fkB [%v]\n      css.Sass=%7.3fkB [%v]\n    PostCSS=%7.3fkB [%v]\n     Minify=%7.3fkB [%v]\nPostProcess=%7.3fkB [%v]"
-            $page $template $resourceID
+        {{- warnf "%v Size of style bundle '%v':\n Concat=%7.3fkB [%v]\n      css.Sass=%7.3fkB [%v]\n    PostCSS=%7.3fkB [%v]\n     Minify=%7.3fkB [%v]\nPostProcess=%7.3fkB [%v]"
+            $dbg $resourceID
             (div (len $concatResource.Content) 1024.0) $concatResource.RelPermalink
             (div (len $bundle.Content) 1024.0) $bundle.RelPermalink
             (div (len $afterPostCSS.Content) 1024.0) $afterPostCSS.RelPermalink
@@ -232,13 +388,13 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
     {{- $styleBundles = merge $styleBundles (dict $resourceID $styleBundle) -}}
 
   {{- else }}
-    {{- warnf "%s[%s]: Not generating style bundle for MediaType=%s: not in MediaTypeList=%v"
-        $page $template $mediaType $mediaTypeList }}
+    {{- warnf "%v Not generating style bundle for MediaType=%s: not in MediaTypeList=%v"
+        $dbg $mediaType $mediaTypeList }}
   {{- end }}
 {{- end }}
-{{- if $debug }}
-  {{- warnf "%s[%s]: assetVariant:\n%v\n\ntplParams:\n%v\n\nReturning styleBundles:\n%v"
-      $page $template (jsonify (dict "indent" "  ") $assetVariant)
+{{- if and false $debug }}
+  {{- warnf "%v assetVariant:\n%v\n\ntplParams:\n%v\n\nReturning styleBundles:\n%v"
+      $dbg (jsonify (dict "indent" "  ") $assetVariant)
       (jsonify (dict "indent" "  ") (merge $tplParams (dict "Page" "omitted")))
       (jsonify (dict "indent" "  ") $styleBundles) }}
 {{- end }}

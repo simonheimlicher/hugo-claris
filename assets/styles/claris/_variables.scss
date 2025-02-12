@@ -1,5 +1,11 @@
 @use 'sass:math';
+@use 'sass:map';
+@use 'sass:meta';
+@use 'sass:string';
+@use 'sass:color';
 @use 'hugo-vars' as hugo;
+@use 'functions' as functions;
+@use 'colors' as colors;
 
 $list-excerpt-width: 20rem;
 $list-excerpt-width: math.div((hugo.$screenViewBreakpointWidthOneColumn - (3 * hugo.$screenViewInnerPaddingOneColumn) ), 2);
@@ -12,18 +18,78 @@ $heading-margin-top: 1.5rem;
 
 $main-z-index: 1;
 
+@function color_variable_to_RGB($color) {
+  @return round(color.channel($color, "red", $space: rgb)), round(color.channel($color, "green", $space: rgb)), round(color.channel($color, "blue", $space: rgb));
+}
+
+@function map_color_variable_to_RGB($colors, $value) {
+  // @debug "map_color_variable_to_RGB: #{$value}: #{$value} [#{meta.type-of($value)}]";
+  @if meta.type-of($value) == color {
+    @return color_variable_to_RGB($value);
+  }
+  @else if meta.type-of($value) == string {
+    @if string.slice($value, 1, 3) == "var" {
+      // @debug "map_color_variable_to_RGB: extracting color key from '#{$value}'";
+      $color_key: functions.stringExtract($value, 'var(--', ')'); // Remove 'var(--' and ')'
+      // @debug "map_color_variable_to_RGB: Extracted color key='#{$color_key}' from '#{$value}'";
+      $resolved_value: map.get($colors, $color_key);
+      // @debug "map_color_variable_to_RGB: Resolved color value: #{$resolved_value} [#{meta.type-of($resolved_value)}] using key='#{$color_key}' from '#{$value}'";
+
+      @if $resolved_value == null {
+        $resolved_value: #ff0000; // Default to red
+        @debug "map_color_variable_to_RGB: Color key '#{$color_key}' not found; defaulting to red: #{inspect($resolved_value)}";
+      }
+
+      @if meta.type-of($resolved_value) == color {
+        @return color_variable_to_RGB($resolved_value);
+      }
+      @else if meta.type-of($resolved_value) == string {
+        // Resolve nested variables
+        @if string.slice($resolved_value, 1, 3) == "var" {
+          @error "map_color_variable_to_RGB: Nested variable detected: #{$resolved_value}. This code is untested";
+          @return map_color_variable_to_RGB($colors, $resolved_value);
+        }
+      }
+    }
+  }
+  @error "map_color_variable_to_RGB: Invalid $value: #{$value} [#{meta.type-of($value)}]";
+  @return $value;
+}
+
 @mixin generate_colors($colors) {
   // Add RGB / RGBA color definitions
   @each $color, $value in $colors {
     --#{$color}: #{$value};
-    // --RGB_#{$color}: #{mapColorVarToRGB($colors, $value)};
+    // --RGB_#{$color}: #{map_color_variable_to_RGB($colors, $value)};
   }
-  // Only define RGB values for select colors
+  // @debug "generate_colors: type of 'colors': [#{meta.type-of($colors)}]. Contents of colors: #{inspect($colors)}";
   @each $color in (text bg theme theme-bg choice-bg xhaze link link-visited link-hover link-focus link-active link-dark link-dark-visited link-dark-hover link-dark-focus link-dark-active highlight-bg-yellow) {
-    $value: map-get($colors, $color);
-    --RGB_#{$color}: #{mapColorVarToRGB($colors, $value)};
+    $value: map.get($colors, $color);
+    // @debug "generate_colors: color=#{$color} mapped to value=#{$value} [#{meta.type-of($value)}] --> #{map_color_variable_to_RGB($colors, $value)}";
+    $color_RGB: map_color_variable_to_RGB($colors, $value);
+    --RGB_#{$color}: #{$color_RGB};
   }
 }
+
+// @mixin generate_colors($colors) {
+//   // Add RGB / RGBA color definitions
+//   @each $color, $value in $colors {
+//     --#{$color}: #{$value};
+//   }
+//   $colorMap: ("text": #{hsl(200, 10%, 13%)});
+//   $defaultColor: hsl(200, 10%, 13%);
+//   @debug "generate_colors: defaultColor: #{$defaultColor}";
+
+//   // Only define RGB values for select colors
+//   @each $color in (text bg theme theme-bg choice-bg xhaze link link-visited link-hover link-focus link-active link-dark link-dark-visited link-dark-hover link-dark-focus link-dark-active highlight-bg-yellow) {
+//     $value: map-get($colors, $color);
+//     // @debug "generate_colors: #{$color}: #{$value} [colors: #{type-of($colors)}] [value: #{type-of($value)}]";
+
+//     // @debug "generate_colors: #{$color}: #{mapColorVarToRGB($colors, $value)}";
+//     $color_RGB: mapColorVarToRGB($colors, $value);
+//     --RGB_#{$color}: #{$color_RGB};
+//   }
+// }
 
 @function direction($value) {
   @if index('right' 'left', $value) != null {
@@ -641,323 +707,6 @@ $main-z-index: 1;
   }
 }
 
-$familyDefaultMap: (
-  styles: (
-    default: (
-      font-weight: 400,
-      line-height: 1.5
-    ),
-    strong: (
-      font-weight: 600,
-    )
-  ),
-  roles: (
-    display: (
-      styles: (
-        default: (
-          font-weight: 400,
-          line-height: 1.2
-        ),
-        strong: (
-          font-weight: 600,
-        )
-      )
-    )
-  )
-);
-
-// Utility mixin to apply style definitions by defining CSS custom properties
-// If $key is in $keysToDefineAsProperty, define the CSS custom property
-// Currently, this is used to ensure we can access the current `line-height`
-// to remove the line-height from the first line usinc `calc`
-@mixin generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef) {
-  // @debug 'generateFontStyleProperties(#{$styleName}): defaultStyleDef: #{inspect($defaultStyleDef)} baseStyleDef: #{inspect($baseStyleDef)}';
-  // To enable consistently using the same style rules, we make some definitions available
-  // as CSS custom properties.
-  // This is used for example to have the weight of `strong` style available in `--font-weight-strong`
-  // The values of some attributes such as `line-height` are required
-  // for calculations.
-  // List them in the following list to have them defined as CSS properties
-  $keysToDefineAsProperty: ("line-height", "font-weight");
-
-  @each $key, $value in $styleDef {
-    @if index($keysToDefineAsProperty, $key) {
-      $baseValue: map-get($defaultStyleDef, $key);
-      @if $styleName != default {
-        $baseValue: map-get($baseStyleDef, $key);
-      }
-      @if $value == $baseValue {
-        // @debug 'generateFontStyleProperties(#{$styleName}): value=#{$value} == #{$baseValue}';
-      }
-      @else {
-        // @debug 'generateFontStyleProperties(#{$styleName}): value=#{$value} != #{$baseValue}';
-        $propertyName: $key;
-        @if ($styleName != default) {
-          $propertyName: #{$key}-#{$styleName};
-        }
-        --#{$propertyName}: #{$value};
-      }
-    }
-  }
-}
-
-// Utility mixin to apply style definitions by defining CSS rules if they differ from default
-@mixin generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef) {
-  // @debug 'generateFontStyleRules(#{$styleName}): defaultStyleDef: #{inspect($defaultStyleDef)} baseStyleDef: #{inspect($baseStyleDef)}';
-  $overrideStyles: $styleDef;
-  @if ($styleName == default) {
-    // Determine, which values differ from default - if any
-    $overrideStyles: ();
-    @each $key, $value in $styleDef {
-      $baseValue: map-get($defaultStyleDef, $key);
-      @if ($baseValue and $value == $baseValue) {
-        // @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} == #{$baseValue}';
-      }
-      @else {
-        // @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} != #{$baseValue}';
-        $overrideStyles: map-merge($overrideStyles, ($key: $value) );
-      }
-    }
-  }
-  @else {
-    // Determine, which values differ from default - if any
-    $overrideStyles: ();
-    @each $key, $value in $styleDef {
-      $baseValue: map-get($baseStyleDef, $key);
-      @if ($baseValue and $value == $baseValue) {
-        // @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} == #{$baseValue}';
-      }
-      @else {
-        // @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} != #{$baseValue}';
-        $overrideStyles: map-merge($overrideStyles, ($key: $value) );
-      }
-    }
-  }
-
-  @each $key, $value in $overrideStyles {
-    #{$key}: #{$value};
-  }
-}
-
-// Mixin to apply styles from a styles map
-@mixin applyFontStyles($fontStackVariant, $defaultStyleDef, $baseStyleDef, $styleName, $styleDef, $baseSelector: null, $nestedSelector: null) {
-
-  @if ($baseSelector == null) {
-    @if ($styleName == default) {
-      html {
-        font-family: #{inspect($fontStackVariant)};
-        @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-        @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-      }
-    }
-    @else {
-      html {
-        @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-      }
-      #{$styleName} {
-        @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-      }
-    }
-  }
-  @else {
-    @if ($nestedSelector == null) {
-      @if ($styleName == default) {
-        #{$baseSelector} {
-          font-family: #{inspect($fontStackVariant)};
-          @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-          @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-        }
-      }
-      @else {
-        #{$baseSelector} {
-          @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-          #{$styleName} {
-            @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-          }
-        }
-        #{$styleName}#{$baseSelector} {
-          @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-        }
-      }
-    }
-    @else {
-      #{$baseSelector} {
-        #{$nestedSelector} {
-          @if ($styleName == default) {
-            font-family: #{inspect($fontStackVariant)};
-            @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-            @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-          }
-          @else {
-            @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-            #{$styleName} {
-              @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-            }
-          }
-        }
-        @if ($styleName != default) {
-          #{$styleName}#{$nestedSelector} {
-            @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-          }
-        }
-      }
-    }
-  }
-}
-
-// Utility mixin to generate CSS rules
-@mixin defineFontUtilityRules($fontStackVariant, $defaultStyleDef, $baseStyleDef, $styleName, $styleDef, $baseClassNames, $nestedClassNames: null) {
-  @if length($baseClassNames) > 0 {
-    $baseSelector: '.' + joinArray($baseClassNames, '.');
-    $nestedSelector: null;
-    @if $nestedClassNames != null and length($nestedClassNames) > 0 {
-      $nestedSelector: '.' + joinArray($nestedClassNames, '.');
-      // @debug 'nestedSelector=#{$baseSelector} #{$nestedSelector}';
-    }
-    @include applyFontStyles($fontStackVariant, $defaultStyleDef, $baseStyleDef, $styleName, $styleDef, $baseSelector, $nestedSelector);
-  }
-  @else {
-    // Define the rules for the outermost element, typically HTML
-    @include applyFontStyles($fontStackVariant, $defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-  }
-}
-
-// Mixin to handle className combinations and generate rules
-@mixin generateFontUtilityClasses($fontStackVariant, $defaultStyleDef, $baseStyleDef, $styleName, $styleDef, $classNames) {
-  $len: length($classNames);
-  // Generate rule for combined class
-  @include defineFontUtilityRules($fontStackVariant, $defaultStyleDef, $baseStyleDef, $styleName, $styleDef, $classNames);
-  @if $len > 1 {
-    // Generate rules for all permutations (nested classes)
-    @for $i from 1 through $len - 1 {
-      $baseClassNames: sliceArray($classNames, 1, $i);
-      $nestedClassNames: sliceArray($classNames, $i + 1, $len);
-      @include defineFontUtilityRules($fontStackVariant, $defaultStyleDef, $baseStyleDef, $styleName, $styleDef, $baseClassNames, $nestedClassNames);
-    }
-  }
-}
-
-// Main mixin to define font styles
-@mixin defineFontStyles($fontStackVariant, $defaultStyleDef, $stylesRole, $stylesVariant, $specStyles, $classNames) {
-  // $baseStyleDef: updateMap(map-get($stylesRole, default), map-get($stylesVariant, default) );
-  $defaultStyle: ();
-  @if length($classNames) > 0 {
-    $defaultStyle: $defaultStyleDef;
-  }
-  // Go through all styles
-  @each $styleName, $specStyle in $stylesRole {
-    $baseStyleDef: updateMap(map-get($stylesRole, $styleName), map-get($stylesVariant, $styleName) );
-    $styleDef: updateMap($baseStyleDef, $specStyle);
-
-    @if length($classNames) == 0 {
-      $baseStyleDef: ();
-    }
-
-    // @debug 'defineFontStyles: defaultStyleDef: #{inspect($defaultStyleDef)} baseStyleDef: #{inspect($baseStyleDef)} styleDef: #{inspect($styleDef)}';
-    // Note: To avoid an invalid CSS value error when $classNames is empty,
-    // we append an empty list to it
-    // @debug 'defineFontStyles: call generateFontUtilityClasses(#{nth($fontStackVariant, 1)}, styleName=#{$styleName}, classNames=#{append($classNames, ())})';
-    // Generate rules
-    @include generateFontUtilityClasses($fontStackVariant, $defaultStyle, $baseStyleDef, $styleName, $styleDef, $classNames);
-  }
-}
-
-// Main mixin to define font variants
-@mixin defineFontVariants($fontNameRole, $fallbackStackRole, $defaultStyleDef, $stylesRole, $specVariants, $classNames) {
-  // Go through all variants
-  @each $variant, $specVariant in $specVariants {
-    $specStyles: map-get($specVariant, styles);
-
-    @if $variant != default {
-      $classNames: append($classNames, variant- + $variant);
-    }
-
-    $fontNameVariant: defaultTo($fontNameRole, map-get($specVariant, 'name'));
-    $fallbackStackVariant: defaultTo($fallbackStackRole, map-get($specVariant, 'fallback'));
-    $fontStackVariant: join(($fontNameVariant), $fallbackStackVariant);
-
-    $stylesVariant: map-get($specVariant, 'styles');
-    // Note: To avoid an invalid CSS value error when $classNames is empty,
-    // we append an empty list to it
-    // @debug 'defineFontVariants: call defineFontStyles(#{$fontNameRole}, classNames=#{append($classNames, ())})';
-    @include defineFontStyles($fontStackVariant, $defaultStyleDef, $stylesRole, $stylesVariant, $specStyles, $classNames);
-  }
-}
-
-@mixin defineFontRoles($specFamily, $classNames: () ) {
-  // Default fallback stack to be used if all else fails.
-  // Ensure to define a list here. If there is only one fallback font, append a comma: ('Fallback Font', )
-  $fallbackStackDefault: ('Arial', );
-
-  $fontNameFamily: map-get($specFamily, name);
-  $fallbackStackFamily: map-get($specFamily, fallback);
-  $fallbackStackFamily: defaultTo($fallbackStackDefault, map-get($specFamily, fallback));
-  // --fallbackStackFamily: #{$fallbackStackFamily};
-
-  $defaultStyleDef: map-get(map-get($familyDefaultMap, styles), default);
-
-  $specStyles: updateMap(map-get($familyDefaultMap, styles), map-get($specFamily, styles));
-
-  $specRolesDefault: updateMap((default: (styles: $specStyles)), map-get($familyDefaultMap, roles));
-  $specRoles: updateMap($specRolesDefault, map-get($specFamily, roles));
-
-  $specVariantsDefault: updateMap((default: (
-    name: $fontNameFamily,
-    fallback: $fallbackStackFamily,
-    styles: $specStyles
-  )), map-get($familyDefaultMap, variants));
-
-  $specVariants: updateMap($specVariantsDefault, map-get($specFamily, variants));
-  // @include mapToCSSProperties($specStyles, specStyles);
-  // @include mapToCSSProperties($specRoles, specRoles);
-  // @include mapToCSSProperties($specVariants, specVariants);
-
-  // Go through all roles (default, display etc.) that are defined
-  // for this font family's specification
-  @each $role, $specRole in $specRoles {
-    $defRole: updateMap(map-get($specRoles, default), $specRole);
-    $fontNameRole: defaultTo($fontNameFamily, map-get($specRole, name));
-    $fallbackStackRole: defaultTo($fallbackStackFamily, map-get($specRole, fallback));
-
-    $stylesRole: updateMap($specStyles, map-get($specRole, styles));
-    @if $role != default {
-      $classNames: append($classNames, role- + $role);
-    }
-    // Note: To avoid an invalid CSS value error when $classNames is empty,
-    // we append an empty list to it
-    // @debug 'defineFontRoles: call defineFontVariants(#{$fontNameRole}, classNames=#{append((), $classNames)})';
-    @include defineFontVariants($fontNameRole, $fallbackStackRole, $defaultStyleDef, $stylesRole, $specVariants, $classNames);
-  }
-}
-
-/**
-This mixin takes the **font specification** provided for the font family with the
-provided `fontFamilyID` and turns it into a **font definition**, i.e.,
-a map that comprises all the keys provided in `familyDefaultMap` and overrides
-those provided by the font specification and adding any additional
-role, variant, and style definitions
-*/
-@mixin defineFont($definitionID: default, $fontFamilyID: default) {
-
-  // Get the specification of this font family
-  $specFamily: map-get($fontFamilyMap, $fontFamilyID);
-
-  @if ($specFamily) {
-    // The font family with ID == default is applied at the HTML level
-    $classNames: ();
-    @if ($fontFamilyID != default) {
-      // All other families generate utility classes with the font family ID
-      // Note: define a list by adding a comma before the closing parenthesis
-      $classNames: (font-#{$definitionID}, );
-    }
-    // @debug 'defineFont: call defineFontRoles(#{$fontFamilyID}, classNames=#{append((), $classNames)})';
-    @include defineFontRoles($specFamily, $classNames);
-  }
-  @else {
-    @warn "@mixin defineFont: font ID '#{$fontFamilyID}' is undefined";
-  }
-}
-
 // Generating fluid font scales for copy-paste: https://www.fluid-type-scale.com/calculate https://utopia.fyi/type/calculator/
 // Using SASS: https://www.smashingmagazine.com/2022/10/fluid-typography-clamp-sass-functions/
 @function fluid($min-size, $max-size, $min-breakpoint: hugo.$screenViewBreakpointWidthMobile, $max-breakpoint: hugo.$screenViewBreakpointWidthWide, $unit: vw) {
@@ -1028,6 +777,47 @@ role, variant, and style definitions
     --#{$prop}_#{$denominator}-#{$i}: #{fractional-scaled-prop($prop, $base-shift + $i, $denominator)};
   }
 }
+
+$screenViewBreakpoints: (
+  'width': (
+    'mobile': hugo.$screenViewBreakpointWidthMobile,
+    'narrow': hugo.$screenViewBreakpointWidthNarrow,
+    'onecolumn': hugo.$screenViewBreakpointWidthOneColumn,
+    'twocolumn': hugo.$screenViewBreakpointWidthTwoColumn,
+    'wide': hugo.$screenViewBreakpointWidthWide,
+    'ultrawide': hugo.$screenViewBreakpointWidthUltrawide,
+  ),
+  'height': (
+    'shallow': hugo.$screenViewBreakpointHeightShallow,
+    'tall': hugo.$screenViewBreakpointHeightTall,
+  ),
+);
+
+$screenViewMargin: (
+  'outer': (
+    'mobile': hugo.$screenViewBodyMarginMobile,
+    'narrow': hugo.$screenViewBodyMarginNarrow,
+    'onecolumn': hugo.$screenViewBodyMarginOneColumn,
+  ),
+  'inner': (
+    'mobile': hugo.$screenViewInnerMarginMobile,
+    'narrow': hugo.$screenViewInnerMarginNarrow,
+    'onecolumn': hugo.$screenViewInnerMarginOneColumn,
+  ),
+);
+
+$screenViewPadding: (
+  'outer': (
+    'mobile': hugo.$screenViewBodyPaddingMobile,
+    'narrow': hugo.$screenViewBodyPaddingNarrow,
+    'onecolumn': hugo.$screenViewBodyPaddingOneColumn,
+  ),
+  'inner': (
+    'mobile': hugo.$screenViewInnerPaddingMobile,
+    'narrow': hugo.$screenViewInnerPaddingNarrow,
+    'onecolumn': hugo.$screenViewInnerPaddingOneColumn,
+  ),
+);
 
 html {
   // --dim-image-filter: grayscale(30%);
@@ -1106,47 +896,6 @@ html {
     --screenViewNavHeight: #{hugo.$screenViewNavHeight};
   }
 
-$screenViewBreakpoints: (
-    'width': (
-      'mobile': hugo.$screenViewBreakpointWidthMobile,
-      'narrow': hugo.$screenViewBreakpointWidthNarrow,
-      'onecolumn': hugo.$screenViewBreakpointWidthOneColumn,
-      'twocolumn': hugo.$screenViewBreakpointWidthTwoColumn,
-      'wide': hugo.$screenViewBreakpointWidthWide,
-      'ultrawide': hugo.$screenViewBreakpointWidthUltrawide,
-    ),
-    'height': (
-      'shallow': hugo.$screenViewBreakpointHeightShallow,
-      'tall': hugo.$screenViewBreakpointHeightTall,
-    ),
-  );
-
-  $screenViewMargin: (
-    'outer': (
-      'mobile': hugo.$screenViewBodyMarginMobile,
-      'narrow': hugo.$screenViewBodyMarginNarrow,
-      'onecolumn': hugo.$screenViewBodyMarginOneColumn,
-    ),
-    'inner': (
-      'mobile': hugo.$screenViewInnerMarginMobile,
-      'narrow': hugo.$screenViewInnerMarginNarrow,
-      'onecolumn': hugo.$screenViewInnerMarginOneColumn,
-    ),
-  );
-
-  $screenViewPadding: (
-    'outer': (
-      'mobile': hugo.$screenViewBodyPaddingMobile,
-      'narrow': hugo.$screenViewBodyPaddingNarrow,
-      'onecolumn': hugo.$screenViewBodyPaddingOneColumn,
-    ),
-    'inner': (
-      'mobile': hugo.$screenViewInnerPaddingMobile,
-      'narrow': hugo.$screenViewInnerPaddingNarrow,
-      'onecolumn': hugo.$screenViewInnerPaddingOneColumn,
-    ),
-  );
-
   // @mixin screen-margin-padding($breakpoint) {
   //   @each $where in ('outer', 'inner') {
   //     $marginBase: map-get(map-get(hugo.$screenViewMargin, $where), $breakpoint);
@@ -1179,7 +928,7 @@ $screenViewBreakpoints: (
 
   --navigation-header-height: 0;
 
-  @include generate_colors($colors-lit);
+  @include generate_colors(colors.$colors-lit);
   --choice-bg-menu: var(--haze);
   --choice-bg-menu-active: var(--xxxhaze);
 
@@ -1232,7 +981,7 @@ $screenViewBreakpoints: (
       }
     }
 
-    @include generate_colors( map-merge($colors-lit, $colors-dim) );
+    @include generate_colors( map-merge(colors.$colors-lit, colors.$colors-dim) );
     img:not([src*=".svg"]) {
       filter: var(--dim-image-filter);
     }
@@ -1254,30 +1003,3 @@ $screenViewBreakpoints: (
     --RGB_choice-bg: var(--RGB_theme-bg);
   }
 }
-
-$fontStyles: (default, sans, serif, mono);
-@each $style in $fontStyles {
-  @include defineFont($style, $style);
-}
-
-$fontDefinitions: (
-  (default, $fontTypeDefault),
-  (content, $fontTypeContent),
-  (article, $fontTypeArticle),
-  (code, $fontTypeCode),
-  (heading, $fontTypeHeading),
-  (meta, $fontTypeMeta)
-);
-
-@each $defID, $defSpec in $fontDefinitions {
-  // It is possible to define a font definition with the value `inherit`, e.g.,
-  // (heading, $fontTypeHeading)
-  // with `$fontTypeHeading` set to `inherit`
-  // NOTE: Determine, how to determine the value of `inherit`. For the time being,
-  // we simply treat it as a no-op, which will lead to the corresponding font utility
-  // classes not being generated
-  @if ($defSpec != inherit) {
-    @include defineFont($defID, $defSpec);
-  }
-}
-// @include defineFont(default, default);

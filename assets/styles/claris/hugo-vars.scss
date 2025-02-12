@@ -27,10 +27,6 @@ $onSecondaryDim: if(hugo.$colors_on_secondary_dim != null, hugo.$colors_on_secon
 $surfaceSecondaryLit: if(hugo.$colors_surface_secondary_lit != null, hugo.$colors_surface_secondary_lit, lighten(desaturate($colorSecondaryLit, 50%), 45%));
 $surfaceSecondaryDim: if(hugo.$colors_surface_secondary_dim != null, hugo.$colors_surface_secondary_dim, darken(desaturate($colorSecondaryDim, 60%), 35%));
 
-$fontFamilySans: if(hugo.$fonts_family_sans != null, hugo.$fonts_family_sans, "Source Sans 3");
-$fontFamilySerif: if(hugo.$fonts_family_serif != null, hugo.$fonts_family_serif, "Alegreya");
-$fontFamilyMono: if(hugo.$fonts_family_mono != null, hugo.$fonts_family_mono, "DM Mono");
-
 $geometricScaleFactor: if(hugo.$fonts_geometric_scale_factor != "null", hugo.$fonts_geometric_scale_factor, math.pow(2.0, math.div(1, 4) ));
 $fractionalScaleDenominator: if(hugo.$fonts_fractional_scale_denominator != "null", hugo.$fonts_fractional_scale_denominator, 4);
 $fluidScaleDigits: if(hugo.$fonts_fluid_scale_digits != "null", hugo.$fonts_fluid_scale_digits, 2);
@@ -124,3 +120,9 @@ $screenViewBreakpointHeightShallow: if(hugo.$breakpoints_height_shallow != null,
 // From this height upward, the footer is layered beneath the main content
 // and revealed when scrolling up
 $screenViewBreakpointHeightStickyFooter: if(hugo.$breakpoints_height_sticky_footer != null, hugo.$breakpoints_height_sticky_footer, 42rem);
+
+$featureImageAspectRatioMin: hugo.$images_feature_ratio_min + 0;
+$featureImageAspectRatioMax: hugo.$images_feature_ratio_max;
+$featureImageViewportHeightMax: hugo.$images_feature_viewport_height_max;
+
+$mediaType: if(hugo.$media_type != null, hugo.$media_type, "screen");

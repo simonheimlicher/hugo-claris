@@ -1,15 +1,58 @@
 @use 'sass:meta';
+@use 'sass:string';
 @use 'sass:math';
 
-// Replace substring with another string
-// Credits: https://css-tricks.com/snippets/sass/str-replace-function/
-@function str-replace($string, $search, $replace: '') {
-  // @debug "str-replace('#{$string}', '#{$search}', '#{$replace}')";
-  $index: str-index($string, $search);
-  @if $index {
-    @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+/// Return true if `$string` contains `$search`
+/// @param {String} $string - Haystack
+/// @param {String} $search - Needle
+/// @return {String} - Boolean
+@function stringContains($string, $search) {
+  $index: string.index($string, $search);
+  @if $index == null {
+    @return false;
   }
-  @return $string;
+  @return true;
+}
+
+/// Replace `$search` with `$replace` in `$string`
+/// @param {String} $string - Initial string
+/// @param {String} $search - Substring to replace
+/// @param {String} $replace ('') - New value
+/// @return {String} - Updated string
+@function stringReplace($string, $search, $replace) {
+  $index: string.index($string, $search);
+  @if $index == null {
+    @return $string;
+  }
+  $before: string.slice($string, 1, $index - 1);
+  $after: string.slice($string, $index + string.length($search));
+  @return $before + $replace + $after;
+}
+
+/// Strip `$prefix` and `$postfix` from `$string`
+/// @param {String} $string - Initial string
+/// @param {String} $prefix - Prefix to remove
+/// @param {String} $postfix - Postfix to remove
+/// @return {String} - Updated string
+@function stringExtract($string, $prefix, $postfix) {
+  // Ensure the string starts with the prefix
+  @if string.index($string, $prefix) != 1 {
+    @error "Prefix not found or does not start at the beginning of the string.";
+  }
+
+  // Remove the prefix
+  $trimmed: string.slice($string, string.length($prefix) + 1);
+
+  // Ensure the string ends with the postfix
+  $postfix-length: string.length($postfix);
+  $trimmed-length: string.length($trimmed);
+  @if string.slice($trimmed, -$postfix-length) != $postfix {
+    @error "Postfix '#{$postfix}' not found or does not end the string '#{$string}'";
+  }
+
+  // Remove the postfix
+  $final: string.slice($trimmed, 1, $trimmed-length - $postfix-length);
+  @return $final;
 }
 
 // https://kittygiraudel.com/2013/08/08/advanced-sass-list-functions/
@@ -75,55 +118,6 @@
   }
 
   @return $result;
-}
-
-// https://stackoverflow.com/a/64863842
-@function colorVarToRGB($value) {
-  @return round(red($value)), round(green($value)), round(blue($value));
-}
-
-@function mapColorVarToRGB($colors, $value) {
-  $color_value: $value;
-  @if str-slice(#{$value}, 1, 3) == "var" {
-    $color_key: str-replace($value, 'var(--');
-    $color_key: str-replace($color_key, ')');
-    $color_value: map-get($colors, $color_key);
-    @if $color_value == null {
-      $color_value: #ff0000;
-      @debug "mapColorVarToRGB($colors, #{$value})";
-      @debug "    key not found; defaulting to red: #{inspect($color_value)}";
-    }
-    @if str-slice(#{$color_value}, 1, 3) == "var" {
-      @return mapColorVarToRGB($colors, $color_value);
-    }
-  }
-  @return colorVarToRGB($color_value);
-}
-
-@function colorVarToHSLRounded($value) {
-  @return round(hue($value)), round(saturation($value)), round(lightness($value)), alpha($value);
-}
-
-@function colorVarToHSL($value) {
-  @return hue($value), saturation($value), lightness($value), alpha($value);
-}
-
-@function mapColorVarToHSL($colors, $value) {
-  $color_value: $value;
-  @if str-slice(#{$value}, 1, 3) == "var" {
-    $color_key: str-replace($value, 'var(--');
-    $color_key: str-replace($color_key, ')');
-    $color_value: map-get($colors, $color_key);
-    @if $color_value == null {
-      $color_value: #ff0000;
-      @debug "mapColorVarToRGB($colors, #{$value})";
-      @debug "    key not found; defaulting to red: #{inspect($color_value)}";
-    }
-    @if str-slice(#{$color_value}, 1, 3) == "var" {
-      @return mapColorVarToHSL($colors, $color_value);
-    }
-  }
-  @return colorVarToHSL($color_value);
 }
 
 @function roundDec($value, $fractionDigits: 0) {

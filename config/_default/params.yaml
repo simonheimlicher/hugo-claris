@@ -135,7 +135,9 @@ assets:
     #   host: https://eu.posthog.com
 
   images:
+    # Feature image at top of article and section pages
     feature:
+      # Aspect ratio: bounded by minimum and maximum
       ratio:
         min: 2
         max: 4

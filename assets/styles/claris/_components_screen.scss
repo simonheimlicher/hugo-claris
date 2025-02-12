@@ -1,16 +1,10 @@
 @use "sass:meta";
 @use "sass:math";
+@use "sass:string";
 @use "hugo-vars" as hugo;
+@use "functions" as functions;
+@use "variables" as variables;
 
-// General navigation definition
-%upcaret {
-  width: 0;
-  height: 0;
-  border-left: 0.33rem solid transparent;
-  border-right: 0.33rem solid transparent;
-  top: -0.5rem;
-  left: 1rem;
-}
 // This mixin creates a background that is cut off at the corner specified
 // Unfortunately, it cannot be used to generate an outline with a cut-off corner
 // @mixin cut-off-corner-background($color: var(--text-hover), $background: var(--theme-bg-hover), $top-left: 0, $top-right: 0, $bottom-right: 0, $bottom-left: 0)
@@ -40,7 +34,7 @@
 
 @mixin nav-background($color: var(--text-active), $background: var(--theme-bg-active), $border: var(--theme-bg-active), $underline: var(--theme-bg-active), $top-left: 0.5rem, $top-right: 0.5rem, $bottom-right: 0.5rem, $bottom-left: 0.5rem) {
   color: $color;
-  z-index: ($main-z-index + 1);
+  z-index: (variables.$main-z-index + 1);
   &::after {
     z-index: -1;
     content: '';
@@ -82,777 +76,6 @@
 }
 @mixin nav-open-background($color: var(--theme-text), $background: var(--theme-bg), $border: var(--theme-bg), $underline: var(--theme-haze) ) {
   @include nav-background($color, $background, $border);
-}
-@media screen {
-  .to_top {
-    background-color: var(--theme);
-    @include color-scheme_transition;
-    width: 2.75rem;
-    height: 2.75rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    border-radius: 50%;
-    position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    z-index: 99;
-    &.ios {
-      position: absolute;
-      bottom: 0.75rem;
-      right: 0;
-    }
-    @media (any-hover: hover) {
-      &:hover {
-        background-color: var(--theme);
-      }
-    }
-    svg {
-      fill: var(--theme-text);
-      opacity: 0.5;
-      transition: 0.3s opacity var(--ease);
-    }
-    @media (any-hover: hover) {
-      &:hover svg {
-        opacity: 1;
-      }
-    }
-  }
-}
-.header_claris {
-  position: relative;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: hugo.$screenViewNavHeightNarrow;
-  z-index: 99;
-  padding: 0;
-  background: transparent;
-  line-height: (hugo.$screenViewNavHeight - 1.5rem);
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    // IE requires this z-index to be -2
-    z-index: -2;
-    background: rgba(var(--RGB_choice-bg), 0.98);
-    @include background-gradient-translucent("to top", 0.9);
-    // @include shadow-centered-narrow
-    box-shadow: 0.25rem 0.25rem 3rem var(--shadow);
-    @include color-scheme_transition;
-  }
-}
-@media screen {
-  .header_claris {
-    display: block;
-  }
-}
-
-.nav {
-  position: relative;
-  height: hugo.$screenViewNavHeightNarrow;
-  line-height: (hugo.$screenViewNavHeightNarrow - 1.5rem);
-  display: flex;
-  justify-content: space-between;
-  color: var(--text);
-  white-space: nowrap;
-  column-gap: var(--inner_margin);
-  // Replaced by utility classes
-  // @include useFontDefinition(sans, display);
-  @include chrome;
-  // NOTE: Overflow-y leads to scroll bars
-  // Does not work because overlow-x and -y cannot be set independently
-  // https://stackoverflow.com/q/6421966/617559
-  font-size: var(--font-size-nav);
-  line-height: (hugo.$screenViewNavHeight - 1.5rem);
-  .icon {
-    width: var(--icon-height-nav);
-    height: var(--icon-height-nav);
-  }
-  &_active {
-    padding: 0;
-    border-radius: 0.125rem;
-    &,
-    &_is_menu.nav_menu,
-    &_has_menu:not(.nav_open),
-    &_parent_is_menu.nav_menu,
-    &_parent_has_menu {
-      @include nav-active-background;
-      &:active {
-        color: var(--xaccent);
-      }
-      &:focus {
-        outline: var(--accent);
-      }
-    }
-  }
-  &_open_sub {
-    .nav_active.nav_child.nav_item {
-      @include nav-active-background;
-    }
-  }
-  // NOTE: dart sass fails to convert "~ &"; it leaves out "~":
-  // '~ &' becomes '.nav_active' instead of '~ .nav_active'
-  // a:not(:has( ~ &), &).nav_active_in_section {
-  a:not(:has( ~ .nav_active), &_active).nav_active_in_section {
-    // z-index: ($main-z-index + 1)
-    @include nav-active-section-background;
-  }
-  &_active, &_active_page {
-    // NOTE: Do not use position relative, otherwise alignment gets out of shape
-    // position: relative
-    @include nav-active-background;
-    // NOTE: dart sass fails to convert "~ &"; it leaves out "~":
-    // '~ &' becomes '.nav_active' instead of '~ .nav_active'
-    // a:not(:has( ~ &), &).nav_active_in_section {
-    // a:not(:has( ~ .nav_active), .nav_active).nav_active_in_section {
-    //     // z-index: ($main-z-index + 1)
-    //   @include nav-active-section-background;
-    // }
-  }
-  &_icon {
-    width: 0.7rem;
-    margin: auto 0.5rem auto 0.5rem;
-    transition: transform 0.3s var(--ease);
-    transform-origin: 50% 50%;
-    transform: rotate(180deg);
-  }
-  &_body {
-    // NOTE: Overflow-y leads to scroll bars
-    // overflow-x: auto
-    position: fixed;
-    max-width: unset;
-    top: 0;
-    bottom: 0;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    background: inherit;
-    transition: transform 0.5s var(--easing);
-    &_right {
-      // For IE 11
-      transform: translateX(100%);
-      transform: translateX(calc(100% + 100vw));
-      transition: transform 0.5s var(--easing);
-      right: 0;
-    }
-    &_left {
-      // For IE 11
-      transform: translateX(-100%);
-      transform: translateX(calc(-100% - 100vw));
-      transition: transform 0.5s var(--easing);
-      left: 0;
-    }
-    &::after {
-      content: '';
-      position: absolute;
-      top: hugo.$screenViewNavHeightNarrow;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      background: rgba(var(--RGB_choice-bg), 0.98);
-      @include background-gradient-translucent("to bottom", 0.9);
-      @include color-scheme_transition;
-    }
-  }
-  &_group {
-    &_color-scheme_mobile.nav_group {
-      position: absolute;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    &_follow {
-      display: flex;
-      align-content: center;
-      justify-content: space-between;
-      flex: 0 0 auto;
-    }
-  }
-  &_sub {
-    width: 100%;
-    left: 0;
-    position: absolute;
-    z-index: 20;
-    border-radius: 0 0 0.5rem 0.5rem;
-    top: 3rem;
-    transition: height 0.3s ease-in-out;
-    height: 0;
-    overflow: hidden;
-    padding: 0.96rem 0 0;
-    background: transparent;
-  }
-  &_item {
-    position: relative;
-    display: flex;
-    align-items: center;
-    padding: math.div(hugo.$screenViewNavHeightNarrow - 1.5rem, 2) var(--inner_padding_4-1);
-    border-radius: 0;
-    @media (any-hover: hover) {
-      &:not(.nav_active):hover, a.nav_active_in_section:hover {
-        @include nav-hover-background;
-      }
-    }
-  }
-  &_parent {
-    // Display as grid to position sub menus properly
-    display: grid;
-    position: relative;
-    &_follow,
-    &_color-scheme {
-      flex-wrap: wrap;
-      width: auto;
-    }
-    &_color-scheme {
-      margin-right: 0;
-      margin-left: auto;
-    }
-  }
-  &_parent_follow &_item {
-    margin: 0 0.25rem;
-    line-height: 1.25rem;
-    .icon {
-      margin: 0;
-    }
-  }
-  &_open {
-    @include nav-open-background;
-  }
-  &_open + &_sub &_child {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    z-index: 3;
-    & + a {
-      @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
-        padding-top: 0.5rem;
-      }
-    }
-    &:not(:first-child) {
-      position: relative;
-    }
-    &:first-child::before {
-      position: absolute;
-      content: "";
-      @extend %upcaret;
-      border-bottom: 0.5rem solid var(--choice-bg-menu);
-      z-index: 2;
-    }
-  }
-  &_open + &_sub {
-    height: auto;
-    z-index: 999;
-    overflow: auto;
-    border-radius: 0.5rem;
-    padding: 0;
-    @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
-      color: var(--text);
-      background: transparent;
-      min-width: 100%;
-      width: auto;
-      white-space: nowrap;
-      color: var(--text);
-    }
-    &::before,
-    &::after {
-      content: "";
-      position: absolute;
-    }
-    &::before {
-      @extend %upcaret;
-      z-index: 1;
-      @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
-        border-bottom: 0.5rem solid var(--choice-bg-menu);
-      }
-    }
-    &::after {
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border-radius: 0.5rem;
-      background: var(--choice-bg-menu);
-      @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
-        background: var(--choice-bg-menu);
-        width: auto;
-        white-space: nowrap;
-      }
-    }
-  }
-  &_open &_icon {
-    color: var(--theme-text-hover);
-    transform: rotate(0deg);
-  }
-  &_sub &_item {
-    &:not(.nav_child) {
-      position: relative;
-    }
-    position: relative;
-    z-index: 5;
-    display: block;
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
-    transition: background 0.3s ease-out;
-    margin: 0;
-    @media (any-hover: hover) {
-      &:hover {
-        &:not(.nav_active) {
-          @include nav-hover-background;
-          margin: 0;
-          border-radius: 0.5rem;
-        }
-      }
-    }
-  }
-  &_brand {
-    display: flex;
-    &_logo {
-      position: relative;
-      align-items: center;
-      border-radius: 0.5rem;
-      // Required for IE 11
-      z-index: ($main-z-index + 1);
-      @media (any-hover: hover) {
-        &:not(.nav_active):hover {
-          @include nav-hover-background;
-        }
-      }
-      margin-left: calc(0px - var(--inner_padding));
-      margin-right: 0rem;
-      padding: 0 var(--inner_padding_4-1) 0 var(--inner_padding);
-      z-index: 999;
-      width: min-content;
-      // Setting min-height is required to avoid nav bar incl. burger menu icon from collapsing
-      height: hugo.$screenViewNavHeightNarrow;
-      img {
-        padding: 0.5rem 0;
-        max-height: 100%;
-        width: auto;
-        max-width: unset;
-        background: transparent !important;
-      }
-      &_parent {
-        margin-right: auto;
-      }
-      &.padding-1 {
-        img {
-          padding: 0.25em;
-        }
-      }
-      &.padding-2 {
-        img {
-          padding: 0.5em;
-        }
-      }
-      &.padding-3 {
-        img {
-          padding: 0.75em;
-        }
-      }
-      &.padding-4 {
-        img {
-          padding: 1em;
-        }
-      }
-    }
-    &_text {
-      display: block;
-      // Replaced by utility classes
-      // @include useFontDefinition(inherit, display, small-caps, bold);
-      font-weight: var(--font-weight-strong);
-      color: var(--theme-text);
-      line-height: (hugo.$screenViewNavHeightNarrow - 1.5rem);
-      padding: math.div(hugo.$screenViewNavHeightNarrow - 1rem, 2) 0.25rem;
-      padding: math.div(hugo.$screenViewNavHeightNarrow - 1rem, 2) var(--inner_padding_4-1);
-      padding-right: 1em;
-      border-right: 2px solid var(--theme);
-      border-radius: 0;
-    }
-  }
-  &_mobile_toggle,
-  &_color-scheme_choice {
-    position: relative;
-    height: 100%;
-    padding: 0 var(--inner_padding);
-    cursor: pointer;
-    z-index: 1000;
-    .icon {
-      fill: var(--text-);
-      pointer-events: none;
-    }
-  }
-  &_color-scheme {
-    &_choice {
-      // display: none;
-      &_mask {
-        position: relative;
-        width: hugo.$screenViewNavHeightNarrow;
-        height: hugo.$screenViewNavHeightNarrow;
-      }
-      &_icon {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        background: transparent;
-        .icon {
-          display: block;
-          fill: var(--text);
-          // width: var(--icon-height-nav)
-          // height: var(--icon-height-nav)
-          width: 1rem;
-          height: 1rem;
-          margin: 0;
-          padding: 0;
-        }
-      }
-      &_dark {
-        opacity: 0.0;
-      }
-      html[data-color-scheme-transition] &_icon {
-        transition: opacity var(--color-scheme-duration) var(--color-scheme-timing), background var(--color-scheme-duration) var(--color-scheme-timing);
-        .icon {
-          transition: fill var(--color-scheme-duration) var(--color-scheme-timing);
-        }
-      }
-      @media (any-hover: hover) {
-        html:not([data-color-scheme-transition]) &:hover {
-          .nav_color-scheme_choice {
-            &_icon {
-              background: var(--theme-bg-hover);
-              transition: background 0.35s var(--color-scheme-timing);
-              .icon {
-                fill: var(--bg);
-                width: 1.25rem;
-                height: 1.25rem;
-              }
-            }
-            &_dark {
-              opacity: 1.0;
-              z-index: 1;
-            }
-            &_light {
-              opacity: 0.0;
-              transition: none;
-              z-index: auto;
-            }
-          }
-        }
-      }
-    }
-  }
-  &_mobile_toggle {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    &_open {
-      display: block;
-    }
-    &_close {
-      display: none;
-    }
-    &.isopen {
-      .nav_mobile_toggle_open {
-        display: none;
-      }
-      .nav_mobile_toggle_close {
-        display: block;
-      }
-    }
-  }
-  &_center {
-    display: none;
-    @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
-      display: flex;
-      flex: 1;
-      align-items: center;
-      justify-content: center;
-    }
-  }
-  &_sub {
-    position: relative;
-    top: auto;
-    padding-top: 0;
-    top: 0.25rem;
-  }
-}
-.main_claris {
-  @media screen {
-    // Ensure .main_claris is under header_claris when header_claris is position: relative
-    padding-top: #{hugo.$screenViewNavHeightNarrow};
-    margin-top: - #{hugo.$screenViewNavHeightNarrow};
-    @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
-      padding-top: #{hugo.$screenViewNavHeight};
-      margin-top: - #{hugo.$screenViewNavHeight};
-    }
-    min-height: 100vh;
-    min-height: 100lvh;
-    // Ensure main covers whole width of footer
-    width: 100%;
-  }
-}
-.footer_claris {
-  // Footer shall stick to the bottom and reveal when body scrolls up
-  // But only if positions: sticky is fully supported
-  // NOTE: Mobile Safari gets confused with position: sticky on footer
-  // Exclude mobile Safari with ''@supports (not (-webkit-touch-callout: none)'
-  // https://browserstrangeness.bitbucket.io/css_hacks.html#safari
-  // https://syntaxfix.com/question/5666/css-media-query-to-target-only-ios-devices
-  // Exclude any version of IE or other browsers that don't support @supports with '@supports (position: sticky)'
-  @supports (position: sticky) and (not (-webkit-touch-callout: none)) {
-    @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) and (min-height: hugo.$screenViewBreakpointHeightStickyFooter) {
-      position: sticky;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-    }
-  }
-}
-
-// NOTE: Mobile Safari gets confused with position: sticky on footer
-// https://browserstrangeness.bitbucket.io/css_hacks.html#safari
-// https://syntaxfix.com/question/5666/css-media-query-to-target-only-ios-devices
-@supports (position: sticky) and (not (-webkit-touch-callout: none)) {
-  @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) and (min-height: hugo.$screenViewBreakpointHeightStickyFooter) {
-    .hero-image_background {
-      &_main {
-        .main_inner {
-          // (100svh - 60vh)
-          min-height: 40vh;
-          // (100svh - 60svh)
-          min-height: 40svh;
-          // NOTE: Not sure why we had -3rem margin-top
-          // It interferes with the hero image on the home page
-          // margin: -3rem auto -100vh auto;
-          margin: 0 auto -100vh auto;
-          margin-bottom: -100lvh;
-          z-index: ($main-z-index + 2);
-        }
-        & ~ .footer_claris {
-          position: sticky;
-          bottom: 0;
-          z-index: ($main-z-index - 1);
-        }
-      }
-      &_figure {
-        display: none;
-      }
-      &_main &_figure {
-        display: block;
-        position: sticky;
-        top: unset;
-        bottom: 0;
-        margin: 0;
-        padding: 0;
-        z-index: ($main-z-index + 1);
-        margin-top: (-1 * hugo.$screenViewNavHeight);
-      }
-    }
-  }
-}
-@media screen and (max-width: #{hugo.$screenViewBreakpointWidthMobileMenu - 0.01}) {
-  html.jsopen {
-    @include nav-bar-anchor-offset;
-    .header_claris {
-      position: fixed;
-    }
-  }
-  .jsopen {
-    &::after {
-      content: "";
-      position: fixed;
-      z-index: 2;
-      background-color: rgba(0,0,0,0.3);
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-    }
-    .nav_body .nav_item,
-    .nav_body .nav_item.nav_menu,
-    .nav_follow {
-      border-radius: 0.5rem;
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
-    }
-    .nav {
-      &_body {
-        transform: translateX(0);
-        width: auto;
-        @include element-padding('inner', 0, 1);
-        & > .nav_group {
-          .nav_item {
-            // Maximize size of clickable area
-            width: 100%;
-            padding-left: (hugo.$screenViewInnerPaddingMobile - 0.25rem);
-            padding-right: (hugo.$screenViewInnerPaddingMobile - 0.25rem);
-          }
-          @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
-            .nav_item {
-              padding-left: (hugo.$screenViewInnerPaddingOneColumn - 0.5rem);
-              padding-right: (hugo.$screenViewInnerPaddingOneColumn - 0.5rem);
-            }
-          }
-          &:first-child {
-            margin-top: (hugo.$screenViewNavHeightNarrow + hugo.$screenViewInnerPaddingOneColumn);
-          }
-        }
-      }
-      &_group_follow_color-scheme {
-        flex-wrap: wrap;
-        justify-content: space-between;
-        margin-top: hugo.$screenViewInnerPaddingOneColumn;
-      }
-    }
-  }
-}
-
-// Narrow navigation menu bar
-@media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
-  .header_claris {
-    font-size: var(--font-size-nav);
-  }
-  .nav {
-    &,
-    &_body {
-      flex-direction: row;
-    }
-    &_body {
-      position: relative;
-      transform: none;
-      width: auto;
-      max-width: none;
-      top: auto;
-      bottom: auto;
-      transition: none;
-      &::after {
-        content: none;
-      }
-    }
-    &_group {
-      position: relative;
-      display: flex;
-      align-items: center;
-      // column-gap: var(--inner_margin_4-2);
-      &_follow_color-scheme {
-        margin-left: auto;
-        display: flex;
-        align-content: center;
-        justify-content: space-between;
-        width: auto;
-        .color-scheme {
-          margin-right: 0;
-        }
-      }
-    }
-    &_logourl {
-      display: none;
-    }
-    &_follow {
-      &:first-child {
-        a {
-          margin-left: 0;
-        }
-      }
-    }
-    &_sub {
-      position: absolute;
-      left: 0;
-      top: 3.5rem;
-      width: 100%;
-      height: 0;
-      z-index: 20;
-      padding: 0.96rem 0 0;
-    }
-    &_center {
-      display: flex;
-      flex: 1;
-      align-items: center;
-      justify-content: center;
-    }
-    &_hide,
-    &_mobile_toggle {
-      display: none;
-    }
-  }
-  .color-scheme {
-    position: relative;
-    right: auto;
-    top: auto;
-  }
-}
-
-// Full navigation menu bar
-@media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
-  .header_claris {
-    height: hugo.$screenViewNavHeight;
-    line-height: (hugo.$screenViewNavHeight - 1.5rem);
-  }
-  .nav {
-    height: hugo.$screenViewNavHeight;
-    // &_item,
-    // &_follow {
-    //   padding: 0.5rem 0.5rem;
-    //   padding: calc( (hugo.$screenViewNavHeight - 2rem) / 2) var(--inner_padding_4-1);
-    // }
-    &_brand {
-      &_logo {
-        height: hugo.$screenViewNavHeight;
-        // margin-left: (-1 * hugo.$screenViewInnerPaddingOneColumn);
-        margin-right: 0;
-        // padding-left: hugo.$screenViewInnerPaddingOneColumn;
-      }
-      &_text {
-        line-height: (hugo.$screenViewNavHeight - 1.5rem);
-      }
-    }
-    &_item {
-      padding: math.div(hugo.$screenViewNavHeight - 1.5rem, 2) var(--inner_padding_4-2);
-    }
-    &_group_menu {
-      margin-left:  calc(0px - var(--inner_padding_4-2) );
-    }
-    &_color-scheme_choice {
-      &_mask,
-      &_icon {
-        width: hugo.$screenViewNavHeight;
-        height: hugo.$screenViewNavHeight;
-      }
-    }
-    &_body {
-      &::after {
-        top: hugo.$screenViewNavHeight;
-      }
-
-    }
-  }
-}
-
-// If the homepage contains a hero element, we want to be able to scroll
-// directly to the beginning of the content, without smooth scrolling
-html.content-above-header {
-  &,
-  body {
-    scroll-behavior: auto;
-  }
-  body {
-    min-height: 100vh;
-    min-height: 100lvh;
-  }
 }
 
 @mixin table-of-contents_line($color: var(--text), $border-width: var(--toc_indicator_line_width), $border-color: var(--toc_indicator_line_color),
@@ -927,281 +150,1067 @@ $indicator-width: var(--toc_indicator_width)) {
   }
   @include table-of-contents_bar($icon-color);
 }
-.table_of_contents {
-  visibility: hidden;
-  width: 100%;
-  @include aside-meta;
 
-  // The top offset of the triangle depends on the font family and
-  // needs to be adjusted accordingly
-  // --triangle_top: 0.33em;
-  --toc_indent: calc(1.5 * var(--font-size-normal));
-  --toc_item_between: calc(0.5 * var(--font-size-normal));
-  --toc_indicator_line_color: var(--xhaze);
-  --toc_indicator_line_width: 1px;
-  --toc_indicator_width: calc(var(--toc_indent) / 2);
-  --toc_indicator_icon_color: var(--xxxhaze);
-  --toc_indicator_icon_width: calc(var(--toc_indicator_width) / 3);
-
-  &_heading {
-    font-size: var(--font-size-normal);
-    margin: calc(1em * (1 - var(--line-height-heading))) 0 var(--inner_margin_4-1) 0;
-    padding: 0;
-    text-transform: uppercase;
+@if functions.stringContains(hugo.$mediaType, "screen") or functions.stringContains(hugo.$mediaType, "all") {
+  @debug "components_screen: mediaType=#{hugo.$mediaType}";
+  // General navigation definition
+  %upcaret {
+    width: 0;
+    height: 0;
+    border-left: 0.33rem solid transparent;
+    border-right: 0.33rem solid transparent;
+    top: -0.5rem;
+    left: 1rem;
   }
-  a {
-    text-decoration: none;
-    color: var(--text);
-  }
-  ul {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    & > li {
-      position: relative;
-      list-style-type: none;
-      margin: 0 0 0 var(--toc_indent);
-      padding: calc(var(--toc_item_between) / 2) 0;
-      ul {
-        padding-left: 1em;
+  @media screen {
+    .to_top {
+      background-color: var(--theme);
+      @include variables.color-scheme_transition;
+      width: 2.75rem;
+      height: 2.75rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      border-radius: 50%;
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 99;
+      &.ios {
+        position: absolute;
+        bottom: 0.75rem;
+        right: 0;
       }
-      @include table-of-contents_line;
+      @media (any-hover: hover) {
+        &:hover {
+          background-color: var(--theme);
+        }
+      }
+      svg {
+        fill: var(--theme-text);
+        opacity: 0.5;
+        transition: 0.3s opacity var(--ease);
+      }
+      @media (any-hover: hover) {
+        &:hover svg {
+          opacity: 1;
+        }
+      }
+    }
+  }
+  .header_claris {
+    position: relative;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: hugo.$screenViewNavHeightNarrow;
+    z-index: 99;
+    padding: 0;
+    background: transparent;
+    line-height: (hugo.$screenViewNavHeight - 1.5rem);
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      // IE requires this z-index to be -2
+      z-index: -2;
+      background: rgba(var(--RGB_choice-bg), 0.98);
+      @include variables.background-gradient-translucent("to top", 0.9);
+      // @include variables.shadow-centered-narrow
+      box-shadow: 0.25rem 0.25rem 3rem var(--shadow);
+      @include variables.color-scheme_transition;
+    }
+  }
+  @media screen {
+    .header_claris {
+      display: block;
     }
   }
 
-  //li.visible:not(.active) + li.active,
-  li.active,
-  nav:not(.active) li.visible {
-    @include table-of-contents-current;
+  .nav {
+    position: relative;
+    height: hugo.$screenViewNavHeightNarrow;
+    line-height: (hugo.$screenViewNavHeightNarrow - 1.5rem);
+    display: flex;
+    justify-content: space-between;
+    color: var(--text);
+    white-space: nowrap;
+    column-gap: var(--inner_margin);
+    // Replaced by utility classes
+    // @include variables.useFontDefinition(sans, display);
+    @include variables.chrome;
+    // NOTE: Overflow-y leads to scroll bars
+    // Does not work because overlow-x and -y cannot be set independently
+    // https://stackoverflow.com/q/6421966/617559
+    font-size: var(--font-size-nav);
+    line-height: (hugo.$screenViewNavHeight - 1.5rem);
+    .icon {
+      width: var(--icon-height-nav);
+      height: var(--icon-height-nav);
+    }
+    &_active {
+      padding: 0;
+      border-radius: 0.125rem;
+      &,
+      &_is_menu.nav_menu,
+      &_has_menu:not(.nav_open),
+      &_parent_is_menu.nav_menu,
+      &_parent_has_menu {
+        @include nav-active-background;
+        &:active {
+          color: var(--xaccent);
+        }
+        &:focus {
+          outline: var(--accent);
+        }
+      }
+    }
+    &_open_sub {
+      .nav_active.nav_child.nav_item {
+        @include nav-active-background;
+      }
+    }
+    // NOTE: dart sass fails to convert "~ &"; it leaves out "~":
+    // '~ &' becomes '.nav_active' instead of '~ .nav_active'
+    // a:not(:has( ~ &), &).nav_active_in_section {
+    a:not(:has( ~ .nav_active), &_active).nav_active_in_section {
+      // z-index: (variables.$main-z-index + 1)
+      @include nav-active-section-background;
+    }
+    &_active, &_active_page {
+      // NOTE: Do not use position relative, otherwise alignment gets out of shape
+      // position: relative
+      @include nav-active-background;
+      // NOTE: dart sass fails to convert "~ &"; it leaves out "~":
+      // '~ &' becomes '.nav_active' instead of '~ .nav_active'
+      // a:not(:has( ~ &), &).nav_active_in_section {
+      // a:not(:has( ~ .nav_active), .nav_active).nav_active_in_section {
+      //     // z-index: (variables.$main-z-index + 1)
+      //   @include nav-active-section-background;
+      // }
+    }
+    &_icon {
+      width: 0.7rem;
+      margin: auto 0.5rem auto 0.5rem;
+      transition: transform 0.3s var(--ease);
+      transform-origin: 50% 50%;
+      transform: rotate(180deg);
+    }
+    &_body {
+      // NOTE: Overflow-y leads to scroll bars
+      // overflow-x: auto
+      position: fixed;
+      max-width: unset;
+      top: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      background: inherit;
+      transition: transform 0.5s var(--easing);
+      &_right {
+        // For IE 11
+        transform: translateX(100%);
+        transform: translateX(calc(100% + 100vw));
+        transition: transform 0.5s var(--easing);
+        right: 0;
+      }
+      &_left {
+        // For IE 11
+        transform: translateX(-100%);
+        transform: translateX(calc(-100% - 100vw));
+        transition: transform 0.5s var(--easing);
+        left: 0;
+      }
+      &::after {
+        content: '';
+        position: absolute;
+        top: hugo.$screenViewNavHeightNarrow;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: rgba(var(--RGB_choice-bg), 0.98);
+        @include variables.background-gradient-translucent("to bottom", 0.9);
+        @include variables.color-scheme_transition;
+      }
+    }
+    &_group {
+      &_color-scheme_mobile.nav_group {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      &_follow {
+        display: flex;
+        align-content: center;
+        justify-content: space-between;
+        flex: 0 0 auto;
+      }
+    }
+    &_sub {
+      width: 100%;
+      left: 0;
+      position: absolute;
+      z-index: 20;
+      border-radius: 0 0 0.5rem 0.5rem;
+      top: 3rem;
+      transition: height 0.3s ease-in-out;
+      height: 0;
+      overflow: hidden;
+      padding: 0.96rem 0 0;
+      background: transparent;
+    }
+    &_item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: math.div(hugo.$screenViewNavHeightNarrow - 1.5rem, 2) var(--inner_padding_4-1);
+      border-radius: 0;
+      @media (any-hover: hover) {
+        &:not(.nav_active):hover, a.nav_active_in_section:hover {
+          @include nav-hover-background;
+        }
+      }
+    }
+    &_parent {
+      // Display as grid to position sub menus properly
+      display: grid;
+      position: relative;
+      &_follow,
+      &_color-scheme {
+        flex-wrap: wrap;
+        width: auto;
+      }
+      &_color-scheme {
+        margin-right: 0;
+        margin-left: auto;
+      }
+    }
+    &_parent_follow &_item {
+      margin: 0 0.25rem;
+      line-height: 1.25rem;
+      .icon {
+        margin: 0;
+      }
+    }
+    &_open {
+      @include nav-open-background;
+    }
+    &_open + &_sub &_child {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+      z-index: 3;
+      & + a {
+        @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
+          padding-top: 0.5rem;
+        }
+      }
+      &:not(:first-child) {
+        position: relative;
+      }
+      &:first-child::before {
+        position: absolute;
+        content: "";
+        @extend %upcaret;
+        border-bottom: 0.5rem solid var(--choice-bg-menu);
+        z-index: 2;
+      }
+    }
+    &_open + &_sub {
+      height: auto;
+      z-index: 999;
+      overflow: auto;
+      border-radius: 0.5rem;
+      padding: 0;
+      @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
+        color: var(--text);
+        background: transparent;
+        min-width: 100%;
+        width: auto;
+        white-space: nowrap;
+        color: var(--text);
+      }
+      &::before,
+      &::after {
+        content: "";
+        position: absolute;
+      }
+      &::before {
+        @extend %upcaret;
+        z-index: 1;
+        @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
+          border-bottom: 0.5rem solid var(--choice-bg-menu);
+        }
+      }
+      &::after {
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 0.5rem;
+        background: var(--choice-bg-menu);
+        @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
+          background: var(--choice-bg-menu);
+          width: auto;
+          white-space: nowrap;
+        }
+      }
+    }
+    &_open &_icon {
+      color: var(--theme-text-hover);
+      transform: rotate(0deg);
+    }
+    &_sub &_item {
+      &:not(.nav_child) {
+        position: relative;
+      }
+      position: relative;
+      z-index: 5;
+      display: block;
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+      transition: background 0.3s ease-out;
+      margin: 0;
+      @media (any-hover: hover) {
+        &:hover {
+          &:not(.nav_active) {
+            @include nav-hover-background;
+            margin: 0;
+            border-radius: 0.5rem;
+          }
+        }
+      }
+    }
+    &_brand {
+      display: flex;
+      &_logo {
+        position: relative;
+        align-items: center;
+        border-radius: 0.5rem;
+        // Required for IE 11
+        z-index: (variables.$main-z-index + 1);
+        @media (any-hover: hover) {
+          &:not(.nav_active):hover {
+            @include nav-hover-background;
+          }
+        }
+        margin-left: calc(0px - var(--inner_padding));
+        margin-right: 0rem;
+        padding: 0 var(--inner_padding_4-1) 0 var(--inner_padding);
+        z-index: 999;
+        width: min-content;
+        // Setting min-height is required to avoid nav bar incl. burger menu icon from collapsing
+        height: hugo.$screenViewNavHeightNarrow;
+        img {
+          padding: 0.5rem 0;
+          max-height: 100%;
+          width: auto;
+          max-width: unset;
+          background: transparent !important;
+        }
+        &_parent {
+          margin-right: auto;
+        }
+        &.padding-1 {
+          img {
+            padding: 0.25em;
+          }
+        }
+        &.padding-2 {
+          img {
+            padding: 0.5em;
+          }
+        }
+        &.padding-3 {
+          img {
+            padding: 0.75em;
+          }
+        }
+        &.padding-4 {
+          img {
+            padding: 1em;
+          }
+        }
+      }
+      &_text {
+        display: block;
+        // Replaced by utility classes
+        // @include variables.useFontDefinition(inherit, display, small-caps, bold);
+        font-weight: var(--font-weight-strong);
+        color: var(--theme-text);
+        line-height: (hugo.$screenViewNavHeightNarrow - 1.5rem);
+        padding: math.div(hugo.$screenViewNavHeightNarrow - 1rem, 2) 0.25rem;
+        padding: math.div(hugo.$screenViewNavHeightNarrow - 1rem, 2) var(--inner_padding_4-1);
+        padding-right: 1em;
+        border-right: 2px solid var(--theme);
+        border-radius: 0;
+      }
+    }
+    &_mobile_toggle,
+    &_color-scheme_choice {
+      position: relative;
+      height: 100%;
+      padding: 0 var(--inner_padding);
+      cursor: pointer;
+      z-index: 1000;
+      .icon {
+        fill: var(--text-);
+        pointer-events: none;
+      }
+    }
+    &_color-scheme {
+      &_choice {
+        // display: none;
+        &_mask {
+          position: relative;
+          width: hugo.$screenViewNavHeightNarrow;
+          height: hugo.$screenViewNavHeightNarrow;
+        }
+        &_icon {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          background: transparent;
+          .icon {
+            display: block;
+            fill: var(--text);
+            // width: var(--icon-height-nav)
+            // height: var(--icon-height-nav)
+            width: 1rem;
+            height: 1rem;
+            margin: 0;
+            padding: 0;
+          }
+        }
+        &_dark {
+          opacity: 0.0;
+        }
+        html[data-color-scheme-transition] &_icon {
+          transition: opacity var(--color-scheme-duration) var(--color-scheme-timing), background var(--color-scheme-duration) var(--color-scheme-timing);
+          .icon {
+            transition: fill var(--color-scheme-duration) var(--color-scheme-timing);
+          }
+        }
+        @media (any-hover: hover) {
+          html:not([data-color-scheme-transition]) &:hover {
+            .nav_color-scheme_choice {
+              &_icon {
+                background: var(--theme-bg-hover);
+                transition: background 0.35s var(--color-scheme-timing);
+                .icon {
+                  fill: var(--bg);
+                  width: 1.25rem;
+                  height: 1.25rem;
+                }
+              }
+              &_dark {
+                opacity: 1.0;
+                z-index: 1;
+              }
+              &_light {
+                opacity: 0.0;
+                transition: none;
+                z-index: auto;
+              }
+            }
+          }
+        }
+      }
+    }
+    &_mobile_toggle {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      &_open {
+        display: block;
+      }
+      &_close {
+        display: none;
+      }
+      &.isopen {
+        .nav_mobile_toggle_open {
+          display: none;
+        }
+        .nav_mobile_toggle_close {
+          display: block;
+        }
+      }
+    }
+    &_center {
+      display: none;
+      @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+    &_sub {
+      position: relative;
+      top: auto;
+      padding-top: 0;
+      top: 0.25rem;
+    }
   }
-  // nav > a, nav:not(.active) li, nav:not(.active) li.visible ~ li, nav.active li
-  nav:not(.active) li,
-  nav:not(.active) li.visible ~ li,
-  nav.active li {
-    @include table-of-contents-hover;
+  .main_claris {
+    @media screen {
+      // Ensure .main_claris is under header_claris when header_claris is position: relative
+      padding-top: #{hugo.$screenViewNavHeightNarrow};
+      margin-top: - #{hugo.$screenViewNavHeightNarrow};
+      @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
+        padding-top: #{hugo.$screenViewNavHeight};
+        margin-top: - #{hugo.$screenViewNavHeight};
+      }
+      min-height: 100vh;
+      min-height: 100lvh;
+      // Ensure main covers whole width of footer
+      width: 100%;
+    }
   }
-  ul ul li.active,
-  nav:not(.active) ul ul li.visible {
-    @include table-of-contents-current;
-  }
-  nav:not(.active) ul ul li,
-  nav:not(.active) ul ul li.visible ~ li,
-  nav.active ul ul li {
-    @include table-of-contents-hover;
+  .footer_claris {
+    // Footer shall stick to the bottom and reveal when body scrolls up
+    // But only if positions: sticky is fully supported
+    // NOTE: Mobile Safari gets confused with position: sticky on footer
+    // Exclude mobile Safari with ''@supports (not (-webkit-touch-callout: none)'
+    // https://browserstrangeness.bitbucket.io/css_hacks.html#safari
+    // https://syntaxfix.com/question/5666/css-media-query-to-target-only-ios-devices
+    // Exclude any version of IE or other browsers that don't support @supports with '@supports (position: sticky)'
+    @supports (position: sticky) and (not (-webkit-touch-callout: none)) {
+      @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) and (min-height: hugo.$screenViewBreakpointHeightStickyFooter) {
+        position: sticky;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+      }
+    }
   }
 
-  nav {
-    &:not(.active), &.active {
-      .article_top {
-        margin: 0 0 0 var(--toc_indent);
-        padding: 0 0 calc(var(--toc_item_between) / 2) 0;
-        @include table-of-contents-hover;
+  // NOTE: Mobile Safari gets confused with position: sticky on footer
+  // https://browserstrangeness.bitbucket.io/css_hacks.html#safari
+  // https://syntaxfix.com/question/5666/css-media-query-to-target-only-ios-devices
+  @supports (position: sticky) and (not (-webkit-touch-callout: none)) {
+    @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) and (min-height: hugo.$screenViewBreakpointHeightStickyFooter) {
+      .hero-image_background {
+        &_main {
+          .main_inner {
+            // (100svh - 60vh)
+            min-height: 40vh;
+            // (100svh - 60svh)
+            min-height: 40svh;
+            // NOTE: Not sure why we had -3rem margin-top
+            // It interferes with the hero image on the home page
+            // margin: -3rem auto -100vh auto;
+            margin: 0 auto -100vh auto;
+            margin-bottom: -100lvh;
+            z-index: (variables.$main-z-index + 2);
+          }
+          & ~ .footer_claris {
+            position: sticky;
+            bottom: 0;
+            z-index: (variables.$main-z-index - 1);
+          }
+        }
+        &_figure {
+          display: none;
+        }
+        &_main &_figure {
+          display: block;
+          position: sticky;
+          top: unset;
+          bottom: 0;
+          margin: 0;
+          padding: 0;
+          z-index: (variables.$main-z-index + 1);
+          margin-top: (-1 * hugo.$screenViewNavHeight);
+        }
+      }
+    }
+  }
+  @media screen and (max-width: #{hugo.$screenViewBreakpointWidthMobileMenu - 0.01}) {
+    html.jsopen {
+      @include variables.nav-bar-anchor-offset;
+      .header_claris {
+        position: fixed;
+      }
+    }
+    .jsopen {
+      &::after {
+        content: "";
+        position: fixed;
+        z-index: 2;
+        background-color: rgba(0,0,0,0.3);
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+      .nav_body .nav_item,
+      .nav_body .nav_item.nav_menu,
+      .nav_follow {
+        border-radius: 0.5rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+      }
+      .nav {
+        &_body {
+          transform: translateX(0);
+          width: auto;
+          @include variables.element-padding('inner', 0, 1);
+          & > .nav_group {
+            .nav_item {
+              // Maximize size of clickable area
+              width: 100%;
+              padding-left: (hugo.$screenViewInnerPaddingMobile - 0.25rem);
+              padding-right: (hugo.$screenViewInnerPaddingMobile - 0.25rem);
+            }
+            @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
+              .nav_item {
+                padding-left: (hugo.$screenViewInnerPaddingOneColumn - 0.5rem);
+                padding-right: (hugo.$screenViewInnerPaddingOneColumn - 0.5rem);
+              }
+            }
+            &:first-child {
+              margin-top: (hugo.$screenViewNavHeightNarrow + hugo.$screenViewInnerPaddingOneColumn);
+            }
+          }
+        }
+        &_group_follow_color-scheme {
+          flex-wrap: wrap;
+          justify-content: space-between;
+          margin-top: hugo.$screenViewInnerPaddingOneColumn;
+        }
+      }
+    }
+  }
+
+  // Narrow navigation menu bar
+  @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
+    .header_claris {
+      font-size: var(--font-size-nav);
+    }
+    .nav {
+      &,
+      &_body {
+        flex-direction: row;
+      }
+      &_body {
         position: relative;
-        font-size: var(--font-size-larger-1);
-        // font-weight: var(--font-weight-heading);
-        &::before {
+        transform: none;
+        width: auto;
+        max-width: none;
+        top: auto;
+        bottom: auto;
+        transition: none;
+        &::after {
           content: none;
         }
-        &, &.active, &.visible {
-          & > a {
-            &::before {
-              content: '';
-              display: block;
-              position: absolute;
-              top: calc(1em * var(--line-height) / 2 - var(--toc_indicator_width) / 2);
-              left:  calc(0px - var(--toc_indent));
-              width: var(--toc_indicator_width);
-              height: var(--toc_indicator_width);
-              border-radius: 50%;
-              outline: 2px solid var(--toc_indicator_line_color);
-              opacity: 1;
-            }
-            &::after {
-              position: absolute;
-              content: "";
-              top: calc(1em * var(--line-height) / 2 + var(--toc_indicator_width) / 2);
-              bottom: 0;
-              left: calc(0px - var(--toc_indicator_line_width) / 2 + var(--toc_indicator_width) / 2 - var(--toc_indent));
-              border-left: var(--toc_indicator_line_width) solid var(--toc_indicator_line_color);
+      }
+      &_group {
+        position: relative;
+        display: flex;
+        align-items: center;
+        // column-gap: var(--inner_margin_4-2);
+        &_follow_color-scheme {
+          margin-left: auto;
+          display: flex;
+          align-content: center;
+          justify-content: space-between;
+          width: auto;
+          .color-scheme {
+            margin-right: 0;
+          }
+        }
+      }
+      &_logourl {
+        display: none;
+      }
+      &_follow {
+        &:first-child {
+          a {
+            margin-left: 0;
+          }
+        }
+      }
+      &_sub {
+        position: absolute;
+        left: 0;
+        top: 3.5rem;
+        width: 100%;
+        height: 0;
+        z-index: 20;
+        padding: 0.96rem 0 0;
+      }
+      &_center {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+      }
+      &_hide,
+      &_mobile_toggle {
+        display: none;
+      }
+    }
+    .color-scheme {
+      position: relative;
+      right: auto;
+      top: auto;
+    }
+  }
+
+  // Full navigation menu bar
+  @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
+    .header_claris {
+      height: hugo.$screenViewNavHeight;
+      line-height: (hugo.$screenViewNavHeight - 1.5rem);
+    }
+    .nav {
+      height: hugo.$screenViewNavHeight;
+      // &_item,
+      // &_follow {
+      //   padding: 0.5rem 0.5rem;
+      //   padding: calc( (hugo.$screenViewNavHeight - 2rem) / 2) var(--inner_padding_4-1);
+      // }
+      &_brand {
+        &_logo {
+          height: hugo.$screenViewNavHeight;
+          // margin-left: (-1 * hugo.$screenViewInnerPaddingOneColumn);
+          margin-right: 0;
+          // padding-left: hugo.$screenViewInnerPaddingOneColumn;
+        }
+        &_text {
+          line-height: (hugo.$screenViewNavHeight - 1.5rem);
+        }
+      }
+      &_item {
+        padding: math.div(hugo.$screenViewNavHeight - 1.5rem, 2) var(--inner_padding_4-2);
+      }
+      &_group_menu {
+        margin-left:  calc(0px - var(--inner_padding_4-2) );
+      }
+      &_color-scheme_choice {
+        &_mask,
+        &_icon {
+          width: hugo.$screenViewNavHeight;
+          height: hugo.$screenViewNavHeight;
+        }
+      }
+      &_body {
+        &::after {
+          top: hugo.$screenViewNavHeight;
+        }
+
+      }
+    }
+  }
+
+  // If the homepage contains a hero element, we want to be able to scroll
+  // directly to the beginning of the content, without smooth scrolling
+  html.content-above-header {
+    &,
+    body {
+      scroll-behavior: auto;
+    }
+    body {
+      min-height: 100vh;
+      min-height: 100lvh;
+    }
+  }
+
+  .table_of_contents {
+    visibility: hidden;
+    width: 100%;
+    @include variables.aside-meta;
+
+    // The top offset of the triangle depends on the font family and
+    // needs to be adjusted accordingly
+    // --triangle_top: 0.33em;
+    --toc_indent: calc(1.5 * var(--font-size-normal));
+    --toc_item_between: calc(0.5 * var(--font-size-normal));
+    --toc_indicator_line_color: var(--xhaze);
+    --toc_indicator_line_width: 1px;
+    --toc_indicator_width: calc(var(--toc_indent) / 2);
+    --toc_indicator_icon_color: var(--xxxhaze);
+    --toc_indicator_icon_width: calc(var(--toc_indicator_width) / 3);
+
+    &_heading {
+      font-size: var(--font-size-normal);
+      margin: calc(1em * (1 - var(--line-height-heading))) 0 var(--inner_margin_4-1) 0;
+      padding: 0;
+      text-transform: uppercase;
+    }
+    a {
+      text-decoration: none;
+      color: var(--text);
+    }
+    ul {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      & > li {
+        position: relative;
+        list-style-type: none;
+        margin: 0 0 0 var(--toc_indent);
+        padding: calc(var(--toc_item_between) / 2) 0;
+        ul {
+          padding-left: 1em;
+        }
+        @include table-of-contents_line;
+      }
+    }
+
+    //li.visible:not(.active) + li.active,
+    li.active,
+    nav:not(.active) li.visible {
+      @include table-of-contents-current;
+    }
+    // nav > a, nav:not(.active) li, nav:not(.active) li.visible ~ li, nav.active li
+    nav:not(.active) li,
+    nav:not(.active) li.visible ~ li,
+    nav.active li {
+      @include table-of-contents-hover;
+    }
+    ul ul li.active,
+    nav:not(.active) ul ul li.visible {
+      @include table-of-contents-current;
+    }
+    nav:not(.active) ul ul li,
+    nav:not(.active) ul ul li.visible ~ li,
+    nav.active ul ul li {
+      @include table-of-contents-hover;
+    }
+
+    nav {
+      &:not(.active), &.active {
+        .article_top {
+          margin: 0 0 0 var(--toc_indent);
+          padding: 0 0 calc(var(--toc_item_between) / 2) 0;
+          @include table-of-contents-hover;
+          position: relative;
+          font-size: var(--font-size-larger-1);
+          // font-weight: var(--font-weight-heading);
+          &::before {
+            content: none;
+          }
+          &, &.active, &.visible {
+            & > a {
+              &::before {
+                content: '';
+                display: block;
+                position: absolute;
+                top: calc(1em * var(--line-height) / 2 - var(--toc_indicator_width) / 2);
+                left:  calc(0px - var(--toc_indent));
+                width: var(--toc_indicator_width);
+                height: var(--toc_indicator_width);
+                border-radius: 50%;
+                outline: 2px solid var(--toc_indicator_line_color);
+                opacity: 1;
+              }
+              &::after {
+                position: absolute;
+                content: "";
+                top: calc(1em * var(--line-height) / 2 + var(--toc_indicator_width) / 2);
+                bottom: 0;
+                left: calc(0px - var(--toc_indicator_line_width) / 2 + var(--toc_indicator_width) / 2 - var(--toc_indent));
+                border-left: var(--toc_indicator_line_width) solid var(--toc_indicator_line_color);
+              }
             }
           }
         }
       }
     }
   }
-}
 
-@media screen {
-  .outdated::before {
-    content: '';
-    display: block;
-    width: 60%;
-    height: 1rem;
-    position: absolute;
-    left: 0.2rem;
-    bottom: 0.05rem;
-    background-color: rgba(0, 0, 0, 0.5);
-    transform: rotate(-2deg);
-    box-shadow: 0 0 10px #000;
-    opacity: 1;
-    z-index: -1;
-  }
-  .outdated::after {
-    content: '';
-    display: block;
-    width: 60%;
-    height: 1rem;
-    position: absolute;
-    right: 0.2rem;
-    bottom: 0.05rem;
-    background-color: rgba(0, 0, 0, 0.5);
-    transform: rotate(2deg);
-    box-shadow: 0 0 10px #000;
-    opacity: 1;
-    z-index: -1;
-  }
-  .outated h2::before {
-    content: '';
-    display: block;
-    width: 30%;
-    height: 1.5rem;
-    position: absolute;
-    top: -0.75rem;
-    left: 35%;
-    background-color: rgba(240, 240, 180, 0.35);
-    transform: rotate(-3deg);
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.15), inset 0 0 2px rgba(255, 255, 255, 0.8);
-    opacity: 1;
-  }
-}
-
-.article_body {
-  // @include link-lvhfa;
-  @include link-lvhfa(true);
-}
-.sidebar {
-  @include link-lvhfa;
-}
-.footer_claris {
-  @include link-lvhfa(false, dark);
-}
-@media screen and (min-height: hugo.$screenViewBreakpointHeightShallow) {
-  html {
-    @include nav-bar-anchor-offset;
-    .header_claris {
-      position: fixed;
+  @media screen {
+    .outdated::before {
+      content: '';
+      display: block;
+      width: 60%;
+      height: 1rem;
+      position: absolute;
+      left: 0.2rem;
+      bottom: 0.05rem;
+      background-color: rgba(0, 0, 0, 0.5);
+      transform: rotate(-2deg);
+      box-shadow: 0 0 10px #000;
+      opacity: 1;
+      z-index: -1;
+    }
+    .outdated::after {
+      content: '';
+      display: block;
+      width: 60%;
+      height: 1rem;
+      position: absolute;
+      right: 0.2rem;
+      bottom: 0.05rem;
+      background-color: rgba(0, 0, 0, 0.5);
+      transform: rotate(2deg);
+      box-shadow: 0 0 10px #000;
+      opacity: 1;
+      z-index: -1;
+    }
+    .outated h2::before {
+      content: '';
+      display: block;
+      width: 30%;
+      height: 1.5rem;
+      position: absolute;
+      top: -0.75rem;
+      left: 35%;
+      background-color: rgba(240, 240, 180, 0.35);
+      transform: rotate(-3deg);
+      box-shadow: 0 0 3px rgba(0, 0, 0, 0.15), inset 0 0 2px rgba(255, 255, 255, 0.8);
+      opacity: 1;
     }
   }
-}
-html.content-above-header {
-  @include nav-bar-anchor-offset;
-  .header_claris {
-    position: sticky;
-  }
-}
 
-// footnotes-accessible.js
-/*! purgecss start ignore */
-@keyframes footnotes-accessible_highlight {
-  0% {
-    opacity: 1;
+  .article_body {
+    // @include variables.link-lvhfa;
+    @include variables.link-lvhfa(true);
   }
-  100% {
-    opacity: 0;
+  .sidebar {
+    @include variables.link-lvhfa;
   }
-}
+  .footer_claris {
+    @include variables.link-lvhfa(false, dark);
+  }
+  @media screen and (min-height: hugo.$screenViewBreakpointHeightShallow) {
+    html {
+      @include variables.nav-bar-anchor-offset;
+      .header_claris {
+        position: fixed;
+      }
+    }
+  }
+  html.content-above-header {
+    @include variables.nav-bar-anchor-offset;
+    .header_claris {
+      position: sticky;
+    }
+  }
 
-@keyframes footnotes-accessible_highlight-color {
-  0% {
-    opacity: 1;
-    background: var(--highlight-bg-yellow);
-  }
-  100% {
-    background: var(--theme-bg);
-  }
-}
-
-// https://danielpost.com/articles/making-hugos-footnotes-accessible/
-.footnotes li {
-  & p {
-    position: relative;
-    z-index: ($main-z-index  + 1);
-    &::after {
-      position: absolute;
-      z-index: -1;
-      content: '';
-      top: -0.5em;
-      left: -0.5em;
-      right: -0.5em;
-      bottom: -0.5em;
-      background: var(--highlight-bg-yellow);
-      border-radius: 0.25em;
+  // footnotes-accessible.js
+  /*! purgecss start ignore */
+  @keyframes footnotes-accessible_highlight {
+    0% {
+      opacity: 1;
+    }
+    100% {
       opacity: 0;
     }
   }
-  &:target,
-  &:focus {
-    p::after {
-      animation: footnotes-accessible_highlight 3s cubic-bezier(0.3, 0, 1, 0.7);
+
+  @keyframes footnotes-accessible_highlight-color {
+    0% {
+      opacity: 1;
+      background: var(--highlight-bg-yellow);
+    }
+    100% {
+      background: var(--theme-bg);
     }
   }
 
-}
+  // https://danielpost.com/articles/making-hugos-footnotes-accessible/
+  .footnotes li {
+    & p {
+      position: relative;
+      z-index: (variables.$main-z-index  + 1);
+      &::after {
+        position: absolute;
+        z-index: -1;
+        content: '';
+        top: -0.5em;
+        left: -0.5em;
+        right: -0.5em;
+        bottom: -0.5em;
+        background: var(--highlight-bg-yellow);
+        border-radius: 0.25em;
+        opacity: 0;
+      }
+    }
+    &:target,
+    &:focus {
+      p::after {
+        animation: footnotes-accessible_highlight 3s cubic-bezier(0.3, 0, 1, 0.7);
+      }
+    }
 
-p sup[id^=fnref] {
-  line-height: 0;
-  a {
-    position: relative;
-    z-index: ($main-z-index  + 1);
-    top: 0;
-    left: 0;
-    padding: 0 0.3em 0;
-    border-radius: 50%;
   }
-  a::after {
-    position: absolute;
-    z-index: -1;
-    content: '';
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 50%;
-    background: var(--theme-bg);
-    opacity: 0;
-  }
-  &:target,
-  &:focus {
+
+  p sup[id^=fnref] {
+    line-height: 0;
     a {
-      animation: footnotes-accessible_highlight-color 3s cubic-bezier(0.3, 0, 1, 0.7);
+      position: relative;
+      z-index: (variables.$main-z-index  + 1);
+      top: 0;
+      left: 0;
+      padding: 0 0.3em 0;
+      border-radius: 50%;
+    }
+    a::after {
+      position: absolute;
+      z-index: -1;
+      content: '';
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 50%;
+      background: var(--theme-bg);
+      opacity: 0;
+    }
+    &:target,
+    &:focus {
+      a {
+        animation: footnotes-accessible_highlight-color 3s cubic-bezier(0.3, 0, 1, 0.7);
+      }
     }
   }
-}
 
-// https://www.a11yproject.com/posts/how-to-hide-content/
-.visually-hidden:not(:focus):not(:active) {
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  height: 1px;
-  overflow: hidden;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
-}
-
-.medium-zoom-image {
-  margin-top: var(--navigation-header-height);
-  z-index: ($main-z-index + 100);
-  &--opened {
-    z-index: ($main-z-index + 101);
+  // https://www.a11yproject.com/posts/how-to-hide-content/
+  .visually-hidden:not(:focus):not(:active) {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
   }
-}
-.medium-zoom {
-  &--opened {
-    .medium-zoom-overlay {
-      z-index: ($main-z-index + 100);
+
+  .medium-zoom-image {
+    margin-top: var(--navigation-header-height);
+    z-index: (variables.$main-z-index + 100);
+    &--opened {
+      z-index: (variables.$main-z-index + 101);
     }
   }
-}
+  .medium-zoom {
+    &--opened {
+      .medium-zoom-overlay {
+        z-index: (variables.$main-z-index + 100);
+      }
+    }
+  }
 
-/*! purgecss stop ignore */
+  /*! purgecss stop ignore */
+
+}

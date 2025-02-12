@@ -1,6 +1,7 @@
 @use "sass:meta";
 @use "sass:math";
 @use "hugo-vars" as hugo;
+@use "variables" as variables;
 
 @for $i from 1 through 2 {
   $size: $i * 1.5rem;
@@ -28,37 +29,37 @@
 }
 
 .inner {
-  @include element-padding('inner', 1, 1);
+  @include variables.element-padding('inner', 1, 1);
   &_4-2 {
-    @include element-padding('inner', 0.5, 0.5);
+    @include variables.element-padding('inner', 0.5, 0.5);
   }
   &_top {
-    @include element-padding('inner', 1, unset, unset, unset);
+    @include variables.element-padding('inner', 1, unset, unset, unset);
   }
   &_bottom {
-    @include element-padding('inner', unset, unset, 1, unset);
+    @include variables.element-padding('inner', unset, unset, 1, unset);
   }
   &_full-bleed_left {
-    @include element-padding('inner', unset, unset, unset, 0);
+    @include variables.element-padding('inner', unset, unset, unset, 0);
   }
   &_horizontal {
-    @include element-padding('inner', unset, 1);
+    @include variables.element-padding('inner', unset, 1);
 
     .inner_top, &.inner_top {
-      @include element-padding('inner', 1, 1, unset, 1);
+      @include variables.element-padding('inner', 1, 1, unset, 1);
     }
     .inner_bottom, &.inner_bottom {
-      @include element-padding('inner', unset, 1, 1, 1);
+      @include variables.element-padding('inner', unset, 1, 1, 1);
     }
   }
   &_full-bleed_horizontal {
-    @include element-padding('inner', unset, 0);
+    @include variables.element-padding('inner', unset, 0);
   }
 }
 
 .outer {
   &_horizontal {
-    @include element-padding('outer', unset, 1);
+    @include variables.element-padding('outer', unset, 1);
   }
 }
 

@@ -1,0 +1,118 @@
+@use "sass:map";
+@use "sass:meta";
+@use "sass:string";
+@use "sass:color";
+
+
+$text-lit: hsl(200, 10%, 13%);
+$bg-lit: hsl(200, 10%, 95%);
+
+$colors-lit: (
+  text: $text-lit,
+  bg: $bg-lit,
+  theme: var(--text),
+  theme-bg: var(--bg)
+);
+
+/// Replace `$search` with `$replace` in `$string`
+/// @param {String} $string - Initial string
+/// @param {String} $search - Substring to replace
+/// @param {String} $replace ('') - New value
+/// @return {String} - Updated string
+@function stringReplace($string, $search, $replace) {
+  $index: string.index($string, $search);
+  @if $index == null {
+    @return $string;
+  }
+  $before: string.slice($string, 1, $index - 1);
+  $after: string.slice($string, $index + string.length($search));
+  @return $before + $replace + $after;
+}
+
+/// Strip `$prefix` and `$postfix` from `$string`
+/// @param {String} $string - Initial string
+/// @param {String} $prefix - Prefix to remove
+/// @param {String} $postfix - Postfix to remove
+/// @return {String} - Updated string
+@function stringExtract($string, $prefix, $postfix) {
+  // Ensure the string starts with the prefix
+  @if string.index($string, $prefix) != 1 {
+    @error "Prefix not found or does not start at the beginning of the string.";
+  }
+
+  // Remove the prefix
+  $trimmed: string.slice($string, string.length($prefix) + 1);
+
+  // Ensure the string ends with the postfix
+  $postfix-length: string.length($postfix);
+  $trimmed-length: string.length($trimmed);
+  @if string.slice($trimmed, -$postfix-length) != $postfix {
+    @error "Postfix '#{$postfix}' not found or does not end the string '#{$string}'";
+  }
+
+  // Remove the postfix
+  $final: string.slice($trimmed, 1, $trimmed-length - $postfix-length);
+  @return $final;
+}
+
+@function color_variable_to_RGB($color) {
+  @return round(color.channel($color, "red", $space: rgb)), round(color.channel($color, "green", $space: rgb)), round(color.channel($color, "blue", $space: rgb));
+}
+
+@function map_color_variable_to_RGB($colors, $value) {
+  // @debug "map_color_variable_to_RGB: #{$value}: #{$value} [#{meta.type-of($value)}]";
+  @if meta.type-of($value) == color {
+    @return color_variable_to_RGB($value);
+  }
+  @else if meta.type-of($value) == string {
+    @debug "String processing: #{$value}";
+    @if string.slice($value, 1, 3) == "var" {
+      @debug "Processing variable string: #{$value}";
+      $color_key: stringExtract($value, 'var(--', ')'); // Remove 'var(--' and ')'
+      @debug "Extracted color key: #{$color_key}";
+
+      $resolved_value: map.get($colors, $color_key);
+      @debug "Resolved color value: #{$resolved_value} [#{meta.type-of($resolved_value)}]";
+
+      @if $resolved_value == null {
+        $resolved_value: #ff0000; // Default to red
+        @debug "Key not found; defaulting to red: #{inspect($resolved_value)}";
+      }
+
+      @if meta.type-of($resolved_value) == color {
+        @return color_variable_to_RGB($resolved_value);
+      }
+      @else if meta.type-of($resolved_value) == string {
+        // Resolve nested variables
+        @if string.slice($resolved_value, 1, 3) == "var" {
+          @debug "Nested variable detected: #{$resolved_value}";
+          @return map_color_variable_to_RGB($colors, $resolved_value);
+        }
+      }
+    }
+  }
+  @error "map_color_variable_to_RGB: Invalid $value: #{$value} [#{meta.type-of($value)}]";
+  @return $value;
+}
+
+@mixin generate_colors($colors) {
+  // Add RGB / RGBA color definitions
+  @each $color, $value in $colors {
+    --#{$color}: #{$value};
+    // --RGB_#{$color}: #{map_color_variable_to_RGB($colors, $value)};
+  }
+  @debug $colors;
+  // @each $color in (text bg theme theme-bg choice-bg xhaze link link-visited link-hover link-focus link-active link-dark link-dark-visited link-dark-hover link-dark-focus link-dark-active highlight-bg-yellow) {
+  @each $color in (text bg theme theme-bg) {
+      $value: map.get($colors, $color);
+    @debug "generate_colors: #{$color}: #{$value} [colors: #{meta.type-of($colors)}] [value: #{meta.type-of($value)}]";
+
+    @debug "generate_colors: #{$color}: #{map_color_variable_to_RGB($colors, $value)}";
+    $color_RGB: map_color_variable_to_RGB($colors, $value);
+    --RGB_#{$color}: #{$color_RGB};
+  }
+}
+
+:root {
+  @include generate_colors($colors-lit);
+}

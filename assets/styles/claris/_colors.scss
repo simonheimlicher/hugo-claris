@@ -1,3 +1,6 @@
+@use 'sass:math';
+@use 'hugo-vars' as hugo;
+
 $primary-hue-lit: hue(hugo.$colorPrimaryLit);
 $primary-sat-lit: saturation(hugo.$colorPrimaryLit);
 $primary-lum-lit: lightness(hugo.$colorPrimaryLit);
