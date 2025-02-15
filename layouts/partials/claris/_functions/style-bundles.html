@@ -1,7 +1,7 @@
 {{- $styleBundles := dict }}
 {{- $page := .Page }}
 {{- $template := "claris/_functions/style-bundles" }}
-{{- $debug := or true (page.Param "clarisdebug") }}
+{{- $debug := or false (page.Param "clarisdebug") }}
 {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $assetVariant :=.AssetVariant -}}
@@ -156,7 +156,7 @@ does not have an effect, as mentioned above.
               $fallbackSpecFileKey (printf "%s" $fallbackFontSpecFile)
           ) }}
         {{- else }}
-          {{- if $debug }}
+          {{- if and false $debug }}
             {{- warnf "%s No fallback font family for %v [%v] found matching fallbackFamilyID='%v'"
               $dbg $familyName $fontFamilyID $fallbackFamilyID }}
           {{- end }}
@@ -273,9 +273,9 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
   {{- $fetchPriority := default "" $params.fetchpriority }}
   {{- if (in $mediaTypeList $mediaType) }}
     {{- $hugoParams := merge $hugoParamsBase (dict "media_type" $mediaType) }}
-    {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "vars" $hugoParams) }}
+    {{- $toCSSoptions := merge $toCSSoptionsBase (dict "vars" $hugoParams) }}
     {{- if $debug }}
-      {{- warnf "toCSSoptionsBase:\n%v" (jsonify (dict "indent" "  ") $toCSSoptionsBase) -}}
+      {{- warnf "toCSSoptions:\n%v" (jsonify (dict "indent" "  ") $toCSSoptions) -}}
     {{- end }}
 
     {{- /* warnf "%v Generating style bundle with contentTypeList=%s contentTypeListID=%s for MediaType=%s in MediaTypeList=%v"
@@ -297,36 +297,27 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
       -->
       {{- $mainFile := printf "%s-%s" $resourcePathPrefix $mainFileBaseName -}}
 
-      <!-- Process these top-level files as Go Template language templates -->
-      {{- $sourceTemplates := (slice $mainFile) }}
-      {{- range $resourceFile := $sourceTemplates }}
-        {{- with resources.GetMatch (printf "%s.*" $resourceFile ) -}}
-          {{- $executedFile := printf "%s_%s%s.%s" $resourceFile $resourceID $executedSourceSuffix $sourceExt }}
-          {{- with $assetStyleSuffix }}
-            {{- $executedFile = printf "%s_%s%s%s.%s" $resourceFile $resourceID . $executedSourceSuffix $sourceExt }}
-          {{- end }}
-          {{- $executedResource := resources.ExecuteAsTemplate $executedFile $tplParams . }}
-          {{- $executedResourceList = append (slice $executedResource) $executedResourceList }}
-        {{- else -}}
-          {{- if (eq $contentType "claris") }}
-            {{- errorf "%v resourceFile '%s' not found" $dbg $resourceFile }}
-          {{- end -}}
+      <!-- Process main SASS file as Go Template Language template -->
+      {{- with resources.GetMatch (printf "%s.*" $mainFile ) -}}
+        {{- $executedFile := printf "%s_%s%s.%s" $mainFile $resourceID $executedSourceSuffix $sourceExt }}
+        {{- with $assetStyleSuffix }}
+          {{- $executedFile = printf "%s_%s%s%s.%s" $mainFile $resourceID . $executedSourceSuffix $sourceExt }}
+        {{- end }}
+        {{- $executedResource := resources.ExecuteAsTemplate $executedFile $tplParams . }}
+        {{- $executedResourceList = append (slice $executedResource) $executedResourceList }}
+      {{- else -}}
+        {{- if (eq $contentType "claris") }}
+          {{- errorf "%v mainFile '%s' not found" $dbg $mainFile }}
         {{- end -}}
       {{- end -}}
     {{- end -}}
 
-    {{- /* {{- if (gt (len $contentTypeList) 1) }}
+    {{- if (gt (len $contentTypeList) 1) }}
       {{- warnf "%v Multiple types=%v ID=%v resourceID=%s produced executedResourceList: "
           $dbg $contentTypeList $contentTypeListID $resourceID }}
       {{- range $idx, $resource := $executedResourceList }}
         {{- warnf "%v %d --> %v .Name=%v .MediaType=%v" $dbg $idx $resource $resource.Name $resource.MediaType }}
       {{- end }}
-    {{- end }} */ -}}
-
-    {{- $targetPathPrefix := printf "%s/%s" $resourcePathBase $contentTypeListID -}}
-    {{- $targetFile := printf "%s/%s.%s" $targetPathPrefix $resourceID $targetExt }}
-    {{- with $assetStyleSuffix }}
-      {{- $targetFile = printf "%s/%s%s.%s" $targetPathPrefix $resourceID . $targetExt }}
     {{- end }}
 
     {{- $importFile := printf "%s/%s-%s.%s" $resourcePathBase $contentTypeListID $resourceID $sourceExt }}
@@ -338,7 +329,14 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
           $dbg $concatResource $concatResource.Content -}}
     {{- end }}
 
-    {{- $toCSSoptions := merge $toCSSoptionsBase (dict "targetPath" $targetFile) -}}
+    <!-- Determine target file path and bundle SASS -->
+    {{- $targetPathPrefix := printf "%s/%s" $resourcePathBase $contentTypeListID -}}
+    {{- $targetFile := printf "%s/%s.%s" $targetPathPrefix $resourceID $targetExt }}
+    {{- with $assetStyleSuffix }}
+      {{- $targetFile = printf "%s/%s%s.%s" $targetPathPrefix $resourceID . $targetExt }}
+    {{- end }}
+
+    {{- $toCSSoptions = merge $toCSSoptions (dict "targetPath" $targetFile) -}}
     {{- $bundle := $concatResource | css.Sass $toCSSoptions }}
 
     {{- $bundleUnMinified := $bundle | resources.Fingerprint $fingerprintOptions }}
