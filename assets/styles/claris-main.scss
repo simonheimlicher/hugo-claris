@@ -18,8 +18,8 @@
 @use 'claris/components_screen';
 @use 'claris/components_print';
 
-@import 'claris/utils';
+@use 'claris/utils';
 
 /*! purgecss start ignore */
-@import 'claris/syntax';
+@use 'claris/syntax';
 /*! purgecss end ignore */
