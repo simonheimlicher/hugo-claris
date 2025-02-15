@@ -192,7 +192,7 @@ does not have an effect, as mentioned above.
     "feature_viewport_height_max" ($page.Param "assets.styles.images.feature.viewport.height.max" | default 0.5)
 ) }}
 
-{{- $hugoParams := dict }}
+{{- $hugoParamsBase := dict }}
 {{- range $categoryKey, $categoryParams := (dict
     "colors" site.Params.colors
     "fonts" $fontParams
@@ -203,19 +203,19 @@ does not have an effect, as mentioned above.
   {{- range $outerKey, $outerValue := $categoryParams }}
     {{- if reflect.IsMap $outerValue }}
       {{- range $innerKey, $innerValue := $outerValue }}
-        {{- $hugoParams = merge $hugoParams (dict (printf "%s_%s_%s" $categoryKey $outerKey $innerKey) $innerValue) }}
+        {{- $hugoParamsBase = merge $hugoParamsBase (dict (printf "%s_%s_%s" $categoryKey $outerKey $innerKey) $innerValue) }}
       {{- end }}
     {{- else if reflect.IsSlice $outerValue }}
-      {{- $hugoParams = merge $hugoParams (dict (printf "%s_%s" $categoryKey $outerKey) (delimit $outerValue " ") ) }}
+      {{- $hugoParamsBase = merge $hugoParamsBase (dict (printf "%s_%s" $categoryKey $outerKey) (delimit $outerValue " ") ) }}
     {{- else }}
       {{- if (eq "string" (printf "%T" $outerValue) ) }}
-        {{- $hugoParams = merge $hugoParams (dict (printf "%s_%s" $categoryKey $outerKey) $outerValue) }}
+        {{- $hugoParamsBase = merge $hugoParamsBase (dict (printf "%s_%s" $categoryKey $outerKey) $outerValue) }}
       {{- else if (eq "bool" (printf "%T" $outerValue) ) }}
-        {{- $hugoParams = merge $hugoParams (dict (printf "%s_%s" $categoryKey $outerKey) (printf "%v" $outerValue) ) }}
+        {{- $hugoParamsBase = merge $hugoParamsBase (dict (printf "%s_%s" $categoryKey $outerKey) (printf "%v" $outerValue) ) }}
       {{- else if (in (slice "int" "float64") (printf "%T" $outerValue) ) }}
-        {{- $hugoParams = merge $hugoParams (dict (printf "%s_%s" $categoryKey $outerKey) $outerValue) }}
+        {{- $hugoParamsBase = merge $hugoParamsBase (dict (printf "%s_%s" $categoryKey $outerKey) $outerValue) }}
       {{- else if (in (slice "<nil>") (printf "%T" $outerValue) ) }}
-        {{- $hugoParams = merge $hugoParams (dict (printf "%s_%s" $categoryKey $outerKey) "null") }}
+        {{- $hugoParamsBase = merge $hugoParamsBase (dict (printf "%s_%s" $categoryKey $outerKey) "null") }}
       {{- else }}
         {{- errorf "%s Invalid type: cannot pass value %v for key %v"
             $dbg (printf "%v [%T]" $outerValue $outerValue) (printf "%s_%s" $categoryKey $outerKey) }}
@@ -272,7 +272,7 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
   {{- $mediaType := default "all" $params.media }}
   {{- $fetchPriority := default "" $params.fetchpriority }}
   {{- if (in $mediaTypeList $mediaType) }}
-    {{- $hugoParams := merge $hugoParams (dict "media_type" $mediaType) }}
+    {{- $hugoParams := merge $hugoParamsBase (dict "media_type" $mediaType) }}
     {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "vars" $hugoParams) }}
     {{- if $debug }}
       {{- warnf "toCSSoptionsBase:\n%v" (jsonify (dict "indent" "  ") $toCSSoptionsBase) -}}
@@ -280,8 +280,6 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
 
     {{- /* warnf "%v Generating style bundle with contentTypeList=%s contentTypeListID=%s for MediaType=%s in MediaTypeList=%v"
     $dbg $contentTypeList $contentTypeListID $mediaType $mediaTypeList */ -}}
-    <!-- Parameters to pass to the hugoParamsFile and other top-level style files
-      that are executed as templates -->
     {{- /* warnf "%v resourceID=%v params=%v $tplParams=%v" $dbg $resourceID $params $tplParams }} */ -}}
 
     <!-- Concat SASS -->
@@ -291,8 +289,6 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
       {{- $tplParams = merge $tplParams (dict "ContentType" $contentType "MediaType" $mediaType) }}
       {{- $resourcePathPrefix := printf "%s/%s" $resourcePathBase $contentType -}}
 
-      <!-- Get the Hugo params file resource and execute it as a Go Template -->
-      {{- $hugoParamsFile := printf "%s/hugo-params" $resourcePathPrefix }}
       <!-- Get the main SASS/SCSS file resource and execute it as a Go Template -->
       {{- $mainFileBaseName := (default $resourceID $params.file) }}
       <!-- The main SASS file needs to be outside the contentType directory to avoid
