@@ -1,24 +1,25 @@
 @use "sass:meta";
 @use "sass:math";
+@use "sass:color";
 @use "hugo-vars" as hugo;
 @use "variables" as variables;
 
 .main {
   &_claris {
     background: var(--choice-bg);
-    @include variables.color-scheme_transition;
     z-index: variables.$main-z-index;
+    @include variables.color-scheme_transition;
     // @include variables.link-lvhfa;
   }
   &_inner {
     // margin-top: var(--inner_margin)
-    @include variables.element-padding('inner', 0, unset, unset, unset);
     clear: both;
+    padding: 0 0 var(--body_padding) 0;
+    @include variables.element-padding('inner', 0, unset, unset, unset);
     h1:first-child {
       margin-top: 0;
       padding-top: 0;
     }
-    padding: 0 0 var(--body_padding) 0;
   }
 }
 
@@ -203,10 +204,10 @@
       display: block;
       flex: 1 1 10%;
       background: var(--bg);
+      min-width: calc(min(100%, (hugo.$screenViewBreakpointWidthWide - 1 * var(--inner_margin)) / 2));
       @include variables.drop-shadow(3rem, 0.1, 0.1);
       @include variables.color-scheme_transition;
       @include variables.inner_padding;
-      min-width: calc(min(100%, (hugo.$screenViewBreakpointWidthWide - 1 * var(--inner_margin)) / 2));
       @media screen and (min-width: hugo.$screenViewBreakpointWidthWide) {
         &:nth-child(odd) {
           border-radius: 0 0.5em 0.5em 0;
@@ -257,9 +258,12 @@
  */
 
 .footer_claris {
+  font-size: var(--font-size-footer);
+  padding-top: var(--body_padding);
+  z-index: (variables.$main-z-index  - 1);
   @include variables.background_dark;
   @include variables.geometric-scale('font-size', var(--font-size-footer));
-  font-size: var(--font-size-footer);
+  @include variables.list-style_indented(0, 0, 0, 0);
 
   h2,
   h3,
@@ -272,16 +276,13 @@
   h2 {
     font-size: var(--font-size-larger-1);
   }
-  padding-top: var(--body_padding);
-  @include variables.list-style_indented(0, 0, 0, 0);
-  z-index: (variables.$main-z-index  - 1);
 
   .footer {
     &_inner {
+      @include variables.footer;
       h2 + p, h2 + ul {
         margin-top: var(--inner_margin_4-2);
       }
-      @include variables.footer;
       // https://codepen.io/tutsplus/details/yWrEgW
       .icon-link {
         display: flex;
@@ -293,10 +294,10 @@
       }
     }
     &_copyright {
-      @include variables.footer;
       padding-top: var(--inner_padding);
       padding-bottom: var(--inner_padding);
       font-size: var(--font-size-meta);
+      @include variables.footer;
     }
 
     // Footer main
@@ -717,20 +718,20 @@
   justify-content: flex-end;
   z-index: (variables.$main-z-index + 2);
   .content-title {
-    @include variables.content_multicolumn;
     --title_line-height: calc(var(--font-size-title) * var(--line-height-heading));
     margin: calc(0.5 * var(--title_line-height)) auto;
     // @extend .role-display;
-    @media screen and (min-width: hugo.$screenViewBreakpointWidthTwoColumn) {
-      // min-width: calc(var(--content_max-width) - var(--inner_margin) * 2);
-      min-width: var(--content_max-width);
-    }
     padding: 0;
     width: fit-content;
     text-align: unset;
     color: var(--header-text);
     z-index: (variables.$main-z-index + 5);
     hyphens: manual;
+    @include variables.content_multicolumn;
+    @media screen and (min-width: hugo.$screenViewBreakpointWidthTwoColumn) {
+      // min-width: calc(var(--content_max-width) - var(--inner_margin) * 2);
+      min-width: var(--content_max-width);
+    }
     h1 {
       font-size: var(--font-size-title);
       margin: 0;
@@ -878,19 +879,19 @@
         // grid-template-rows: minmax(0px, 2fr) 5fr minmax(0px, 1fr)
         grid-template-rows: minmax(0px, 1fr) 8fr minmax(0px, 3fr);
         min-height: 33vw;
+        max-height: 75vh;
         @media screen and (min-width: hugo.$screenViewBreakpointHeightTall) {
           min-height: 25vw;
         }
-        max-height: 75vh;
         @media screen and (min-width: hugo.$screenViewBreakpointWidthTwoColumn) {
           max-height: 33vh;
         }
         .content-title {
-          @include variables.body_horizontal-padding;
           margin: 0 auto;
           width: fit-content;
           grid-column: 4;
           grid-row: 2;
+          @include variables.body_horizontal-padding;
           @media screen and (min-width: hugo.$screenViewBreakpointWidthWide) {
             grid-column: 3 / span 2;
           }

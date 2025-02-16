@@ -1,4 +1,5 @@
 @use 'sass:math';
+@use 'sass:list';
 @use 'sass:map';
 @use 'sass:meta';
 @use 'sass:string';
@@ -59,15 +60,19 @@ $main-z-index: 1;
 @mixin generate_colors($colors) {
   // Add RGB / RGBA color definitions
   @each $color, $value in $colors {
-    --#{$color}: #{$value};
-    // --RGB_#{$color}: #{map_color_variable_to_RGB($colors, $value)};
+    & {
+      --#{$color}: #{$value};
+      // --RGB_#{$color}: #{map_color_variable_to_RGB($colors, $value)};
+    }
   }
   // @debug "generate_colors: type of 'colors': [#{meta.type-of($colors)}]. Contents of colors: #{meta.inspect($colors)}";
   @each $color in (text bg theme theme-bg choice-bg xhaze link link-visited link-hover link-focus link-active link-dark link-dark-visited link-dark-hover link-dark-focus link-dark-active highlight-bg-yellow) {
-    $value: map.get($colors, $color);
-    // @debug "generate_colors: color=#{$color} mapped to value=#{$value} [#{meta.type-of($value)}] --> #{map_color_variable_to_RGB($colors, $value)}";
-    $color_RGB: map_color_variable_to_RGB($colors, $value);
-    --RGB_#{$color}: #{$color_RGB};
+    & {
+      $value: map.get($colors, $color);
+      // @debug "generate_colors: color=#{$color} mapped to value=#{$value} [#{meta.type-of($value)}] --> #{map_color_variable_to_RGB($colors, $value)}";
+      $color_RGB: map_color_variable_to_RGB($colors, $value);
+      --RGB_#{$color}: #{$color_RGB};
+    }
   }
 }
 
@@ -335,7 +340,9 @@ $main-z-index: 1;
 }
 
 @mixin content_base() {
-  clear: both;
+  & {
+    clear: both;
+  }
 }
 
 @mixin content_base_centered() {
@@ -343,8 +350,10 @@ $main-z-index: 1;
   // NOTE: Must not use width: 100% as otherwise
   // the grid track is exceeded when column-gap is > 0px
   // width: 100%;
-  margin-left: auto;
-  margin-right: auto;
+  & {
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 @mixin content() {
@@ -354,15 +363,19 @@ $main-z-index: 1;
 @mixin content_singlecolumn() {
   @include body_horizontal-padding;
   @include content_base_centered;
-  max-width: var(--content_max-width);
-  // max-width: calc(min(100%, var(--content_max-width)));
+  & {
+    max-width: var(--content_max-width);
+    // max-width: calc(min(100%, var(--content_max-width)));
+  }
 }
 
 // Content that has multiple columns
 @mixin content_multicolumn() {
   @include body_horizontal-padding;
   @include content_base_centered;
-  max-width: var(--content_max-width); // For IE 11
+  & {
+    max-width: var(--content_max-width); // For IE 11
+  }
   @supports (display: grid) {
     max-width: var(--content_multicolumn_max-width);
     // NOTE: Not sure what (min(100%, ...) is supposed to accomplish.
@@ -399,13 +412,17 @@ $main-z-index: 1;
   // @include inner_padding;
   // NOTE: Avoid large gap betweeen .content-title and .lede
   @include body_horizontal-padding;
-  max-width: var(--content_max-width);
+  & {
+    max-width: var(--content_max-width);
+  }
 }
 
 // Container that has multiple columns
 @mixin container_multicolumn() {
   @include inner_padding;
-  max-width: var(--content_max-width); // For IE 11
+  & {
+    max-width: var(--content_max-width); // For IE 11
+  }
   @supports (display: grid) {
     max-width: var(--content_multicolumn_max-width);
   }
@@ -711,28 +728,35 @@ $main-z-index: 1;
 // Using SASS: https://www.smashingmagazine.com/2022/10/fluid-typography-clamp-sass-functions/
 @function fluid($min-size, $max-size, $min-breakpoint: hugo.$screenViewBreakpointWidthMobile, $max-breakpoint: hugo.$screenViewBreakpointWidthWide, $unit: vw) {
   $slope: math.div($max-size - $min-size, $max-breakpoint - $min-breakpoint);
-  $slope-to-unit: roundDec($slope * 100, 2);
-  $intercept-rem: roundDec($min-size - $slope * $min-breakpoint, 2);
-  $min-size-rem: roundDec($min-size, 2);
-  $max-size-rem: roundDec($max-size, 2);
+  $slope-to-unit: functions.roundDec($slope * 100, 2);
+  $intercept-rem: functions.roundDec($min-size - $slope * $min-breakpoint, 2);
+  $min-size-rem: functions.roundDec($min-size, 2);
+  $max-size-rem: functions.roundDec($max-size, 2);
   @return clamp(#{$min-size-rem}, #{$slope-to-unit}#{$unit} + #{$intercept-rem}, #{$max-size-rem});
 }
 
 @function geometric-scaled-prop($prop, $scale-factor, $shift: 0, $factor-normal: 1) {
-  @return calc(#{roundDec($factor-normal * math.pow($scale-factor, $shift), hugo.$fluidScaleDigits)} * var(--#{$prop}-base));
+  $scaleFactor: functions.roundDec($factor-normal * math.pow($scale-factor, $shift), hugo.$fluidScaleDigits);
+  @return calc( #{$scaleFactor} * var(--#{$prop}-base));
 }
 
 @mixin geometric-scale($prop, $base-size, $scale-factor: hugo.$geometricScaleFactor, $base-shift: 0, $smallest: 9, $largest: 9) {
 
+  & {
+    --#{$prop}-base: #{$base-size};
+    --#{$prop}-normal: #{geometric-scaled-prop($prop, $scale-factor, $base-shift)};
+  }
   $smaller-factor-idx-max: 5;
   $larger-factor-idx-max: 6;
-  --#{$prop}-base: #{$base-size};
-  --#{$prop}-normal: #{geometric-scaled-prop($prop, $scale-factor, $base-shift)};
   @for $i from 1 through $smaller-factor-idx-max {
-    --#{$prop}-smaller-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift - min($smallest, $i))};
+    & {
+      --#{$prop}-smaller-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift - min($smallest, $i))};
+    }
   }
   @for $i from 1 through $larger-factor-idx-max {
-    --#{$prop}-larger-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift + min($largest, $i))};
+    & {
+      --#{$prop}-larger-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift + min($largest, $i))};
+    }
   }
 }
 
@@ -743,13 +767,16 @@ $main-z-index: 1;
   $larger-factor-idx-max: 6;
 
   --#{$prop}-base: #{fluid($min-size, $max-size, $min-breakpoint, $max-breakpoint, $unit)};
-
   --#{$prop}-normal: #{geometric-scaled-prop($prop, $scale-factor, $base-shift)};
   @for $i from 1 through $smaller-factor-idx-max {
-    --#{$prop}-smaller-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift - min($smallest, $i))};
+    & {
+      --#{$prop}-smaller-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift - min($smallest, $i))};
+    }
   }
   @for $i from 1 through $larger-factor-idx-max {
-    --#{$prop}-larger-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift + min($largest, $i))};
+    & {
+      --#{$prop}-larger-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift + min($largest, $i))};
+    }
   }
 }
 
@@ -757,7 +784,8 @@ $main-z-index: 1;
   @if ($numerator == $denominator) {
     @return var(--#{$prop}-base);
   }
-  @return calc(#{roundDec($factor-normal * math.div($numerator, $denominator), hugo.$fluidScaleDigits)} * var(--#{$prop}-base));
+  $scaleFactor: functions.roundDec($factor-normal * math.div($numerator, $denominator), hugo.$fluidScaleDigits);
+  @return calc($scaleFactor * var(--#{$prop}-base));
 }
 
 @mixin fluid-fractional-scale($prop, $min-size, $max-size, $min-breakpoint: hugo.$screenViewBreakpointWidthMobile, $max-breakpoint: hugo.$screenViewBreakpointWidthWide, $unit: vw,
@@ -774,7 +802,66 @@ $main-z-index: 1;
   --#{$prop}-base: #{fluid($min-size, $max-size, $min-breakpoint, $max-breakpoint, $unit)};
   --#{$prop}: #{fractional-scaled-prop($prop, $base-shift + $denominator, $denominator)};
   @for $i from 0 through $numerator-max {
-    --#{$prop}_#{$denominator}-#{$i}: #{fractional-scaled-prop($prop, $base-shift + $i, $denominator)};
+    & {
+      --#{$prop}_#{$denominator}-#{$i}: #{fractional-scaled-prop($prop, $base-shift + $i, $denominator)};
+    }
+  }
+}
+
+@mixin color-scheme-dark {
+  --theme-text-dim: hsla(0,0%,100%,0.87);
+  --color-scheme: 'dark';
+  --text: var(--theme-text-dim);
+  --accent: var(--bubble);
+  // --choice-bg: var(--bg);
+  --code-bg: var(--translucent);
+  --header-text: var(--theme-text-dim);
+  --table-bg: var(--code-bg);
+  --table-haze: hsla(0, 0%, 100%, 0.1);
+  --table-border: var(--code-bg);
+  --footer-bg: var(--bg);
+  svg.icon {
+    fill: var(--theme-text);
+  }
+  .icon {
+    img {
+      background: none;
+    }
+    svg {
+      fill: #fafafa;
+    }
+  }
+  .nav_color-scheme {
+    &_choice {
+      &_light {
+        opacity: 0.0;
+      }
+      &_dark {
+        opacity: 1.0;
+      }
+    }
+  }
+  @media (any-hover: hover) {
+    &:not([data-color-scheme-transition]) .nav_color-scheme_choice:hover {
+      .nav_color-scheme_choice {
+        &_light {
+          opacity: 1.0;
+          z-index: 1;
+        }
+        &_dark {
+          opacity: 0.0;
+          transition: none;
+          z-index: auto;
+        }
+      }
+    }
+  }
+
+  & {
+    @include generate_colors( map.merge(colors.$colors-lit, colors.$colors-dim) );
+    img:not([src*=".svg"]) {
+      filter: var(--dim-image-filter);
+    }
   }
 }
 
@@ -820,7 +907,6 @@ $screenViewPadding: (
 );
 
 html {
-  // --dim-image-filter: grayscale(30%);
   --dim-image-filter: brightness(75%);
 
   --to-be-eliminated-by-csspurge: black;
@@ -892,6 +978,10 @@ html {
   // }
 
   --screenViewNavHeight: #{hugo.$screenViewNavHeightNarrow};
+  --navigation-header-height: 0;
+  --choice-bg-menu: var(--haze);
+  --choice-bg-menu-active: var(--xxxhaze);
+
   @media screen and (min-width: #{hugo.$screenViewBreakpointWidthNarrow}) {
     --screenViewNavHeight: #{hugo.$screenViewNavHeight};
   }
@@ -926,66 +1016,12 @@ html {
   //   }
   // }
 
-  --navigation-header-height: 0;
+  &:not(.kind-page) {
+    --choice-bg: var(--theme-bg);
+    --RGB_choice-bg: var(--RGB_theme-bg);
+  }
 
   @include generate_colors(colors.$colors-lit);
-  --choice-bg-menu: var(--haze);
-  --choice-bg-menu-active: var(--xxxhaze);
-
-  @mixin color-scheme-dark {
-    --theme-text-dim: hsla(0,0%,100%,0.87);
-    --color-scheme: 'dark';
-    --text: var(--theme-text-dim);
-    --accent: var(--bubble);
-    // --choice-bg: var(--bg);
-    --code-bg: var(--translucent);
-    --header-text: var(--theme-text-dim);
-    --table-bg: var(--code-bg);
-    --table-haze: hsla(0, 0%, 100%, 0.1);
-    --table-border: var(--code-bg);
-    --footer-bg: var(--bg);
-    svg.icon {
-      fill: var(--theme-text);
-    }
-    .icon {
-      img {
-        background: none;
-      }
-      svg {
-        fill: #fafafa;
-      }
-    }
-    .nav_color-scheme {
-      &_choice {
-        &_light {
-          opacity: 0.0;
-        }
-        &_dark {
-          opacity: 1.0;
-        }
-      }
-    }
-    @media (any-hover: hover) {
-      &:not([data-color-scheme-transition]) .nav_color-scheme_choice:hover {
-        .nav_color-scheme_choice {
-          &_light {
-            opacity: 1.0;
-            z-index: 1;
-          }
-          &_dark {
-            opacity: 0.0;
-            transition: none;
-            z-index: auto;
-          }
-        }
-      }
-    }
-
-    @include generate_colors( map-merge(colors.$colors-lit, colors.$colors-dim) );
-    img:not([src*=".svg"]) {
-      filter: var(--dim-image-filter);
-    }
-  }
 
   @media screen {
     &[data-color-scheme="dark"] {
@@ -996,10 +1032,5 @@ html {
     &:not([data-color-scheme="light"]) {
       @include color-scheme-dark;
     }
-  }
-
-  &:not(.kind-page) {
-    --choice-bg: var(--theme-bg);
-    --RGB_choice-bg: var(--RGB_theme-bg);
   }
 }

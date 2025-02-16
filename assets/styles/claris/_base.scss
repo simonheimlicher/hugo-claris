@@ -80,9 +80,11 @@ a {
     outline: 1px dashed var(--link-focus);
   }
   // Avoid adding a hyphen where the word breaks
-  hyphens: none;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  & {
+    hyphens: none;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
 
   // Allow hyphenation in block elements within a
   div,
