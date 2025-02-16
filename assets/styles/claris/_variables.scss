@@ -37,7 +37,7 @@ $main-z-index: 1;
 
       @if $resolved_value == null {
         $resolved_value: #ff0000; // Default to red
-        @debug "map_color_variable_to_RGB: Color key '#{$color_key}' not found; defaulting to red: #{inspect($resolved_value)}";
+        @debug "map_color_variable_to_RGB: Color key '#{$color_key}' not found; defaulting to red: #{meta.inspect($resolved_value)}";
       }
 
       @if meta.type-of($resolved_value) == color {
@@ -62,7 +62,7 @@ $main-z-index: 1;
     --#{$color}: #{$value};
     // --RGB_#{$color}: #{map_color_variable_to_RGB($colors, $value)};
   }
-  // @debug "generate_colors: type of 'colors': [#{meta.type-of($colors)}]. Contents of colors: #{inspect($colors)}";
+  // @debug "generate_colors: type of 'colors': [#{meta.type-of($colors)}]. Contents of colors: #{meta.inspect($colors)}";
   @each $color in (text bg theme theme-bg choice-bg xhaze link link-visited link-hover link-focus link-active link-dark link-dark-visited link-dark-hover link-dark-focus link-dark-active highlight-bg-yellow) {
     $value: map.get($colors, $color);
     // @debug "generate_colors: color=#{$color} mapped to value=#{$value} [#{meta.type-of($value)}] --> #{map_color_variable_to_RGB($colors, $value)}";
@@ -82,8 +82,8 @@ $main-z-index: 1;
 
 //   // Only define RGB values for select colors
 //   @each $color in (text bg theme theme-bg choice-bg xhaze link link-visited link-hover link-focus link-active link-dark link-dark-visited link-dark-hover link-dark-focus link-dark-active highlight-bg-yellow) {
-//     $value: map-get($colors, $color);
-//     // @debug "generate_colors: #{$color}: #{$value} [colors: #{type-of($colors)}] [value: #{type-of($value)}]";
+//     $value: map.get($colors, $color);
+//     // @debug "generate_colors: #{$color}: #{$value} [colors: #{meta.type-of($colors)}] [value: #{meta.type-of($value)}]";
 
 //     // @debug "generate_colors: #{$color}: #{mapColorVarToRGB($colors, $value)}";
 //     $color_RGB: mapColorVarToRGB($colors, $value);
@@ -92,25 +92,25 @@ $main-z-index: 1;
 // }
 
 @function direction($value) {
-  @if index('right' 'left', $value) != null {
+  @if list.index('right' 'left', $value) != null {
     @return 'x';
   }
-  @if index('top' 'bottom', $value) != null {
+  @if list.index('top' 'bottom', $value) != null {
     @return 'y';
   }
   @error "Expected 'top', 'right', 'bottom' or 'left' but got #{$value}";
 }
 
 @function is-number($value) {
-  @return type-of($value) == 'number';
+  @return meta.type-of($value) == 'number';
 }
 
 @function is-null($value) {
-  @return type-of($value) == 'null';
+  @return meta.type-of($value) == 'null';
 }
 
 @function is-absolute-length($value) {
-  @return type-of($value) == 'number' and index('cm' 'mm' 'in' 'px' 'pt' 'pc', unit($value)) != null;
+  @return meta.type-of($value) == 'number' and list.index('cm' 'mm' 'in' 'px' 'pt' 'pc', unit($value)) != null;
 }
 
 @mixin element-padding($where: 'outer', $top: null, $right: null, $bottom: null, $left: null) {
@@ -127,10 +127,10 @@ $main-z-index: 1;
   $pVar: ('top': $top, 'right': $right, 'bottom': $bottom, 'left': $left);
   @each $key, $value in $pVar {
     $direction: direction($key);
-    @if type-of($value) == 'number' {
+    @if meta.type-of($value) == 'number' {
       @if is-absolute-length(#{$value}) {
         // @debug "absolute-length: #{$value}";
-        $pVar: map-merge($pVar, (
+        $pVar: map.merge($pVar, (
           #{$key}: calc( max(#{$value}, env(safe-area-inset-#{$key}, 0px) ) )
         ));
       }
@@ -142,11 +142,11 @@ $main-z-index: 1;
         @else {
           $valueVar: calc( max(#{$value} * var(--#{$where}_padding), env(safe-area-inset-#{$key}, 0px) ) )
         }
-        $pVar: map-merge($pVar, (#{$key}: $valueVar));
+        $pVar: map.merge($pVar, (#{$key}: $valueVar));
         }
     }
     @else {
-      $pVar: map-merge($pVar, (#{$key}: null) );
+      $pVar: map.merge($pVar, (#{$key}: null) );
     }
   }
   // @debug "pVar: #{$pVar}";
@@ -224,13 +224,13 @@ $main-z-index: 1;
 }
 
 @mixin link-lvhfa_color($attrs, $color-id, $override: null) {
-  $variant: map-get($attrs, variant);
-  $highlight: map-get($attrs, highlight);
+  $variant: map.get($attrs, variant);
+  $highlight: map.get($attrs, highlight);
 
   $color: link#{if($variant != null and $variant != '', -#{$variant}, '')}#{if($color-id != null and $color-id != '', -#{$color-id}, '')};
   @each $key, $attr in $highlight {
-    $name: map-get($attr, name);
-    $opacity: map-get($attr, opacity);
+    $name: map.get($attr, name);
+    $opacity: map.get($attr, opacity);
     @if ($override != null) {
       $opacity: $override;
     }
@@ -258,7 +258,7 @@ $main-z-index: 1;
       );
 
       @if ($underline) {
-        $attrs: map-merge($attrs, (
+        $attrs: map.merge($attrs, (
           primary: (
             name: text-decoration-color,
             opacity: 0.5
@@ -898,8 +898,8 @@ html {
 
   // @mixin screen-margin-padding($breakpoint) {
   //   @each $where in ('outer', 'inner') {
-  //     $marginBase: map-get(map-get(hugo.$screenViewMargin, $where), $breakpoint);
-  //     $paddingBase: map-get(map-get(hugo.$screenViewPadding, $where), $breakpoint);
+  //     $marginBase: map.get(map.get(hugo.$screenViewMargin, $where), $breakpoint);
+  //     $paddingBase: map.get(map.get(hugo.$screenViewPadding, $where), $breakpoint);
   //     @if $paddingBase {
   //       @each $sizeDesc, $numQuarters in ('-1': 1, '-2': 2, '-3': 3, '': 4) {
   //         @each $direction in ('x', 'y') {
@@ -911,11 +911,11 @@ html {
   //   }
   // }
 
-  // $breakpointsWidth: map-get(hugo.$screenViewBreakpoints, 'width');
+  // $breakpointsWidth: map.get(hugo.$screenViewBreakpoints, 'width');
   // @for $i from 1 through length($breakpointsWidth) {
   //   $breakpointKeys: map-keys($breakpointsWidth);
   //   $breakpoint: nth($breakpointKeys, $i);
-  //   $breakpointWidth: map-get(map-get(hugo.$screenViewBreakpoints, 'width'), $breakpoint);
+  //   $breakpointWidth: map.get(map.get(hugo.$screenViewBreakpoints, 'width'), $breakpoint);
   //   @if $i == 1 {
   //     @include screen-margin-padding($breakpoint);
   //   }

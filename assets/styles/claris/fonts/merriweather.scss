@@ -91,4 +91,4 @@ $fontSpec: (
     )
   )
 );
-$fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: (settings: $fontSpec)));
+$fontFamilyMap: map.merge($fontFamilyMap, ($fontFamilyID: (settings: $fontSpec)));

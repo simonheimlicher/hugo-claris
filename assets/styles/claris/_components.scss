@@ -1691,29 +1691,29 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
   border: 0.0625rem solid var(--note-border-yellow);
   border-bottom-right-radius: 4rem 0.5rem;
   --note-bg-yellow: #{$note-bg-yellow-lit};
-  --note-bg-yellow-light: #{scale-color($note-bg-yellow-lit, $lightness: 53%)};
-  --note-bg-yellow-top: #{scale-color($note-bg-yellow-lit, $saturation: -3%, $lightness: -10%)};
-  --note-border-yellow: #{scale-color($note-bg-yellow-lit, $saturation: -100%, $lightness: 60%)};
+  --note-bg-yellow-light: #{color.scale($note-bg-yellow-lit, $lightness: 53%)};
+  --note-bg-yellow-top: #{color.scale($note-bg-yellow-lit, $saturation: -3%, $lightness: -10%)};
+  --note-border-yellow: #{color.scale($note-bg-yellow-lit, $saturation: -100%, $lightness: 60%)};
 
   --note-bg-orange: #{$note-bg-orange-lit};
-  --note-bg-orange-light: #{scale-color($note-bg-orange-lit, $lightness: 53%)};
-  --note-bg-orange-top: #{scale-color($note-bg-orange-lit, $saturation: -3%, $lightness: -3%)};
-  --note-border-orange: #{scale-color($note-bg-orange-lit, $saturation: -100%, $lightness: 60%)};
+  --note-bg-orange-light: #{color.scale($note-bg-orange-lit, $lightness: 53%)};
+  --note-bg-orange-top: #{color.scale($note-bg-orange-lit, $saturation: -3%, $lightness: -3%)};
+  --note-border-orange: #{color.scale($note-bg-orange-lit, $saturation: -100%, $lightness: 60%)};
 
   --note-bg-red: #{$note-bg-red-lit};
-  --note-bg-red-light: #{scale-color($note-bg-red-lit, $lightness: 53%)};
-  --note-bg-red-top: #{scale-color($note-bg-red-lit, $saturation: -3%, $lightness: -3%)};
-  --note-border-red: #{scale-color($note-bg-red-lit, $saturation: -100%, $lightness: 60%)};
+  --note-bg-red-light: #{color.scale($note-bg-red-lit, $lightness: 53%)};
+  --note-bg-red-top: #{color.scale($note-bg-red-lit, $saturation: -3%, $lightness: -3%)};
+  --note-border-red: #{color.scale($note-bg-red-lit, $saturation: -100%, $lightness: 60%)};
 
   --note-bg-green: #{$note-bg-green-lit};
-  --note-bg-green-light: #{scale-color($note-bg-green-lit, $lightness: 53%)};
-  --note-bg-green-top: #{scale-color($note-bg-green-lit, $saturation: -3%, $lightness: -3%)};
-  --note-border-green: #{scale-color($note-bg-green-lit, $saturation: -100%, $lightness: 60%)};
+  --note-bg-green-light: #{color.scale($note-bg-green-lit, $lightness: 53%)};
+  --note-bg-green-top: #{color.scale($note-bg-green-lit, $saturation: -3%, $lightness: -3%)};
+  --note-border-green: #{color.scale($note-bg-green-lit, $saturation: -100%, $lightness: 60%)};
 
   --note-bg-blue: #{$note-bg-blue-lit};
-  --note-bg-blue-light: #{scale-color($note-bg-blue-lit, $lightness: 53%)};
-  --note-bg-blue-top: #{scale-color($note-bg-blue-lit, $saturation: -3%, $lightness: -3%)};
-  --note-border-blue: #{scale-color($note-bg-blue-lit, $saturation: -100%, $lightness: 60%)};
+  --note-bg-blue-light: #{color.scale($note-bg-blue-lit, $lightness: 53%)};
+  --note-bg-blue-top: #{color.scale($note-bg-blue-lit, $saturation: -3%, $lightness: -3%)};
+  --note-border-blue: #{color.scale($note-bg-blue-lit, $saturation: -100%, $lightness: 60%)};
 
   --note-bg: var(--note-bg-yellow);
   --note-bg-light: var(--note-bg-yellow-light);
@@ -1800,25 +1800,25 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
 }
 @mixin note-dim-colors {
   --note-bg-yellow: #{$note-bg-yellow-dim};
-  --note-bg-yellow-light: #{scale-color($note-bg-yellow-dim, $lightness: -53%)};
-  --note-bg-yellow-top: #{scale-color($note-bg-yellow-dim, $saturation: -3%, $lightness: -2%)};
-  --note-border-yellow: #{scale-color($note-bg-yellow-dim, $saturation: -100%, $lightness: 20%)};
+  --note-bg-yellow-light: #{color.scale($note-bg-yellow-dim, $lightness: -53%)};
+  --note-bg-yellow-top: #{color.scale($note-bg-yellow-dim, $saturation: -3%, $lightness: -2%)};
+  --note-border-yellow: #{color.scale($note-bg-yellow-dim, $saturation: -100%, $lightness: 20%)};
   --note-bg-orange: #{$note-bg-orange-dim};
-  --note-bg-orange-light: #{scale-color($note-bg-orange-dim, $lightness: -53%)};
-  --note-bg-orange-top: #{scale-color($note-bg-orange-dim, $saturation: -3%, $lightness: -2%)};
-  --note-border-orange: #{scale-color($note-bg-orange-dim, $saturation: -100%, $lightness: 20%)};
+  --note-bg-orange-light: #{color.scale($note-bg-orange-dim, $lightness: -53%)};
+  --note-bg-orange-top: #{color.scale($note-bg-orange-dim, $saturation: -3%, $lightness: -2%)};
+  --note-border-orange: #{color.scale($note-bg-orange-dim, $saturation: -100%, $lightness: 20%)};
   --note-bg-red: #{$note-bg-red-dim};
-  --note-bg-red-light: #{scale-color($note-bg-red-dim, $lightness: -53%)};
-  --note-bg-red-top: #{scale-color($note-bg-red-dim, $saturation: -3%, $lightness: -2%)};
-  --note-border-red: #{scale-color($note-bg-red-dim, $saturation: -100%, $lightness: 20%)};
+  --note-bg-red-light: #{color.scale($note-bg-red-dim, $lightness: -53%)};
+  --note-bg-red-top: #{color.scale($note-bg-red-dim, $saturation: -3%, $lightness: -2%)};
+  --note-border-red: #{color.scale($note-bg-red-dim, $saturation: -100%, $lightness: 20%)};
   --note-bg-green: #{$note-bg-green-dim};
-  --note-bg-green-light: #{scale-color($note-bg-green-dim, $lightness: -53%)};
-  --note-bg-green-top: #{scale-color($note-bg-green-dim, $saturation: -3%, $lightness: -2%)};
-  --note-border-green: #{scale-color($note-bg-green-dim, $saturation: -100%, $lightness: 20%)};
+  --note-bg-green-light: #{color.scale($note-bg-green-dim, $lightness: -53%)};
+  --note-bg-green-top: #{color.scale($note-bg-green-dim, $saturation: -3%, $lightness: -2%)};
+  --note-border-green: #{color.scale($note-bg-green-dim, $saturation: -100%, $lightness: 20%)};
   --note-bg-blue: #{$note-bg-blue-dim};
-  --note-bg-blue-light: #{scale-color($note-bg-blue-dim, $lightness: -53%)};
-  --note-bg-blue-top: #{scale-color($note-bg-blue-dim, $saturation: -3%, $lightness: -2%)};
-  --note-border-blue: #{scale-color($note-bg-blue-dim, $saturation: -100%, $lightness: 20%)};
+  --note-bg-blue-light: #{color.scale($note-bg-blue-dim, $lightness: -53%)};
+  --note-bg-blue-top: #{color.scale($note-bg-blue-dim, $saturation: -3%, $lightness: -2%)};
+  --note-border-blue: #{color.scale($note-bg-blue-dim, $saturation: -100%, $lightness: 20%)};
   --note-shadow-bg: rgba(0, 0, 0, 0.95);
 }
 @media screen {

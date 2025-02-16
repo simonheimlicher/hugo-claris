@@ -58,8 +58,8 @@
 // https://kittygiraudel.com/2013/08/08/advanced-sass-list-functions/
 @function joinArray($list, $glue: '', $is-nested: false) {
   // Check if the argument is a list
-  @if type-of($list) != 'list' {
-    @warn "#{inspect($list)} is not a list.";
+  @if meta.type-of($list) != 'list' {
+    @warn "#{meta.inspect($list)} is not a list.";
     @return null;
   }
   $result: null;
@@ -67,7 +67,7 @@
   @for $i from 1 through length($list) {
     $e: nth($list, $i);
 
-    @if type-of($e) == list {
+    @if meta.type-of($e) == list {
       $result: $result#{to-string($e, $glue, true)};
     } @else {
       @if $e == '' {
@@ -89,7 +89,7 @@
 @function sliceArray($list, $start: 1, $end: length($list)) {
   $result: null;
 
-  @if type-of($start) != number or type-of($end) != number {
+  @if meta.type-of($start) != number or meta.type-of($end) != number {
     @warn "Either $start or $end are not a number for `slice`.";
   }
 
@@ -129,13 +129,13 @@
 // https://stackoverflow.com/a/33536471/617559
 @function updateMap($defaultMap, $updateMap: ()) {
   $mergedMap: ();
-  @if (type-of($defaultMap) == 'map') {
+  @if (meta.type-of($defaultMap) == 'map') {
     $mergedMap: $defaultMap;
-    @if (type-of($updateMap) == 'map') {
+    @if (meta.type-of($updateMap) == 'map') {
       // We iterate over each property of the defaultMap
       @each $key, $value in $updateMap {
           // Add the default value to mergedMap
-          $mergedMap: map-merge($mergedMap, ($key : $value));
+          $mergedMap: map.merge($mergedMap, ($key : $value));
       }
     }
   }
@@ -145,7 +145,7 @@
 // Take the default unless update is non-null
 @function defaultTo($defaultValue, $updateValue: null) {
   $finalValue: $defaultValue;
-  @if (type-of($updateValue) != 'null') {
+  @if (meta.type-of($updateValue) != 'null') {
     $finalValue: $updateValue;
   }
   @return $finalValue;
@@ -166,7 +166,7 @@
       }
       @else {
         @if (meta.type-of($value) == 'list') {
-          $value: inspect($value);
+          $value: meta.inspect($value);
         }
         --#{$prefix}#{$key}: #{$value};
       }
@@ -177,7 +177,7 @@
 
 @function print-map ( $map, $prefix: "", $str: "" ) {
   @each $k, $v in $map {
-    @if type-of($v) == map {
+    @if meta.type-of($v) == map {
       $str: "#{$str} \000D\000A#{$prefix}#{$k}: ( #{print-map($v, "  #{$prefix}")} \000D\000A #{$prefix}), ";
     }
     @else {

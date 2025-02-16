@@ -76,7 +76,7 @@ $colors-lit: (
 
       @if $resolved_value == null {
         $resolved_value: #ff0000; // Default to red
-        @debug "Key not found; defaulting to red: #{inspect($resolved_value)}";
+        @debug "Key not found; defaulting to red: #{meta.inspect($resolved_value)}";
       }
 
       @if meta.type-of($resolved_value) == color {

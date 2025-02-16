@@ -1,5 +1,6 @@
 // Required for meta.get-variable
 @use "sass:meta";
+@use "sass:map";
 @use "sass:string";
 
 @use 'hugo:vars' as hugo;
@@ -23,14 +24,14 @@ $fontDefinitions: (
   ("heading", if(hugo.$fonts_role_heading != "null", hugo.$fonts_role_heading, $fontRoleTypeDefault)),
   ("meta", if(hugo.$fonts_role_meta != "null", hugo.$fonts_role_meta, $fontRoleTypeDefault))
 );
-@debug "$fontDefinitions: #{inspect($fontDefinitions)}";
+@debug "$fontDefinitions: #{meta.inspect($fontDefinitions)}";
 
 
 // Split the string into a list using meta.split
 $fontsFamilyList: string.split(hugo.$fonts_family_ids, " ");
 
 // $fontsFamilyList: (concourse valkyrie_b dm-mono);
-@debug "$fontsFamilyList: #{inspect($fontsFamilyList)}";
+@debug "$fontsFamilyList: #{meta.inspect($fontsFamilyList)}";
 
 $fontFamilyDefault: (name: $fontTypeDefault);
 
@@ -69,7 +70,7 @@ $familyDefaultMap: (
 // Currently, this is used to ensure we can access the current `line-height`
 // to remove the line-height from the first line usinc `calc`
 @mixin generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef) {
-  // @debug 'generateFontStyleProperties(#{$styleName}): defaultStyleDef: #{inspect($defaultStyleDef)} baseStyleDef: #{inspect($baseStyleDef)}';
+  // @debug 'generateFontStyleProperties(#{$styleName}): defaultStyleDef: #{meta.inspect($defaultStyleDef)} baseStyleDef: #{meta.inspect($baseStyleDef)}';
   // To enable consistently using the same style rules, we make some definitions available
   // as CSS custom properties.
   // This is used for example to have the weight of `strong` style available in `--font-weight-strong`
@@ -80,9 +81,9 @@ $familyDefaultMap: (
 
   @each $key, $value in $styleDef {
     @if index($keysToDefineAsProperty, $key) {
-      $baseValue: map-get($defaultStyleDef, $key);
+      $baseValue: map.get($defaultStyleDef, $key);
       @if $styleName != default {
-        $baseValue: map-get($baseStyleDef, $key);
+        $baseValue: map.get($baseStyleDef, $key);
       }
       @if $value == $baseValue {
         // @debug 'generateFontStyleProperties(#{$styleName}): value=#{$value} == #{$baseValue}';
@@ -101,19 +102,19 @@ $familyDefaultMap: (
 
 // Utility mixin to apply style definitions by defining CSS rules if they differ from default
 @mixin generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef) {
-  // @debug 'generateFontStyleRules(#{$styleName}): defaultStyleDef: #{inspect($defaultStyleDef)} baseStyleDef: #{inspect($baseStyleDef)}';
+  // @debug 'generateFontStyleRules(#{$styleName}): defaultStyleDef: #{meta.inspect($defaultStyleDef)} baseStyleDef: #{meta.inspect($baseStyleDef)}';
   $overrideStyles: $styleDef;
   @if ($styleName == default) {
     // Determine, which values differ from default - if any
     $overrideStyles: ();
     @each $key, $value in $styleDef {
-      $baseValue: map-get($defaultStyleDef, $key);
+      $baseValue: map.get($defaultStyleDef, $key);
       @if ($baseValue and $value == $baseValue) {
         // @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} == #{$baseValue}';
       }
       @else {
         // @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} != #{$baseValue}';
-        $overrideStyles: map-merge($overrideStyles, ($key: $value) );
+        $overrideStyles: map.merge($overrideStyles, ($key: $value) );
       }
     }
   }
@@ -121,13 +122,13 @@ $familyDefaultMap: (
     // Determine, which values differ from default - if any
     $overrideStyles: ();
     @each $key, $value in $styleDef {
-      $baseValue: map-get($baseStyleDef, $key);
+      $baseValue: map.get($baseStyleDef, $key);
       @if ($baseValue and $value == $baseValue) {
         // @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} == #{$baseValue}';
       }
       @else {
         // @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} != #{$baseValue}';
-        $overrideStyles: map-merge($overrideStyles, ($key: $value) );
+        $overrideStyles: map.merge($overrideStyles, ($key: $value) );
       }
     }
   }
@@ -143,7 +144,7 @@ $familyDefaultMap: (
   @if ($baseSelector == null) {
     @if ($styleName == default) {
       html {
-        font-family: #{inspect($fontStackVariant)};
+        font-family: #{meta.inspect($fontStackVariant)};
         @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
         @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
       }
@@ -161,7 +162,7 @@ $familyDefaultMap: (
     @if ($nestedSelector == null) {
       @if ($styleName == default) {
         #{$baseSelector} {
-          font-family: #{inspect($fontStackVariant)};
+          font-family: #{meta.inspect($fontStackVariant)};
           @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
           @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
         }
@@ -182,7 +183,7 @@ $familyDefaultMap: (
       #{$baseSelector} {
         #{$nestedSelector} {
           @if ($styleName == default) {
-            font-family: #{inspect($fontStackVariant)};
+            font-family: #{meta.inspect($fontStackVariant)};
             @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
             @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
           }
@@ -237,21 +238,21 @@ $familyDefaultMap: (
 
 // Main mixin to define font styles
 @mixin defineFontStyles($fontStackVariant, $defaultStyleDef, $stylesRole, $stylesVariant, $specStyles, $classNames) {
-  // $baseStyleDef: updateMap(map-get($stylesRole, default), map-get($stylesVariant, default) );
+  // $baseStyleDef: updateMap(map.get($stylesRole, default), map.get($stylesVariant, default) );
   $defaultStyle: ();
   @if length($classNames) > 0 {
     $defaultStyle: $defaultStyleDef;
   }
   // Go through all styles
   @each $styleName, $specStyle in $stylesRole {
-    $baseStyleDef: updateMap(map-get($stylesRole, $styleName), map-get($stylesVariant, $styleName) );
+    $baseStyleDef: updateMap(map.get($stylesRole, $styleName), map.get($stylesVariant, $styleName) );
     $styleDef: updateMap($baseStyleDef, $specStyle);
 
     @if length($classNames) == 0 {
       $baseStyleDef: ();
     }
 
-    // @debug 'defineFontStyles: defaultStyleDef: #{inspect($defaultStyleDef)} baseStyleDef: #{inspect($baseStyleDef)} styleDef: #{inspect($styleDef)}';
+    // @debug 'defineFontStyles: defaultStyleDef: #{meta.inspect($defaultStyleDef)} baseStyleDef: #{meta.inspect($baseStyleDef)} styleDef: #{meta.inspect($styleDef)}';
     // Note: To avoid an invalid CSS value error when $classNames is empty,
     // we append an empty list to it
     // @debug 'defineFontStyles: call generateFontUtilityClasses(#{nth($fontStackVariant, 1)}, styleName=#{$styleName}, classNames=#{append($classNames, ())})';
@@ -264,17 +265,17 @@ $familyDefaultMap: (
 @mixin defineFontVariants($fontNameRole, $fallbackStackRole, $defaultStyleDef, $stylesRole, $specVariants, $classNames) {
   // Go through all variants
   @each $variant, $specVariant in $specVariants {
-    $specStyles: map-get($specVariant, styles);
+    $specStyles: map.get($specVariant, styles);
 
     @if $variant != default {
       $classNames: append($classNames, variant- + $variant);
     }
 
-    $fontNameVariant: defaultTo($fontNameRole, map-get($specVariant, 'name'));
-    $fallbackStackVariant: defaultTo($fallbackStackRole, map-get($specVariant, 'fallback'));
+    $fontNameVariant: defaultTo($fontNameRole, map.get($specVariant, 'name'));
+    $fallbackStackVariant: defaultTo($fallbackStackRole, map.get($specVariant, 'fallback'));
     $fontStackVariant: join(($fontNameVariant), $fallbackStackVariant);
 
-    $stylesVariant: map-get($specVariant, 'styles');
+    $stylesVariant: map.get($specVariant, 'styles');
     // Note: To avoid an invalid CSS value error when $classNames is empty,
     // we append an empty list to it
     // @debug 'defineFontVariants: call defineFontStyles(#{$fontNameRole}, classNames=#{append($classNames, ())})';
@@ -287,25 +288,25 @@ $familyDefaultMap: (
   // Ensure to define a list here. If there is only one fallback font, append a comma: ('Fallback Font', )
   $fallbackStackDefault: ('Arial', );
 
-  $fontNameFamily: map-get($specFamily, name);
-  $fallbackStackFamily: map-get($specFamily, fallback);
-  $fallbackStackFamily: defaultTo($fallbackStackDefault, map-get($specFamily, fallback));
+  $fontNameFamily: map.get($specFamily, name);
+  $fallbackStackFamily: map.get($specFamily, fallback);
+  $fallbackStackFamily: defaultTo($fallbackStackDefault, map.get($specFamily, fallback));
   // --fallbackStackFamily: #{$fallbackStackFamily};
 
-  $defaultStyleDef: map-get(map-get($familyDefaultMap, styles), default);
+  $defaultStyleDef: map.get(map.get($familyDefaultMap, styles), default);
 
-  $specStyles: updateMap(map-get($familyDefaultMap, styles), map-get($specFamily, styles));
+  $specStyles: updateMap(map.get($familyDefaultMap, styles), map.get($specFamily, styles));
 
-  $specRolesDefault: updateMap((default: (styles: $specStyles)), map-get($familyDefaultMap, roles));
-  $specRoles: updateMap($specRolesDefault, map-get($specFamily, roles));
+  $specRolesDefault: updateMap((default: (styles: $specStyles)), map.get($familyDefaultMap, roles));
+  $specRoles: updateMap($specRolesDefault, map.get($specFamily, roles));
 
   $specVariantsDefault: updateMap((default: (
     name: $fontNameFamily,
     fallback: $fallbackStackFamily,
     styles: $specStyles
-  )), map-get($familyDefaultMap, variants));
+  )), map.get($familyDefaultMap, variants));
 
-  $specVariants: updateMap($specVariantsDefault, map-get($specFamily, variants));
+  $specVariants: updateMap($specVariantsDefault, map.get($specFamily, variants));
   // @include mapToCSSProperties($specStyles, specStyles);
   // @include mapToCSSProperties($specRoles, specRoles);
   // @include mapToCSSProperties($specVariants, specVariants);
@@ -313,11 +314,11 @@ $familyDefaultMap: (
   // Go through all roles (default, display etc.) that are defined
   // for this font family's specification
   @each $role, $specRole in $specRoles {
-    $defRole: updateMap(map-get($specRoles, default), $specRole);
-    $fontNameRole: defaultTo($fontNameFamily, map-get($specRole, name));
-    $fallbackStackRole: defaultTo($fallbackStackFamily, map-get($specRole, fallback));
+    $defRole: updateMap(map.get($specRoles, default), $specRole);
+    $fontNameRole: defaultTo($fontNameFamily, map.get($specRole, name));
+    $fallbackStackRole: defaultTo($fallbackStackFamily, map.get($specRole, fallback));
 
-    $stylesRole: updateMap($specStyles, map-get($specRole, styles));
+    $stylesRole: updateMap($specStyles, map.get($specRole, styles));
     @if $role != default {
       $classNames: append($classNames, role- + $role);
     }
@@ -338,7 +339,7 @@ role, variant, and style definitions
 @mixin defineFont($definitionID: default, $fontFamilyID: default) {
 
   // Get the specification of this font family
-  $specFamily: map-get($fontFamilyMap, $fontFamilyID);
+  $specFamily: map.get($fontFamilyMap, $fontFamilyID);
 
   @if ($specFamily) {
     // The font family with ID == default is applied at the HTML level
@@ -372,7 +373,7 @@ role, variant, and style definitions
   //   // @import $fontSpecFile;
   //   // @import $fontFallbackSpecFile;
 
-  //   $fontFamilyDefault: map-merge($fontFamilyDefault, (fallback: $fallbackStack) );
+  //   $fontFamilyDefault: map.merge($fontFamilyDefault, (fallback: $fallbackStack) );
   }
   @else {
     // $fontFamilySpec: (
@@ -414,7 +415,7 @@ role, variant, and style definitions
   //   );
   }
 
-  // $fontFamilyMap: map-merge($fontFamilyMap, ($fontFamilyID: $fontFamilySpec));
+  // $fontFamilyMap: map.merge($fontFamilyMap, ($fontFamilyID: $fontFamilySpec));
 
   // // The font family map may have different structures:
   // // Simple:
@@ -465,31 +466,31 @@ role, variant, and style definitions
   // $fontFamilySpec: $fontFamilyDefault;
 
   // @if map-has-key($fontFamilyMap, $fontFamilyID) {
-  //   $fontFamilySpec: updateMap($fontFamilySpec, map-get($fontFamilyMap, $fontFamilyID));
+  //   $fontFamilySpec: updateMap($fontFamilySpec, map.get($fontFamilyMap, $fontFamilyID));
 
-  //   $fallbackStackFamily: map-get($fontFamilySpec, fallback);
+  //   $fallbackStackFamily: map.get($fontFamilySpec, fallback);
   //   // @if not map-has-key($fontFamilySpec, stack) {
-  //   //   $fontStackFamily: map-get($fontFamilySpec, name), inspect($fallbackStackFamily);
-  //   //   $fontFamilySpec: map-merge($fontFamilySpec, (stack: $fontStackFamily))
+  //   //   $fontStackFamily: map.get($fontFamilySpec, name), meta.inspect($fallbackStackFamily);
+  //   //   $fontFamilySpec: map.merge($fontFamilySpec, (stack: $fontStackFamily))
   //   // }
   //   @if map-has-key($fontFamilySpec, variants) {
   //     $fontFamilyVariants: ();
-  //     $variants: map-get($fontFamilySpec, variants);
+  //     $variants: map.get($fontFamilySpec, variants);
   //     @each $variant, $variantSpec in $variants {
   //       @if map-has-key($variantSpec, name) {
-  //         $fallbackStack: defaultTo($fallbackStackFamily, map-get($variantSpec, fallback));
-  //         // $fontStack: map-get($variantSpec, name), inspect($fallbackStack);
-  //         // $variantSpec: map-merge($variantSpec, (stack: $fontStack) );
-  //         $variantSpec: map-merge($variantSpec, (fallback: $fallbackStack) );
+  //         $fallbackStack: defaultTo($fallbackStackFamily, map.get($variantSpec, fallback));
+  //         // $fontStack: map.get($variantSpec, name), meta.inspect($fallbackStack);
+  //         // $variantSpec: map.merge($variantSpec, (stack: $fontStack) );
+  //         $variantSpec: map.merge($variantSpec, (fallback: $fallbackStack) );
   //       }
-  //       $fontFamilyVariants: map-merge($fontFamilyVariants, ($variant: $variantSpec));
+  //       $fontFamilyVariants: map.merge($fontFamilyVariants, ($variant: $variantSpec));
   //     }
-  //     $fontFamilySpec: map-merge($fontFamilySpec, (variants: $fontFamilyVariants));
+  //     $fontFamilySpec: map.merge($fontFamilySpec, (variants: $fontFamilyVariants));
   //   }
   // }
 
-  // $fontFamilyMap: map-merge($fontFamilyMap, (#{$fontTypeKey}: $fontFamilySpec) );
-  // $fontFamilyMap: map-merge($fontFamilyMap, (#{$familyID}: $fontFamilySpec) );
+  // $fontFamilyMap: map.merge($fontFamilyMap, (#{$fontTypeKey}: $fontFamilySpec) );
+  // $fontFamilyMap: map.merge($fontFamilyMap, (#{$familyID}: $fontFamilySpec) );
 }
 
 $fontStyles: (default, sans, serif, mono);
