@@ -229,6 +229,11 @@ does not have an effect, as mentioned above.
     "includePaths" (slice "node_modules")
 )
 -}}
+{{- if not $debug }}
+  $toCSSoptionsBase = merge $toCSSoptionsBase (dict
+    "silenceDeprecations" (slice "mixed-decls" "global-builtin")
+  )
+{{- end }}
 {{- if $minifyCSS }}
   {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "compressed" "enableSourceMap" false) -}}
 {{- else }}
@@ -312,7 +317,7 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
       {{- end -}}
     {{- end -}}
 
-    {{- if (gt (len $contentTypeList) 1) }}
+    {{- if and $debug (gt (len $contentTypeList) 1) }}
       {{- warnf "%v Multiple types=%v ID=%v resourceID=%s produced executedResourceList: "
           $dbg $contentTypeList $contentTypeListID $resourceID }}
       {{- range $idx, $resource := $executedResourceList }}
