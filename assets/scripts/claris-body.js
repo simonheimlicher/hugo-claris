@@ -22,9 +22,16 @@ optionalModules.push(mediumZoomInit);
 
 // Additional modules that can be imported: "./qrcode-svg", "./web-vitals-analytics"
 
-{{- if and (page.Param "assets.scripts.posthog.key") (page.Param "assets.scripts.posthog.host")  }}
+// Only load PostHog Analytics in production and staging environments
+{{- if in (slice "prod" "stage") hugo.Environment }}
+  {{- if and (page.Param "assets.scripts.posthog.key") (page.Param "assets.scripts.posthog.host") }}
 import { postHogAnalyticsInit } from "scripts/claris/optional/posthog-analytics";
 optionalModules.push(postHogAnalyticsInit);
+  {{- else }}
+    {{- warnf "Optional module 'posthog-analytics' is not loaded because the parameters in map `assets.scripts.posthog` are missing." }}
+  {{- end }}
+  {{- else }}
+    {{- warnf "Optional module 'posthog-analytics' is not loaded because the Hugo environment %s is not in %s." hugo.Environment (slice "prod" "stage") }}
 {{- end }}
 
 onDOMContentLoaded(...optionalModules);
