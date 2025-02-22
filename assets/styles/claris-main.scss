@@ -1,10 +1,5 @@
-// Required for meta.get-variable
-@use "sass:meta";
-@use "sass:string";
-@use 'hugo:vars' as hugo;
-
 // Core stylesheets that are included for all media types
-@use 'claris/functions' as functions;
+@use 'claris/functions';
 
 @use 'claris/variables';
 @use 'claris/fonts';

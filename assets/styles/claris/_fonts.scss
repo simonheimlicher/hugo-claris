@@ -1,41 +1,60 @@
-// Required for meta.get-variable
 @use "sass:meta";
 @use "sass:map";
 @use "sass:string";
 
+@use "functions" as functions;
 @use 'hugo:vars' as hugo;
 
-$fontFamilySans: if(hugo.$fonts_type_sans_name != null, hugo.$fonts_type_sans_name, "Source Sans 3");
-$fontFamilySerif: if(hugo.$fonts_type_serif_name != null, hugo.$fonts_type_serif_name, "Alegreya");
-$fontFamilyMono: if(hugo.$fonts_type_mono_name != null, hugo.$fonts_type_mono_name, "DM Mono");
+$fontTypeMap: (
+  default: (
+    id: if(hugo.$fonts_type_default_id != "null", hugo.$fonts_type_default_id, "source-sans-3"),
+    name: if(hugo.$fonts_type_default_name != "null", hugo.$fonts_type_default_name, "Source Sans 3"),
+    fallback_names: if(hugo.$fonts_type_default_fallback_names != "null", hugo.$fonts_type_default_fallback_names, "null"),
+  ),
+  sans: (
+    id: if(hugo.$fonts_type_sans_id != "null", hugo.$fonts_type_sans_id, "source-sans-3"),
+    name: if(hugo.$fonts_type_sans_name != "null", hugo.$fonts_type_sans_name, "Source Sans 3"),
+    fallback_names: if(hugo.$fonts_type_sans_fallback_names != "null", hugo.$fonts_type_sans_fallback_names, "null"),
+  ),
+  serif: (
+    id: if(hugo.$fonts_type_serif_id != "null", hugo.$fonts_type_serif_id, "alegreya"),
+    name: if(hugo.$fonts_type_serif_name != "null", hugo.$fonts_type_serif_name, "Alegreya"),
+    fallback_names: if(hugo.$fonts_type_serif_fallback_names != "null", hugo.$fonts_type_serif_fallback_names, "null"),
+  ),
+  mono: (
+    id: if(hugo.$fonts_type_mono_id != "null", hugo.$fonts_type_mono_id, "dm-mono"),
+    name: if(hugo.$fonts_type_mono_name != "null", hugo.$fonts_type_mono_name, "DM Mono"),
+    fallback_names: if(hugo.$fonts_type_mono_fallback_names != "null", hugo.$fonts_type_mono_fallback_names, "null"),
+  )
+);
+// @debug "$fontTypeMap: #{meta.inspect($fontTypeMap)}";
+
+// $fontFamilySans: if(hugo.$fonts_type_sans_name != "null", hugo.$fonts_type_sans_name, "Source Sans 3");
+// $fontFamilySerif: if(hugo.$fonts_type_serif_name != "null", hugo.$fonts_type_serif_name, "Alegreya");
+// $fontFamilyMono: if(hugo.$fonts_type_mono_name != "null", hugo.$fonts_type_mono_name, "DM Mono");
 
 // The default font type is 'sans' unless defind in Hugo params
-$fontTypeDefault: if(hugo.$fonts_type_default_name != "null", hugo.$fonts_type_default_name, "sans");
+$fontTypeDefault: if(hugo.$fonts_type_default_name != "null", hugo.$fonts_type_default_name, "sans-serif");
 
 // The default font for role 'default' is given by `$fontTypeDefault`
 $fontRoleTypeDefault: if(hugo.$fonts_role_default != "null", hugo.$fonts_role_default, $fontTypeDefault);
 
 // The following map provides a mapping from a font role, such as 'article', to a font type, such as `serif`
 $fontDefinitions: (
-  ("default", $fontRoleTypeDefault),
-  ("content", if(hugo.$fonts_role_content != "null", hugo.$fonts_role_content, $fontRoleTypeDefault)),
-  ("article", if(hugo.$fonts_role_article != "null", hugo.$fonts_role_article, $fontRoleTypeDefault)),
-  ("code", if(hugo.$fonts_role_code != "null", hugo.$fonts_role_code, "mono")),
-  ("heading", if(hugo.$fonts_role_heading != "null", hugo.$fonts_role_heading, $fontRoleTypeDefault)),
-  ("meta", if(hugo.$fonts_role_meta != "null", hugo.$fonts_role_meta, $fontRoleTypeDefault))
+  default: $fontRoleTypeDefault,
+  content: if(hugo.$fonts_role_content != null, hugo.$fonts_role_content, $fontRoleTypeDefault),
+  article: if(hugo.$fonts_role_article != null, hugo.$fonts_role_article, $fontRoleTypeDefault),
+  code: if(hugo.$fonts_role_code != null, hugo.$fonts_role_code, "monospace"),
+  heading: if(hugo.$fonts_role_heading != null, hugo.$fonts_role_heading, $fontRoleTypeDefault),
+  meta: if(hugo.$fonts_role_meta != null, hugo.$fonts_role_meta, $fontRoleTypeDefault)
 );
-@debug "$fontDefinitions: #{meta.inspect($fontDefinitions)}";
-
+// @debug "$fontDefinitions: #{meta.inspect($fontDefinitions)}";
 
 // Split the string into a list using meta.split
 $fontsFamilyList: string.split(hugo.$fonts_family_ids, " ");
 
-// $fontsFamilyList: (concourse valkyrie_b dm-mono);
-@debug "$fontsFamilyList: #{meta.inspect($fontsFamilyList)}";
-
 $fontFamilyDefault: (name: $fontTypeDefault);
 
-$fontFamilyMap: ();
 $fontDefinitionMap: () !default;
 $currentFontDefinition: default !default;
 
@@ -207,10 +226,10 @@ $familyDefaultMap: (
 // Utility mixin to generate CSS rules
 @mixin defineFontUtilityRules($fontStackVariant, $defaultStyleDef, $baseStyleDef, $styleName, $styleDef, $baseClassNames, $nestedClassNames: null) {
   @if length($baseClassNames) > 0 {
-    $baseSelector: '.' + joinArray($baseClassNames, '.');
+    $baseSelector: '.' + functions.joinArray($baseClassNames, '.');
     $nestedSelector: null;
     @if $nestedClassNames != null and length($nestedClassNames) > 0 {
-      $nestedSelector: '.' + joinArray($nestedClassNames, '.');
+      $nestedSelector: '.' + functions.joinArray($nestedClassNames, '.');
       // @debug 'nestedSelector=#{$baseSelector} #{$nestedSelector}';
     }
     @include applyFontStyles($fontStackVariant, $defaultStyleDef, $baseStyleDef, $styleName, $styleDef, $baseSelector, $nestedSelector);
@@ -229,8 +248,8 @@ $familyDefaultMap: (
   @if $len > 1 {
     // Generate rules for all permutations (nested classes)
     @for $i from 1 through $len - 1 {
-      $baseClassNames: sliceArray($classNames, 1, $i);
-      $nestedClassNames: sliceArray($classNames, $i + 1, $len);
+      $baseClassNames: functions.sliceArray($classNames, 1, $i);
+      $nestedClassNames: functions.sliceArray($classNames, $i + 1, $len);
       @include defineFontUtilityRules($fontStackVariant, $defaultStyleDef, $baseStyleDef, $styleName, $styleDef, $baseClassNames, $nestedClassNames);
     }
   }
@@ -238,15 +257,15 @@ $familyDefaultMap: (
 
 // Main mixin to define font styles
 @mixin defineFontStyles($fontStackVariant, $defaultStyleDef, $stylesRole, $stylesVariant, $specStyles, $classNames) {
-  // $baseStyleDef: updateMap(map.get($stylesRole, default), map.get($stylesVariant, default) );
+  // $baseStyleDef: functions.updateMap(map.get($stylesRole, default), map.get($stylesVariant, default) );
   $defaultStyle: ();
   @if length($classNames) > 0 {
     $defaultStyle: $defaultStyleDef;
   }
   // Go through all styles
   @each $styleName, $specStyle in $stylesRole {
-    $baseStyleDef: updateMap(map.get($stylesRole, $styleName), map.get($stylesVariant, $styleName) );
-    $styleDef: updateMap($baseStyleDef, $specStyle);
+    $baseStyleDef: functions.updateMap(map.get($stylesRole, $styleName), map.get($stylesVariant, $styleName) );
+    $styleDef: functions.updateMap($baseStyleDef, $specStyle);
 
     @if length($classNames) == 0 {
       $baseStyleDef: ();
@@ -271,8 +290,8 @@ $familyDefaultMap: (
       $classNames: append($classNames, variant- + $variant);
     }
 
-    $fontNameVariant: defaultTo($fontNameRole, map.get($specVariant, 'name'));
-    $fallbackStackVariant: defaultTo($fallbackStackRole, map.get($specVariant, 'fallback'));
+    $fontNameVariant: functions.defaultTo($fontNameRole, map.get($specVariant, 'name'));
+    $fallbackStackVariant: functions.defaultTo($fallbackStackRole, map.get($specVariant, 'fallback'));
     $fontStackVariant: join(($fontNameVariant), $fallbackStackVariant);
 
     $stylesVariant: map.get($specVariant, 'styles');
@@ -290,23 +309,27 @@ $familyDefaultMap: (
 
   $fontNameFamily: map.get($specFamily, name);
   $fallbackStackFamily: map.get($specFamily, fallback);
-  $fallbackStackFamily: defaultTo($fallbackStackDefault, map.get($specFamily, fallback));
+  $fallbackStackFamily: functions.defaultTo($fallbackStackDefault, map.get($specFamily, fallback));
   // --fallbackStackFamily: #{$fallbackStackFamily};
+
+  // @debug 'defineFontRoles: fallbackStackFamily=#{meta.inspect($fallbackStackFamily)}';
 
   $defaultStyleDef: map.get(map.get($familyDefaultMap, styles), default);
 
-  $specStyles: updateMap(map.get($familyDefaultMap, styles), map.get($specFamily, styles));
+  $specStyles: functions.updateMap(map.get($familyDefaultMap, styles), map.get($specFamily, styles));
 
-  $specRolesDefault: updateMap((default: (styles: $specStyles)), map.get($familyDefaultMap, roles));
-  $specRoles: updateMap($specRolesDefault, map.get($specFamily, roles));
+  $specRolesDefault: functions.updateMap((default: (styles: $specStyles)), map.get($familyDefaultMap, roles));
+  $specRoles: functions.updateMap($specRolesDefault, map.get($specFamily, roles));
 
-  $specVariantsDefault: updateMap((default: (
+  // @debug 'defineFontRoles: specRoles=#{meta.inspect($specRoles)}';
+
+  $specVariantsDefault: functions.updateMap((default: (
     name: $fontNameFamily,
     fallback: $fallbackStackFamily,
     styles: $specStyles
   )), map.get($familyDefaultMap, variants));
 
-  $specVariants: updateMap($specVariantsDefault, map.get($specFamily, variants));
+  $specVariants: functions.updateMap($specVariantsDefault, map.get($specFamily, variants));
   // @include mapToCSSProperties($specStyles, specStyles);
   // @include mapToCSSProperties($specRoles, specRoles);
   // @include mapToCSSProperties($specVariants, specVariants);
@@ -314,11 +337,11 @@ $familyDefaultMap: (
   // Go through all roles (default, display etc.) that are defined
   // for this font family's specification
   @each $role, $specRole in $specRoles {
-    $defRole: updateMap(map.get($specRoles, default), $specRole);
-    $fontNameRole: defaultTo($fontNameFamily, map.get($specRole, name));
-    $fallbackStackRole: defaultTo($fallbackStackFamily, map.get($specRole, fallback));
+    $defRole: functions.updateMap(map.get($specRoles, default), $specRole);
+    $fontNameRole: functions.defaultTo($fontNameFamily, map.get($specRole, name));
+    $fallbackStackRole: functions.defaultTo($fallbackStackFamily, map.get($specRole, fallback));
 
-    $stylesRole: updateMap($specStyles, map.get($specRole, styles));
+    $stylesRole: functions.updateMap($specStyles, map.get($specRole, styles));
     @if $role != default {
       $classNames: append($classNames, role- + $role);
     }
@@ -329,183 +352,103 @@ $familyDefaultMap: (
   }
 }
 
-/**
-This mixin takes the **font specification** provided for the font family with the
-provided `fontFamilyID` and turns it into a **font definition**, i.e.,
-a map that comprises all the keys provided in `familyDefaultMap` and overrides
-those provided by the font specification and adding any additional
-role, variant, and style definitions
-*/
-@mixin defineFont($definitionID: default, $fontFamilyID: default) {
-
-  // Get the specification of this font family
-  $specFamily: map.get($fontFamilyMap, $fontFamilyID);
-
-  @if ($specFamily) {
-    // The font family with ID == default is applied at the HTML level
-    $classNames: ();
-    @if ($fontFamilyID != default) {
-      // All other families generate utility classes with the font family ID
-      // Note: define a list by adding a comma before the closing parenthesis
-      $classNames: (font-#{$definitionID}, );
-    }
-    // @debug 'defineFont: call defineFontRoles(#{$fontFamilyID}, classNames=#{append((), $classNames)})';
-    @include defineFontRoles($specFamily, $classNames);
+@mixin defineFontUtilityClasses($specFamily, $useAsFontType: default) {
+  // The font family with ID == default is applied at the HTML level
+  $classNames: ();
+  @if ($useAsFontType != default) {
+    // All other font type generate utility classes with the font type ID
+    // Note: define a list by adding a comma before the closing parenthesis
+    $classNames: (font-#{$useAsFontType}, );
   }
-  @else {
-    @warn "@mixin defineFont: font ID '#{$fontFamilyID}' is undefined";
-  }
+  // @debug 'defineFontUtilityClasses: call defineFontRoles(#{$useAsFontType}, classNames=#{append((), $classNames)})';
+  @include defineFontRoles($specFamily, $classNames);
 }
 
-@each $familyID in $fontsFamilyList {
-  @debug $familyID;
-  $fontTypeKey: $familyID;
-  @if hugo.$fonts_hosted {
-    $fontSpecFileKey: 'fonts_family_#{$familyID}_spec';
-    $fontFallbackSpecFileKey: 'fonts_family_fallback_spec_#{$familyID}';
-
-    // // Use meta.get-variable to access dynamically named variables in the namespace
-    @debug $fontSpecFileKey;
-    // $fontSpecFile: meta.get-variable(hugo, $fontSpecFileKey);
-  //   $fontFallbackSpecFile: meta.get-variable(hugo, $fontFallbackSpecFileKey);
-
-  //   // Import the resolved file paths
-  //   // @import $fontSpecFile;
-  //   // @import $fontFallbackSpecFile;
-
-  //   $fontFamilyDefault: map.merge($fontFamilyDefault, (fallback: $fallbackStack) );
+@if not hugo.$fonts_hosted {
+  @each $fontType in $fontTypeMap {
+  $fontTypeKey: $fontType;
+    $fontFamilySpec: (
+      // Default font-family
+      name: $fontFamilyDefault,
+      // Default styles
+      styles: (
+        // Style: `default`, i.e., body text
+        default: (
+          font-weight: 400,
+          line-height: 1.4
+        ),
+        strong: (
+          font-weight: 600,
+        )
+      ),
+      // Alternative roles
+      roles: (
+        // Role: `display`, i.e., short pieces of text such as headings, labels, navigation
+        display: (
+          styles: (
+            default: (
+              font-weight: 400,
+              line-height: 1.2
+            ),
+            strong: (
+              font-weight: 600
+            )
+          )
+        )
+      ),
+      // // Font variants such as small-caps, oldstyle-nums
+      // variants: (
+      //   // Font variant: `small-caps`
+      //   small-caps: (
+      //     name: 'Alegreya SC'
+      //   )
+      // ),
+    );
   }
-  @else {
-    // $fontFamilySpec: (
-  //     // Default font-family
-  //     name: $fontFamilyDefault,
-  //     // Default styles
-  //     styles: (
-  //       // Style: `default`, i.e., body text
-  //       default: (
-  //         font-weight: 400,
-  //         line-height: 1.4
-  //       ),
-  //       strong: (
-  //         font-weight: 600,
-  //       )
-  //     ),
-  //     // Alternative roles
-  //     roles: (
-  //       // Role: `display`, i.e., short pieces of text such as headings, labels, navigation
-  //       display: (
-  //         styles: (
-  //           default: (
-  //             font-weight: 400,
-  //             line-height: 1.2
-  //           ),
-  //           strong: (
-  //             font-weight: 600
-  //           )
+
+  // The font family map may have different structures:
+  // Simple:
+  // name: Alegreya; // font-family
+  // fallback: serif;
+  //
+  // Include additional settings such as font-weight for default, strong and italic
+  // styles: (
+  //   default: (
+  //     font-weight: 400
+  //   )
+  //   strong: (
+  //     font-weight: 700
+  //   )
+  // );
+  //
+  // Include font names and styles for alternative fontTypes:
+  // fontTypes: (
+  //   display: (
+  //     name: Alegreya Sans, // font-family for display type
+  //       styles: (
+  //         default: (
+  //           font-weight: 400
+  //         )
+  //         strong: (
+  //           font-weight: 700
   //         )
   //       )
-  //     ),
-  //     // // Font variants such as small-caps, oldstyle-nums
-  //     // variants: (
-  //     //   // Font variant: `small-caps`
-  //     //   small-caps: (
-  //     //     name: 'Alegreya SC'
-  //     //   )
-  //     // ),
-  //   );
-  }
-
-  // $fontFamilyMap: map.merge($fontFamilyMap, ($fontFamilyID: $fontFamilySpec));
-
-  // // The font family map may have different structures:
-  // // Simple:
-  // // name: Alegreya; // font-family
-  // // fallback: serif;
-  // //
-  // // Include additional settings such as font-weight for default, strong and italic
-  // // styles: (
-  // //   default: (
-  // //     font-weight: 400
-  // //   )
-  // //   strong: (
-  // //     font-weight: 700
-  // //   )
-  // // );
-  // //
-  // // Include font names and styles for alternative fontTypes:
-  // // fontTypes: (
-  // //   display: (
-  // //     name: Alegreya Sans, // font-family for display type
-  // //       styles: (
-  // //         default: (
-  // //           font-weight: 400
-  // //         )
-  // //         strong: (
-  // //           font-weight: 700
-  // //         )
-  // //       )
-  // //     )
-  // //   )
-  // // );
-  // //
-  // // Include font names and styles for alternative variants:
-  // // variants: (
-  // //   small-caps: (
-  // //     name: Alegreya SC
-  // //     styles: (
-  // //       default: (
-  // //         font-weight: 400
-  // //       )
-  // //       strong: (
-  // //         font-weight: 700
-  // //       )
-  // //     );
-  // //   )
-  // // );
-
-  // $fontFamilySpec: $fontFamilyDefault;
-
-  // @if map-has-key($fontFamilyMap, $fontFamilyID) {
-  //   $fontFamilySpec: updateMap($fontFamilySpec, map.get($fontFamilyMap, $fontFamilyID));
-
-  //   $fallbackStackFamily: map.get($fontFamilySpec, fallback);
-  //   // @if not map-has-key($fontFamilySpec, stack) {
-  //   //   $fontStackFamily: map.get($fontFamilySpec, name), meta.inspect($fallbackStackFamily);
-  //   //   $fontFamilySpec: map.merge($fontFamilySpec, (stack: $fontStackFamily))
-  //   // }
-  //   @if map-has-key($fontFamilySpec, variants) {
-  //     $fontFamilyVariants: ();
-  //     $variants: map.get($fontFamilySpec, variants);
-  //     @each $variant, $variantSpec in $variants {
-  //       @if map-has-key($variantSpec, name) {
-  //         $fallbackStack: defaultTo($fallbackStackFamily, map.get($variantSpec, fallback));
-  //         // $fontStack: map.get($variantSpec, name), meta.inspect($fallbackStack);
-  //         // $variantSpec: map.merge($variantSpec, (stack: $fontStack) );
-  //         $variantSpec: map.merge($variantSpec, (fallback: $fallbackStack) );
-  //       }
-  //       $fontFamilyVariants: map.merge($fontFamilyVariants, ($variant: $variantSpec));
-  //     }
-  //     $fontFamilySpec: map.merge($fontFamilySpec, (variants: $fontFamilyVariants));
-  //   }
-  // }
-
-  // $fontFamilyMap: map.merge($fontFamilyMap, (#{$fontTypeKey}: $fontFamilySpec) );
-  // $fontFamilyMap: map.merge($fontFamilyMap, (#{$familyID}: $fontFamilySpec) );
-}
-
-$fontStyles: (default, sans, serif, mono);
-@each $style in $fontStyles {
-  @include defineFont($style, $style);
-}
-
-@each $defID, $defSpec in $fontDefinitions {
-  // It is possible to define a font definition with the value `inherit`, e.g.,
-  // (heading, $fontTypeHeading)
-  // with `$fontTypeHeading` set to `inherit`
-  // NOTE: Determine, how to determine the value of `inherit`. For the time being,
-  // we simply treat it as a no-op, which will lead to the corresponding font utility
-  // classes not being generated
-  @if ($defSpec != inherit) {
-    @include defineFont($defID, $defSpec);
-  }
+  //     )
+  //   )
+  // );
+  //
+  // Include font names and styles for alternative variants:
+  // variants: (
+  //   small-caps: (
+  //     name: Alegreya SC
+  //     styles: (
+  //       default: (
+  //         font-weight: 400
+  //       )
+  //       strong: (
+  //         font-weight: 700
+  //       )
+  //     );
+  //   )
+  // );
 }

@@ -1,60 +1,60 @@
 @font-face {
   font-display: swap;
-  font-family: '#{$fontFamilyName}';
+  font-family: '{{ .fontFamilyName }}';
   font-style: normal;
   font-weight: 400;
-  src: url('#{$hostedFontPath}/#{$fontFamilyID}/#{$fontFamilyID}_regular.woff2') format('woff2'),
-       url('#{$hostedFontPath}/#{$fontFamilyID}/#{$fontFamilyID}_regular.woff') format('woff');
+  src: url('{{ .hostedFontPath }}/{{ .fontFamilyID }}/{{ .fontFamilyID }}_regular.woff2') format('woff2'),
+       url('{{ .hostedFontPath }}/{{ .fontFamilyID }}/{{ .fontFamilyID }}_regular.woff') format('woff');
 }
 
 @font-face {
   font-display: swap;
-  font-family: '#{$fontFamilyName}';
+  font-family: '{{ .fontFamilyName }}';
   font-style: italic;
   font-weight: 400;
-  src: url('#{$hostedFontPath}/#{$fontFamilyID}/#{$fontFamilyID}_italic.woff2') format('woff2'),
-       url('#{$hostedFontPath}/#{$fontFamilyID}/#{$fontFamilyID}_italic.woff') format('woff');
+  src: url('{{ .hostedFontPath }}/{{ .fontFamilyID }}/{{ .fontFamilyID }}_italic.woff2') format('woff2'),
+       url('{{ .hostedFontPath }}/{{ .fontFamilyID }}/{{ .fontFamilyID }}_italic.woff') format('woff');
 }
 
 @font-face {
   font-display: swap;
-  font-family: '#{$fontFamilyName}';
+  font-family: '{{ .fontFamilyName }}';
   font-style: normal;
   font-weight: 600;
-  src: url('#{$hostedFontPath}/#{$fontFamilyID}/#{$fontFamilyID}_bold.woff2') format('woff2'),
-       url('#{$hostedFontPath}/#{$fontFamilyID}/#{$fontFamilyID}_bold.woff') format('woff');
+  src: url('{{ .hostedFontPath }}/{{ .fontFamilyID }}/{{ .fontFamilyID }}_bold.woff2') format('woff2'),
+       url('{{ .hostedFontPath }}/{{ .fontFamilyID }}/{{ .fontFamilyID }}_bold.woff') format('woff');
 }
 
 @font-face {
   font-display: swap;
-  font-family: '#{$fontFamilyName}';
+  font-family: '{{ .fontFamilyName }}';
   font-style: italic;
   font-weight: 600;
-  src: url('#{$hostedFontPath}/#{$fontFamilyID}/#{$fontFamilyID}_bold_italic.woff2') format('woff2'),
-       url('#{$hostedFontPath}/#{$fontFamilyID}/#{$fontFamilyID}_bold_italic.woff') format('woff');
+  src: url('{{ .hostedFontPath }}/{{ .fontFamilyID }}/{{ .fontFamilyID }}_bold_italic.woff2') format('woff2'),
+       url('{{ .hostedFontPath }}/{{ .fontFamilyID }}/{{ .fontFamilyID }}_bold_italic.woff') format('woff');
 }
 
 @font-face {
   font-display: swap;
-  font-family: '#{$fontFamilyName} SC';
+  font-family: '{{ .fontFamilyName }} SC';
   font-style: normal;
   font-weight: 400;
-  src: url('#{$hostedFontPath}/#{$fontFamilyID}-sc/#{$fontFamilyID}_caps_regular.woff2') format('woff2'),
-       url('#{$hostedFontPath}/#{$fontFamilyID}-sc/#{$fontFamilyID}_caps_regular.woff') format('woff');
+  src: url('{{ .hostedFontPath }}/{{ .fontFamilyID }}-sc/{{ .fontFamilyID }}_caps_regular.woff2') format('woff2'),
+       url('{{ .hostedFontPath }}/{{ .fontFamilyID }}-sc/{{ .fontFamilyID }}_caps_regular.woff') format('woff');
 }
 
 @font-face {
   font-display: swap;
-  font-family: '#{$fontFamilyName} SC';
+  font-family: '{{ .fontFamilyName }} SC';
   font-style: normal;
   font-weight: 600;
-  src: url('#{$hostedFontPath}/#{$fontFamilyID}-sc/#{$fontFamilyID}_caps_bold.woff2') format('woff2'),
-       url('#{$hostedFontPath}/#{$fontFamilyID}-sc/#{$fontFamilyID}_caps_bold.woff') format('woff');
+  src: url('{{ .hostedFontPath }}/{{ .fontFamilyID }}-sc/{{ .fontFamilyID }}_caps_bold.woff2') format('woff2'),
+       url('{{ .hostedFontPath }}/{{ .fontFamilyID }}-sc/{{ .fontFamilyID }}_caps_bold.woff') format('woff');
 }
 
 $fontFamilySpec: (
   // Default, i.e., body text
-  name: '#{$fontFamilyName}',
+  name: '{{ .fontFamilyName }}',
   styles: (
     // Weight: `default`, i.e., body text
     default: (
@@ -69,7 +69,7 @@ $fontFamilySpec: (
   // variants: (
   //   // Font variant: `small-caps`
   //   small-caps: (
-  //     name: '#{$fontFamilyName}',
+  //     name: '{{ .fontFamilyName }}',
   //     styles: (
   //       default: (
   //         font-variant: all-small-caps
@@ -81,7 +81,7 @@ $fontFamilySpec: (
   variants: (
     // Font variant: `small-caps`
     small-caps: (
-      name: '#{$fontFamilyName} SC',
+      name: '{{ .fontFamilyName }} SC',
       styles: (
         default: (
           font-variant: inherit,
@@ -106,4 +106,8 @@ $fontFamilySpec: (
     )
   )
 );
-$fontFamilyMap: map.merge($fontFamilyMap, ($fontFamilyID: $fontFamilySpec) );
+
+@each $fontType in {{ delimit .useFamilyAsType " " }} {
+  @include fonts.defineFontUtilityClasses($fontFamilySpec, $useAsFontType: #{$fontType});
+}
+

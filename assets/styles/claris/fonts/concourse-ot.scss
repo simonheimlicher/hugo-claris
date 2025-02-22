@@ -1,114 +1,114 @@
 @font-face {
   font-display: swap;
-  font-family: '#{$fontFamilyName}';
+  font-family: '{{ .fontFamilyName }}';
   font-style: normal;
   font-weight: 300;
-  src: url('#{$hostedFontPath}/concourse-ot/concourse_ot_2_thin.woff2') format('woff2'),
-       url('#{$hostedFontPath}/concourse-ot/concourse_ot_2_thin.woff') format('woff');
+  src: url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_2_thin.woff2') format('woff2'),
+       url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_2_thin.woff') format('woff');
 }
 
 @font-face {
   font-display: swap;
-  font-family: '#{$fontFamilyName}';
+  font-family: '{{ .fontFamilyName }}';
   font-style: italic;
   font-weight: 300;
-  src: url('#{$hostedFontPath}/concourse-ot/concourse_ot_2_thin_italic.woff2') format('woff2'),
-       url('#{$hostedFontPath}/concourse-ot/concourse_ot_2_thin_italic.woff') format('woff');
+  src: url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_2_thin_italic.woff2') format('woff2'),
+       url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_2_thin_italic.woff') format('woff');
 }
 
 @font-face {
   font-display: swap;
-  font-family: '#{$fontFamilyName}';
+  font-family: '{{ .fontFamilyName }}';
   font-style: normal;
   font-weight: 300;
-  src: url('#{$hostedFontPath}/concourse-ot/concourse_ot_3_book.woff2') format('woff2'),
-       url('#{$hostedFontPath}/concourse-ot/concourse_ot_3_book.woff') format('woff');
+  src: url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_3_book.woff2') format('woff2'),
+       url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_3_book.woff') format('woff');
 }
 
 @font-face {
   font-display: swap;
-  font-family: '#{$fontFamilyName}';
+  font-family: '{{ .fontFamilyName }}';
   font-style: italic;
   font-weight: 300;
-  src: url('#{$hostedFontPath}/concourse-ot/concourse_ot_3_book_italic.woff2') format('woff2'),
-       url('#{$hostedFontPath}/concourse-ot/concourse_ot_3_book_italic.woff') format('woff');
+  src: url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_3_book_italic.woff2') format('woff2'),
+       url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_3_book_italic.woff') format('woff');
 }
 
 @font-face {
   font-display: swap;
-  font-family: '#{$fontFamilyName}';
+  font-family: '{{ .fontFamilyName }}';
   font-style: normal;
   font-weight: 400;
-  src: url('#{$hostedFontPath}/concourse-ot/concourse_ot_4_medium.woff2') format('woff2'),
-       url('#{$hostedFontPath}/concourse-ot/concourse_ot_4_medium.woff') format('woff');
+  src: url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_4_medium.woff2') format('woff2'),
+       url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_4_medium.woff') format('woff');
 }
 
 @font-face {
   font-display: swap;
-  font-family: '#{$fontFamilyName}';
+  font-family: '{{ .fontFamilyName }}';
   font-style: italic;
   font-weight: 400;
-  src: url('#{$hostedFontPath}/concourse-ot/concourse_ot_4_medium_italic.woff2') format('woff2'),
-       url('#{$hostedFontPath}/concourse-ot/concourse_ot_4_medium_italic.woff') format('woff');
+  src: url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_4_medium_italic.woff2') format('woff2'),
+       url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_4_medium_italic.woff') format('woff');
 }
 
 @font-face {
   font-display: swap;
-  font-family: '#{$fontFamilyName}';
+  font-family: '{{ .fontFamilyName }}';
   font-style: normal;
   font-weight: 600;
-  src: url('#{$hostedFontPath}/concourse-ot/concourse_ot_6_semibold.woff2') format('woff2'),
-       url('#{$hostedFontPath}/concourse-ot/concourse_ot_6_semibold.woff') format('woff');
+  src: url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_6_semibold.woff2') format('woff2'),
+       url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_6_semibold.woff') format('woff');
 }
 
 @font-face {
   font-display: swap;
-  font-family: '#{$fontFamilyName}';
+  font-family: '{{ .fontFamilyName }}';
   font-style: italic;
   font-weight: 600;
-  src: url('#{$hostedFontPath}/concourse-ot/concourse_ot_6_semibold_italic.woff2') format('woff2'),
-       url('#{$hostedFontPath}/concourse-ot/concourse_ot_6_semibold_italic.woff') format('woff');
+  src: url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_6_semibold_italic.woff2') format('woff2'),
+       url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_6_semibold_italic.woff') format('woff');
 }
 
 @font-face {
   font-display: swap;
-  font-family: '#{$fontFamilyName}';
+  font-family: '{{ .fontFamilyName }}';
   font-style: normal;
   font-weight: 700;
-  src: url('#{$hostedFontPath}/concourse-ot/concourse_ot_7_bold.woff2') format('woff2'),
-       url('#{$hostedFontPath}/concourse-ot/concourse_ot_7_bold.woff') format('woff');
+  src: url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_7_bold.woff2') format('woff2'),
+       url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_7_bold.woff') format('woff');
 }
 
 @font-face {
   font-display: swap;
-  font-family: '#{$fontFamilyName}';
+  font-family: '{{ .fontFamilyName }}';
   font-style: italic;
   font-weight: 700;
-  src: url('#{$hostedFontPath}/concourse-ot/concourse_ot_7_bold_italic.woff2') format('woff2'),
-       url('#{$hostedFontPath}/concourse-ot/concourse_ot_7_bold_italic.woff') format('woff');
+  src: url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_7_bold_italic.woff2') format('woff2'),
+       url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_7_bold_italic.woff') format('woff');
 }
 
 @font-face {
   font-display: swap;
-  font-family: '#{$fontFamilyName}';
+  font-family: '{{ .fontFamilyName }}';
   font-style: normal;
   font-weight: 800;
-  src: url('#{$hostedFontPath}/concourse-ot/concourse_ot_8_black.woff2') format('woff2'),
-       url('#{$hostedFontPath}/concourse-ot/concourse_ot_8_black.woff') format('woff');
+  src: url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_8_black.woff2') format('woff2'),
+       url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_8_black.woff') format('woff');
 }
 
 @font-face {
   font-display: swap;
-  font-family: '#{$fontFamilyName}';
+  font-family: '{{ .fontFamilyName }}';
   font-style: italic;
   font-weight: 800;
-  src: url('#{$hostedFontPath}/concourse-ot/concourse_ot_8_black_italic.woff2') format('woff2'),
-       url('#{$hostedFontPath}/concourse-ot/concourse_ot_8_black_italic.woff') format('woff');
+  src: url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_8_black_italic.woff2') format('woff2'),
+       url('{{ .hostedFontPath }}/concourse-ot/concourse_ot_8_black_italic.woff') format('woff');
 }
 
 $fontFamilySpec: (
   // Default, i.e., body text
-  name: '#{$fontFamilyName}',
+  name: '{{ .fontFamilyName }}',
   styles: (
     // Weight: `default`, i.e., body text
     default: (
@@ -123,7 +123,7 @@ $fontFamilySpec: (
   variants: (
     // Font variant: `small-caps`
     small-caps: (
-      name: '#{$fontFamilyName}',
+      name: '{{ .fontFamilyName }}',
       styles: (
         default: (
           font-variant: all-small-caps
@@ -147,4 +147,8 @@ $fontFamilySpec: (
     )
   )
 );
-$fontFamilyMap: map.merge($fontFamilyMap, ($fontFamilyID: $fontFamilySpec) );
+
+@each $fontType in {{ delimit .useFamilyAsType " " }} {
+  @include fonts.defineFontUtilityClasses($fontFamilySpec, $useAsFontType: #{$fontType});
+}
+

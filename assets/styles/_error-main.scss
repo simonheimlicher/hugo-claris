@@ -1,5 +1,2 @@
-/* {{- $page := .Page }} {{- $mediaType := .MediaType }} */
-/* File='styles/claris-error.scss': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .ContentTypeList='{{ printf "%v" .ContentTypeList }}' .ContentTypeListID='{{ .ContentTypeListID }}' .ContentType='{{ .ContentType }}' .MediaType='{{ .MediaType }}' */
-
 // Stylesheets for error pages
-@import '_error/components';
+@use '_error/components' as error_components;
