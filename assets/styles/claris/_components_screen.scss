@@ -71,7 +71,7 @@
 @mixin nav-active-section-background($color: var(--text), $background: transparent, $border: var(--theme-haze), $underline: var(--theme-haze) ) {
   @include nav-background($color, $background, $border);
 }
-@mixin nav-hover-background($color: var(--theme-text-hover), $background: var(--theme-bg-hover), $border: var(--theme), $underline: var(--theme-bg-hover)) {
+@mixin nav-hover-background($color: var(--theme-text-hover), $background: var(--theme-bg-hover), $border: var(--theme-bg-hover), $underline: var(--theme-bg-hover)) {
   @include nav-background($color, $background, $border, $underline);
 }
 @mixin nav-open-background($color: var(--theme-text), $background: var(--theme-bg), $border: var(--theme-bg), $underline: var(--theme-haze) ) {
@@ -152,7 +152,7 @@ $indicator-width: var(--toc_indicator_width)) {
 }
 
 @if functions.stringContains(hugo.$mediaType, "screen") or functions.stringContains(hugo.$mediaType, "all") {
-  @debug "components_screen: mediaType=#{hugo.$mediaType}";
+  // @debug "components_screen: mediaType=#{hugo.$mediaType}";
   // General navigation definition
   %upcaret {
     width: 0;
@@ -240,7 +240,7 @@ $indicator-width: var(--toc_indicator_width)) {
     justify-content: space-between;
     color: var(--text);
     white-space: nowrap;
-    column-gap: var(--inner_margin);
+    column-gap: var(--inner_padding_4-2);
     // Replaced by utility classes
     // @include variables.useFontDefinition(sans, display);
     @include variables.chrome;
@@ -552,8 +552,7 @@ $indicator-width: var(--toc_indicator_width)) {
         line-height: (hugo.$screenViewNavHeightNarrow - 1.5rem);
         padding: math.div(hugo.$screenViewNavHeightNarrow - 1rem, 2) 0.25rem;
         padding: math.div(hugo.$screenViewNavHeightNarrow - 1rem, 2) var(--inner_padding_4-1);
-        padding-right: 1em;
-        border-right: 2px solid var(--theme);
+        border-right: 2px solid var(--theme-bg-active);
         border-radius: 0;
       }
     }

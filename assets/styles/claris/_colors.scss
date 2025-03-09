@@ -52,8 +52,8 @@ $theme-dim: hugo.$colorPrimaryDim;
 $theme-hover-dim: color.mix(white, $theme-dim, 10%);
 
 $theme-text-lit: hugo.$onPrimaryLit;
-$theme-text-active-lit: color.mix(white, $theme-text-lit, 80%);
-$theme-text-hover-lit: color.mix(white, $theme-text-lit, 80%);
+$theme-text-active-lit: color.mix(white, $theme-text-lit, 100%);
+$theme-text-hover-lit: color.mix(white, $theme-text-lit, 100%);
 
 $theme-text-dim: hugo.$onPrimaryDim;
 $theme-text-active-dim: color.mix(black, $theme-text-dim, 100%);
@@ -72,12 +72,12 @@ $link-focus-dim: hugo.$colorPrimaryDim;
 $link-active-dim: hugo.$colorPrimaryDim;
 
 $theme-bg-lit: hugo.$surfacePrimaryLit;
-$theme-bg-active-lit: color.mix(black, color.adjust($theme-bg-lit, $saturation: 0%), 50%);
-$theme-bg-hover-lit: color.mix(black, color.adjust($theme-bg-lit, $saturation: 20%), 40%);
+$theme-bg-active-lit: color.mix(black, $theme-text-lit, 50%);
+$theme-bg-hover-lit: color.mix(black, $theme-text-lit, 0%);
 
 $theme-bg-dim: hugo.$surfacePrimaryDim;
-$theme-bg-active-dim: color.mix(white, $theme-bg-dim, 40%);
-$theme-bg-hover-dim: color.mix(white, color.adjust($theme-bg-dim, $saturation: 20%), 50%);
+$theme-bg-active-dim: color.mix(white,$theme-text-dim, 40%);
+$theme-bg-hover-dim: color.mix(white, $theme-text-dim, 0%);
 
 $theme-bg-hue-0-lit: color.adjust(color.mix(white, #1b3348, 60%), $alpha: 1.0);
 $theme-bg-hue-1-lit: color.adjust(color.mix(white, #2c3352, 60%), $alpha: 1.0);
