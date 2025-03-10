@@ -128,8 +128,9 @@ assets:
     # add the argument `lightbox` when calling the shortcode `responsive-image`
     # and set `assets.scripts.mediumzoom: true`
     # mediumzoom: true
-    # To enable PostHog Analytics, configure the host and key below
+    # To enable PostHog Analytics, configure the environments, host and key below
     # posthog:
+    # environments: [prod, stage]
     #   key: <your key>
     #   host: https://api.posthog.com
     #   host: https://eu.posthog.com
