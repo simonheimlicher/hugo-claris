@@ -552,8 +552,6 @@ $indicator-width: var(--toc_indicator_width)) {
         line-height: (hugo.$screenViewNavHeightNarrow - 1.5rem);
         padding: math.div(hugo.$screenViewNavHeightNarrow - 1rem, 2) 0.25rem;
         padding: math.div(hugo.$screenViewNavHeightNarrow - 1rem, 2) var(--inner_padding_4-1);
-        border-right: 2px solid var(--theme-bg-active);
-        border-radius: 0;
       }
     }
     &_mobile_toggle,
@@ -916,6 +914,18 @@ $indicator-width: var(--toc_indicator_width)) {
           top: hugo.$screenViewNavHeight;
         }
 
+      }
+    }
+  }
+
+  // Full navigation menu bar
+  @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
+    .nav {
+      &_brand {
+        &_text {
+          border-right: 2px solid var(--theme);
+          border-radius: 0;
+        }
       }
     }
   }
