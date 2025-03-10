@@ -354,13 +354,13 @@ $familyDefaultMap: (
 
 @mixin defineFontUtilityClasses($specFamily, $useAs: default ) {
   $useAs: if(type-of($useAs) == list, $useAs, ($useAs,));
-  @debug 'defineFontUtilityClasses: useAs=#{meta.inspect($useAs)}';
+  // @debug 'defineFontUtilityClasses: useAs=#{meta.inspect($useAs)}';
   @each $use in $useAs {
     $classNames: ();
     @if ($use != default) {
       $classNames: (font- + $use, );
     }
-    @debug 'defineFontUtilityClasses: call defineFontRoles(classNames=#{append( (), $classNames)})';
+    // @debug 'defineFontUtilityClasses: call defineFontRoles(classNames=#{append( (), $classNames)})';
     @include defineFontRoles($specFamily, $classNames);
   }
 }
