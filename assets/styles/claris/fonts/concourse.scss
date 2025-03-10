@@ -214,6 +214,4 @@ $fontFamilySpec: (
   )
 );
 
-@each $fontType in {{ delimit .useFamilyAsType " " }} {
-  @include fonts.defineFontUtilityClasses($fontFamilySpec, $useAsFontType: #{$fontType});
-}
+@include fonts.defineFontUtilityClasses($fontFamilySpec, $useAs: ( {{ delimit .useFamilyAs ", " }} ) );

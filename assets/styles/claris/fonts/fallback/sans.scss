@@ -1,6 +1,4 @@
 // Humanist from https://github.com/system-fonts/modern-font-stacks#humanist
 $fallbackStack: Seravek, 'Gill Sans Nova', Ubuntu, Calibri, 'DejaVu Sans', source-sans-pro, sans-serif;
 
-@each $fontType in {{ delimit .useFamilyAsType " " }} {
-  @include fonts.defineFontUtilityClasses($fontFamilySpec, $useAsFontType: #{$fontType});
-}
+@include fonts.defineFontUtilityClasses($fontFamilySpec, $useAs: ( {{ delimit .useFamilyAs ", " }} ) );

@@ -53,17 +53,17 @@ does not have an effect, as mentioned above.
 
 {{- $fontParams := dict }}
 
-{{- $fontFamilyNames := (dict
+{{- $fontTypeToFamilyMap := (dict
   "sans"      ($page.Param "assets.styles.fonts.family.sans"  | default "Source Sans Pro")
   "serif"     ($page.Param "assets.styles.fonts.family.serif" | default "Alegreya")
   "mono"      ($page.Param "assets.styles.fonts.family.mono"  | default "DM Mono")
 ) -}}
 
 {{- $fontRoleTypeDefault := $page.Param "assets.styles.fonts.type.default" | default "sans" }}
-{{- $fontFamilyDefaultName := index $fontFamilyNames $fontRoleTypeDefault }}
-{{- $fontFamilyNames = merge $fontFamilyNames (dict "default" $fontFamilyDefaultName ) }}
+{{- $fontFamilyDefaultName := index $fontTypeToFamilyMap $fontRoleTypeDefault }}
+{{- $fontTypeToFamilyMap = merge $fontTypeToFamilyMap (dict "default" $fontFamilyDefaultName ) }}
 
-{{- $fontRoleTypes := (dict
+{{- $fontRoleToTypeMap := (dict
     "default" $fontRoleTypeDefault
     "content" ($page.Param "assets.styles.fonts.type.content" | default ($page.Param "assets.styles.fonts.type.default"))
     "article" ($page.Param "assets.styles.fonts.type.article" | default "serif")
@@ -71,19 +71,19 @@ does not have an effect, as mentioned above.
     "heading" ($page.Param "assets.styles.fonts.type.heading" | default "inherit")
     "meta"    ($page.Param "assets.styles.fonts.type.meta"    | default "sans")
 ) -}}
-{{- range $fontRole, $fontType := $fontRoleTypes }}
+{{- range $fontRole, $fontType := $fontRoleToTypeMap }}
   {{- $roleKey := printf "role_%v" $fontRole }}
   {{- $fontParams = merge $fontParams (dict
       $roleKey $fontType
   ) }}
 {{- end }}
 
-{{- $fontFamilies := (slice
+{{/* {{- $fontFamilies := (slice
   (dict "fontType" "default"  "family" $fontFamilyDefaultName)
-  (dict "fontType" "sans"     "family" $fontFamilyNames.sans)
-  (dict "fontType" "serif"    "family" $fontFamilyNames.serif)
-  (dict "fontType" "mono"     "family" $fontFamilyNames.mono)
-) }}
+  (dict "fontType" "sans"     "family" $fontTypeToFamilyMap.sans)
+  (dict "fontType" "serif"    "family" $fontTypeToFamilyMap.serif)
+  (dict "fontType" "mono"     "family" $fontTypeToFamilyMap.mono)
+) }} */}}
 
  {{- $defaultFallbackFontFamilyNames := (dict
   "sans" "Arial"
@@ -110,7 +110,7 @@ does not have an effect, as mentioned above.
 
 {{- $fontSpecFiles := slice }}
 {{- $fontFamilyIDs := slice }}
-{{- range $fontType, $fontFamily := $fontFamilyNames }}
+{{- range $fontType, $fontFamily := $fontTypeToFamilyMap }}
   {{- $fontFamilyID   := urlize $fontFamily }}
   {{- $typeFamilyNameKey := printf "type_%v_name" $fontType }}
   {{- $typeFamilyIDKey := printf "type_%v_id" $fontType }}
@@ -134,24 +134,51 @@ does not have an effect, as mentioned above.
     to pass the information to the SASS module. -->
     {{- if not (in $fontFamilyIDs $fontFamilyID) }}
       {{- $useFamilyAsType := slice }}
-      {{- range $ft, $fn := $fontFamilyNames }}
+      {{- range $ft, $fn := $fontTypeToFamilyMap }}
         {{- if eq $fn $fontFamily }}
           {{- $useFamilyAsType = append (slice $ft) $useFamilyAsType }}
+          {{- if and true $debug }}
+            {{- warnf "%s fn=%v: using fontFamily=%v for fontType ft=%v: useFamilyAsType=%v"
+                $dbg $fn $fontFamily $ft $useFamilyAsType }}
+          {{- end }}
+        {{- else }}
+          {{- if and false $debug }}
+            {{- warnf "%s fn=%v: not using fontFamily=%v for fontType ft=%v: useFamilyAsType=%v"
+                $dbg $fn $fontFamily $ft $useFamilyAsType }}
+          {{- end }}
         {{- end }}
       {{- end }}
+
+      {{- $useFamilyForRole := slice }}
+      {{- range $fontRole, $roleType := $fontRoleToTypeMap }}
+        {{- if in $useFamilyAsType $roleType }}
+          {{- if and true $debug }}
+            {{- warnf "%s fontRole=%v: using fontFamily=%v for fontRole=%v as roleType=%v in %v"
+                $dbg $fontRole $fontFamily $fontRole $roleType $useFamilyAsType }}
+          {{- end }}
+          {{- $useFamilyForRole = append (slice $fontRole) $useFamilyForRole | uniq }}
+        {{- else }}
+          {{- if and false $debug }}
+            {{- warnf "%s fontRole=%v: not using fontFamily=%v as roleType=%v not in %v"
+                $dbg $fontRole $fontFamily $roleType $useFamilyAsType }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+
+      {{- $useFamilyAs := append $useFamilyForRole $useFamilyAsType | uniq }}
       {{- $fontSpecParams = merge $fontSpecParams (dict
-          "useFamilyAsType" $useFamilyAsType
+          "useFamilyAs" $useFamilyAs
       ) }}
       {{- $specPathGlob := printf "%s/%s.scss" $assetFontPath $fontFamilyID }}
       {{- with $fontSpecResource := resources.Get $specPathGlob }}
         {{- if and true $debug }}
-          {{- warnf "%s Self-hosted font %v [%v] to be used for types %v found: executing font file '%v' [type=%T] matching '%v' as template"
-            $dbg $fontFamily $fontFamilyID $useFamilyAsType $fontSpecResource $fontSpecResource $specPathGlob }}
+          {{- warnf "%s Self-hosted font %v [%v] to be used for types and roles %v: executing font file '%v' [type=%T] matching '%v' as template with $fontSpecParams:\n%v"
+            $dbg $fontFamily $fontFamilyID $useFamilyAs $fontSpecResource $fontSpecResource $specPathGlob (jsonify (dict "indent" "  ") $fontSpecParams) }}
         {{- end }}
         {{- $fontBasename := path.Join (path.Dir $fontSpecResource.Name) (path.BaseName $fontSpecResource.Name) }}
         {{- $executedFontSpecFile := printf "%s%s%s" $fontBasename $executedSourceSuffix $sourceExt}}
         {{- $executedFontSpecResource := resources.ExecuteAsTemplate $executedFontSpecFile $fontSpecParams $fontSpecResource }}
-        {{- if and false $debug }}
+        {{- if and true $debug }}
           {{- warnf "%s Executed font spec file '%v' [type=%T] matching '%v' as template: \n%v"
             $dbg $fontSpecResource $fontSpecResource $specPathGlob $executedFontSpecResource.Content }}
         {{- end }}
@@ -272,7 +299,7 @@ does not have an effect, as mentioned above.
   {{- $toCSSIncludePaths = append (slice (printf "assets/%s/%s" $resourcePathBase . ) ) $toCSSIncludePaths }}
 {{- end }}
 {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "includePaths" $toCSSIncludePaths) }}
-{{- if $debug }}
+{{- if and false $debug }}
   {{- warnf "hugoParamsBase:\n%v" (jsonify (dict "indent" "  ") $hugoParamsBase) -}}
 {{- end }}
 

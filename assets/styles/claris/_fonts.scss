@@ -352,16 +352,17 @@ $familyDefaultMap: (
   }
 }
 
-@mixin defineFontUtilityClasses($specFamily, $useAsFontType: default) {
-  // The font family with ID == default is applied at the HTML level
-  $classNames: ();
-  @if ($useAsFontType != default) {
-    // All other font type generate utility classes with the font type ID
-    // Note: define a list by adding a comma before the closing parenthesis
-    $classNames: (font-#{$useAsFontType}, );
+@mixin defineFontUtilityClasses($specFamily, $useAs: default ) {
+  $useAs: if(type-of($useAs) == list, $useAs, ($useAs,));
+  @debug 'defineFontUtilityClasses: useAs=#{meta.inspect($useAs)}';
+  @each $use in $useAs {
+    $classNames: ();
+    @if ($use != default) {
+      $classNames: (font- + $use, );
+    }
+    @debug 'defineFontUtilityClasses: call defineFontRoles(classNames=#{append( (), $classNames)})';
+    @include defineFontRoles($specFamily, $classNames);
   }
-  // @debug 'defineFontUtilityClasses: call defineFontRoles(#{$useAsFontType}, classNames=#{append((), $classNames)})';
-  @include defineFontRoles($specFamily, $classNames);
 }
 
 @if not hugo.$fonts_hosted {
