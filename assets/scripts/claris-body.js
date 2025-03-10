@@ -23,7 +23,7 @@ optionalModules.push(mediumZoomInit);
 // Additional modules that can be imported: "./qrcode-svg", "./web-vitals-analytics"
 
 // Only load PostHog Analytics in production and staging environments
-{{- $postHogEnv := page.Param "assets.scripts.posthog.environments" | default (slice "prod" "stage") }}
+{{- $postHogEnv := page.Param "assets.scripts.posthog.environments" | default (slice "production" "prod" "staging" "stage") }}
 {{- if in $postHogEnv hugo.Environment }}
   {{- if and (page.Param "assets.scripts.posthog.key") (page.Param "assets.scripts.posthog.host") }}
 import { postHogAnalyticsInit } from "scripts/claris/optional/posthog-analytics";

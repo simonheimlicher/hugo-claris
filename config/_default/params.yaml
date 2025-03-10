@@ -130,7 +130,7 @@ assets:
     # mediumzoom: true
     # To enable PostHog Analytics, configure the environments, host and key below
     # posthog:
-    # environments: [prod, stage]
+    # environments: [production, prod, staging, stage]
     #   key: <your key>
     #   host: https://api.posthog.com
     #   host: https://eu.posthog.com
