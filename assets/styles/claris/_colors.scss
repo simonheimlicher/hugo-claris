@@ -59,9 +59,9 @@ $theme-text-dim: hugo.$onPrimaryDim;
 $theme-text-active-dim: color.mix(black, $theme-text-dim, 100%);
 $theme-text-hover-dim: color.mix(black, $theme-text-dim, 100%);
 
-$link-lit: color.scale(hugo.$colorPrimaryLit, $lightness: -40%);
+$link-lit: color.scale(hugo.$colorPrimaryLit, $lightness: -50%);
 $link-visited-lit: color.scale(
-  color.adjust(hugo.$colorPrimaryLit, $hue: 30, $saturation: -50%),
+  color.adjust(hugo.$colorPrimaryLit, $hue: 30, $saturation: -40%),
   $lightness: -20%
 );
 $link-hover-lit: color.scale(hugo.$colorPrimaryLit, $lightness: -10%);
@@ -70,8 +70,8 @@ $link-active-lit: hugo.$colorPrimaryLit;
 
 $link-dim: color.scale(hugo.$colorPrimaryDim, $lightness: -5%);
 $link-visited-dim: color.scale(
-  color.adjust(hugo.$colorPrimaryDim, $hue: 30, $saturation: -50%),
-  $lightness: 20%
+  color.adjust(hugo.$colorPrimaryDim, $hue: 30, $saturation: -40%),
+  $lightness: 50%
 );
 $link-hover-dim: color.scale(hugo.$colorPrimaryDim, $lightness: 30%);
 $link-focus-dim: hugo.$colorPrimaryDim;
