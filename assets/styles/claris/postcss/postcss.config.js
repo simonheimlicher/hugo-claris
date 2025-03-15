@@ -41,6 +41,10 @@ const pruneVar = require('postcss-prune-var')({
 });
 */
 
+const cssnano = require("cssnano")({
+  preset: ['default', {discardEmpty: true}]
+});
+
 module.exports = {
   plugins: [
     require("autoprefixer")({}),
@@ -48,7 +52,7 @@ module.exports = {
     // as a parameter instead of hardcoding it as an array below
     // ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [purgeCSS] : []),
     // ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [varOptimize] : []),
-    ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [varOptimize, purgeCSS] : []),
+    ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [varOptimize, purgeCSS, cssnano] : []),
     // ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [purgeCSS, varOptimize] : []),
   ]
 };
