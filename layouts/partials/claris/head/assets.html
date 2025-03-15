@@ -1,8 +1,8 @@
 {{- $ctx := . }}
 {{- $page := .Page }}
 {{- $template := "claris/head/assets" }}
-{{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
+{{- $debug := or false (page.Param "clarisdebug") }}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 {{- /* {{- $debug = or $debug (in (slice "home" "section" "page") $page.Kind) }} */ -}}
 
 {{- $assetVariant := .AssetVariant -}}
@@ -11,7 +11,9 @@
       try { document.documentElement.dataset.colorScheme = window.localStorage.getItem('userSelectedColorScheme'); } catch (e) { }
     </script>
 
-{{- /* partial "html-comment" (printf "%s[%s]: assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) */ -}}
+{{- if $debug }}
+  {{- warnf "%s assetVariant:\n%v" $dbg (jsonify (dict "indent" "  ") $assetVariant) -}}
+{{- end}}
 {{- $assets := partialCached "claris/_functions/asset-bundles" $ctx $assetVariant -}}
 
 {{- $scriptBundles := $assets.Scripts }}
@@ -20,11 +22,20 @@
 {{- range $styleBundleID := (slice "main_all") }}
   {{- $styleSheet := (index $styleBundles $styleBundleID) }}
   {{- with $styleSheet }}
+    {{- if $debug }}
+      {{- warnf "%s .Kind=%v: Rendering stylesheet from %v" $dbg $page.Kind $styleSheet }}
+      {{- warnf "%v" $styleSheet.resource.Content }}
+    {{- end }}
+
     {{- if ($page.Param "assets.styles.fonts.selfhosted") -}}
+      {{- if $debug }}
+        {{- warnf "%s .Kind=%v: Looking for font matching .Scratch claris.assets.font.main=%v"
+            $dbg $page.Kind ($page.Scratch.Get "claris.assets.font.main") }}
+      {{- end }}
       {{- $preloadFonts := partialCached "claris/_functions/resources/fonts/preload" (dict "Page" $page "StyleSheet" .) $assetVariant }}
       {{- if $debug }}
-        {{- warnf "%s[%s]: .Kind=%v: Pre-loading font .Scratch claris.assets.font.main=%v %v"
-            $page $template $page.Kind ($page.Scratch.Get "claris.assets.font.main") $preloadFonts }}
+        {{- warnf "%s .Kind=%v: Pre-loading font .Scratch claris.assets.font.main=%v %v"
+            $dbg $page.Kind ($page.Scratch.Get "claris.assets.font.main") $preloadFonts }}
       {{- end }}
       {{- range first 1 $preloadFonts }}
       <link rel="preload" href="{{ .URL | safeHTMLAttr }}" as="font" type="font/{{ .Type | safeHTMLAttr }}" crossorigin="anonymous">
@@ -35,7 +46,7 @@
     {{- end }}
     <link rel="stylesheet" id="style_claris_main" type="text/css" media="{{ .media }}" href="{{ .resource.RelPermalink }}" {{- with .fetchpriority }} fetchpriority="{{ . }}"{{ end }} integrity="{{ .resource.Data.Integrity }}" crossorigin="anonymous">
   {{- else }}
-    {{- errorf "Render %s[%s]: missing stylesheet '%s' [onlyMediaType=%s]" $page $template $styleBundleID $bundleParams.OnlyMediaType }}
+    {{- errorf "Render %s missing stylesheet '%s' [onlyMediaType=%s]" $dbg $styleBundleID $bundleParams.OnlyMediaType }}
   {{- end }}
 {{- end }}
 

@@ -1,8 +1,6 @@
 import * as params from "@params";
 import posthog from "posthog-js";
 
-const postHogParamsPath = "assets.scripts.posthog";
-
 export function postHogAnalyticsInit() {
   const postHogKey = params.postHogParams?.key;
   const postHogHost = params.postHogParams?.host;

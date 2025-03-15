@@ -1,56 +1,121 @@
-/* Style sheet for content type '#{$contentType}' and media type '#{$mediaType}'
- * File='styles/claris/_variables.scss'
- */
-
 @use 'sass:math';
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:meta';
+@use 'sass:string';
+@use 'sass:color';
+@use 'hugo-vars' as hugo;
+@use 'functions' as functions;
+@use 'colors' as colors;
 
 $list-excerpt-width: 20rem;
-$list-excerpt-width: math.div(($screenViewBreakpointWidthOneColumn - (3 * $screenViewInnerPaddingOneColumn) ), 2);
+$list-excerpt-width: math.div((hugo.$screenViewBreakpointWidthOneColumn - (3 * hugo.$screenViewInnerPaddingOneColumn) ), 2);
 
 // $list-style-indent: 0.16667em;
 $list-style-indent: 1em;
-
-$screenViewNavHeightNarrow: 2.5rem;
-$screenViewNavHeight: 3rem;
 
 $heading-padding-top: 0.5rem;
 $heading-margin-top: 1.5rem;
 
 $main-z-index: 1;
 
+@function color_variable_to_RGB($color) {
+  @return round(color.channel($color, "red", $space: rgb)), round(color.channel($color, "green", $space: rgb)), round(color.channel($color, "blue", $space: rgb));
+}
+
+@function map_color_variable_to_RGB($colors, $value) {
+  // @debug "map_color_variable_to_RGB: #{$value}: #{$value} [#{meta.type-of($value)}]";
+  @if meta.type-of($value) == color {
+    @return color_variable_to_RGB($value);
+  }
+  @else if meta.type-of($value) == string {
+    @if string.slice($value, 1, 3) == "var" {
+      // @debug "map_color_variable_to_RGB: extracting color key from '#{$value}'";
+      $color_key: functions.stringExtract($value, 'var(--', ')'); // Remove 'var(--' and ')'
+      // @debug "map_color_variable_to_RGB: Extracted color key='#{$color_key}' from '#{$value}'";
+      $resolved_value: map.get($colors, $color_key);
+      // @debug "map_color_variable_to_RGB: Resolved color value: #{$resolved_value} [#{meta.type-of($resolved_value)}] using key='#{$color_key}' from '#{$value}'";
+
+      @if $resolved_value == null {
+        $resolved_value: #ff0000; // Default to red
+        @debug "map_color_variable_to_RGB: Color key '#{$color_key}' not found; defaulting to red: #{meta.inspect($resolved_value)}";
+      }
+
+      @if meta.type-of($resolved_value) == color {
+        @return color_variable_to_RGB($resolved_value);
+      }
+      @else if meta.type-of($resolved_value) == string {
+        // Resolve nested variables
+        @if string.slice($resolved_value, 1, 3) == "var" {
+          @error "map_color_variable_to_RGB: Nested variable detected: #{$resolved_value}. This code is untested";
+          @return map_color_variable_to_RGB($colors, $resolved_value);
+        }
+      }
+    }
+  }
+  @error "map_color_variable_to_RGB: Invalid $value: #{$value} [#{meta.type-of($value)}]";
+  @return $value;
+}
+
 @mixin generate_colors($colors) {
   // Add RGB / RGBA color definitions
   @each $color, $value in $colors {
-    --#{$color}: #{$value};
-    // --RGB_#{$color}: #{mapColorVarToRGB($colors, $value)};
+    & {
+      --#{$color}: #{$value};
+      // --RGB_#{$color}: #{map_color_variable_to_RGB($colors, $value)};
+    }
   }
-  // Only define RGB values for select colors
+  // @debug "generate_colors: type of 'colors': [#{meta.type-of($colors)}]. Contents of colors: #{meta.inspect($colors)}";
   @each $color in (text bg theme theme-bg choice-bg xhaze link link-visited link-hover link-focus link-active link-dark link-dark-visited link-dark-hover link-dark-focus link-dark-active highlight-bg-yellow) {
-    $value: map-get($colors, $color);
-    --RGB_#{$color}: #{mapColorVarToRGB($colors, $value)};
+    & {
+      $value: map.get($colors, $color);
+      // @debug "generate_colors: color=#{$color} mapped to value=#{$value} [#{meta.type-of($value)}] --> #{map_color_variable_to_RGB($colors, $value)}";
+      $color_RGB: map_color_variable_to_RGB($colors, $value);
+      --RGB_#{$color}: #{$color_RGB};
+    }
   }
 }
 
+// @mixin generate_colors($colors) {
+//   // Add RGB / RGBA color definitions
+//   @each $color, $value in $colors {
+//     --#{$color}: #{$value};
+//   }
+//   $colorMap: ("text": #{hsl(200, 10%, 13%)});
+//   $defaultColor: hsl(200, 10%, 13%);
+//   @debug "generate_colors: defaultColor: #{$defaultColor}";
+
+//   // Only define RGB values for select colors
+//   @each $color in (text bg theme theme-bg choice-bg xhaze link link-visited link-hover link-focus link-active link-dark link-dark-visited link-dark-hover link-dark-focus link-dark-active highlight-bg-yellow) {
+//     $value: map.get($colors, $color);
+//     // @debug "generate_colors: #{$color}: #{$value} [colors: #{meta.type-of($colors)}] [value: #{meta.type-of($value)}]";
+
+//     // @debug "generate_colors: #{$color}: #{mapColorVarToRGB($colors, $value)}";
+//     $color_RGB: mapColorVarToRGB($colors, $value);
+//     --RGB_#{$color}: #{$color_RGB};
+//   }
+// }
+
 @function direction($value) {
-  @if index('right' 'left', $value) != null {
+  @if list.index('right' 'left', $value) != null {
     @return 'x';
   }
-  @if index('top' 'bottom', $value) != null {
+  @if list.index('top' 'bottom', $value) != null {
     @return 'y';
   }
   @error "Expected 'top', 'right', 'bottom' or 'left' but got #{$value}";
 }
 
 @function is-number($value) {
-  @return type-of($value) == 'number';
+  @return meta.type-of($value) == 'number';
 }
 
 @function is-null($value) {
-  @return type-of($value) == 'null';
+  @return meta.type-of($value) == 'null';
 }
 
 @function is-absolute-length($value) {
-  @return type-of($value) == 'number' and index('cm' 'mm' 'in' 'px' 'pt' 'pc', unit($value)) != null;
+  @return meta.type-of($value) == 'number' and list.index('cm' 'mm' 'in' 'px' 'pt' 'pc', unit($value)) != null;
 }
 
 @mixin element-padding($where: 'outer', $top: null, $right: null, $bottom: null, $left: null) {
@@ -67,10 +132,10 @@ $main-z-index: 1;
   $pVar: ('top': $top, 'right': $right, 'bottom': $bottom, 'left': $left);
   @each $key, $value in $pVar {
     $direction: direction($key);
-    @if type-of($value) == 'number' {
+    @if meta.type-of($value) == 'number' {
       @if is-absolute-length(#{$value}) {
         // @debug "absolute-length: #{$value}";
-        $pVar: map-merge($pVar, (
+        $pVar: map.merge($pVar, (
           #{$key}: calc( max(#{$value}, env(safe-area-inset-#{$key}, 0px) ) )
         ));
       }
@@ -82,11 +147,11 @@ $main-z-index: 1;
         @else {
           $valueVar: calc( max(#{$value} * var(--#{$where}_padding), env(safe-area-inset-#{$key}, 0px) ) )
         }
-        $pVar: map-merge($pVar, (#{$key}: $valueVar));
+        $pVar: map.merge($pVar, (#{$key}: $valueVar));
         }
     }
     @else {
-      $pVar: map-merge($pVar, (#{$key}: null) );
+      $pVar: map.merge($pVar, (#{$key}: null) );
     }
   }
   // @debug "pVar: #{$pVar}";
@@ -164,13 +229,13 @@ $main-z-index: 1;
 }
 
 @mixin link-lvhfa_color($attrs, $color-id, $override: null) {
-  $variant: map-get($attrs, variant);
-  $highlight: map-get($attrs, highlight);
+  $variant: map.get($attrs, variant);
+  $highlight: map.get($attrs, highlight);
 
   $color: link#{if($variant != null and $variant != '', -#{$variant}, '')}#{if($color-id != null and $color-id != '', -#{$color-id}, '')};
   @each $key, $attr in $highlight {
-    $name: map-get($attr, name);
-    $opacity: map-get($attr, opacity);
+    $name: map.get($attr, name);
+    $opacity: map.get($attr, opacity);
     @if ($override != null) {
       $opacity: $override;
     }
@@ -198,7 +263,7 @@ $main-z-index: 1;
       );
 
       @if ($underline) {
-        $attrs: map-merge($attrs, (
+        $attrs: map.merge($attrs, (
           primary: (
             name: text-decoration-color,
             opacity: 0.5
@@ -275,7 +340,9 @@ $main-z-index: 1;
 }
 
 @mixin content_base() {
-  clear: both;
+  & {
+    clear: both;
+  }
 }
 
 @mixin content_base_centered() {
@@ -283,8 +350,10 @@ $main-z-index: 1;
   // NOTE: Must not use width: 100% as otherwise
   // the grid track is exceeded when column-gap is > 0px
   // width: 100%;
-  margin-left: auto;
-  margin-right: auto;
+  & {
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 @mixin content() {
@@ -294,15 +363,19 @@ $main-z-index: 1;
 @mixin content_singlecolumn() {
   @include body_horizontal-padding;
   @include content_base_centered;
-  max-width: var(--content_max-width);
-  // max-width: calc(min(100%, var(--content_max-width)));
+  & {
+    max-width: var(--content_max-width);
+    // max-width: calc(min(100%, var(--content_max-width)));
+  }
 }
 
 // Content that has multiple columns
 @mixin content_multicolumn() {
   @include body_horizontal-padding;
   @include content_base_centered;
-  max-width: var(--content_max-width); // For IE 11
+  & {
+    max-width: var(--content_max-width); // For IE 11
+  }
   @supports (display: grid) {
     max-width: var(--content_multicolumn_max-width);
     // NOTE: Not sure what (min(100%, ...) is supposed to accomplish.
@@ -339,13 +412,17 @@ $main-z-index: 1;
   // @include inner_padding;
   // NOTE: Avoid large gap betweeen .content-title and .lede
   @include body_horizontal-padding;
-  max-width: var(--content_max-width);
+  & {
+    max-width: var(--content_max-width);
+  }
 }
 
 // Container that has multiple columns
 @mixin container_multicolumn() {
   @include inner_padding;
-  max-width: var(--content_max-width); // For IE 11
+  & {
+    max-width: var(--content_max-width); // For IE 11
+  }
   @supports (display: grid) {
     max-width: var(--content_multicolumn_max-width);
   }
@@ -387,7 +464,7 @@ $main-z-index: 1;
 
 @mixin aside() {
   @include content_base;
-  @media screen and (min-width: $screenViewBreakpointWidthWide) {
+  @media screen and (min-width: hugo.$screenViewBreakpointWidthWide) {
     @include geometric-scale('font-size', var(--font-size-aside));
   }
   font-size: var(--font-size-normal);
@@ -409,7 +486,7 @@ $main-z-index: 1;
   font-size: var(--font-size-normal);
 }
 
-// @mixin list-style_indented($margin-vertical: math.div($screenViewInnerPaddingMobile, 2), $padding-vertical: math.div($screenViewInnerPaddingMobile, 2), $indent: $list-style-indent) {
+// @mixin list-style_indented($margin-vertical: math.div(hugo.$screenViewInnerPaddingMobile, 2), $padding-vertical: math.div(hugo.$screenViewInnerPaddingMobile, 2), $indent: $list-style-indent) {
 @mixin list-style_indented($margin-horizontal: 0, $padding-horizontal: $list-style-indent, $margin-between: 0, $padding-between: 0.5em) {
     ul, ol {
     // list-style: disc outside none;;
@@ -627,7 +704,7 @@ $main-z-index: 1;
 // Other ideas: https://css-tricks.com/hash-tag-links-padding/, e.g.
 //   https://codepen.io/kirkgleffe/pen/DfvuE
 
-@mixin nav-bar-offset($offset: $screenViewNavHeight) {
+@mixin nav-bar-offset($offset: hugo.$screenViewNavHeight) {
   $anchor-offset: 1rem;
   .main_claris {
     padding-top: $offset;
@@ -641,384 +718,78 @@ $main-z-index: 1;
 }
 
 @mixin nav-bar-anchor-offset {
-  @include nav-bar-offset($screenViewNavHeightNarrow);
-  @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
-    @include nav-bar-offset($screenViewNavHeight);
-  }
-}
-
-$familyDefaultMap: (
-  styles: (
-    default: (
-      font-weight: 400,
-      line-height: 1.5
-    ),
-    strong: (
-      font-weight: 600,
-    )
-  ),
-  roles: (
-    display: (
-      styles: (
-        default: (
-          font-weight: 400,
-          line-height: 1.2
-        ),
-        strong: (
-          font-weight: 600,
-        )
-      )
-    )
-  )
-);
-
-// Utility mixin to apply style definitions by defining CSS custom properties
-// If $key is in $keysToDefineAsProperty, define the CSS custom property
-// Currently, this is used to ensure we can access the current `line-height`
-// to remove the line-height from the first line usinc `calc`
-@mixin generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef) {
-  // @debug 'generateFontStyleProperties(#{$styleName}): defaultStyleDef: #{inspect($defaultStyleDef)} baseStyleDef: #{inspect($baseStyleDef)}';
-  // To enable consistently using the same style rules, we make some definitions available
-  // as CSS custom properties.
-  // This is used for example to have the weight of `strong` style available in `--font-weight-strong`
-  // The values of some attributes such as `line-height` are required
-  // for calculations.
-  // List them in the following list to have them defined as CSS properties
-  $keysToDefineAsProperty: ("line-height", "font-weight");
-
-  @each $key, $value in $styleDef {
-    @if index($keysToDefineAsProperty, $key) {
-      $baseValue: map-get($defaultStyleDef, $key);
-      @if $styleName != default {
-        $baseValue: map-get($baseStyleDef, $key);
-      }
-      @if $value == $baseValue {
-        // @debug 'generateFontStyleProperties(#{$styleName}): value=#{$value} == #{$baseValue}';
-      }
-      @else {
-        // @debug 'generateFontStyleProperties(#{$styleName}): value=#{$value} != #{$baseValue}';
-        $propertyName: $key;
-        @if ($styleName != default) {
-          $propertyName: #{$key}-#{$styleName};
-        }
-        --#{$propertyName}: #{$value};
-      }
-    }
-  }
-}
-
-// Utility mixin to apply style definitions by defining CSS rules if they differ from default
-@mixin generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef) {
-  // @debug 'generateFontStyleRules(#{$styleName}): defaultStyleDef: #{inspect($defaultStyleDef)} baseStyleDef: #{inspect($baseStyleDef)}';
-  $overrideStyles: $styleDef;
-  @if ($styleName == default) {
-    // Determine, which values differ from default - if any
-    $overrideStyles: ();
-    @each $key, $value in $styleDef {
-      $baseValue: map-get($defaultStyleDef, $key);
-      @if ($baseValue and $value == $baseValue) {
-        // @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} == #{$baseValue}';
-      }
-      @else {
-        // @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} != #{$baseValue}';
-        $overrideStyles: map-merge($overrideStyles, ($key: $value) );
-      }
-    }
-  }
-  @else {
-    // Determine, which values differ from default - if any
-    $overrideStyles: ();
-    @each $key, $value in $styleDef {
-      $baseValue: map-get($baseStyleDef, $key);
-      @if ($baseValue and $value == $baseValue) {
-        // @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} == #{$baseValue}';
-      }
-      @else {
-        // @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} != #{$baseValue}';
-        $overrideStyles: map-merge($overrideStyles, ($key: $value) );
-      }
-    }
-  }
-
-  @each $key, $value in $overrideStyles {
-    #{$key}: #{$value};
-  }
-}
-
-// Mixin to apply styles from a styles map
-@mixin applyFontStyles($fontStackVariant, $defaultStyleDef, $baseStyleDef, $styleName, $styleDef, $baseSelector: null, $nestedSelector: null) {
-
-  @if ($baseSelector == null) {
-    @if ($styleName == default) {
-      html {
-        font-family: #{inspect($fontStackVariant)};
-        @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-        @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-      }
-    }
-    @else {
-      html {
-        @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-      }
-      #{$styleName} {
-        @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-      }
-    }
-  }
-  @else {
-    @if ($nestedSelector == null) {
-      @if ($styleName == default) {
-        #{$baseSelector} {
-          font-family: #{inspect($fontStackVariant)};
-          @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-          @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-        }
-      }
-      @else {
-        #{$baseSelector} {
-          @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-          #{$styleName} {
-            @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-          }
-        }
-        #{$styleName}#{$baseSelector} {
-          @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-        }
-      }
-    }
-    @else {
-      #{$baseSelector} {
-        #{$nestedSelector} {
-          @if ($styleName == default) {
-            font-family: #{inspect($fontStackVariant)};
-            @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-            @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-          }
-          @else {
-            @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-            #{$styleName} {
-              @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-            }
-          }
-        }
-        @if ($styleName != default) {
-          #{$styleName}#{$nestedSelector} {
-            @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-          }
-        }
-      }
-    }
-  }
-}
-
-// Utility mixin to generate CSS rules
-@mixin defineFontUtilityRules($fontStackVariant, $defaultStyleDef, $baseStyleDef, $styleName, $styleDef, $baseClassNames, $nestedClassNames: null) {
-  @if length($baseClassNames) > 0 {
-    $baseSelector: '.' + joinArray($baseClassNames, '.');
-    $nestedSelector: null;
-    @if $nestedClassNames != null and length($nestedClassNames) > 0 {
-      $nestedSelector: '.' + joinArray($nestedClassNames, '.');
-      // @debug 'nestedSelector=#{$baseSelector} #{$nestedSelector}';
-    }
-    @include applyFontStyles($fontStackVariant, $defaultStyleDef, $baseStyleDef, $styleName, $styleDef, $baseSelector, $nestedSelector);
-  }
-  @else {
-    // Define the rules for the outermost element, typically HTML
-    @include applyFontStyles($fontStackVariant, $defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-  }
-}
-
-// Mixin to handle className combinations and generate rules
-@mixin generateFontUtilityClasses($fontStackVariant, $defaultStyleDef, $baseStyleDef, $styleName, $styleDef, $classNames) {
-  $len: length($classNames);
-  // Generate rule for combined class
-  @include defineFontUtilityRules($fontStackVariant, $defaultStyleDef, $baseStyleDef, $styleName, $styleDef, $classNames);
-  @if $len > 1 {
-    // Generate rules for all permutations (nested classes)
-    @for $i from 1 through $len - 1 {
-      $baseClassNames: sliceArray($classNames, 1, $i);
-      $nestedClassNames: sliceArray($classNames, $i + 1, $len);
-      @include defineFontUtilityRules($fontStackVariant, $defaultStyleDef, $baseStyleDef, $styleName, $styleDef, $baseClassNames, $nestedClassNames);
-    }
-  }
-}
-
-// Main mixin to define font styles
-@mixin defineFontStyles($fontStackVariant, $defaultStyleDef, $stylesRole, $stylesVariant, $specStyles, $classNames) {
-  // $baseStyleDef: updateMap(map-get($stylesRole, default), map-get($stylesVariant, default) );
-  $defaultStyle: ();
-  @if length($classNames) > 0 {
-    $defaultStyle: $defaultStyleDef;
-  }
-  // Go through all styles
-  @each $styleName, $specStyle in $stylesRole {
-    $baseStyleDef: updateMap(map-get($stylesRole, $styleName), map-get($stylesVariant, $styleName) );
-    $styleDef: updateMap($baseStyleDef, $specStyle);
-
-    @if length($classNames) == 0 {
-      $baseStyleDef: ();
-    }
-
-    // @debug 'defineFontStyles: defaultStyleDef: #{inspect($defaultStyleDef)} baseStyleDef: #{inspect($baseStyleDef)} styleDef: #{inspect($styleDef)}';
-    // Note: To avoid an invalid CSS value error when $classNames is empty,
-    // we append an empty list to it
-    // @debug 'defineFontStyles: call generateFontUtilityClasses(#{nth($fontStackVariant, 1)}, styleName=#{$styleName}, classNames=#{append($classNames, ())})';
-    // Generate rules
-    @include generateFontUtilityClasses($fontStackVariant, $defaultStyle, $baseStyleDef, $styleName, $styleDef, $classNames);
-  }
-}
-
-// Main mixin to define font variants
-@mixin defineFontVariants($fontNameRole, $fallbackStackRole, $defaultStyleDef, $stylesRole, $specVariants, $classNames) {
-  // Go through all variants
-  @each $variant, $specVariant in $specVariants {
-    $specStyles: map-get($specVariant, styles);
-
-    @if $variant != default {
-      $classNames: append($classNames, variant- + $variant);
-    }
-
-    $fontNameVariant: defaultTo($fontNameRole, map-get($specVariant, 'name'));
-    $fallbackStackVariant: defaultTo($fallbackStackRole, map-get($specVariant, 'fallback'));
-    $fontStackVariant: join(($fontNameVariant), $fallbackStackVariant);
-
-    $stylesVariant: map-get($specVariant, 'styles');
-    // Note: To avoid an invalid CSS value error when $classNames is empty,
-    // we append an empty list to it
-    // @debug 'defineFontVariants: call defineFontStyles(#{$fontNameRole}, classNames=#{append($classNames, ())})';
-    @include defineFontStyles($fontStackVariant, $defaultStyleDef, $stylesRole, $stylesVariant, $specStyles, $classNames);
-  }
-}
-
-@mixin defineFontRoles($specFamily, $classNames: () ) {
-  // Default fallback stack to be used if all else fails.
-  // Ensure to define a list here. If there is only one fallback font, append a comma: ('Fallback Font', )
-  $fallbackStackDefault: ('Arial', );
-
-  $fontNameFamily: map-get($specFamily, name);
-  $fallbackStackFamily: map-get($specFamily, fallback);
-  $fallbackStackFamily: defaultTo($fallbackStackDefault, map-get($specFamily, fallback));
-  // --fallbackStackFamily: #{$fallbackStackFamily};
-
-  $defaultStyleDef: map-get(map-get($familyDefaultMap, styles), default);
-
-  $specStyles: updateMap(map-get($familyDefaultMap, styles), map-get($specFamily, styles));
-
-  $specRolesDefault: updateMap((default: (styles: $specStyles)), map-get($familyDefaultMap, roles));
-  $specRoles: updateMap($specRolesDefault, map-get($specFamily, roles));
-
-  $specVariantsDefault: updateMap((default: (
-    name: $fontNameFamily,
-    fallback: $fallbackStackFamily,
-    styles: $specStyles
-  )), map-get($familyDefaultMap, variants));
-
-  $specVariants: updateMap($specVariantsDefault, map-get($specFamily, variants));
-  // @include mapToCSSProperties($specStyles, specStyles);
-  // @include mapToCSSProperties($specRoles, specRoles);
-  // @include mapToCSSProperties($specVariants, specVariants);
-
-  // Go through all roles (default, display etc.) that are defined
-  // for this font family's specification
-  @each $role, $specRole in $specRoles {
-    $defRole: updateMap(map-get($specRoles, default), $specRole);
-    $fontNameRole: defaultTo($fontNameFamily, map-get($specRole, name));
-    $fallbackStackRole: defaultTo($fallbackStackFamily, map-get($specRole, fallback));
-
-    $stylesRole: updateMap($specStyles, map-get($specRole, styles));
-    @if $role != default {
-      $classNames: append($classNames, role- + $role);
-    }
-    // Note: To avoid an invalid CSS value error when $classNames is empty,
-    // we append an empty list to it
-    // @debug 'defineFontRoles: call defineFontVariants(#{$fontNameRole}, classNames=#{append((), $classNames)})';
-    @include defineFontVariants($fontNameRole, $fallbackStackRole, $defaultStyleDef, $stylesRole, $specVariants, $classNames);
-  }
-}
-
-/**
-This mixin takes the **font specification** provided for the font family with the
-provided `fontFamilyID` and turns it into a **font definition**, i.e.,
-a map that comprises all the keys provided in `familyDefaultMap` and overrides
-those provided by the font specification and adding any additional
-role, variant, and style definitions
-*/
-@mixin defineFont($definitionID: default, $fontFamilyID: default) {
-
-  // Get the specification of this font family
-  $specFamily: map-get($fontFamilyMap, $fontFamilyID);
-
-  @if ($specFamily) {
-    // The font family with ID == default is applied at the HTML level
-    $classNames: ();
-    @if ($fontFamilyID != default) {
-      // All other families generate utility classes with the font family ID
-      // Note: define a list by adding a comma before the closing parenthesis
-      $classNames: (font-#{$definitionID}, );
-    }
-    // @debug 'defineFont: call defineFontRoles(#{$fontFamilyID}, classNames=#{append((), $classNames)})';
-    @include defineFontRoles($specFamily, $classNames);
-  }
-  @else {
-    @warn "@mixin defineFont: font ID '#{$fontFamilyID}' is undefined";
+  @include nav-bar-offset(hugo.$screenViewNavHeightNarrow);
+  @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
+    @include nav-bar-offset(hugo.$screenViewNavHeight);
   }
 }
 
 // Generating fluid font scales for copy-paste: https://www.fluid-type-scale.com/calculate https://utopia.fyi/type/calculator/
 // Using SASS: https://www.smashingmagazine.com/2022/10/fluid-typography-clamp-sass-functions/
-@function fluid($min-size, $max-size, $min-breakpoint: $screenViewBreakpointWidthMobile, $max-breakpoint: $screenViewBreakpointWidthWide, $unit: vw) {
+@function fluid($min-size, $max-size, $min-breakpoint: hugo.$screenViewBreakpointWidthMobile, $max-breakpoint: hugo.$screenViewBreakpointWidthWide, $unit: vw) {
   $slope: math.div($max-size - $min-size, $max-breakpoint - $min-breakpoint);
-  $slope-to-unit: roundDec($slope * 100, 2);
-  $intercept-rem: roundDec($min-size - $slope * $min-breakpoint, 2);
-  $min-size-rem: roundDec($min-size, 2);
-  $max-size-rem: roundDec($max-size, 2);
+  $slope-to-unit: functions.roundDec($slope * 100, 2);
+  $intercept-rem: functions.roundDec($min-size - $slope * $min-breakpoint, 2);
+  $min-size-rem: functions.roundDec($min-size, 2);
+  $max-size-rem: functions.roundDec($max-size, 2);
   @return clamp(#{$min-size-rem}, #{$slope-to-unit}#{$unit} + #{$intercept-rem}, #{$max-size-rem});
 }
 
 @function geometric-scaled-prop($prop, $scale-factor, $shift: 0, $factor-normal: 1) {
-  @return calc(#{roundDec($factor-normal * math.pow($scale-factor, $shift), $fluidScaleDigits)} * var(--#{$prop}-base));
+  $scaleFactor: functions.roundDec($factor-normal * math.pow($scale-factor, $shift), hugo.$fluidScaleDigits);
+  @return calc( #{$scaleFactor} * var(--#{$prop}-base));
 }
 
-@mixin geometric-scale($prop, $base-size, $scale-factor: $geometricScaleFactor, $base-shift: 0, $smallest: 9, $largest: 9) {
+@mixin geometric-scale($prop, $base-size, $scale-factor: hugo.$geometricScaleFactor, $base-shift: 0, $smallest: 9, $largest: 9) {
 
+  & {
+    --#{$prop}-base: #{$base-size};
+    --#{$prop}-normal: #{geometric-scaled-prop($prop, $scale-factor, $base-shift)};
+  }
   $smaller-factor-idx-max: 5;
   $larger-factor-idx-max: 6;
-  --#{$prop}-base: #{$base-size};
-  --#{$prop}-normal: #{geometric-scaled-prop($prop, $scale-factor, $base-shift)};
   @for $i from 1 through $smaller-factor-idx-max {
-    --#{$prop}-smaller-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift - min($smallest, $i))};
+    & {
+      --#{$prop}-smaller-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift - min($smallest, $i))};
+    }
   }
   @for $i from 1 through $larger-factor-idx-max {
-    --#{$prop}-larger-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift + min($largest, $i))};
+    & {
+      --#{$prop}-larger-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift + min($largest, $i))};
+    }
   }
 }
 
-@mixin fluid-geometric-scale($prop, $min-size, $max-size, $min-breakpoint: $screenViewBreakpointWidthMobile, $max-breakpoint: $screenViewBreakpointWidthWide, $unit: vw,
-    $scale-factor: $geometricScaleFactor, $base-shift: 0, $smallest: 9, $largest: 9) {
+@mixin fluid-geometric-scale($prop, $min-size, $max-size, $min-breakpoint: hugo.$screenViewBreakpointWidthMobile, $max-breakpoint: hugo.$screenViewBreakpointWidthWide, $unit: vw,
+    $scale-factor: hugo.$geometricScaleFactor, $base-shift: 0, $smallest: 9, $largest: 9) {
 
   $smaller-factor-idx-max: 3;
   $larger-factor-idx-max: 6;
 
   --#{$prop}-base: #{fluid($min-size, $max-size, $min-breakpoint, $max-breakpoint, $unit)};
-
   --#{$prop}-normal: #{geometric-scaled-prop($prop, $scale-factor, $base-shift)};
   @for $i from 1 through $smaller-factor-idx-max {
-    --#{$prop}-smaller-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift - min($smallest, $i))};
+    & {
+      --#{$prop}-smaller-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift - min($smallest, $i))};
+    }
   }
   @for $i from 1 through $larger-factor-idx-max {
-    --#{$prop}-larger-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift + min($largest, $i))};
+    & {
+      --#{$prop}-larger-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift + min($largest, $i))};
+    }
   }
 }
 
-@function fractional-scaled-prop($prop, $numerator: $fractionalScaleDenominator, $denominator: $fractionalScaleDenominator, $factor-normal: 1) {
+@function fractional-scaled-prop($prop, $numerator: hugo.$fractionalScaleDenominator, $denominator: hugo.$fractionalScaleDenominator, $factor-normal: 1) {
   @if ($numerator == $denominator) {
     @return var(--#{$prop}-base);
   }
-  @return calc(#{roundDec($factor-normal * math.div($numerator, $denominator), $fluidScaleDigits)} * var(--#{$prop}-base));
+  $scaleFactor: functions.roundDec($factor-normal * math.div($numerator, $denominator), hugo.$fluidScaleDigits);
+  @return calc($scaleFactor * var(--#{$prop}-base));
 }
 
-@mixin fluid-fractional-scale($prop, $min-size, $max-size, $min-breakpoint: $screenViewBreakpointWidthMobile, $max-breakpoint: $screenViewBreakpointWidthWide, $unit: vw,
-    $denominator: $fractionalScaleDenominator, $base-shift: 0) {
+@mixin fluid-fractional-scale($prop, $min-size, $max-size, $min-breakpoint: hugo.$screenViewBreakpointWidthMobile, $max-breakpoint: hugo.$screenViewBreakpointWidthWide, $unit: vw,
+    $denominator: hugo.$fractionalScaleDenominator, $base-shift: 0) {
 
   // Define, up to how many times the $min-size we should define
   // E.g., with `$min-size: 1 rem`, `$denominator: 4` and `$numerator-max: 4 * $denominator`,
@@ -1031,26 +802,125 @@ role, variant, and style definitions
   --#{$prop}-base: #{fluid($min-size, $max-size, $min-breakpoint, $max-breakpoint, $unit)};
   --#{$prop}: #{fractional-scaled-prop($prop, $base-shift + $denominator, $denominator)};
   @for $i from 0 through $numerator-max {
-    --#{$prop}_#{$denominator}-#{$i}: #{fractional-scaled-prop($prop, $base-shift + $i, $denominator)};
+    & {
+      --#{$prop}_#{$denominator}-#{$i}: #{fractional-scaled-prop($prop, $base-shift + $i, $denominator)};
+    }
   }
 }
 
+@mixin color-scheme-dark {
+  --theme-text-dim: hsla(0,0%,100%,0.87);
+  --color-scheme: 'dark';
+  --text: var(--theme-text-dim);
+  --accent: var(--bubble);
+  // --choice-bg: var(--bg);
+  --code-bg: var(--translucent);
+  --header-text: var(--theme-text-dim);
+  --table-bg: var(--code-bg);
+  --table-haze: hsla(0, 0%, 100%, 0.1);
+  --table-border: var(--code-bg);
+  --footer-bg: var(--bg);
+  svg.icon {
+    fill: var(--theme-text);
+  }
+  .icon {
+    img {
+      background: none;
+    }
+    svg {
+      fill: #fafafa;
+    }
+  }
+  .nav_color-scheme {
+    &_choice {
+      &_light {
+        opacity: 0.0;
+      }
+      &_dark {
+        opacity: 1.0;
+      }
+    }
+  }
+  @media (any-hover: hover) {
+    &:not([data-color-scheme-transition]) .nav_color-scheme_choice:hover {
+      .nav_color-scheme_choice {
+        &_light {
+          opacity: 1.0;
+          z-index: 1;
+        }
+        &_dark {
+          opacity: 0.0;
+          transition: none;
+          z-index: auto;
+        }
+      }
+    }
+  }
+
+  & {
+    @include generate_colors( map.merge(colors.$colors-lit, colors.$colors-dim) );
+    img:not([src*=".svg"]) {
+      filter: var(--dim-image-filter);
+    }
+  }
+}
+
+$screenViewBreakpoints: (
+  'width': (
+    'mobile': hugo.$screenViewBreakpointWidthMobile,
+    'narrow': hugo.$screenViewBreakpointWidthNarrow,
+    'onecolumn': hugo.$screenViewBreakpointWidthOneColumn,
+    'twocolumn': hugo.$screenViewBreakpointWidthTwoColumn,
+    'wide': hugo.$screenViewBreakpointWidthWide,
+    'ultrawide': hugo.$screenViewBreakpointWidthUltrawide,
+  ),
+  'height': (
+    'shallow': hugo.$screenViewBreakpointHeightShallow,
+    'tall': hugo.$screenViewBreakpointHeightTall,
+  ),
+);
+
+$screenViewMargin: (
+  'outer': (
+    'mobile': hugo.$screenViewBodyMarginMobile,
+    'narrow': hugo.$screenViewBodyMarginNarrow,
+    'onecolumn': hugo.$screenViewBodyMarginOneColumn,
+  ),
+  'inner': (
+    'mobile': hugo.$screenViewInnerMarginMobile,
+    'narrow': hugo.$screenViewInnerMarginNarrow,
+    'onecolumn': hugo.$screenViewInnerMarginOneColumn,
+  ),
+);
+
+$screenViewPadding: (
+  'outer': (
+    'mobile': hugo.$screenViewBodyPaddingMobile,
+    'narrow': hugo.$screenViewBodyPaddingNarrow,
+    'onecolumn': hugo.$screenViewBodyPaddingOneColumn,
+  ),
+  'inner': (
+    'mobile': hugo.$screenViewInnerPaddingMobile,
+    'narrow': hugo.$screenViewInnerPaddingNarrow,
+    'onecolumn': hugo.$screenViewInnerPaddingOneColumn,
+  ),
+);
+
 html {
-  // --dim-image-filter: grayscale(30%);
   --dim-image-filter: brightness(75%);
 
   --to-be-eliminated-by-csspurge: black;
 
-  @include fluid-geometric-scale('font-size_root', 1rem, 1.25rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
-  @include fluid-geometric-scale('font-size', 1rem, 1.25rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
-  @include fluid-geometric-scale('font-size_heading', 1.25rem, 2rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
-  // @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
-  @include fluid-fractional-scale('body_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
-  @include fluid-fractional-scale('inner_margin', 0.75rem, 1.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
-  // @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide, vw, 8);
-  // @include fluid-fractional-scale('inner_padding', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
-  @include fluid-fractional-scale('body_padding', 0.75rem, 2.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthWide);
-  @include fluid-fractional-scale('inner_padding', 0.75rem, 1.5rem, $screenViewBreakpointWidthMobile, $screenViewBreakpointWidthOneColumn);
+  @include fluid-geometric-scale('font-size_root', 1rem, 1.25rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthOneColumn);
+  @include fluid-geometric-scale('font-size', 1rem, 1.25rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthOneColumn);
+  @include fluid-geometric-scale('font-size_heading', 1.25rem, 2rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthWide);
+  // @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthWide);
+  @include fluid-fractional-scale('body_margin', 0.75rem, 2.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthWide);
+  @include fluid-fractional-scale('inner_margin', 0.75rem, 1.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthOneColumn);
+  // @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthWide, vw, 8);
+  // @include fluid-fractional-scale('inner_padding', 0.75rem, 2.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthWide);
+  @include fluid-fractional-scale('body_padding', 0.75rem, 2.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthWide);
+  @include fluid-fractional-scale('inner_padding', 0.75rem, 1.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthOneColumn);
 
   --font-size: var(--font-size-normal);
   --font-size-aside: var(--font-size_root-normal);
@@ -1097,66 +967,29 @@ html {
   --color-scheme-timing: ease;
   /*! purgecss end ignore */
 
-  --screenViewWidthChrome: #{$screenViewWidthChrome};
-  --screenViewWidthUltrawide: #{$screenViewWidthUltrawide};
+  --screenViewWidthChrome: #{hugo.$screenViewWidthChrome};
+  --screenViewWidthUltrawide: #{hugo.$screenViewWidthUltrawide};
 
-  --content_multicolumn_max-width: #{$screenViewWidthChrome};
-  --content_max-width: #{$screenViewColumnWidthMax};
-  --content_wide_max-width: #{$screenViewColumnWidthWideMax};
-  // @media screen and (min-width: #{$screenViewBreakpointWidthWide}) {
-  //   --content_max-width: #{$screenViewColumnWidthWideMax};
+  --content_multicolumn_max-width: #{hugo.$screenViewWidthChrome};
+  --content_max-width: #{hugo.$screenViewColumnWidthMax};
+  --content_wide_max-width: #{hugo.$screenViewColumnWidthWideMax};
+  // @media screen and (min-width: #{hugo.$screenViewBreakpointWidthWide}) {
+  //   --content_max-width: #{hugo.$screenViewColumnWidthWideMax};
   // }
 
-  --screenViewNavHeight: #{$screenViewNavHeightNarrow};
-  @media screen and (min-width: #{$screenViewBreakpointWidthNarrow}) {
-    --screenViewNavHeight: #{$screenViewNavHeight};
+  --screenViewNavHeight: #{hugo.$screenViewNavHeightNarrow};
+  --navigation-header-height: 0;
+  --choice-bg-menu: var(--haze);
+  --choice-bg-menu-active: var(--xxxhaze);
+
+  @media screen and (min-width: #{hugo.$screenViewBreakpointWidthNarrow}) {
+    --screenViewNavHeight: #{hugo.$screenViewNavHeight};
   }
-
-  $screenViewBreakpoints: (
-    'width': (
-      'mobile': $screenViewBreakpointWidthMobile,
-      'narrow': $screenViewBreakpointWidthNarrow,
-      'onecolumn': $screenViewBreakpointWidthOneColumn,
-      'twocolumn': $screenViewBreakpointWidthTwoColumn,
-      'wide': $screenViewBreakpointWidthWide,
-      'ultrawide': $screenViewBreakpointWidthUltrawide,
-    ),
-    'height': (
-      'shallow': $screenViewBreakpointHeightShallow,
-      'tall': $screenViewBreakpointHeightTall,
-    ),
-  );
-
-  $screenViewMargin: (
-    'outer': (
-      'mobile': $screenViewBodyMarginMobile,
-      'narrow': $screenViewBodyMarginNarrow,
-      'onecolumn': $screenViewBodyMarginOneColumn,
-    ),
-    'inner': (
-      'mobile': $screenViewInnerMarginMobile,
-      'narrow': $screenViewInnerMarginNarrow,
-      'onecolumn': $screenViewInnerMarginOneColumn,
-    ),
-  );
-
-  $screenViewPadding: (
-    'outer': (
-      'mobile': $screenViewBodyPaddingMobile,
-      'narrow': $screenViewBodyPaddingNarrow,
-      'onecolumn': $screenViewBodyPaddingOneColumn,
-    ),
-    'inner': (
-      'mobile': $screenViewInnerPaddingMobile,
-      'narrow': $screenViewInnerPaddingNarrow,
-      'onecolumn': $screenViewInnerPaddingOneColumn,
-    ),
-  );
 
   // @mixin screen-margin-padding($breakpoint) {
   //   @each $where in ('outer', 'inner') {
-  //     $marginBase: map-get(map-get($screenViewMargin, $where), $breakpoint);
-  //     $paddingBase: map-get(map-get($screenViewPadding, $where), $breakpoint);
+  //     $marginBase: map.get(map.get(hugo.$screenViewMargin, $where), $breakpoint);
+  //     $paddingBase: map.get(map.get(hugo.$screenViewPadding, $where), $breakpoint);
   //     @if $paddingBase {
   //       @each $sizeDesc, $numQuarters in ('-1': 1, '-2': 2, '-3': 3, '': 4) {
   //         @each $direction in ('x', 'y') {
@@ -1168,11 +1001,11 @@ html {
   //   }
   // }
 
-  // $breakpointsWidth: map-get($screenViewBreakpoints, 'width');
+  // $breakpointsWidth: map.get(hugo.$screenViewBreakpoints, 'width');
   // @for $i from 1 through length($breakpointsWidth) {
   //   $breakpointKeys: map-keys($breakpointsWidth);
   //   $breakpoint: nth($breakpointKeys, $i);
-  //   $breakpointWidth: map-get(map-get($screenViewBreakpoints, 'width'), $breakpoint);
+  //   $breakpointWidth: map.get(map.get(hugo.$screenViewBreakpoints, 'width'), $breakpoint);
   //   @if $i == 1 {
   //     @include screen-margin-padding($breakpoint);
   //   }
@@ -1183,66 +1016,12 @@ html {
   //   }
   // }
 
-  --navigation-header-height: 0;
-
-  @include generate_colors($colors-lit);
-  --choice-bg-menu: var(--haze);
-  --choice-bg-menu-active: var(--xxxhaze);
-
-  @mixin color-scheme-dark {
-    --theme-text-dim: hsla(0,0%,100%,0.87);
-    --color-scheme: 'dark';
-    --text: var(--theme-text-dim);
-    --accent: var(--bubble);
-    // --choice-bg: var(--bg);
-    --code-bg: var(--translucent);
-    --header-text: var(--theme-text-dim);
-    --table-bg: var(--code-bg);
-    --table-haze: hsla(0, 0%, 100%, 0.1);
-    --table-border: var(--code-bg);
-    --footer-bg: var(--bg);
-    svg.icon {
-      fill: var(--theme-text);
-    }
-    .icon {
-      img {
-        background: none;
-      }
-      svg {
-        fill: #fafafa;
-      }
-    }
-    .nav_color-scheme {
-      &_choice {
-        &_light {
-          opacity: 0.0;
-        }
-        &_dark {
-          opacity: 1.0;
-        }
-      }
-    }
-    @media (any-hover: hover) {
-      &:not([data-color-scheme-transition]) .nav_color-scheme_choice:hover {
-        .nav_color-scheme_choice {
-          &_light {
-            opacity: 1.0;
-            z-index: 1;
-          }
-          &_dark {
-            opacity: 0.0;
-            transition: none;
-            z-index: auto;
-          }
-        }
-      }
-    }
-
-    @include generate_colors( map-merge($colors-lit, $colors-dim) );
-    img:not([src*=".svg"]) {
-      filter: var(--dim-image-filter);
-    }
+  &:not(.kind-page) {
+    --choice-bg: var(--theme-bg);
+    --RGB_choice-bg: var(--RGB_theme-bg);
   }
+
+  @include generate_colors(colors.$colors-lit);
 
   @media screen {
     &[data-color-scheme="dark"] {
@@ -1254,36 +1033,4 @@ html {
       @include color-scheme-dark;
     }
   }
-
-  &:not(.kind-page) {
-    --choice-bg: var(--theme-bg);
-    --RGB_choice-bg: var(--RGB_theme-bg);
-  }
 }
-
-$fontStyles: (default, sans, serif, mono);
-@each $style in $fontStyles {
-  @include defineFont($style, $style);
-}
-
-$fontDefinitions: (
-  (default, $fontTypeDefault),
-  (content, $fontTypeContent),
-  (article, $fontTypeArticle),
-  (code, $fontTypeCode),
-  (heading, $fontTypeHeading),
-  (meta, $fontTypeMeta)
-);
-
-@each $defID, $defSpec in $fontDefinitions {
-  // It is possible to define a font definition with the value `inherit`, e.g.,
-  // (heading, $fontTypeHeading)
-  // with `$fontTypeHeading` set to `inherit`
-  // NOTE: Determine, how to determine the value of `inherit`. For the time being,
-  // we simply treat it as a no-op, which will lead to the corresponding font utility
-  // classes not being generated
-  @if ($defSpec != inherit) {
-    @include defineFont($defID, $defSpec);
-  }
-}
-// @include defineFont(default, default);

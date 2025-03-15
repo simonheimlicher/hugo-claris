@@ -1,0 +1,8 @@
+@use "sass:meta";
+@use "sass:string";
+
+$value: "Hello World!";
+
+@debug "Before: $value=#{$value} [#{meta.type-of($value)}]";
+$value: string.replace($value, "Hello", "Good Morning");
+@debug "After: $value=#{$value} [#{meta.type-of($value)}]";

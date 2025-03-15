@@ -1,3 +1,6 @@
+@use "hugo-vars" as hugo;
+@use "variables" as variables;
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -35,7 +38,7 @@ body {
   // https://web.dev/prefers-color-scheme/#activating-dark-mode-in-the-operating-system
   // transition: color var(--color-scheme-duration) var(--color-scheme-timing), background-color var(--color-scheme-duration) var(--color-scheme-timing)
   // transition: all var(--color-scheme-duration) var(--color-scheme-timing)
-  @include color-scheme_transition;
+  @include variables.color-scheme_transition;
 
   // Allow breaking long words including URLs
   // https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
@@ -77,9 +80,11 @@ a {
     outline: 1px dashed var(--link-focus);
   }
   // Avoid adding a hyphen where the word breaks
-  hyphens: none;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  & {
+    hyphens: none;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
 
   // Allow hyphenation in block elements within a
   div,
@@ -98,7 +103,7 @@ h4,
 h5,
 h6 {
   // padding: $heading-padding-top 0 calc(#{$heading-padding-top} * 0.25) 0;
-  margin: $heading-margin-top 0 calc(#{$heading-margin-top} * 0.25) 0;
+  margin: variables.$heading-margin-top 0 calc(#{variables.$heading-margin-top} * 0.25) 0;
   color: var(--header-text);
   // Replaced by utility classes
   // @include useFontDefinition(default, display, default, strong);
@@ -166,7 +171,7 @@ img {
 main img {
   content-visibility: auto;
 }
-@include list-style_indented;
+@include variables.list-style_indented;
 
 // em {
 //   font-weight: var(--font-weight);
@@ -314,7 +319,7 @@ blockquote {
     }
   }
 }
-@media screen and (min-width: $screenViewBreakpointWidthOneColumn) and (min-height: $screenViewBreakpointHeightShallow) {
+@media screen and (min-width: hugo.$screenViewBreakpointWidthOneColumn) and (min-height: hugo.$screenViewBreakpointHeightShallow) {
   .view-screen {
     blockquote {
       --quotation-mark-open-height: 1rem;
@@ -324,7 +329,7 @@ blockquote {
     }
   }
 }
-@media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
+@media screen and (min-width: hugo.$screenViewBreakpointWidthTwoColumn) {
   .view-screen {
     blockquote {
       --quotation-mark-open-height: 1.2rem;
@@ -381,7 +386,7 @@ dt + dt + dd {
   /* own height including padding */
   padding-left: calc(var(--dt-padding-left));
 }
-@media screen and (min-width: $screenViewBreakpointWidthNarrow) {
+@media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
   dl {
     --dt-width: 25%;
   }

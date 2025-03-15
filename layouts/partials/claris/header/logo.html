@@ -48,11 +48,11 @@
   {{- end }}
 {{- else -}}
       <div class="nav_group nav_brand_text_parent">
-      {{- with $logoURL }}
+  {{- with $logoURL }}
         <a href='{{ . }}' title='{{ $siteTitle }}' class='nav_brand_text nav_item'>
-      {{- end }}
-          {{- $siteTitle -}}
-    {{- if $logoURL }}
+  {{- end }}
+        {{- $siteTitle -}}
+  {{- if $logoURL -}}
         </a>
       </div>
   {{- end }}
