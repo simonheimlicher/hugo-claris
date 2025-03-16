@@ -32,12 +32,9 @@ body {
   &.macos,
   &.windows,
   &.ios {
-    // font-variant: common-ligatures
     text-rendering: optimizeLegibility;
   }
   // https://web.dev/prefers-color-scheme/#activating-dark-mode-in-the-operating-system
-  // transition: color var(--color-scheme-duration) var(--color-scheme-timing), background-color var(--color-scheme-duration) var(--color-scheme-timing)
-  // transition: all var(--color-scheme-duration) var(--color-scheme-timing)
   @include variables.color-scheme_transition;
 
   // Allow breaking long words including URLs
@@ -50,16 +47,16 @@ body {
   overflow-wrap: break-word;
   word-wrap: break-word;
 
-  // word-break: break-all; Prioritizes minimizing the space wasted while avoiding overflow,
-  // before keeping any words unbroken, so it never wraps anywhere but at the right margin
-  // word-break: break-word
-
   // Adds a hyphen where the word breaks, if supported
   hyphens: auto;
 }
 a {
   text-decoration: none;
   color: inherit;
+  // Avoid adding a hyphen where the word breaks
+  hyphens: none;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   &:focus,
   &:focus-within {
     // Allow overrriding outline for accessibility
@@ -67,9 +64,6 @@ a {
   }
   &:hover {
     @media (any-hover: hover) {
-      // text-decoration-line: underline
-      // text-underline-position: under
-      // text-underline-offset: 0.1em
       color: var(--text-hover);
     }
   }
@@ -78,12 +72,6 @@ a {
   }
   &:focus:not(&:active) {
     outline: 1px dashed var(--link-focus);
-  }
-  // Avoid adding a hyphen where the word breaks
-  & {
-    hyphens: none;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
   }
 
   // Allow hyphenation in block elements within a
@@ -102,14 +90,8 @@ h3,
 h4,
 h5,
 h6 {
-  // padding: $heading-padding-top 0 calc(#{$heading-padding-top} * 0.25) 0;
   margin: variables.$heading-margin-top 0 calc(#{variables.$heading-margin-top} * 0.25) 0;
   color: var(--header-text);
-  // Replaced by utility classes
-  // @include useFontDefinition(default, display, default, strong);
-  // @extend .role-display;
-  // @extend strong;
-  // line-height: var(--line-height);
   font-weight: var(--font-weight-strong);
   hyphens: manual;
   .icon,
@@ -124,7 +106,6 @@ h6 {
     position: relative;
     margin: 0 -2em 0 0;
     padding: 0 0 0 0.25em;
-    // opacity: 0.25
     display: inline-flex;
     flex-direction: column;
   }
@@ -173,9 +154,6 @@ main img {
 }
 @include variables.list-style_indented;
 
-// em {
-//   font-weight: var(--font-weight);
-// }
 // Avoid `pre` breaking width of grid columns
 pre {
   min-width: 0;
@@ -192,7 +170,6 @@ hr {
   border: none;
   padding: 1px;
   background: var(--xhaze);
-  // opacity: 0.5;
   margin: var(--inner_margin) 0;
 }
 aside {
@@ -230,16 +207,7 @@ tbody {
   }
 }
 blockquote {
-  // margin: 1.5rem auto
-  // quotes: '\201C''\201D''\2018''\2019'
-  // padding: 1.5rem
-  // color: var(--text)
-  // padding: 1rem 1.5rem
-  // border-left: 0.25rem solid var(--theme)
-  // position: relative
-  // background: var(--haze)
   font-style: italic;
-  // font-weight: lighter
   // Source: https://codepen.io/bharanim/pen/BoLNdd
   $blockquote-quotation-color-open: rgba(var(--RGB_text), 0.5);
   $blockquote-quotation-color-close: rgba(var(--RGB_text), 0.1);
@@ -283,19 +251,16 @@ blockquote {
   min-height: calc(1.25 * var(--quotation-mark-close-height));
 
   &::before {
-    // @include useFontDefinition(serif);
     content: "“";
     position: absolute;
     top: calc(var(--box-padding-top) + var(--quotation-mark-open-height));
     left: 0;
-    // @extend .font-serif;
     line-height: var(--quotation-mark-open-height);
     font-size: var(--quotation-mark-open-font-size);
     color: $blockquote-quotation-color-open;
     font-weight: normal;
   }
   &::after {
-    // @include useFontDefinition(serif);
     content: "”";
     position: absolute;
     bottom: calc(0px - 0.5 * var(--quotation-mark-close-height));

@@ -9,10 +9,8 @@
     background: var(--choice-bg);
     z-index: variables.$main-z-index;
     @include variables.color-scheme_transition;
-    // @include variables.link-lvhfa;
   }
   &_inner {
-    // margin-top: var(--inner_margin)
     clear: both;
     padding: 0 0 var(--body_padding) 0;
     @include variables.element-padding('inner', 0, unset, unset, unset);
@@ -64,7 +62,6 @@
 
 .panel {
   &_container {
-    // font-size: var(--font-size-larger-1);
     @extend .article_body;
     clear: both;
     p, ul, ol {
@@ -116,31 +113,6 @@
     padding: var(--inner_padding) 0;
     @include variables.color-scheme_transition;
     background: var(--choice-bg);
-    // &-0
-    //   background: var(--theme-bg-hue-0)
-    // &-1
-    //   background: var(--theme-bg-hue-1)
-    // &-2
-    //   background: var(--theme-bg-hue-2)
-    // &-3
-    //   background: var(--theme-bg-hue-3)
-    // &-4
-    //   background: var(--theme-bg-hue-4)
-    // &-5
-    //   background: var(--theme-bg-hue-5)
-    // &.background-dark
-    //   &-0
-    //     background: var(--dark-bg-hue-0)
-    //   &-1
-    //     background: var(--dark-bg-hue-1)
-    //   &-2
-    //     background: var(--dark-bg-hue-2)
-    //   &-3
-    //     background: var(--dark-bg-hue-3)
-    //   &-4
-    //     background: var(--dark-bg-hue-4)
-    //   &-5
-    //     background: var(--dark-bg-hue-5)
     &_inner {
       margin: 0 auto;
       max-width: var(--content_multicolumn_max-width);
@@ -393,14 +365,6 @@
   }
   &_tally {
     padding: 0 0.25em 0 0.5em;
-    // border-radius: 0.5em;
-    // background-color: var(--choice-bg);
-    // background-color: rgba(var(--RGB_bg), 80%);
-    // display: inline-flex;
-    // justify-content: center;
-    // align-items: center;
-    // Ensure constrast ratio requirements are met
-    // color: var(--theme-text)
     color: var(--text);
     margin: 0.125em 0 0.125em 0.5em;
     // Minimal size for mobile users
@@ -421,20 +385,15 @@
   &_translucent,
   .article_content &_translucent,
   .sidebar &_translucent {
-    // background-color: rgba(var(--RGB_text), 10%);
     background-color: rgba(var(--RGB_xhaze), 10%);
     // Ensure constrast ratio requirements are met
     color: var(--text);
-      // border: 1px solid transparent
-    // border: 1px solid rgba(var(--RGB_text), 20%);
     border: 1px solid rgba(var(--RGB_xhaze), 100%);
     &:hover,
     &:focus {
       @media (any-hover: hover) {
         color: var(--text-hover);
-        // background-color: var(--bg-hover);
         background-color: rgba(var(--theme-bg-hover), 100%);
-        // border: 1px solid var(--text-hover);
         border: 1px solid var(--xxxhaze);
       }
     }
@@ -454,7 +413,6 @@
   }
   &_tag,
   &_meta_tag {
-    // padding: 0 0.75em;
     padding: 0.25em 0.75em;
     font-size: var(--font-size-meta);
   }
@@ -469,11 +427,8 @@
     display: inline-flex;
     flex-flow: row wrap;
     align-items: center;
-    // margin: calc(-1 * var(--inner_padding_4-1));
     margin: 0 calc(-1 * var(--inner_padding_4-1)) var(--inner_padding_4-3);
     color: var(--text-faint);
-    // @include variables.useFontDefinition(meta);
-    // @extend .font-meta;
     @include variables.link-lvhfa;
     span {
       align-items: center;
@@ -523,9 +478,6 @@
   &_content {
     @include variables.list-style_indented;
     @include variables.color-scheme_transition;
-    // h2 {
-    //   font-size: var(--font-size-larger-1);
-    // }
   }
   &_body {
     // For IE 11, otherwise responsive images exceed the width of .article_body
@@ -578,35 +530,10 @@
 .article_aside {
   display: none;
   position: sticky;
-  // margin: 0.8rem 0 1rem auto
-  // margin: 0 0 var(--inner_margin) auto;
   margin: 0 auto var(--inner_margin) 0;
-  // top: calc(#{hugo.$screenViewNavHeight} + 5vh)
   top: calc(#{hugo.$screenViewNavHeight} + #{hugo.$screenViewInnerPaddingOneColumn});
   align-self: start;
   border-radius: 0.25rem;
-  // padding: 0.5rem 1rem 0 1rem
-  // Replaced by utility classes
-  // @include variables.useFontDefinition(meta);
-  // background: rgba(var(--RGB_bg), 0.9)
-  // https://stackoverflow.com/a/66962139/617559
-  // width: fit-content
-  // display: flex
-  // align-items: center
-  // @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none))
-  //   background: linear-gradient(180deg, rgba(var(--RGB_bg), 0.8) 0%, rgba(var(--RGB_bg), 0.8) 80%, rgba(var(--RGB_bg), 0.8) 100%)
-  //   backdrop-filter: blur(50px)
-  //   -webkit-backdrop-filter: blur(50px)
-  // &::after {
-  //   position: absolute;
-  //   content: "";
-  //   top: 0;
-  //   bottom: 0;
-  //   padding: 0.5px;
-  //   background: var(--xhaze);
-  //   background: linear-gradient(to bottom, var(--xhaze), var(--haze), var(--xhaze), var(--xhaze), var(--haze), var(--xhaze));
-  //   @include variables.color-scheme_transition;
-  // }
   @media screen and (min-width: hugo.$screenViewBreakpointWidthTwoColumn) {
 
     // Don't show any article aside if the browser does not support grid
@@ -625,9 +552,6 @@
     padding: 2em 0 0 0;
     position: relative;
     z-index: 1;
-    // Replaced by utility classes
-    // @include variables.useFontDefinition(meta);
-
     h2 {
       font-size: 150%;
     }
@@ -685,12 +609,6 @@
     var(--initial_margin-bottom)
     var(--initial_margin-left);
   }
-  /*
-  .initial-words {
-    // @include variables.useFontDefinition(inherit, default, small-caps, strong);
-    @extend .variant-small-caps;
-  }
-  */
 }
 
 .main_header .feature-image {
@@ -720,7 +638,6 @@
   .content-title {
     --title_line-height: calc(var(--font-size-title) * var(--line-height-heading));
     margin: calc(0.5 * var(--title_line-height)) auto;
-    // @extend .role-display;
     padding: 0;
     width: fit-content;
     text-align: unset;
@@ -729,7 +646,6 @@
     hyphens: manual;
     @include variables.content_multicolumn;
     @media screen and (min-width: hugo.$screenViewBreakpointWidthTwoColumn) {
-      // min-width: calc(var(--content_max-width) - var(--inner_margin) * 2);
       min-width: var(--content_max-width);
     }
     h1 {
@@ -740,10 +656,7 @@
     .supertitle {
       display: block;
       font-size: var(--font-size-supertitle);
-      // padding: 1.5rem 0 0.25rem 0;
       text-align: start;
-      // Replaced by utility classes
-      // @include variables.useFontDefinition(inherit, display, small-caps, strong);
     }
     .subtitle {
       display: block;
@@ -779,19 +692,6 @@
             $factor * $border_overlap_fraction * var(--feature-image_max-width)
           )
         }
-
-        // .content-title {
-        //   @include variables.content_multicolumn;
-        //   --title_line-height: calc(var(--font-size-title) * var(--line-height-heading));
-        //   margin: calc(0.5 * var(--title_line-height)) auto;
-        //   @media screen and (min-width: hugo.$screenViewBreakpointWidthTwoColumn) {
-        //     // min-width: calc(var(--content_max-width) - var(--inner_margin) * 2);
-        //     min-width: var(--content_max-width);
-        //   }
-        //   padding: 0;
-        //   width: fit-content;
-        //   text-align: unset;
-        // }
 
         .feature-image {
           &_figure {
@@ -855,7 +755,6 @@
           &_img {
             margin: 0;
             padding: 0;
-            // max-width: unset
             max-height: unset;
             width: auto;
             max-width: 40vw;
@@ -876,7 +775,6 @@
       &-background {
         display: grid;
         grid-template-columns: 0px 3fr 1fr 3fr 0px;
-        // grid-template-rows: minmax(0px, 2fr) 5fr minmax(0px, 1fr)
         grid-template-rows: minmax(0px, 1fr) 8fr minmax(0px, 3fr);
         min-height: 33vw;
         max-height: 75vh;
@@ -1030,7 +928,6 @@
 
 .inline-separator-list {
   // Does not appear to have an effect
-  // @include variables.useFontDefinition;
   p {
     color: var(--text-faint);
   }
@@ -1063,7 +960,6 @@
   }
   &_toggle {
     margin: 0.5rem;
-    // margin-left: 0.5rem;
     cursor: pointer;
   }
   &_list {
@@ -1091,7 +987,6 @@
     cursor: pointer;
   }
   &_sort {
-    // font-size: 1rem;
     color: var(--text);
     background: var(--theme-bg);
     position: absolute;
@@ -1122,7 +1017,6 @@
         bottom: 0;
         left: -1rem;
         z-index: -1;
-        // opacity: 0.25;
         background: var(--theme-bg);
         border: 1px solid var(--theme-bg);
         border-radius: 999rem;
@@ -1201,15 +1095,12 @@
   }
 }
 .fa-icon {
-  // width: 1em
   height: auto;
   display: inline-flex;
   justify-content: center;
   align-items: center;
   margin: 0;
-  // margin: 0 0.5rem
   width: 1.2em;
-  // height: 1.2em
   flex: none;
   &-large {
     width: 2.4em;
@@ -1287,8 +1178,6 @@ svg.qrcode-svg {
       top: -2rem;
       background-color: var(--theme-hover);
       color: var(--theme-text-hover);
-      // Replaced by @extend
-      // @include variables.useFontDefinition(meta);
       width: auto;
       white-space: nowrap;
       padding: 0.25rem 0.75rem;
@@ -1418,7 +1307,6 @@ svg.qrcode-svg {
       margin: 0;
     }
     &_read-on {
-      // display: none;
       .read-on {
         // Note: The content below contains UTF-8-encoded &nbsp;
         // Do not use &nbsp; because Dart SASS does not support mixing
@@ -1429,14 +1317,6 @@ svg.qrcode-svg {
       }
       text-align: right;
     }
-    // @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
-    //   & {
-    //     padding-bottom: 0;
-    //   }
-    //   &_read-on {
-    //     display: block;
-    //   }
-    // }
   }
   &_container {
     &, & > a {
@@ -1652,7 +1532,6 @@ kbd {
   display: inline-block;
   margin: 0 0.1rem;
   padding: 0.1rem 0.6rem;
-  // @include variables.useFontDefinition(meta);
   @extend .font-meta !optional;
   background-clip: padding-box;
   border: 1px solid rgba(var(--RGB_text), 0.2);
@@ -1691,12 +1570,8 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
   margin: 1rem 5% 1rem 5%;
   padding: 0.5rem 1rem;
   position: relative;
-  // z-index: (variables.$main-z-index  + 1)
-  // background: var(--neutral-haze);
   @include variables.color-scheme_transition;
   color: var(--text);
-  // Replaced by utility classes
-  // @include variables.useFontDefinition(default);
   display: inline-block;
   background: transparent;
   width: 90%;
@@ -1863,7 +1738,6 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
 .shortcode_responsive-figure,
 .excerpt_container {
   --float_margin: var(--inner_margin_4-3);
-  // padding: var(--inner_padding) var(--inner_padding)
   --float_margin-top: calc( (1 + (var(--line-height) - 1) / 2) * 1em);
   border-radius: 0.125rem;
   // Remove any surrounding margins and padding from elements
@@ -1886,8 +1760,6 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
     @include variables.color-scheme_transition;
     padding: var(--inner_padding_4-2)  var(--inner_padding_4-2);
     color: var(--text);
-    // Replaced by utility classes
-    // @include variables.useFontDefinition(meta);
     & > figcaption {
       width: 100%;
       padding: var(--inner_padding_4-2) 0 0 0;
@@ -1912,7 +1784,6 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
   &.float-right {
     float: none;
     max-width: 100%;
-    // max-width: calc(0.8 * (#{hugo.$screenViewBreakpointWidthMobile} - 2 * var(--inner_padding) ) )
     margin: var(--inner_margin) auto;
   }
   *:not(figure) + & {

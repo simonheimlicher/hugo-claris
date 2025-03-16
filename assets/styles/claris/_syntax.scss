@@ -15,8 +15,6 @@
 }
 
 pre, code {
-  // Replaced by utility classes
-  // @include useFontDefinition(code);
   word-break: break-word;
 }
 code {
@@ -27,7 +25,6 @@ code {
   &:not(pre > &) {
     display: inline;
     padding: calc(1em * (var(--line-height) - 1) / 8) 0.25ch calc(1em * (var(--line-height) - 1) / 4) 0.25ch;
-    /* vertical-align: 7%; */
     border: 0.05em solid var(--xxxhaze);
     border-radius: 0.125em;
     background-color: var(--haze);
@@ -54,12 +51,9 @@ pre {
 .highlight {
   position: relative;
   background: var(--code-bg) !important;
-  // border-radius: 0.5rem
   border-radius: 0.2rem;
   margin: 1.5rem auto 0 auto;
   width: 100%;
-  // Replaced by utility classes
-  // @include useFontDefinition(meta);
   & + & {
     margin-top: 2.25rem;
   }
@@ -97,7 +91,6 @@ pre {
     text-align: right;
     // NOTE: No limitation of width to allow long syntax names
     // such as Go HTML Template
-    // width: 7.5rem
     padding: 0.5rem 1rem;
     @extend .font-meta !optional;
     font-style: italic;
@@ -329,10 +322,8 @@ pre {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    // transition: opacity 0.3s var(--easing)
     padding: 0.1rem;
     transform-origin: 50% 50%;
-    // opacity: 0.7
     &.active {
       animation: pulse 0.1s linear;
     }
@@ -353,15 +344,10 @@ pre {
     bottom: 0;
     width: 100%;
     text-align: center;
-    // font-size: 1.5rem
-    // font-weight: var(--font-weight-code)
-    // padding: 0.5rem 0
     padding: 0 1.5rem 0.5rem 1.5rem;
     cursor: pointer;
-    // letter-spacing: 0.1px
     z-index: 19;
     background: var(--code-bg);
-    // border: solid 0.125px hsla(200, 20%, 80%, 0.5)
     border-radius: 0.25rem;
   }
   &_expanded &_from {

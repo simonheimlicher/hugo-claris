@@ -5,33 +5,6 @@
 @use "functions" as functions;
 @use "variables" as variables;
 
-// This mixin creates a background that is cut off at the corner specified
-// Unfortunately, it cannot be used to generate an outline with a cut-off corner
-// @mixin cut-off-corner-background($color: var(--text-hover), $background: var(--theme-bg-hover), $top-left: 0, $top-right: 0, $bottom-right: 0, $bottom-left: 0)
-//   z-index: -1
-//   content: ''
-//   position: absolute
-//   color: var(--theme-text-hover)
-//   top: 0
-//   right: 0
-//   bottom: 0
-//   left: 0
-//   background-size: 100% 100%
-//   background-image: linear-gradient(to top, $background 0, $background 100%)
-//   background-repeat: repeat-x
-//   background-position-y: bottom
-//   height: unset
-//   margin: 0
-//   border-radius: 0
-//   --all: 0
-//   --top-left: #{$top-left}
-//   --top-right: #{$top-right}
-//   --bottom-right: #{$bottom-right}
-//   --bottom-left: #{$bottom-left}
-//   -webkit-mask: linear-gradient(45deg, transparent 0 var(--bottom-left,var(--all)) ,#fff 0) bottom left, linear-gradient( -45deg, transparent 0 var(--bottom-right,var(--all)),#fff 0) bottom right, linear-gradient( 135deg, transparent 0 var(--top-left,var(--all)) ,#fff 0) top left, linear-gradient(-135deg, transparent 0 var(--top-right,var(--all)) ,#fff 0) top right
-//   -webkit-mask-size: 50.5% 50.5%
-//   -webkit-mask-repeat: no-repeat
-
 @mixin nav-background($color: var(--text-active), $background: var(--theme-bg-active), $border: var(--theme-bg-active), $underline: var(--theme-bg-active), $top-left: 0.5rem, $top-right: 0.5rem, $bottom-right: 0.5rem, $bottom-left: 0.5rem) {
   color: $color;
   z-index: (variables.$main-z-index + 1);
@@ -108,25 +81,6 @@ $indicator-width: var(--toc_indicator_width)) {
   }
 }
 
-// Icon: triangle
-// NOTE: Untested
-@mixin table-of-contents_triangle($triangle-width: 0.5ch, $triangle-color: var(--text)) {
-  &::after {
-    content: '';
-    display: block;
-    position: absolute;
-    top: var(--triangle_top);
-    left: var(--toc_indent);
-    height: 0;
-    width: 0;
-    opacity: 1;
-    background: transparent;
-    border-style: solid;
-    border-width: $triangle-width 0 $triangle-width ($triangle-width / 3 * 4);
-    border-color: transparent transparent transparent $triangle-color;
-  }
-}
-
 @mixin table-of-contents-hover($hover-color: var(--theme-bg-hover), $active-color: var(--accent), $icon-color: var(--theme-bg-hover)) {
   @media (any-hover: hover) {
     &, & > a:active {
@@ -152,7 +106,6 @@ $indicator-width: var(--toc_indicator_width)) {
 }
 
 @if functions.stringContains(hugo.$mediaType, "screen") or functions.stringContains(hugo.$mediaType, "all") {
-  // @debug "components_screen: mediaType=#{hugo.$mediaType}";
   // General navigation definition
   %upcaret {
     width: 0;
@@ -221,7 +174,6 @@ $indicator-width: var(--toc_indicator_width)) {
       z-index: -2;
       background: rgba(var(--RGB_choice-bg), 0.98);
       @include variables.background-gradient-translucent("to top", 0.9);
-      // @include variables.shadow-centered-narrow
       box-shadow: 0.25rem 0.25rem 3rem var(--shadow);
       @include variables.color-scheme_transition;
     }
@@ -241,10 +193,8 @@ $indicator-width: var(--toc_indicator_width)) {
     color: var(--text);
     white-space: nowrap;
     column-gap: var(--inner_padding_4-2);
-    // Replaced by utility classes
-    // @include variables.useFontDefinition(sans, display);
     @include variables.chrome;
-    // NOTE: Overflow-y leads to scroll bars
+    // NOTE: Overflow-y leads to scrollbars
     // Does not work because overlow-x and -y cannot be set independently
     // https://stackoverflow.com/q/6421966/617559
     font-size: var(--font-size-nav);
@@ -277,9 +227,7 @@ $indicator-width: var(--toc_indicator_width)) {
     }
     // NOTE: dart sass fails to convert "~ &"; it leaves out "~":
     // '~ &' becomes '.nav_active' instead of '~ .nav_active'
-    // a:not(:has( ~ &), &).nav_active_in_section {
     a:not(:has( ~ .nav_active), &_active).nav_active_in_section {
-      // z-index: (variables.$main-z-index + 1)
       @include nav-active-section-background;
     }
     &_active, &_active_page {
@@ -288,11 +236,6 @@ $indicator-width: var(--toc_indicator_width)) {
       @include nav-active-background;
       // NOTE: dart sass fails to convert "~ &"; it leaves out "~":
       // '~ &' becomes '.nav_active' instead of '~ .nav_active'
-      // a:not(:has( ~ &), &).nav_active_in_section {
-      // a:not(:has( ~ .nav_active), .nav_active).nav_active_in_section {
-      //     // z-index: (variables.$main-z-index + 1)
-      //   @include nav-active-section-background;
-      // }
     }
     &_icon {
       width: 0.7rem;
@@ -545,8 +488,6 @@ $indicator-width: var(--toc_indicator_width)) {
       }
       &_text {
         display: block;
-        // Replaced by utility classes
-        // @include variables.useFontDefinition(inherit, display, small-caps, bold);
         font-weight: var(--font-weight-strong);
         color: var(--theme-text);
         line-height: (hugo.$screenViewNavHeightNarrow - 1.5rem);
@@ -568,7 +509,6 @@ $indicator-width: var(--toc_indicator_width)) {
     }
     &_color-scheme {
       &_choice {
-        // display: none;
         &_mask {
           position: relative;
           width: hugo.$screenViewNavHeightNarrow;
@@ -588,8 +528,6 @@ $indicator-width: var(--toc_indicator_width)) {
           .icon {
             display: block;
             fill: var(--text);
-            // width: var(--icon-height-nav)
-            // height: var(--icon-height-nav)
             width: 1rem;
             height: 1rem;
             margin: 0;
@@ -823,7 +761,6 @@ $indicator-width: var(--toc_indicator_width)) {
         position: relative;
         display: flex;
         align-items: center;
-        // column-gap: var(--inner_margin_4-2);
         &_follow_color-scheme {
           margin-left: auto;
           display: flex;
@@ -880,17 +817,10 @@ $indicator-width: var(--toc_indicator_width)) {
     }
     .nav {
       height: hugo.$screenViewNavHeight;
-      // &_item,
-      // &_follow {
-      //   padding: 0.5rem 0.5rem;
-      //   padding: calc( (hugo.$screenViewNavHeight - 2rem) / 2) var(--inner_padding_4-1);
-      // }
       &_brand {
         &_logo {
           height: hugo.$screenViewNavHeight;
-          // margin-left: (-1 * hugo.$screenViewInnerPaddingOneColumn);
           margin-right: 0;
-          // padding-left: hugo.$screenViewInnerPaddingOneColumn;
         }
         &_text {
           line-height: (hugo.$screenViewNavHeight - 1.5rem);
@@ -948,9 +878,6 @@ $indicator-width: var(--toc_indicator_width)) {
     width: 100%;
     @include variables.aside-meta;
 
-    // The top offset of the triangle depends on the font family and
-    // needs to be adjusted accordingly
-    // --triangle_top: 0.33em;
     --toc_indent: calc(1.5 * var(--font-size-normal));
     --toc_item_between: calc(0.5 * var(--font-size-normal));
     --toc_indicator_line_color: var(--xhaze);
@@ -985,12 +912,10 @@ $indicator-width: var(--toc_indicator_width)) {
       }
     }
 
-    //li.visible:not(.active) + li.active,
     li.active,
     nav:not(.active) li.visible {
       @include table-of-contents-current;
     }
-    // nav > a, nav:not(.active) li, nav:not(.active) li.visible ~ li, nav.active li
     nav:not(.active) li,
     nav:not(.active) li.visible ~ li,
     nav.active li {
@@ -1014,7 +939,6 @@ $indicator-width: var(--toc_indicator_width)) {
           @include table-of-contents-hover;
           position: relative;
           font-size: var(--font-size-larger-1);
-          // font-weight: var(--font-weight-heading);
           &::before {
             content: none;
           }
@@ -1092,7 +1016,6 @@ $indicator-width: var(--toc_indicator_width)) {
   }
 
   .article_body {
-    // @include variables.link-lvhfa;
     @include variables.link-lvhfa(true);
   }
   .sidebar {
