@@ -22,7 +22,7 @@ jobs:
       EVENT_ACTOR_EMAIL: "${{ github.event.sender.id }}+${{ github.event.sender.login }}@users.noreply.github.com"
       COMMIT_MESSAGE_PREFIX: "chore: update ${{ github.repository }}@${{ github.ref_name }}\n\n"
       COMMIT_MESSAGE_FILE: ${{ github.workspace }}/website_commit_message.txt
-      HUGO_VERSION: 0.139.2
+      HUGO_VERSION: 0.145.0
 
     steps:
 
@@ -56,6 +56,7 @@ jobs:
           cd hugo-claris-demo
           sed --in-place -Ee 's!(github.com/simonheimlicher/hugo-claris) [^ ]+(.*)!\1 '"${{ env.BRANCH_NAME }}"'\2!' go.mod
           hugo mod get -u
+          hugo mod tidy
           git config user.name "${{ env.EVENT_ACTOR_ID }}"
           git config user.email "${{ env.EVENT_ACTOR_EMAIL }}"
           git add .
@@ -77,6 +78,7 @@ jobs:
           cd heimlicher.com
           sed --in-place -Ee 's!(github.com/simonheimlicher/hugo-claris) [^ ]+(.*)!\1 '"${{ env.BRANCH_NAME }}"'\2!' go.mod
           hugo mod get -u
+          hugo mod tidy
           git config user.name "${{ env.EVENT_ACTOR_ID }}"
           git config user.email "${{ env.EVENT_ACTOR_EMAIL }}"
           git add .
