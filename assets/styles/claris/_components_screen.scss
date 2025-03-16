@@ -89,9 +89,7 @@ $indicator-width: var(--toc_indicator_width)) {
     }
     &:hover {
       color: $hover-color;
-      // cursor: pointer;
       list-style-type: none;
-      // @include table-of-contents_bar($hover-color, $icon-color);
       & > a {
         color: $hover-color;
       }
@@ -187,7 +185,6 @@ $indicator-width: var(--toc_indicator_width)) {
   .nav {
     position: relative;
     height: hugo.$screenViewNavHeightNarrow;
-    line-height: (hugo.$screenViewNavHeightNarrow - 1.5rem);
     display: flex;
     justify-content: space-between;
     color: var(--text);
@@ -311,7 +308,6 @@ $indicator-width: var(--toc_indicator_width)) {
       transition: height 0.3s ease-in-out;
       height: 0;
       overflow: hidden;
-      padding: 0.96rem 0 0;
       background: transparent;
     }
     &_item {
@@ -382,7 +378,6 @@ $indicator-width: var(--toc_indicator_width)) {
         min-width: 100%;
         width: auto;
         white-space: nowrap;
-        color: var(--text);
       }
       &::before,
       &::after {
@@ -441,8 +436,7 @@ $indicator-width: var(--toc_indicator_width)) {
         position: relative;
         align-items: center;
         border-radius: 0.5rem;
-        // Required for IE 11
-        z-index: (variables.$main-z-index + 1);
+        z-index: (variables.$main-z-index + 2);
         @media (any-hover: hover) {
           &:not(.nav_active):hover {
             @include nav-hover-background;
@@ -451,7 +445,6 @@ $indicator-width: var(--toc_indicator_width)) {
         margin-left: calc(0px - var(--inner_padding));
         margin-right: 0rem;
         padding: 0 var(--inner_padding_4-1) 0 var(--inner_padding);
-        z-index: 999;
         width: min-content;
         // Setting min-height is required to avoid nav bar incl. burger menu icon from collapsing
         height: hugo.$screenViewNavHeightNarrow;
@@ -597,12 +590,6 @@ $indicator-width: var(--toc_indicator_width)) {
         justify-content: center;
       }
     }
-    &_sub {
-      position: relative;
-      top: auto;
-      padding-top: 0;
-      top: 0.25rem;
-    }
   }
   .main_claris {
     @media screen {
@@ -635,6 +622,7 @@ $indicator-width: var(--toc_indicator_width)) {
         width: 100%;
       }
     }
+    @include variables.link-lvhfa(false, dark);
   }
 
   // NOTE: Mobile Safari gets confused with position: sticky on footer
@@ -649,9 +637,6 @@ $indicator-width: var(--toc_indicator_width)) {
             min-height: 40vh;
             // (100svh - 60svh)
             min-height: 40svh;
-            // NOTE: Not sure why we had -3rem margin-top
-            // It interferes with the hero image on the home page
-            // margin: -3rem auto -100vh auto;
             margin: 0 auto -100vh auto;
             margin-bottom: -100lvh;
             z-index: (variables.$main-z-index + 2);
@@ -871,6 +856,10 @@ $indicator-width: var(--toc_indicator_width)) {
       min-height: 100vh;
       min-height: 100lvh;
     }
+    @include variables.nav-bar-anchor-offset;
+    .header_claris {
+      position: sticky;
+    }
   }
 
   .table_of_contents {
@@ -1021,21 +1010,12 @@ $indicator-width: var(--toc_indicator_width)) {
   .sidebar {
     @include variables.link-lvhfa;
   }
-  .footer_claris {
-    @include variables.link-lvhfa(false, dark);
-  }
   @media screen and (min-height: hugo.$screenViewBreakpointHeightShallow) {
     html {
       @include variables.nav-bar-anchor-offset;
       .header_claris {
         position: fixed;
       }
-    }
-  }
-  html.content-above-header {
-    @include variables.nav-bar-anchor-offset;
-    .header_claris {
-      position: sticky;
     }
   }
 
