@@ -12,7 +12,6 @@ export function onDOMContentLoaded(...initializationFunctions) {
       fn();
     });
   }
-  // console.log("onDOMContentLoaded: document.readyState: ", document.readyState);
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {

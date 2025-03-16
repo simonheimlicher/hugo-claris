@@ -35,24 +35,16 @@ const varOptimize = require('postcss-var-optimize')({
 
 // Cannot use `postcss-prune-var` if CSS custom properties are used in JavaScript
 // We manipulate custom properties via JavaScript for `--color-scheme`, hence cannot use this plugin
-/*
-const pruneVar = require('postcss-prune-var')({
-  skip: ['node_modules/**']
-});
-*/
 
 const cssnano = require("cssnano")({
   preset: ['default', {discardEmpty: true}]
 });
 
+// NOTE: Should pass the name of the environments in which to enable CSS purging
+// as a parameter instead of hardcoding it as an array below
 module.exports = {
   plugins: [
     require("autoprefixer")({}),
-    // NOTE: Should pass the name of the environments in which to enable CSS purging
-    // as a parameter instead of hardcoding it as an array below
-    // ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [purgeCSS] : []),
-    // ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [varOptimize] : []),
     ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [varOptimize, purgeCSS, cssnano] : []),
-    // ...(['stage', 'prod', 'production'].includes(process.env.HUGO_ENVIRONMENT) ? [purgeCSS, varOptimize] : []),
   ]
 };

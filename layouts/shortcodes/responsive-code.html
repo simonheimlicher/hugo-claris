@@ -1,14 +1,13 @@
 
-<!-- Author: Parsia Hakimian https://github.com/parsiya/Hugo-Shortcodes -->
-
-<!-- codecaption short code - basically this is normal highlighted code with caption on top
+{{- /* `responsive-code` shortcode: highlighted code with a caption below, like a figure.
      example usage (Hugo seems to ignore stuff in this):
 
-     { { < codecaption lang="language e.g. python/csharp" title="captiontitle" > } }
+     {{ < codecaption lang="language e.g. python/csharp" title="captiontitle" > }}
 
      code to be highlighted
 
-     { { < /codecaption > } } -->
+     {{ < /codecaption > }}
+ */ -}}
 
 <figure class="shortcode_responsive-figure shortcode_responsive-figure_code caption font-meta">
   {{ highlight (trim .Inner "\n\r") (.Get "lang") "linenos=true" }}

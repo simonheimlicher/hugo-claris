@@ -3,6 +3,7 @@
 @use "sass:string";
 @use "sass:color";
 
+$debug: false !default; // Set to `true` to enable debugging
 
 $text-lit: hsl(200, 10%, 13%);
 $bg-lit: hsl(200, 10%, 95%);
@@ -60,7 +61,9 @@ $colors-lit: (
 }
 
 @function map_color_variable_to_RGB($colors, $value) {
-  // @debug "map_color_variable_to_RGB: #{$value}: #{$value} [#{meta.type-of($value)}]";
+  @if $debug {
+    @debug "map_color_variable_to_RGB: #{$value}: #{$value} [#{meta.type-of($value)}]";
+  }
   @if meta.type-of($value) == color {
     @return color_variable_to_RGB($value);
   }

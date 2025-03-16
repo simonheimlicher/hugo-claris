@@ -8,10 +8,11 @@
 @use 'functions' as functions;
 @use 'colors' as colors;
 
+$debug: false !default; // Set to `true` to enable debugging
+
 $list-excerpt-width: 20rem;
 $list-excerpt-width: math.div((hugo.$screenViewBreakpointWidthOneColumn - (3 * hugo.$screenViewInnerPaddingOneColumn) ), 2);
 
-// $list-style-indent: 0.16667em;
 $list-style-indent: 1em;
 
 $heading-padding-top: 0.5rem;
@@ -24,28 +25,41 @@ $main-z-index: 1;
 }
 
 @function map_color_variable_to_RGB($colors, $value) {
-  // @debug "map_color_variable_to_RGB: #{$value}: #{$value} [#{meta.type-of($value)}]";
+  @if $debug {
+    @debug "map_color_variable_to_RGB: #{$value}: #{$value} [#{meta.type-of($value)}]";
+  }
+
   @if meta.type-of($value) == color {
     @return color_variable_to_RGB($value);
   }
   @else if meta.type-of($value) == string {
     @if string.slice($value, 1, 3) == "var" {
-      // @debug "map_color_variable_to_RGB: extracting color key from '#{$value}'";
+      @if $debug {
+        @debug "map_color_variable_to_RGB: extracting color key from '#{$value}'";
+      }
       $color_key: functions.stringExtract($value, 'var(--', ')'); // Remove 'var(--' and ')'
-      // @debug "map_color_variable_to_RGB: Extracted color key='#{$color_key}' from '#{$value}'";
+
+      @if $debug {
+        @debug "map_color_variable_to_RGB: Extracted color key='#{$color_key}' from '#{$value}'";
+      }
+
       $resolved_value: map.get($colors, $color_key);
-      // @debug "map_color_variable_to_RGB: Resolved color value: #{$resolved_value} [#{meta.type-of($resolved_value)}] using key='#{$color_key}' from '#{$value}'";
+
+      @if $debug {
+        @debug "map_color_variable_to_RGB: Resolved color value: #{$resolved_value} [#{meta.type-of($resolved_value)}] using key='#{$color_key}' from '#{$value}'";
+      }
 
       @if $resolved_value == null {
         $resolved_value: #ff0000; // Default to red
-        @debug "map_color_variable_to_RGB: Color key '#{$color_key}' not found; defaulting to red: #{meta.inspect($resolved_value)}";
+        @if $debug {
+          @debug "map_color_variable_to_RGB: Color key '#{$color_key}' not found; defaulting to red: #{meta.inspect($resolved_value)}";
+        }
       }
 
       @if meta.type-of($resolved_value) == color {
         @return color_variable_to_RGB($resolved_value);
       }
       @else if meta.type-of($resolved_value) == string {
-        // Resolve nested variables
         @if string.slice($resolved_value, 1, 3) == "var" {
           @error "map_color_variable_to_RGB: Nested variable detected: #{$resolved_value}. This code is untested";
           @return map_color_variable_to_RGB($colors, $resolved_value);
@@ -53,48 +67,33 @@ $main-z-index: 1;
       }
     }
   }
+
   @error "map_color_variable_to_RGB: Invalid $value: #{$value} [#{meta.type-of($value)}]";
   @return $value;
 }
+
 
 @mixin generate_colors($colors) {
   // Add RGB / RGBA color definitions
   @each $color, $value in $colors {
     & {
       --#{$color}: #{$value};
-      // --RGB_#{$color}: #{map_color_variable_to_RGB($colors, $value)};
     }
   }
-  // @debug "generate_colors: type of 'colors': [#{meta.type-of($colors)}]. Contents of colors: #{meta.inspect($colors)}";
+  @if $debug {
+    @debug "generate_colors: type of 'colors': [#{meta.type-of($colors)}]. Contents of colors: #{meta.inspect($colors)}";
+  }
   @each $color in (text bg theme theme-bg choice-bg xhaze link link-visited link-hover link-focus link-active link-dark link-dark-visited link-dark-hover link-dark-focus link-dark-active highlight-bg-yellow) {
     & {
       $value: map.get($colors, $color);
-      // @debug "generate_colors: color=#{$color} mapped to value=#{$value} [#{meta.type-of($value)}] --> #{map_color_variable_to_RGB($colors, $value)}";
+      @if $debug {
+        @debug "generate_colors: color=#{$color} mapped to value=#{$value} [#{meta.type-of($value)}] --> #{map_color_variable_to_RGB($colors, $value)}";
+      }
       $color_RGB: map_color_variable_to_RGB($colors, $value);
       --RGB_#{$color}: #{$color_RGB};
     }
   }
 }
-
-// @mixin generate_colors($colors) {
-//   // Add RGB / RGBA color definitions
-//   @each $color, $value in $colors {
-//     --#{$color}: #{$value};
-//   }
-//   $colorMap: ("text": #{hsl(200, 10%, 13%)});
-//   $defaultColor: hsl(200, 10%, 13%);
-//   @debug "generate_colors: defaultColor: #{$defaultColor}";
-
-//   // Only define RGB values for select colors
-//   @each $color in (text bg theme theme-bg choice-bg xhaze link link-visited link-hover link-focus link-active link-dark link-dark-visited link-dark-hover link-dark-focus link-dark-active highlight-bg-yellow) {
-//     $value: map.get($colors, $color);
-//     // @debug "generate_colors: #{$color}: #{$value} [colors: #{meta.type-of($colors)}] [value: #{meta.type-of($value)}]";
-
-//     // @debug "generate_colors: #{$color}: #{mapColorVarToRGB($colors, $value)}";
-//     $color_RGB: mapColorVarToRGB($colors, $value);
-//     --RGB_#{$color}: #{$color_RGB};
-//   }
-// }
 
 @function direction($value) {
   @if list.index('right' 'left', $value) != null {
@@ -134,7 +133,9 @@ $main-z-index: 1;
     $direction: direction($key);
     @if meta.type-of($value) == 'number' {
       @if is-absolute-length(#{$value}) {
-        // @debug "absolute-length: #{$value}";
+        @if $debug {
+          @debug "absolute-length: #{$value}";
+        }
         $pVar: map.merge($pVar, (
           #{$key}: calc( max(#{$value}, env(safe-area-inset-#{$key}, 0px) ) )
         ));
@@ -154,7 +155,9 @@ $main-z-index: 1;
       $pVar: map.merge($pVar, (#{$key}: null) );
     }
   }
-  // @debug "pVar: #{$pVar}";
+  @if $debug {
+    @debug "pVar: #{$pVar}";
+  }
 
   @media screen {
     @each $key, $value in $pVar {
@@ -304,7 +307,6 @@ $main-z-index: 1;
       &:focus {
         @include link-lvhfa_color($attrs, $focus);
         outline: 1px dashed var(--link#{if($variant != null and $variant != '', -#{$variant}, '')}#{if($focus != null and $focus != '', -#{$focus}, '')});
-        // background: var(--bg#{if($variant != null and $variant != '', -#{$variant}, '')}-hover);
       }
       &:active {
         @include link-lvhfa_color($attrs, $active, 1.0);
@@ -349,11 +351,8 @@ $main-z-index: 1;
   @include content_base;
   // NOTE: Must not use width: 100% as otherwise
   // the grid track is exceeded when column-gap is > 0px
-  // width: 100%;
-  & {
-    margin-left: auto;
-    margin-right: auto;
-  }
+  margin-left: auto;
+  margin-right: auto;
 }
 
 @mixin content() {
@@ -365,7 +364,6 @@ $main-z-index: 1;
   @include content_base_centered;
   & {
     max-width: var(--content_max-width);
-    // max-width: calc(min(100%, var(--content_max-width)));
   }
 }
 
@@ -378,9 +376,6 @@ $main-z-index: 1;
   }
   @supports (display: grid) {
     max-width: var(--content_multicolumn_max-width);
-    // NOTE: Not sure what (min(100%, ...) is supposed to accomplish.
-    // Probably not needed anymore
-    // max-width: calc(min(100%, var(--content_multicolumn_max-width)));
   }
 }
 
@@ -403,26 +398,20 @@ $main-z-index: 1;
   @include container_base;
   // NOTE: Must not use width: 100% as otherwise
   // the grid track is exceeded when column-gap is > 0px
-  // width: 100%;
   margin-left: auto;
   margin-right: auto;
 }
 
 @mixin container_singlecolumn() {
-  // @include inner_padding;
   // NOTE: Avoid large gap betweeen .content-title and .lede
   @include body_horizontal-padding;
-  & {
-    max-width: var(--content_max-width);
-  }
+  max-width: var(--content_max-width);
 }
 
 // Container that has multiple columns
 @mixin container_multicolumn() {
   @include inner_padding;
-  & {
-    max-width: var(--content_max-width); // For IE 11
-  }
+  max-width: var(--content_max-width); // For IE 11
   @supports (display: grid) {
     max-width: var(--content_multicolumn_max-width);
   }
@@ -489,7 +478,6 @@ $main-z-index: 1;
 // @mixin list-style_indented($margin-vertical: math.div(hugo.$screenViewInnerPaddingMobile, 2), $padding-vertical: math.div(hugo.$screenViewInnerPaddingMobile, 2), $indent: $list-style-indent) {
 @mixin list-style_indented($margin-horizontal: 0, $padding-horizontal: $list-style-indent, $margin-between: 0, $padding-between: 0.5em) {
     ul, ol {
-    // list-style: disc outside none;;
     margin-left: $margin-horizontal;
     padding-left: $padding-horizontal;
     & > li + li {
@@ -505,7 +493,6 @@ $main-z-index: 1;
     & > a {
       // NOTE: Avoid `display: inline-flex` as this leads to inadvertent line breaks
       // and lack of spacing around elments contained inside, such as <em> or <strong>
-      // display: inline-flex;
       display: inline-block;
       padding: calc(max(0px, 2.125rem - $padding-between - 1em * var(--line-height)) / 2) 0;
     }
@@ -548,7 +535,6 @@ $main-z-index: 1;
     & > a {
       // NOTE: Avoid `display: inline-flex` as this leads to inadvertent line breaks
       // and lack of spacing around elments contained inside, such as <em> or <strong>
-      // display: inline-flex;
       display: inline-block;
       padding: calc(max(0px, 2.125rem - $padding-between - 1em * var(--line-height)) / 2) 0;
     }
@@ -813,7 +799,6 @@ $main-z-index: 1;
   --color-scheme: 'dark';
   --text: var(--theme-text-dim);
   --accent: var(--bubble);
-  // --choice-bg: var(--bg);
   --code-bg: var(--translucent);
   --header-text: var(--theme-text-dim);
   --table-bg: var(--code-bg);
@@ -914,11 +899,8 @@ html {
   @include fluid-geometric-scale('font-size_root', 1rem, 1.25rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthOneColumn);
   @include fluid-geometric-scale('font-size', 1rem, 1.25rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthOneColumn);
   @include fluid-geometric-scale('font-size_heading', 1.25rem, 2rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthWide);
-  // @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthWide);
   @include fluid-fractional-scale('body_margin', 0.75rem, 2.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthWide);
   @include fluid-fractional-scale('inner_margin', 0.75rem, 1.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthOneColumn);
-  // @include fluid-fractional-scale('inner_margin', 0.75rem, 2.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthWide, vw, 8);
-  // @include fluid-fractional-scale('inner_padding', 0.75rem, 2.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthWide);
   @include fluid-fractional-scale('body_padding', 0.75rem, 2.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthWide);
   @include fluid-fractional-scale('inner_padding', 0.75rem, 1.5rem, hugo.$screenViewBreakpointWidthMobile, hugo.$screenViewBreakpointWidthOneColumn);
 
@@ -930,7 +912,6 @@ html {
   --font-size-lede: var(--font-size_root-larger-1);
 
   --font-size-meta: var(--font-size_root-smaller-1);
-  // --font-size-button: var(--font-size-smaller-1);
   --font-size-button: var(--font-size-normal);
 
   --font-size-title: var(--font-size_heading-larger-4);
@@ -946,7 +927,6 @@ html {
   --font-weight-subtitle: 400;
   --font-weight-code: 400;
 
-  // --line-height: 1.5;
   --line-height-heading: 1.2;
   --line-height-label: 1.2;
 
@@ -955,7 +935,6 @@ html {
   --icon-height-nav: 1.5rem;
   --icon-height-meta: 1em;
 
-  // --ease: cubic-bezier(.19,1,.22,1);
   --ease: cubic-bezier(0.39, 0.575, 0.565, 1);
   --easing: cubic-bezier(0.19, 1, 0.22, 1);
 
@@ -973,9 +952,6 @@ html {
   --content_multicolumn_max-width: #{hugo.$screenViewWidthChrome};
   --content_max-width: #{hugo.$screenViewColumnWidthMax};
   --content_wide_max-width: #{hugo.$screenViewColumnWidthWideMax};
-  // @media screen and (min-width: #{hugo.$screenViewBreakpointWidthWide}) {
-  //   --content_max-width: #{hugo.$screenViewColumnWidthWideMax};
-  // }
 
   --screenViewNavHeight: #{hugo.$screenViewNavHeightNarrow};
   --navigation-header-height: 0;
@@ -985,36 +961,6 @@ html {
   @media screen and (min-width: #{hugo.$screenViewBreakpointWidthNarrow}) {
     --screenViewNavHeight: #{hugo.$screenViewNavHeight};
   }
-
-  // @mixin screen-margin-padding($breakpoint) {
-  //   @each $where in ('outer', 'inner') {
-  //     $marginBase: map.get(map.get(hugo.$screenViewMargin, $where), $breakpoint);
-  //     $paddingBase: map.get(map.get(hugo.$screenViewPadding, $where), $breakpoint);
-  //     @if $paddingBase {
-  //       @each $sizeDesc, $numQuarters in ('-1': 1, '-2': 2, '-3': 3, '': 4) {
-  //         @each $direction in ('x', 'y') {
-  //           --#{$where}_margin-#{$direction}#{$sizeDesc}: #{math.div( $marginBase * $numQuarters, 4)};
-  //           --#{$where}_padding-#{$direction}#{$sizeDesc}: #{math.div($paddingBase * $numQuarters, 4)};
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
-
-  // $breakpointsWidth: map.get(hugo.$screenViewBreakpoints, 'width');
-  // @for $i from 1 through length($breakpointsWidth) {
-  //   $breakpointKeys: map-keys($breakpointsWidth);
-  //   $breakpoint: nth($breakpointKeys, $i);
-  //   $breakpointWidth: map.get(map.get(hugo.$screenViewBreakpoints, 'width'), $breakpoint);
-  //   @if $i == 1 {
-  //     @include screen-margin-padding($breakpoint);
-  //   }
-  //   @else {
-  //     @media screen and (min-width: $breakpointWidth) {
-  //       @include screen-margin-padding($breakpoint);
-  //     }
-  //   }
-  // }
 
   &:not(.kind-page) {
     --choice-bg: var(--theme-bg);
