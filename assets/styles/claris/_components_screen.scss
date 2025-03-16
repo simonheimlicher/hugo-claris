@@ -81,7 +81,7 @@ $indicator-width: var(--toc_indicator_width)) {
   }
 }
 
-@mixin table-of-contents-hover($hover-color: var(--theme-bg-hover), $active-color: var(--accent), $icon-color: var(--theme-bg-hover)) {
+@mixin table-of-contents-hover($hover-color: var(--theme), $active-color: var(--accent), $icon-color: var(--theme-bg-hover)) {
   @media (any-hover: hover) {
     &, & > a:active {
       color: $active-color;
