@@ -1,15 +1,21 @@
 {{- $template := "partials/claris/main/list/grid" }}
-{{- $debug := false }}
+{{- $debug := and false (or .Debug (page.Param "clarisdebug") ) }}
+{{- $dbg := printf "%s [%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` page.RelPermalink)
+    (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
+{{- $pageParams := merge . (dict "Page" nil) }}
+{{- $storeExcerptRenderedKey := .StoreExcerptRenderedKey }}
 
 {{- $headingLevel := default 2 .HeadingLevel }}
 {{- $itemType := .ItemType }}
 
-{{- $listPartialParams := (dict
+{{- $listComponentTemplate := "claris/_components/list" }}
+{{- $listComponentParams := merge $pageParams (dict
   "ItemType" $itemType
   "HeadingLevel" $headingLevel) }}
 
 {{- with page.Param "sectionsToShow" }}
-  {{- $listPartialParams = merge $listPartialParams (dict
+  {{- $listComponentParams = merge $listComponentParams (dict
     "ListParams" (dict
       "SectionsToShow" .
     )
@@ -17,7 +23,8 @@
 {{- end }}
 
 {{- if $debug }}
-  {{- warnf "%s[%s]: Calling 'claris/_components/list' with listPartialParams=%v" page $template $listPartialParams }}
+  {{- warnf "%s Calling %s with listComponentParams=%v" $dbg
+      $listComponentTemplate $listComponentParams }}
 {{- end }}
-{{- partial "claris/_components/list" (merge $listPartialParams (dict "Page" page)) $listPartialParams }}
+{{- partial $listComponentTemplate (merge $listComponentParams (dict "Page" page)) $listComponentParams }}
 {{- /* */ -}}

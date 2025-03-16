@@ -2,18 +2,14 @@
 {{- $excerptMeta := .Meta }}
 {{- $template := "claris/_components/excerpt" }}
 {{- $subjectPage := .SubjectPage }}
-{{- $debug := and false (or .Debug ($page.Param "clarisdebug") ($subjectPage.Param "clarisdebug") ) }}
+{{- $debug := and false or (findRE `quantum-supremacy` $subjectPage.RelPermalink) (or .Debug ($page.Param "clarisdebug") ($subjectPage.Param "clarisdebug") ) }}
 {{- $dbg := printf "%s subject=%s [%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink)
     (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $subjectPage.RelPermalink)
     (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
-{{- $scratchExcerptRenderedKey := "claris.page.excerpt-rendered" }}
-{{- if not ($page.Scratch.Get $scratchExcerptRenderedKey) }}
-  {{- $page.Scratch.Add $scratchExcerptRenderedKey slice }}
-{{- end }}
-
 {{- $assetVariant := .AssetVariant }}
 
+{{- $storeExcerptRenderedKey := "claris.page.excerpt-rendered" }}
 {{- $excerptImageKey := default "excerpt.variant.default.version.default" .ExcerptImageKey }}
 
 {{- $title := default "" .Title }}
@@ -31,7 +27,10 @@
 {{- $containerRelativeWidth := default false .ContainerRelativeWidth }}
 {{- $fetchPriority := default false .FetchPriority }}
 
-
+{{- if not (reflect.IsSlice ($page.Store.Get $storeExcerptRenderedKey) ) }}
+  {{- errorf "%s storeExcerptRenderedKey=%q is not a slice: %T"
+      $dbg $storeExcerptRenderedKey ($page.Store.Get $storeExcerptRenderedKey) }}
+{{- end }}
 {{- $plainTitle := partial `claris/_functions/sanitize` $title }}
 
 {{- $excerptContent := false }}
@@ -63,12 +62,12 @@
   {{- $headerPartial = default "claris/_components/meta" .HeaderPartial  }}
 {{- end }}
 
-{{- if not (in ($page.Scratch.Get $scratchExcerptRenderedKey) $subjectPage) }}
-  {{- /* if $debug }}
-    {{- warnf "%s is not in excerpts rendered=[%v]" $dbg
-        (delimit ($page.Scratch.Get $scratchExcerptRenderedKey) ", ") }}
-  {{- end */ -}}
-
+{{- if (in ($page.Store.Get $storeExcerptRenderedKey) $subjectPage.RelPermalink) }}
+  {{- if $debug }}
+    {{- warnf "%s EXCLUDE subject in %s: [%v]" $dbg $storeExcerptRenderedKey
+        (delimit ($page.Store.Get $storeExcerptRenderedKey) ", ") }}
+  {{- end -}}
+{{- else }}
   {{- with $subjectPage }}
     {{- $excerptImage := false }}
     {{- $imageMeta := $excerptMeta.Single.Data.Images }}
@@ -175,6 +174,10 @@
         </div>
       </a>
     </div>
-    {{ $page.Scratch.Add $scratchExcerptRenderedKey $subjectPage }}
+    {{- $page.Store.Add $storeExcerptRenderedKey $subjectPage.RelPermalink }}
+  {{- if $debug }}
+    {{- warnf "%s added to %s: [%v]" $dbg $storeExcerptRenderedKey
+        (delimit ($page.Store.Get $storeExcerptRenderedKey) ", ") }}
+  {{- end -}}
   {{- end }}
 {{- end -}}
