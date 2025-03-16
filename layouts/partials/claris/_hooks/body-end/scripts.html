@@ -20,7 +20,6 @@
         const schemeUser = document.documentElement.dataset.colorScheme = window.localStorage.getItem('userSelectedColorScheme');
         let scheme = null;
         if ( ! window.matchMedia('(prefers-color-scheme: ' + schemeUser).matches) {
-          // console.log(`claris/head/assets: override system scheme with user scheme[${schemeUser}]`);
           scheme = schemeUser;
         }
         const colorSchemeMatchRegex = new RegExp(`\\(\\s*prefers-color-scheme:\\s*${scheme}\\)`);
@@ -48,7 +47,6 @@
               // independently of the preferred color scheme...
               if (source?.dataset.media.match(colorSchemeMatchRegex)) {
                 source.media = source.dataset.media.replace(colorSchemeEliminateRegex, '') || 'all';
-                // deb('source.dataset.media=' + source.dataset.media + ' --> ' + source.media);
                 source.srcset = source.dataset.srcset;
                 variantStyleAttr = source.dataset.style;
               // ... otherwise, remove the 'srcset' attribute to hide the image
@@ -75,10 +73,8 @@
             });
           }
         });
-        // console.log('claris/head/assets: pictures done');
       }
       catch (e) {
-        // console.log(e);
       }
     </script>
 

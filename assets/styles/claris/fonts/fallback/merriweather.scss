@@ -8,16 +8,6 @@ Merriweather font metrics:
 - line-gap = 0
 */
 
-/*
-@font-face {
-  font-family: merriweather-fallback;
-	src: local("Georgia");
-	ascent-override: 98.4%;
-	descent-override: 26.3%;
-	line-gap-override: 0%;
-}
-*/
-
 @font-face {
   font-family: merriweather-fallback;
   src: local("Georgia");
@@ -26,28 +16,6 @@ Merriweather font metrics:
   descent-override: 28.93%;
   line-gap-override: 0%;
 }
-
-/*
-@font-face {
-  font-family: merriweather-fallback;
-  src: local("Times New Roman");
-  size-adjust: 120.5%;
-  ascent-override: 118.572%;
-  descent-override: 31.6915%;
-  line-gap-override: 0%;
-}
-*/
-
-/*
-@font-face {
-  font-family: merriweather-fallback;
-  src: local("Palatino");
-  size-adjust: 110%;
-  ascent-override: 108.24%;
-  descent-override: 28.93%;
-  line-gap-override: 0%;
-}
-*/
 
 @font-face {
   font-family: merriweather-fallback-android;

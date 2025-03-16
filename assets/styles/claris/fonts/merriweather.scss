@@ -71,7 +71,7 @@
        url('{{ .hostedFontPath }}/merriweather-v30-latin-ext/merriweather-v30-latin-ext-900italic.woff') format('woff'); /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
-$fontSpec: (
+$fontFamilySpec: (
   default: (
     default: (
       font-weight: 400,

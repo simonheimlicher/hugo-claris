@@ -17,7 +17,7 @@
   ) }}
 {{- end }}
 
-<!--
+{{- /*
 Parse $paramsImage and for each kind, extract available image meta data
 In every kind, the meta data of every instance of an image will be captured in
 $imageKindMeta. This variable will have the following structure:
@@ -63,7 +63,7 @@ $imageKindMeta = (dict
     )
   )
 )
--->
+*/ -}}
 
 {{- $availableImageMeta := dict }}
 

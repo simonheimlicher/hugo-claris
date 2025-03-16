@@ -265,7 +265,6 @@ blockquote {
     position: absolute;
     bottom: calc(0px - 0.5 * var(--quotation-mark-close-height));
     right: calc( var(--box-padding-right) - 0.5 * var(--quotation-mark-close-height));
-    // @extend .font-serif;
     line-height: var(--quotation-mark-close-height);
     font-size: calc(var(--quotation-mark-close-font-size));
     color: $blockquote-quotation-color-close;
