@@ -50,7 +50,7 @@ export function codeBlocksInit () {
       icon: 'carly',
       id: 'wrap',
       title: 'Toggle Line Wrap',
-      show: false
+      show: true
     },
     {
       icon: 'expand',

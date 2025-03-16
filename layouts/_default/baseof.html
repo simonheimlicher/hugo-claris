@@ -30,6 +30,21 @@
       (.Scratch.Get "claris.assets.font.main") .Kind }}
 {{- end }}
 
+{{- $storeExcerptRenderedKey := "claris.page.excerpt-rendered" }}
+{{- if (.Store.Get $storeExcerptRenderedKey) }}
+  {{- .Store.Set $storeExcerptRenderedKey slice }}
+  {{- if $debug }}
+    {{- warnf "%s PURGED %s: [%v]" $dbg $storeExcerptRenderedKey
+        (delimit (.Store.Get $storeExcerptRenderedKey) ", ") }}
+  {{- end -}}
+{{- else }}
+  {{- .Store.Add $storeExcerptRenderedKey slice }}
+  {{- if $debug }}
+    {{- warnf "%s INITIALIZED %s: [%v]" $dbg $storeExcerptRenderedKey
+        (delimit (.Store.Get $storeExcerptRenderedKey) ", ") }}
+  {{- end -}}
+{{- end }}
+
 {{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "Debug" $debug) $page.Permalink $assetVariant }}
 {{- .Scratch.Set "clarismeta" $meta }}
 

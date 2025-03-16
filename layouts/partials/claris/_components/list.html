@@ -1,7 +1,11 @@
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/_components/list" }}
-{{- $debug := false }}
+{{- $debug := and false (or .Debug (page.Param "clarisdebug") ) }}
+{{- $dbg := printf "%s [%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` page.RelPermalink)
+    (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
+{{- $page := default page .Page }}
+{{- $pageParams := merge . (dict "Page" nil) }}
 {{- $listParams := default dict .ListParams }}
 
 {{- $excerptPartial := default false .Partial }}
@@ -19,15 +23,25 @@
 {{- $itemType := default "section" $listMeta.List.Data.ItemType }}
 
 {{- if $debug }}
-  {{- warnf "%s[%s]: excerptPartial=%v listLayout=%v headingLevel=%v containerClass=%v .ListParams=%v yielded itemsMeta for %d items of itemType=%v"
-      page $template $excerptPartial $listLayout $headingLevel $containerClass
+  {{- warnf "%s excerptPartial=%v listLayout=%v headingLevel=%v containerClass=%v .ListParams=%v yielded itemsMeta for %d items of itemType=%v"
+      $dbg $excerptPartial $listLayout $headingLevel $containerClass
       .ListParams (len $itemsMeta) $itemType -}}
   {{- range $itemsMeta }}
-    {{- warnf "%s[%s]: itemsMeta: URL: %q ItemType: %q \n%v"
-        page $template .Single.Data.URL .Single.Data.ItemType
+    {{- warnf "%s itemsMeta: URL: %q ItemType: %q \n%v"
+        $dbg .Single.Data.URL .Single.Data.ItemType
         (jsonify (dict "indent" "  ") .Classification ) -}}
   {{- end }}
 {{- end }}
+
+{{- $excerptPartialParams := merge $pageParams (dict
+  "HeadingLevel" $headingLevel
+  "FetchPriority" $fetchPriority
+  "ItemType" $itemType
+  "ShowDate" true
+  "RelativeDates" false
+  "ShowAuthor" false
+  "ShowTags" false
+) -}}
 
 {{- with $itemsMeta }}
 
@@ -38,7 +52,7 @@
   {{- else if (eq $listLayout "list") }}
     <ul class="content_list">
   {{- else }}
-    {{- errorf "%s[%s]: Invalid .ListLayout=%v" page $template $listLayout }}
+    {{- errorf "%s[%s]: Invalid .ListLayout=%v" $dbg $listLayout }}
   {{- end }}
 
   {{- $paginated := $itemsMeta }}
@@ -49,21 +63,16 @@
   {{- end }} */ -}}
   {{- with $paginated }}
     {{- range $idx, $item := . }}
-      {{- /* {{- if $debug }}
-        {{- warnf "%s[%s]: Listing Item=%v of ItemType=%v .Classification=%v" page $template .Single.Page $itemType .Single }}
-      {{- end }} */ -}}
+      {{- if $debug }}
+        {{- warnf "%s Listing Item=%v of ItemType=%v excerptPartial=%v"
+            $dbg .Single.Page $itemType $excerptPartial }}
+      {{- end }}
       {{- if $excerptPartial }}
-        {{- partial $excerptPartial (dict
-          "Page" page
-          "Meta" .
-          "SubjectPage" .Single.Page
-          "ItemType" $itemType
-          "HeadingLevel" $headingLevel
-          "ShowDate" true
-          "RelativeDates" false
-          "ShowAuthor" false
-          "ShowTags" false
-          "FetchPriority" $fetchPriority
+        {{- partial $excerptPartial (merge $excerptPartialParams (dict
+            "Page" $page
+            "Meta" .
+            "SubjectPage" .Single.Page
+          )
         ) -}}
       {{- else }}
         <li><a href="{{ .Single.Page.RelPermalink }}" title="{{ partial `claris/_functions/sanitize` .Single.Page.Title }}">{{ .Single.Page.Title }}</a></li>
@@ -78,7 +87,7 @@
     </div>
     {{- end }} */ -}}
   {{- else }}
-    {{- errorf "%s[%s]: page.Paginate returned %v. $itemsMeta=%v" page $template $paginated $itemsMeta }}
+    {{- errorf "%s[%s]: page.Paginate returned %v. $itemsMeta=%v" $dbg $paginated $itemsMeta }}
   {{- end }}
 
   {{- if (eq $listLayout "grid") }}
@@ -87,5 +96,5 @@
     </ul>
   {{- end }}
 {{- /* {{- else }}
-  {{- warnf "%s[%s]: Nothing to list: .Items=%v" page $template $itemsMeta }} */ -}}
+  {{- warnf "%s Nothing to list: .Items=%v" $dbg $itemsMeta }} */ -}}
 {{- end }}

@@ -11,7 +11,7 @@
 {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
 <article class="article_content content_singlecolumn content">
   <div class="article_body">
-  {{- .Content }}
+  {{ .Content }}
   </div>
 </article>
 {{ partial "html-comment" (printf "[%s]: END" $template) }}

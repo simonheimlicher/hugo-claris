@@ -1,5 +1,17 @@
 {{- $template := "partials/claris/main/list/index" }}
+{{- $debug := or false (or .Debug (page.Param "clarisdebug") ) }}
+{{- $dbg := printf "%s [%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` page.RelPermalink)
+    (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
 {{- $layout := default "grid" page.Layout }}
 {{ partial "html-comment" (printf "[%s]: BEGIN: layout=%v" $template $layout) }}
-{{- partial (printf "claris/main/list/%s" $layout) . }}
+{{- $listPartialTemplate := printf "claris/main/list/%s" $layout }}
+{{- $listPartialParams := merge . (dict
+  "Debug" $debug
+) }}
+{{- if $debug }}
+  {{- warnf "%s Calling %v with listPartialParams=%v" $dbg
+      $listPartialTemplate $listPartialParams }}
+{{- end }}
+{{- partial $listPartialTemplate (merge $listPartialParams (dict "Page" page)) }}
 {{ partial "html-comment" (printf "[%s]:   END" $template) }}
