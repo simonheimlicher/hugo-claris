@@ -1,5 +1,5 @@
 {{- $template := "partials/claris/main/list/index" }}
-{{- $debug := or false (or .Debug (page.Param "clarisdebug") ) }}
+{{- $debug := and false (or .Debug (page.Param "clarisdebug") ) }}
 {{- $dbg := printf "%s [%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` page.RelPermalink)
     (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
