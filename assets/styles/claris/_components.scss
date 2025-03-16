@@ -547,6 +547,12 @@
   visibility: hidden;
 }
 .outdated {
+  width: 80%;
+  padding: 0.5rem 1.5rem 1rem 1.5rem;
+  margin: 0 auto 1.5rem auto;
+  position: relative;
+  background-color: var(--haze);
+  @include variables.color-scheme_transition;
   &_wrap {
     background: none;
     padding: 2em 0 0 0;
@@ -571,14 +577,6 @@
     p {
       margin: 0;
     }
-  }
-  & {
-    width: 80%;
-    padding: 0.5rem 1.5rem 1rem 1.5rem;
-    margin: 0 auto 1.5rem auto;
-    position: relative;
-    background-color: var(--haze);
-    @include variables.color-scheme_transition;
   }
 }
 
@@ -951,7 +949,6 @@
       background: var(--translucent);
       cursor: pointer;
       z-index: 999;
-      overflow-y: auto;
     }
     .article_meta_tag {
       margin: 0.25em 0.5em;
@@ -1112,15 +1109,13 @@
   width: 80%;
   max-width: 96px;
   height: auto;
+  svg {
+    fill: transparent;
+  }
 }
 svg.qrcode-svg {
   fill: var(--text);
   stroke: var(--text);
-}
-.qrcode-svg {
-  svg {
-    fill: transparent;
-  }
 }
 @media screen {
   html[data-color-scheme="dark"] {
@@ -1220,6 +1215,16 @@ svg.qrcode-svg {
       margin-bottom: 0;
     }
     @include variables.drop-shadow(3rem, 0.1, 0.3);
+    &, & > a {
+      display: flex;
+      flex-direction: column;
+      // For IE 11
+      height: 100%;
+      @supports (display: flex) {
+        height: auto;
+        flex: 0 0 100%;
+      }
+    }
     @media (any-hover: hover) {
       &:hover,
       &:focus {
@@ -1250,6 +1255,9 @@ svg.qrcode-svg {
   }
   &_main {
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
     @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
       &.image.content {
         .excerpt_thumbnail {
@@ -1308,32 +1316,15 @@ svg.qrcode-svg {
     }
     &_read-on {
       .read-on {
-        // Note: The content below contains UTF-8-encoded &nbsp;
-        // Do not use &nbsp; because Dart SASS does not support mixing
-        // Unicode with HTML escaped symbols within a string
+        // Note: The content below contains a UTF-8-encoded non-breaking space.
+        // Do not use its equivalent HTML entity as Dart SASS
+        // does not support mixing Unicode with HTML escaped symbols within a string
         &::before {
           content: "↳  ";
         }
       }
       text-align: right;
     }
-  }
-  &_container {
-    &, & > a {
-      display: flex;
-      flex-direction: column;
-      // For IE 11
-      height: 100%;
-      @supports (display: flex) {
-        height: auto;
-        flex: 0 0 100%;
-      }
-    }
-  }
-  &_main {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 auto;
   }
   @supports (display: grid) {
     &_content {
@@ -1343,19 +1334,6 @@ svg.qrcode-svg {
     @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
       &_container {
         margin: var(--inner_margin) 0 0 0;
-      }
-      &_grid {
-        // Auto-fit as many items on a row as possible without going under $list-excerpt-width
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(#{variables.$list-excerpt-width}, 1fr));
-        grid-auto-flow: dense;
-        grid-gap: var(--inner_padding)  var(--inner_padding);
-        margin: 0;
-        .excerpt_container {
-          margin: 0;
-        }
-      }
-      &_container {
         .excerpt_main {
           &.image.content {
             .excerpt_thumbnail {
@@ -1368,6 +1346,17 @@ svg.qrcode-svg {
               height: auto;
             }
           }
+        }
+      }
+      &_grid {
+        // Auto-fit as many items on a row as possible without going under $list-excerpt-width
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(#{variables.$list-excerpt-width}, 1fr));
+        grid-auto-flow: dense;
+        grid-gap: var(--inner_padding)  var(--inner_padding);
+        margin: 0;
+        .excerpt_container {
+          margin: 0;
         }
       }
       @media screen and (min-width: hugo.$screenViewBreakpointWidthOneColumn) {
@@ -1573,7 +1562,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
   @include variables.color-scheme_transition;
   color: var(--text);
   display: inline-block;
-  background: transparent;
+  background: rgb(255, 255, 136) linear-gradient(135deg, var(--note-bg) 80%, var(--note-bg) 85%, var(--note-bg-light) 100%);
   width: 90%;
   height: 100%;
   border: 0.0625rem solid var(--note-border-yellow);
@@ -1634,8 +1623,6 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
     --note-bg-top: var(--note-bg-blue-top);
     --note-border: var(--note-border-blue);
   }
-  background: rgb(255, 255, 136);
-  background: linear-gradient(135deg, var(--note-bg) 80%, var(--note-bg) 85%, var(--note-bg-light) 100%);
 
   &::before {
     content: "";
@@ -1649,8 +1636,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
     border-top: 3rem solid var(--note-bg-top);
     border-bottom-right-radius: 4rem 0.5rem;
     display: inline-block;
-    background: rgb(255, 255, 136);
-    background: linear-gradient(135deg, var(--note-bg) 80%, var(--note-bg) 85%, var(--note-bg-light) 100%);
+    background: rgb(255, 255, 136) linear-gradient(135deg, var(--note-bg) 80%, var(--note-bg) 85%, var(--note-bg-light) 100%);
   }
   &::after {
     content: "";
@@ -1775,11 +1761,6 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
     @include variables.color-scheme_transition;
     color: var(--text-dark);
   }
-  &_img {
-    &.shape-round {
-      border-radius: 50%;
-    }
-  }
   &.float-left,
   &.float-right {
     float: none;
@@ -1798,6 +1779,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
       max-width: 80%;
     }
     &.relative-width-20 {
+      max-width: 40%;
       &.float-left {
         float: left;
         margin: 0.75rem;
@@ -1808,9 +1790,6 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
         margin: 0.75rem;
         margin: var(--float_margin-top) 0 var(--float_margin) var(--float_margin);
       }
-    }
-    &.relative-width-20 {
-      max-width: 40%;
     }
   }
 
@@ -1819,6 +1798,7 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
       max-width: 30%;
     }
     &.relative-width-30 {
+      max-width: 40%;
       &.float-left {
         float: left;
         margin: 0.75rem;
@@ -1829,9 +1809,6 @@ $note-bg-blue-dim: hsl(210, 100%, 10%);
         margin: 0.75rem;
         margin: var(--float_margin-top) 0 var(--float_margin) var(--float_margin);
       }
-    }
-    &.relative-width-30 {
-      max-width: 40%;
     }
     &.relative-width-40 {
       max-width: 50%;
