@@ -38,37 +38,30 @@ export function tableOfContentsInit() {
             tableOfContentsUL.insertBefore(articleTopLI, tableOfContentsUL.firstChild);
         }
     }
-    const navigationElements = function (tableOfContentsNav) {
+    const navigationElements = (function (tableOfContentsNav) {
+        const navListItems = Array.from(elems("li", tableOfContentsNav)); // Convert NodeList to Array
+        if (!navListItems.length) return [];
 
-        const navListItems = elems('li', tableOfContentsNav);
-        if (!navListItems) return;
-
-        let navigationElementList = [];
-
-        for (let idx = 0, headingItem = navListItems[0]; idx < navListItems.length; headingItem = navListItems[++idx]) {
-            let anchor = headingItem.querySelector('a');
-            if (anchor) {
-                let innerLIs = headingItem.querySelectorAll('li');
-                for (let liIdx = 0, innerLI = innerLIs[0]; liIdx < innerLIs.length; innerLI = innerLIs[++liIdx]) {
-                    if (innerLI && !innerLI.innerHTML) {
-                        // Remove empty list item from DOM
-                        // Remove empty LI: ", innerLI, innerLI.parentElement
-                        innerLI.remove();
-                    }
-                }
-                let innerULs = headingItem.querySelectorAll('ul');
-                for (let ulIdx = 0, innerUL = innerULs[0]; ulIdx < innerULs.length; innerUL = innerULs[++ulIdx]) {
-                    if (innerUL && !(innerUL.innerHTML.trim())) {
-                        // Remove empty unordered list from DOM
-                        // "Remove empty UL: ", innerUL
-                        innerUL.remove();
-                    }
-                }
-                navigationElementList.push(headingItem);
+        const removeEmptyElements = (selector, parent) => {
+            parent.querySelectorAll(selector).forEach((element) => {
+            if (!element.innerHTML.trim()) {
+                element.remove();
             }
-        }
-        return navigationElementList;
-    }(tableOfContentsNav);
+            });
+        };
+
+        const processHeadingItem = (headingItem) => {
+            const anchor = headingItem.querySelector("a");
+            if (!anchor) return null;
+
+            removeEmptyElements("li", headingItem);
+            removeEmptyElements("ul", headingItem);
+
+            return headingItem;
+        };
+
+        return navListItems.map(processHeadingItem).filter(Boolean);
+    })(tableOfContentsNav);
 
     const getNavigationElement = function (sectionId) {
         const sectionLink = tableOfContentsNav.querySelector(`a[href="#${sectionId}"]`);
@@ -188,53 +181,46 @@ export function tableOfContentsInit() {
             }
 
             const setVisibleNavigationElement = function (visibleTop, visibleBottom, className) {
-                let aboveSection, currentSection;
+
                 deb(PREFIX, "setVisibleNavigationElement():");
-                for (const element of sectionHeadings) {
-                    const pos = getSectionHeadingPosition(visibleTop, visibleBottom, element);
-                    deb(PREFIX, "    Position of section " + element.id + ': ' + pos);
-                    if (pos == 'above') {
-                        aboveSection = element;
-                        deb(PREFIX, "    pos=" + pos + " --> aboveSection=" + aboveSection.id);
-                        continue;
-                    }
-                    else if (pos == 'visible') {
-                        if (aboveSection) {
-                            currentSection = aboveSection;
-                            deb(PREFIX, "        currentSection = aboveSection=" + aboveSection.id);
+
+                let aboveSection = null;
+                let currentSection = null;
+
+                const determineCurrentSection = () => {
+                    for (const element of sectionHeadings) {
+                        const pos = getSectionHeadingPosition(visibleTop, visibleBottom, element);
+                        deb(PREFIX, `    Position of section ${element.id}: ${pos}`);
+
+                        if (pos === 'above') {
+                            aboveSection = element;
+                            deb(PREFIX, `    pos=${pos} --> aboveSection=${aboveSection.id}`);
+                            continue;
                         }
-                        else {
-                            currentSection = element;
-                            deb(PREFIX, "        currentSection = currentSection=" + currentSection.id);
+
+                        if (pos === 'visible') {
+                            return aboveSection || element;
                         }
-                        break;
+
+                        return aboveSection || element;
                     }
-                    else if (aboveSection) {
-                        deb(PREFIX, "        currentSection = aboveSection=" + aboveSection.id);
-                        currentSection = aboveSection;
+
+                    return aboveSection || sectionHeadings[0];
+                };
+
+                currentSection = determineCurrentSection();
+                deb(PREFIX, `setVisibleNavigationElement(): currentSection=${currentSection.id}`);
+
+                const updateNavigationElements = (navigationElement) => {
+                    for (const el of navigationElements) {
+                        el.classList.toggle(className, el === navigationElement);
                     }
-                    else {
-                        currentSection = element;
-                        deb(PREFIX, "        currentSection = currentSection=" + currentSection.id);
-                    }
-                    deb(PREFIX, "    pos=" + pos + " --> currentSection=" + currentSection.id);
-                    break;
-                }
-                if (!currentSection && (currentSection = aboveSection) === undefined) {
-                    currentSection = sectionHeadings[0];
-                    deb(PREFIX, "setVisibleNavigationElement(): defaulting currentSection=" + currentSection.id);
-                }
+                };
 
                 const navigationElement = getNavigationElement(currentSection.id);
-                for (let idx = 0, el = navigationElements[0]; idx < navigationElements.length; el = navigationElements[++idx]) {
-                    if (el === navigationElement) {
-                        navigationElement.classList.add(className);
-                    }
-                    else {
-                        el.classList.remove(className);
-                    }
-                }
-            }
+                updateNavigationElements(navigationElement);
+            };
+
 
             // Source: https://codepen.io/saas/pen/LYENgqq
             // Once a scrolling event is detected, iterate all elements
