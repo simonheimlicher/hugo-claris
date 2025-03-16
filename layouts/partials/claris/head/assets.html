@@ -1,7 +1,7 @@
 {{- $ctx := . }}
 {{- $page := .Page }}
 {{- $template := "claris/head/assets" }}
-{{- $debug := or false (page.Param "clarisdebug") }}
+{{- $debug := and false (page.Param "clarisdebug") }}
 {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 {{- /* {{- $debug = or $debug (in (slice "home" "section" "page") $page.Kind) }} */ -}}
 
