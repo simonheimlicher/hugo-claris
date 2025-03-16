@@ -1121,18 +1121,24 @@
         right: -1rem;
         bottom: 0;
         left: -1rem;
-        z-index: 3;
-        opacity: 0.5;
+        z-index: -1;
+        // opacity: 0.25;
         background: var(--theme-bg);
-        border: 1px solid var(--bg);
+        border: 1px solid var(--theme-bg);
         border-radius: 999rem;
         transition: $taxonomy-overlay_transition_button;
+      }
+      &:hover::before {
+        border: 1px solid var(--xxxhaze);
       }
       &_alphabetically {
         font-weight: bolder;
         z-index: 10;
         &::before {
-          background: var(--theme-bg-hover);
+          background: var(--theme-bg-active);
+        }
+        &:hover::before {
+          border: 1px solid var(--theme-bg);
         }
       }
     }
@@ -1144,12 +1150,18 @@
           &::before {
             background: var(--theme-bg);
           }
+          &:hover::before {
+            border: 1px solid var(--xxxhaze);
+          }
         }
         &_frequency {
           z-index: 10;
           font-weight: bolder;
           &::before {
-            background: var(--theme-bg-hover);
+            background: var(--theme-bg-active);
+          }
+          &:hover::before {
+            border: 1px solid var(--theme-bg);
           }
         }
       }
