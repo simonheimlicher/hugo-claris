@@ -80,7 +80,6 @@
         '#{$result}#{$e}#{$glue}',
         '#{$result}#{$e}'
       );
-      // @debug 'joinArray: added e="#{$e}" in list=[#{$list}] at position #{$i}: "#{$result}"';
     }
   }
   @return $result;

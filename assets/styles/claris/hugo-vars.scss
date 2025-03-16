@@ -101,7 +101,6 @@ $screenViewBreakpointWidthUltrawide: if(hugo.$breakpoints_width_ultra_wide != nu
 
 // Parameters for layout with two columns: main content and one aside
 $screenViewColumnWidthMin: ($screenViewBreakpointWidthTwoColumn - 2 * $screenViewBodyPaddingOneColumn - $screenViewWidthAsideMin - $screenViewColumnGap);
-// $screenViewColumnWidthMax: (#{$screenViewBreakpointWidthTwoColumn} - 2 * #{$screenViewBodyPaddingOneColumn});
 $screenViewColumnWidthMax: ($screenViewBreakpointWidthWide - $screenViewWidthAsideMin - 2 * $screenViewBodyPaddingOneColumn - $screenViewColumnGap);
 
 // // Parameters for layout with three columns: main content and two asides

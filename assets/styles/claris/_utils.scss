@@ -71,9 +71,6 @@
       // https://css-tricks.com/preventing-a-grid-blowout/
       // Avoid code column (pre element) from busting the grid by setting
       // a min width of 0 via minmax
-      // grid-template-columns: minmax(#{hugo.$screenViewWidthAsideMin}, 1fr) minmax(#{hugo.$screenViewColumnWidthMin}, 10fr)
-      // grid-template-columns: minmax(#{hugo.$screenViewWidthAsideMin}, 1fr) minmax(1px, 10fr)
-      // grid-template-columns: minmax(calc(max(env(safe-area-inset-left, 0px), var(--inner_padding))), 1fr) minmax(#{hugo.$screenViewWidthWideAsideMin}, #{hugo.$screenViewWidthWideAsideMax}) minmax(#{hugo.$screenViewColumnWidthWideMin}, #{hugo.$screenViewColumnWidthWideMax}) 0px 0px;
       grid-template-columns:
         0px
         0px
@@ -90,21 +87,15 @@
       .content {
         grid-row: 1;
         grid-column: 3;
-        // margin-left: var(--column-gap);
-        // margin-right: var(--column-gap);
       }
       .sidebar {
         grid-row: 2;
         grid-column: 2 / span 2;
-        // margin-left: var(--column-gap);
-        // margin-right: var(--column-gap);
       }
     }
     @media screen and (min-width: hugo.$screenViewBreakpointWidthWide) {
       .grid-main-single {
         --column-gap: #{hugo.$screenViewColumnGapWide};
-      // grid-template-columns: minmax(#{hugo.$screenViewWidthWideAsideMin}, #{hugo.$screenViewWidthWideAsideMax}) minmax(#{hugo.$screenViewColumnWidthWideMin}, #{hugo.$screenViewColumnWidthWideMax}) minmax(#{hugo.$screenViewWidthWideAsideMin}, #{hugo.$screenViewWidthWideAsideMax})
-      // grid-template-columns: minmax(#{hugo.$screenViewWidthWideAsideMin}, 1fr) minmax(#{hugo.$screenViewColumnWidthWideMin}, 4fr) minmax(#{hugo.$screenViewWidthWideAsideMin}, 1fr)
         grid-template-columns:
           minmax(calc(max(env(safe-area-inset-left, 0px), var(--inner_padding))), 1fr)
           minmax(#{hugo.$screenViewWidthWideAsideMin}, #{hugo.$screenViewWidthWideAsideMax})
@@ -114,25 +105,11 @@
 
         .content {
           grid-column: 3;
-          // padding: 0;
         }
         .sidebar {
           grid-row: 1;
           grid-column: 2;
-          // margin: 0;
-          // padding: 0;
         }
-        // @media screen and (min-width: hugo.$screenViewBreakpointWidthUltrawide)
-        //   .grid-main-single
-        //     --column-gap: 2rem
-        //     grid-template-columns: minmax(#{hugo.$screenViewWidthWideAsideMin}, #{hugo.$screenViewWidthWideAsideMax}) #{hugo.$screenViewWidthUltrawide} minmax(#{hugo.$screenViewWidthWideAsideMin}, #{hugo.$screenViewWidthWideAsideMax})
-        //     .article_aside
-        //       grid-column: 1
-        //     .content
-        //       grid-column: 2
-        //     .sidebar
-        //       grid-row: 1
-        //       grid-column: 3
       }
     }
   }
