@@ -64,11 +64,15 @@ function initializeNativeLazyLoading(PREFIX) {
 
   // loop through <img>s setting the src attribute and srcset and sizes if present
   // but only if there is no data-media attribute
-  processImages(PREFIX, images, isSafariBrowser);
+  for (let image of images) {
+    processImage(PREFIX, image, isSafariBrowser);
+  }
 
   // loop through <source>s setting the srcset attribute and sizes if present
   // but only if there is no data-media attribute
-  processSources(PREFIX, sources, isSafariBrowser);
+  for (let source of sources) {
+    processSource(PREFIX, source, isSafariBrowser);
+  }
 
   // NOTE: Safari 16.4 does not respond to swapping in new value for `src`, therefore we schedule a
   // second execution after the load event
@@ -84,57 +88,53 @@ function initializeNativeLazyLoading(PREFIX) {
   }
 }
 
-function processSources(PREFIX, sources, isSafariBrowser) {
-  for (let source of sources) {
-    if (!source.dataset.media?.includes('prefers-color-scheme')) {
-      try {
-        source.srcset = source.dataset.srcset;
+function processImage(PREFIX, image, isSafariBrowser) {
+  if (!image.dataset.media?.includes('prefers-color-scheme')) {
+    deb(PREFIX, 'Swapping in src for ', image);
+    try {
+      image.src = image.dataset.src;
+      if (!isSafariBrowser || lazyLoadingInitDone) {
+        delete image.dataset.src;
+      }
+      const srcset = image.dataset.srcset;
+      if (srcset) {
+        deb(PREFIX, 'Swapping in srcset for ', image);
+        image.srcset = srcset;
         if (!isSafariBrowser || lazyLoadingInitDone) {
-          delete source.dataset.srcset;
-        }
-        const sizes = source.dataset.sizes;
-        if (sizes) {
-          source.sizes = sizes;
-          if (!isSafariBrowser || lazyLoadingInitDone) {
-            delete source.dataset.sizes;
-          }
+          delete image.dataset.srcset;
         }
       }
-      catch (e) {
-        deb(PREFIX, 'Failed to swap in srcset for source=', source, '\nException: ', e);
+      const sizes = image.dataset.sizes;
+      if (sizes) {
+        image.sizes = sizes;
+        if (!isSafariBrowser || lazyLoadingInitDone) {
+          delete image.dataset.sizes;
+        }
       }
+    }
+    catch (e) {
+      deb(PREFIX, 'Failed to swap in src or srcset for img=', image, '\nException: ', e);
     }
   }
 }
 
-function processImages(PREFIX, images, isSafariBrowser) {
-  for (let img of images) {
-    if (!img.dataset.media?.includes('prefers-color-scheme')) {
-      deb(PREFIX, 'Swapping in src for ', img);
-      try {
-        img.src = img.dataset.src;
+function processSource(PREFIX, source, isSafariBrowser) {
+  if (!source.dataset.media?.includes('prefers-color-scheme')) {
+    try {
+      source.srcset = source.dataset.srcset;
+      if (!isSafariBrowser || lazyLoadingInitDone) {
+        delete source.dataset.srcset;
+      }
+      const sizes = source.dataset.sizes;
+      if (sizes) {
+        source.sizes = sizes;
         if (!isSafariBrowser || lazyLoadingInitDone) {
-          delete img.dataset.src;
-        }
-        const srcset = img.dataset.srcset;
-        if (srcset) {
-          deb(PREFIX, 'Swapping in srcset for ', img);
-          img.srcset = srcset;
-          if (!isSafariBrowser || lazyLoadingInitDone) {
-            delete img.dataset.srcset;
-          }
-        }
-        const sizes = img.dataset.sizes;
-        if (sizes) {
-          img.sizes = sizes;
-          if (!isSafariBrowser || lazyLoadingInitDone) {
-            delete img.dataset.sizes;
-          }
+          delete source.dataset.sizes;
         }
       }
-      catch (e) {
-        deb(PREFIX, 'Failed to swap in src or srcset for img=', img, '\nException: ', e);
-      }
+    }
+    catch (e) {
+      deb(PREFIX, 'Failed to swap in srcset for source=', source, '\nException: ', e);
     }
   }
 }
