@@ -9,19 +9,11 @@ export function postHogAnalyticsInit() {
   if (posthog && postHogKey && postHogKey.length >= 8
     && postHogHost && postHogHost.length > 3
     && postHogSite && postHogSite.length > 1) {
+    // Initialize PostHog
+    // Note: as per https://posthog.com/docs/libraries/js#option-2-install-via-package-manager,
+    // this automatically captures page views and user interactions
     posthog.init(postHogKey, {
-      api_host: postHogHost,
-      capture_pageview: false, // Disable automatic pageview capture, as we capture manually
+      api_host: postHogHost
     });
-
-    function capturePageview() {
-      const currentUrl = new URL(window.location.href);
-      if (currentUrl) {
-        posthog.capture("$pageview", {
-          site: postHogSite
-        });
-      }
-    }
-    capturePageview();
   }
 }
