@@ -79,7 +79,7 @@ $screenViewWidthAsideMin: if(hugo.$dimensions_width_aside_min != null, hugo.$dim
 
 // From this width upward, the mobile menu is hidden
 // and the full menu bar is shown
-$screenViewBreakpointWidthMobileMenu: if(hugo.$breakpoints_width_mobilemenu != null, hugo.$breakpoints_width_mobilemenu, 28rem);
+$screenViewBreakpointWidthMobileMenu: if(hugo.$breakpoints_width_mobile_menu != null, hugo.$breakpoints_width_mobile_menu, 28rem);
 
 // From this width upward, more than one content item is shown -
 // e.g., a floating image surrounded by text
