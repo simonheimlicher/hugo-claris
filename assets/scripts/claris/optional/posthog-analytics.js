@@ -18,7 +18,6 @@ export function postHogAnalyticsInit() {
       const currentUrl = new URL(window.location.href);
       if (currentUrl) {
         posthog.capture("$pageview", {
-          $current_url: currentUrl,
           site: postHogSite
         });
       }
