@@ -73,8 +73,7 @@ $fontFamilySpec: (
       name: '{{ .fontFamilyName }} SC',
       styles: (
         default: (
-          font-variant: inherit,
-          text-transform: lowercase
+          font-variant: inherit
         )
       )
     )

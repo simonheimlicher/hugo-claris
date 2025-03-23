@@ -596,7 +596,7 @@
   --initial_margin-left: calc(var(--initial_margin-negative) / 16);
   margin-top: 2em;
   min-height: calc(var(--initial_font-size) / 1.4);
-  .initial-letter {
+  &-letter {
     color: var(--initial);
     float: left;
     font-size: var(--initial_font-size);
@@ -606,6 +606,9 @@
     var(--initial_margin-right)
     var(--initial_margin-bottom)
     var(--initial_margin-left);
+  }
+  &-words {
+    text-transform: lowercase;
   }
 }
 
@@ -655,6 +658,7 @@
       display: block;
       font-size: var(--font-size-supertitle);
       text-align: start;
+      text-transform: lowercase;
     }
     .subtitle {
       display: block;
