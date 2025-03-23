@@ -84,6 +84,7 @@ sidebarTaxonomies:
 assets:
   styles:
     fonts:
+      selfhosted: false
       type:
         default: "sans"
         content: "sans"
