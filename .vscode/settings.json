@@ -1,6 +1,18 @@
 {
-    "sonarlint.connectedMode.project": {
-        "connectionId": "simonheimlicher",
-        "projectKey": "simonheimlicher_hugo-claris"
-    }
+  "files.associations": {
+    "*.html": "gohtml",
+    "*.css": "gocss",
+    "*.scss": "gocss",
+    "*.sass": "gocss",
+    "*.js": "javascript",
+    "robots.txt": "gohtml"
+  },
+  "emmet.includeLanguages": {
+    "gohtml": "html"
+  },
+  "files.exclude": {
+    "**/.DS_Store": true,
+    "**/public": true,
+    "**/resources": true
+  }
 }
