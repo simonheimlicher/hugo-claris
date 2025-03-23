@@ -78,13 +78,6 @@ does not have an effect, as mentioned above.
   ) }}
 {{- end }}
 
-{{/* {{- $fontFamilies := (slice
-  (dict "fontType" "default"  "family" $fontFamilyDefaultName)
-  (dict "fontType" "sans"     "family" $fontTypeToFamilyMap.sans)
-  (dict "fontType" "serif"    "family" $fontTypeToFamilyMap.serif)
-  (dict "fontType" "mono"     "family" $fontTypeToFamilyMap.mono)
-) }} */}}
-
  {{- $defaultFallbackFontFamilyNames := (dict
   "sans" "Arial"
   "serif" "Georgia"
@@ -102,12 +95,12 @@ does not have an effect, as mentioned above.
     "hosted" $fontsSelfHosted
 ) }}
 
-
 {{- $fontSpecParamsBase := (dict
   "hostedFontPath" $hostedFontPath
   "hostedFontFallbackPath" $hostedFontFallbackPath
 ) }}
 
+{{- $concatFontResource := "" }}
 {{- $fontSpecFiles := slice }}
 {{- $fontFamilyIDs := slice }}
 {{- range $fontType, $fontFamily := $fontTypeToFamilyMap }}
@@ -124,6 +117,23 @@ does not have an effect, as mentioned above.
       "fontFamilyID" $fontFamilyID
   ) -}}
 
+  {{- $fallbackFamilyNamesKey := printf "type_%v_fallback_names" $fontType }}
+  {{- $fallbackFamily := "" }}
+  {{- $fallbackStack := slice }}
+
+  {{- if eq $fontType "default" }}
+    {{- $fallbackFamily = index $defaultFallbackFontFamilyNames $fontRoleTypeDefault }}
+  {{- else }}
+    {{- $fallbackFamily = index $defaultFallbackFontFamilyNames $fontType }}
+  {{- end}}
+
+  {{- with $fallbackFamily }}
+    {{- $fallbackStack = slice $fallbackFamily }}
+  {{- else }}
+    {{- errorf "%s No fallback font family for fontType=%v found in\n%v"
+        $dbg $fontType (jsonify (dict "indent" "  ") $defaultFallbackFontFamilyNames) }}
+  {{- end }}
+
   {{- if $fontsSelfHosted }}
     <!-- Since it's not possible to inspect the SASS module `hugo:vars` from SASS
     and it is also not possible to access a member of the module using a variable,
@@ -136,7 +146,7 @@ does not have an effect, as mentioned above.
       {{- $useFamilyAsType := slice }}
       {{- range $ft, $fn := $fontTypeToFamilyMap }}
         {{- if eq $fn $fontFamily }}
-          {{- $useFamilyAsType = append (slice $ft) $useFamilyAsType }}
+          {{- $useFamilyAsType = append $ft $useFamilyAsType }}
           {{- if and true $debug }}
             {{- warnf "%s fn=%v: using fontFamily=%v for fontType ft=%v: useFamilyAsType=%v"
                 $dbg $fn $fontFamily $ft $useFamilyAsType }}
@@ -156,7 +166,7 @@ does not have an effect, as mentioned above.
             {{- warnf "%s fontRole=%v: using fontFamily=%v for fontRole=%v as roleType=%v in %v"
                 $dbg $fontRole $fontFamily $fontRole $roleType $useFamilyAsType }}
           {{- end }}
-          {{- $useFamilyForRole = append (slice $fontRole) $useFamilyForRole | uniq }}
+          {{- $useFamilyForRole = append $fontRole $useFamilyForRole | uniq }}
         {{- else }}
           {{- if and false $debug }}
             {{- warnf "%s fontRole=%v: not using fontFamily=%v as roleType=%v not in %v"
@@ -178,60 +188,80 @@ does not have an effect, as mentioned above.
         {{- $fontBasename := path.Join (path.Dir $fontSpecResource.Name) (path.BaseName $fontSpecResource.Name) }}
         {{- $executedFontSpecFile := printf "%s%s%s" $fontBasename $executedSourceSuffix $sourceExt}}
         {{- $executedFontSpecResource := resources.ExecuteAsTemplate $executedFontSpecFile $fontSpecParams $fontSpecResource }}
-        {{- if and true $debug }}
+        {{- if and false $debug }}
           {{- warnf "%s Executed font spec file '%v' [type=%T] matching '%v' as template: \n%v"
             $dbg $fontSpecResource $fontSpecResource $specPathGlob $executedFontSpecResource.Content }}
         {{- end }}
-        {{- $fontSpecFiles = append (slice $executedFontSpecResource) $fontSpecFiles }}
+        {{- $fontSpecFiles = append $executedFontSpecResource $fontSpecFiles }}
       {{- else }}
         {{- errorf "%s No self-hosted font %v [%v] found matching '%v' with typeFamilyIDKey=%v"
             $dbg $fontFamily $fontFamilyID $specPathGlob $typeFamilyIDKey }}
       {{- end }}
       {{- $fontFamilyIDs = $fontFamilyIDs | append $fontFamilyID | uniq }}
-    {{- end }}
 
-    {{- $fallbackFamilyNamesKey := printf "type_%v_fallback_names" $fontType }}
-    {{- $fallbackStack := slice }}
-    {{- $assetFallbackFontPath := printf "%s/fallback" $assetFontPath }}
+      {{- $assetFallbackFontPath := printf "%s/fallback" $assetFontPath }}
 
-    {{- $fallbackFontSpecPathGlob := printf "%s/%s.*" $assetFallbackFontPath $fontFamilyID }}
-    {{- with $fallbackFontSpecFile := resources.GetMatch $fallbackFontSpecPathGlob }}
-      {{- if and false $debug }}
-        {{- warnf "%s Fallback font spec for %v [%v] found: examining fallback font file '%v' [type=%T] matching '%v'"
-          $dbg $fontFamily $fontFamilyID $fallbackFontSpecFile $fallbackFontSpecFile $fallbackFontSpecPathGlob }}
-      {{- end }}
-      <!-- Add the fallback font spec SCSS file to the main SCSS file -->
-      {{- $fontSpecFiles = append (slice $fallbackFontSpecFile) $fontSpecFiles }}
-      {{- range $fallbackFontSuffix := (slice "fallback" "fallback-android") }}
-        {{- $fallbackFamilyID := printf "%s-%s" $fontFamilyID $fallbackFontSuffix }}
-        {{- $fallbackFontFamilyRegex := printf `(?i)font-family:\s*['"]?%s['"]?` $fallbackFamilyID }}
-        {{- with $fallbackMatch := findRE $fallbackFontFamilyRegex $fallbackFontSpecFile.Content }}
-          {{- $fallbackMatch = index $fallbackMatch 0 }}
-          {{- if and false $debug }}
-            {{- warnf "%s Fallback font family for %v [%v] found: adding fallbackFamilyID='%v'. Match: '%v'"
-              $dbg $fontFamily $fontFamilyID $fallbackFamilyID $fallbackMatch }}
-          {{- end }}
-          {{- $fallbackStack = append $fallbackFamilyID $fallbackStack }}
-        {{- else }}
-          {{- if and false $debug }}
-            {{- warnf "%s No fallback font family for %v [%v] found matching fallbackFamilyID='%v'"
-              $dbg $fontFamily $fontFamilyID $fallbackFamilyID }}
+      {{- $fallbackFontSpecPathGlob := printf "%s/%s.*" $assetFallbackFontPath $fontFamilyID }}
+      {{- with $fallbackFontSpecFile := resources.GetMatch $fallbackFontSpecPathGlob }}
+        {{- $fallbackStack = slice }}
+        {{- if and true $debug }}
+          {{- warnf "%s Fallback font spec for %v [%v] found: examining fallback font file '%v' [type=%T] matching '%v'"
+            $dbg $fontFamily $fontFamilyID $fallbackFontSpecFile $fallbackFontSpecFile $fallbackFontSpecPathGlob }}
+        {{- end }}
+        <!-- Add the fallback font spec SCSS file to the main SCSS file -->
+        {{- $fontSpecFiles = append $fallbackFontSpecFile $fontSpecFiles }}
+        {{- range $fallbackFontSuffix := (slice "fallback" "fallback-android") }}
+          {{- $fallbackFamilyID := printf "%s-%s" $fontFamilyID $fallbackFontSuffix }}
+          {{- $fallbackFontFamilyRegex := printf `(?i)font-family:\s*['"]?%s['"]?` $fallbackFamilyID }}
+          {{- with $fallbackMatch := findRE $fallbackFontFamilyRegex $fallbackFontSpecFile.Content }}
+            {{- $fallbackMatch = index $fallbackMatch 0 }}
+            {{- if and false $debug }}
+              {{- warnf "%s Fallback font family for %v [%v] found: adding fallbackFamilyID='%v'. Match: '%v'"
+                $dbg $fontFamily $fontFamilyID $fallbackFamilyID $fallbackMatch }}
+            {{- end }}
+            {{- $fallbackStack = append $fallbackFamilyID $fallbackStack }}
+          {{- else }}
+            {{- if and false $debug }}
+              {{- warnf "%s No fallback font family for %v [%v] found matching fallbackFamilyID='%v'"
+                $dbg $fontFamily $fontFamilyID $fallbackFamilyID }}
+            {{- end }}
           {{- end }}
         {{- end }}
+      {{- else }}
+        {{- if and true $debug }}
+          {{- warnf "%s No fallback font spec for %v [%v] found matching '%v': using default fallback family=%v via fontType=%v"
+            $dbg $fontFamily $fontFamilyID $fallbackFontSpecPathGlob $fallbackFamily $fontType }}
+        {{- end }}
       {{- end }}
-    {{- else }}
-      {{- $fallbackFamily := index $defaultFallbackFontFamilyNames $fontType }}
-      {{- if and false $debug }}
-        {{- warnf "%s No fallback font spec for %v [%v] found matching '%v': using default fallback family=%v via fontType=%v"
-          $dbg $fallbackFontSpecPathGlob $fontFamilyID $fallbackFontSpecPathGlob $fallbackFamily $fontType }}
-      {{- end }}
-      {{- $fallbackStack = append $fallbackFamily $fallbackStack }}
     {{- end }}
 
-    {{- $fontParams = merge $fontParams (dict
-        $fallbackFamilyNamesKey (delimit $fallbackStack " ")
-    ) }}
   {{- end }}
+
+  {{- $fontParams = merge $fontParams (dict
+      $fallbackFamilyNamesKey (delimit $fallbackStack " ")
+  ) }}
+
+{{- end }}
+
+{{- /* Concatenate font spec files if there are any */ -}}
+{{- with $fontSpecFiles }}
+  {{- if and true $debug }}
+    {{- warnf "%v Concatenating fontSpecFiles\n%v" $dbg $fontSpecFiles }}
+    {{- range $idx, $resource := $fontSpecFiles }}
+      {{- warnf "%v %d --> %v .Name=%v .MediaType=%v" $dbg $idx $resource $resource.Name $resource.MediaType }}
+    {{- end }}
+  {{- end }}
+  {{- $concatFontFile := printf "%s/%s.%s" $resourcePathBase "fonts" $sourceExt }}
+
+  {{- $concatFontResource = $fontSpecFiles | resources.Concat $concatFontFile }}
+
+  {{- if and false $debug }}
+    {{- /* warnf "%v $concatFontResource '%s'.Content:\n%v\n...\n%v"
+        $dbg $concatFontResource (substr $concatFontResource.Content 0 500) (substr $concatFontResource.Content -500) */ -}}
+    {{- warnf "%v $concatFontResource '%s'.Content:\n%v"
+        $dbg $concatFontResource $concatFontResource.Content -}}
+  {{- end }}
+
 {{- end }}
 
 {{- $fontParams = merge $fontParams (dict
@@ -296,7 +326,7 @@ does not have an effect, as mentioned above.
 {{- end }}
 {{- $toCSSIncludePaths := slice }}
 {{- range $contentTypeList }}
-  {{- $toCSSIncludePaths = append (slice (printf "assets/%s/%s" $resourcePathBase . ) ) $toCSSIncludePaths }}
+  {{- $toCSSIncludePaths = append (printf "assets/%s/%s" $resourcePathBase . ) $toCSSIncludePaths }}
 {{- end }}
 {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "includePaths" $toCSSIncludePaths) }}
 {{- if and false $debug }}
@@ -345,27 +375,6 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
 
     <!-- Concat SASS -->
     {{- $executedResourceList := slice }}
-    {{- with $fontSpecFiles }}
-      {{- if and true $debug }}
-        {{- warnf "%v Concatenating fontSpecFiles\n%v" $dbg $fontSpecFiles }}
-        {{- range $idx, $resource := $fontSpecFiles }}
-          {{- warnf "%v %d --> %v .Name=%v .MediaType=%v" $dbg $idx $resource $resource.Name $resource.MediaType }}
-        {{- end }}
-      {{- end }}
-      {{- $concatFontFile := printf "%s/%s.%s" $resourcePathBase "fonts" $sourceExt }}
-
-      {{- $concatFontResource := $fontSpecFiles | resources.Concat $concatFontFile }}
-
-      {{- if and false $debug }}
-        {{- /* warnf "%v $concatFontResource '%s'.Content:\n%v\n...\n%v"
-            $dbg $concatFontResource (substr $concatFontResource.Content 0 500) (substr $concatFontResource.Content -500) */ -}}
-        {{- warnf "%v $concatFontResource '%s'.Content:\n%v"
-            $dbg $concatFontResource $concatFontResource.Content -}}
-      {{- end }}
-
-      {{- $executedResourceList = append (slice $concatFontResource) $executedResourceList }}
-    {{- end }}
-
     {{- range $contentType := $contentTypeList }}
       {{- $tplParams = merge $tplParams (dict "ContentType" $contentType "MediaType" $mediaType) }}
       {{- $resourcePathPrefix := printf "%s/%s" $resourcePathBase $contentType -}}
@@ -385,7 +394,7 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
           {{- $executedFile = printf "%s_%s%s%s.%s" $mainFile $resourceID . $executedSourceSuffix $sourceExt }}
         {{- end }}
         {{- $executedResource := resources.ExecuteAsTemplate $executedFile $tplParams . }}
-        {{- $executedResourceList = append $executedResourceList (slice $executedResource) }}
+        {{- $executedResourceList = append $executedResource $executedResourceList }}
         {{- if and true $debug }}
           {{- warnf "%v Added executedResource %v [%v] [type=%T] to executedResourceList\n%v" $dbg
               $executedResource.Name $executedResource.MediaType $executedResource $executedResourceList }}
@@ -394,15 +403,34 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
           {{- end }}
         {{- end }}
       {{- else -}}
-        {{- if (eq $contentType "claris") }}
-          {{- errorf "%v mainFile '%s' not found" $dbg $mainFile }}
+        {{- if (eq $contentType "claris") }} {{- /* Claris is the default contentType, hence `mainFile` must be available */ -}}
+          {{- errorf "%v Default mainFile '%s' not found" $dbg $mainFile }}
+        {{- else}}
+          {{- if and true $debug }}
+            {{- warnf "%v No mainFile '%s' found for contentType=%s: using default mainFile '%s' instead"
+                $dbg $mainFile $contentType $mainFileBaseName }}
+          {{- else }}
+            {{- errorf "%v No mainFile '%s' found for contentType=%s: using default mainFile '%s' instead"
+                $dbg $mainFile $contentType $mainFileBaseName }}
+          {{- end -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}
 
-    {{- if and $debug (gt (len $contentTypeList) 1) }}
-      {{- warnf "%v Multiple types=%v ID=%v resourceID=%s produced executedResourceList: "
-          $dbg $contentTypeList $contentTypeListID $resourceID }}
+    {{- with $concatFontResource }}
+      {{- $executedResourceList = append $concatFontResource $executedResourceList }}
+      {{- if and true $debug }}
+        {{- warnf "%v Added concatFontResource %v [%v] [type=%T] to executedResourceList\n%v" $dbg
+            $concatFontResource.Name $concatFontResource.MediaType $concatFontResource $executedResourceList }}
+        {{- range $idx, $resource := $executedResourceList }}
+          {{- warnf "%v %d --> %v .Name=%v .MediaType=%v" $dbg $idx $resource $resource.Name $resource.MediaType }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+
+    {{- if $debug }}
+      {{- warnf "%v Concatenated SCSS files for content type list=%v ID=%v resourceID=%s. Final executedResourceList: " $dbg
+          $contentTypeList $contentTypeListID $resourceID }}
       {{- range $idx, $resource := $executedResourceList }}
         {{- warnf "%v %d --> %v .Name=%v .MediaType=%v" $dbg $idx $resource $resource.Name $resource.MediaType }}
       {{- end }}
