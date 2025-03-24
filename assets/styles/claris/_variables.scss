@@ -76,22 +76,18 @@ $main-z-index: 1;
 @mixin generate_colors($colors) {
   // Add RGB / RGBA color definitions
   @each $color, $value in $colors {
-    & {
-      --#{$color}: #{$value};
-    }
+    --#{$color}: #{$value};
   }
   @if $debug {
     @debug "generate_colors: type of 'colors': [#{meta.type-of($colors)}]. Contents of colors: #{meta.inspect($colors)}";
   }
   @each $color in (text bg theme theme-bg choice-bg xhaze link link-visited link-hover link-focus link-active link-dark link-dark-visited link-dark-hover link-dark-focus link-dark-active highlight-bg-yellow) {
-    & {
-      $value: map.get($colors, $color);
-      @if $debug {
-        @debug "generate_colors: color=#{$color} mapped to value=#{$value} [#{meta.type-of($value)}] --> #{map_color_variable_to_RGB($colors, $value)}";
-      }
-      $color_RGB: map_color_variable_to_RGB($colors, $value);
-      --RGB_#{$color}: #{$color_RGB};
+    $value: map.get($colors, $color);
+    @if $debug {
+      @debug "generate_colors: color=#{$color} mapped to value=#{$value} [#{meta.type-of($value)}] --> #{map_color_variable_to_RGB($colors, $value)}";
     }
+    $color_RGB: map_color_variable_to_RGB($colors, $value);
+    --RGB_#{$color}: #{$color_RGB};
   }
 }
 
@@ -342,9 +338,7 @@ $main-z-index: 1;
 }
 
 @mixin content_base() {
-  & {
-    clear: both;
-  }
+  clear: both;
 }
 
 @mixin content_base_centered() {
@@ -360,23 +354,16 @@ $main-z-index: 1;
 }
 
 @mixin content_singlecolumn() {
+  max-width: var(--content_max-width);
   @include body_horizontal-padding;
   @include content_base_centered;
-  & {
-    max-width: var(--content_max-width);
-  }
 }
 
 // Content that has multiple columns
 @mixin content_multicolumn() {
+  max-width: var(--content_multicolumn_max-width);
   @include body_horizontal-padding;
   @include content_base_centered;
-  & {
-    max-width: var(--content_max-width); // For IE 11
-  }
-  @supports (display: grid) {
-    max-width: var(--content_multicolumn_max-width);
-  }
 }
 
 // Content that has multiple panels that span the entire width
@@ -728,21 +715,15 @@ $main-z-index: 1;
 
 @mixin geometric-scale($prop, $base-size, $scale-factor: hugo.$geometricScaleFactor, $base-shift: 0, $smallest: 9, $largest: 9) {
 
-  & {
-    --#{$prop}-base: #{$base-size};
-    --#{$prop}-normal: #{geometric-scaled-prop($prop, $scale-factor, $base-shift)};
-  }
+  --#{$prop}-base: #{$base-size};
+  --#{$prop}-normal: #{geometric-scaled-prop($prop, $scale-factor, $base-shift)};
   $smaller-factor-idx-max: 5;
   $larger-factor-idx-max: 6;
   @for $i from 1 through $smaller-factor-idx-max {
-    & {
-      --#{$prop}-smaller-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift - min($smallest, $i))};
-    }
+    --#{$prop}-smaller-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift - min($smallest, $i))};
   }
   @for $i from 1 through $larger-factor-idx-max {
-    & {
-      --#{$prop}-larger-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift + min($largest, $i))};
-    }
+    --#{$prop}-larger-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift + min($largest, $i))};
   }
 }
 
@@ -755,14 +736,10 @@ $main-z-index: 1;
   --#{$prop}-base: #{fluid($min-size, $max-size, $min-breakpoint, $max-breakpoint, $unit)};
   --#{$prop}-normal: #{geometric-scaled-prop($prop, $scale-factor, $base-shift)};
   @for $i from 1 through $smaller-factor-idx-max {
-    & {
-      --#{$prop}-smaller-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift - min($smallest, $i))};
-    }
+    --#{$prop}-smaller-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift - min($smallest, $i))};
   }
   @for $i from 1 through $larger-factor-idx-max {
-    & {
-      --#{$prop}-larger-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift + min($largest, $i))};
-    }
+    --#{$prop}-larger-#{$i}: #{geometric-scaled-prop($prop, $scale-factor, $base-shift + min($largest, $i))};
   }
 }
 
@@ -788,9 +765,7 @@ $main-z-index: 1;
   --#{$prop}-base: #{fluid($min-size, $max-size, $min-breakpoint, $max-breakpoint, $unit)};
   --#{$prop}: #{fractional-scaled-prop($prop, $base-shift + $denominator, $denominator)};
   @for $i from 0 through $numerator-max {
-    & {
-      --#{$prop}_#{$denominator}-#{$i}: #{fractional-scaled-prop($prop, $base-shift + $i, $denominator)};
-    }
+    --#{$prop}_#{$denominator}-#{$i}: #{fractional-scaled-prop($prop, $base-shift + $i, $denominator)};
   }
 }
 
@@ -805,6 +780,10 @@ $main-z-index: 1;
   --table-haze: hsla(0, 0%, 100%, 0.1);
   --table-border: var(--code-bg);
   --footer-bg: var(--bg);
+  @include generate_colors( map.merge(colors.$colors-lit, colors.$colors-dim) );
+  img:not([src*=".svg"]) {
+    filter: var(--dim-image-filter);
+  }
   svg.icon {
     fill: var(--theme-text);
   }
@@ -839,13 +818,6 @@ $main-z-index: 1;
           z-index: auto;
         }
       }
-    }
-  }
-
-  & {
-    @include generate_colors( map.merge(colors.$colors-lit, colors.$colors-dim) );
-    img:not([src*=".svg"]) {
-      filter: var(--dim-image-filter);
     }
   }
 }
