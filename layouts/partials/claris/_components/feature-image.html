@@ -28,7 +28,7 @@
       "ratio" (slice $featureImageAspectRatioMin $featureImageAspectRatioMax)
       "fullbleedhorizontal" true
       "includeplaceholder" true
-      "figureclass" (printf "%s_figure" $classPrefix)
+      "figureclass" (slice "grid-columns-all" (printf "%s_figure" $classPrefix) )
       "imgclass" (printf "%s_img" $classPrefix)
       "fetchpriority" $fetchPriority
       "Debug" $debug

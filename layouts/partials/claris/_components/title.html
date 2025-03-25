@@ -1,7 +1,7 @@
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/_components/title" }}
 {{- $headingLevel := 1 }}
-{{- $titleClass := "content-title role-display" }}
+{{- $titleClassList := slice "content-title" "content_multicolumn" "role-display" }}
 
 {{- /* Use the `formatted` version of the title, subtitle and supertitle from meta data */ -}}
 
@@ -21,7 +21,7 @@
 {{- $subtitleOutside := $meta.Single.Formatted.SubtitleOutside }}
 
 {{- if $title }}
-        <div{{- with $titleClass }} class="{{ . }}"{{ end }}>
+      <div{{- with $titleClassList }} class="{{ delimit $titleClassList ` ` }}"{{ end }}>
   {{- with $supertitleOutside -}}
           <strong class="supertitle variant-small-caps">{{. }}<span class="visually-hidden">: </span></strong>
   {{- end -}}

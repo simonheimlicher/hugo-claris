@@ -4,6 +4,13 @@
 @use "hugo-vars" as hugo;
 @use "variables" as variables;
 
+.header {
+  &_multicolumn {
+    @include variables.header_multicolumn;
+    width: 100%;
+  }
+}
+
 .main {
   &_claris {
     background: var(--choice-bg);
@@ -48,7 +55,6 @@
 }
 
 .container {
-  @include variables.container;
   &_singlecolumn {
     @include variables.container_singlecolumn;
   }
@@ -115,7 +121,6 @@
     background: var(--choice-bg);
     &_inner {
       margin: 0 auto;
-      max-width: var(--content_multicolumn_max-width);
     }
     &_content {
       @include variables.body_horizontal-padding();
@@ -535,12 +540,7 @@
   align-self: start;
   border-radius: 0.25rem;
   @media screen and (min-width: hugo.$screenViewBreakpointWidthTwoColumn) {
-
-    // Don't show any article aside if the browser does not support grid
-    // as it cannot be placed next to the article without grid
-    @supports (display: grid) {
-      display: block;
-    }
+    display: block;
   }
 }
 .table_of_contents {
@@ -632,23 +632,16 @@
 .main_header {
   position: relative;
   grid-column: 3;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
   z-index: (variables.$main-z-index + 2);
   .content-title {
     --title_line-height: calc(var(--font-size-title) * var(--line-height-heading));
     margin: calc(0.5 * var(--title_line-height)) auto;
-    padding: 0;
     width: fit-content;
+    max-width: 100%;
     text-align: unset;
     color: var(--header-text);
     z-index: (variables.$main-z-index + 5);
     hyphens: manual;
-    @include variables.content_multicolumn;
-    @media screen and (min-width: hugo.$screenViewBreakpointWidthTwoColumn) {
-      min-width: var(--content_max-width);
-    }
     h1 {
       font-size: var(--font-size-title);
       margin: 0;
@@ -848,29 +841,32 @@
         );
       }
     }
+    .main_header {
+      display: grid;
+      grid-template-rows: 1fr minmax(0px, max-content);
+
+      .content-title {
+        position: relative;
+        grid-column: 3 / span 3;
+        grid-row: 2;
+        color: white;
+        text-shadow: 1.5px 1.5px 1.5px black;
+        --font-size-title: var(--font-size_heading-larger-5);
+        --font-size-subtitle: var(--font-size_heading-larger-2);
+        --header-text: white;
+        // For IE 11 and other browsers that don't support CSS custom properties
+        h1#articleTop {
+          &, &.supertitle, .supertitle, &.subtitle, .subtitle {
+            color: white;
+          }
+        }
+        margin-bottom: 2rem;
+      }
+    }
     .main_inner {
       position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      align-items: center;
+      display: grid;
       z-index: (variables.$main-z-index + 2);
-    }
-    .content-title {
-      position: relative;
-      color: white;
-      text-shadow: 1.5px 1.5px 1.5px black;
-      --font-size-title: var(--font-size_heading-larger-5);
-      --font-size-subtitle: var(--font-size_heading-larger-2);
-      --header-text: white;
-      // For IE 11 and other browsers that don't support CSS custom properties
-      h1#articleTop {
-        &, &.supertitle, .supertitle, &.subtitle, .subtitle {
-          color: white;
-        }
-      }
-      text-align: center;
-      margin-bottom: 2rem;
     }
     &_figure {
       display: none;
@@ -1330,49 +1326,47 @@ svg.qrcode-svg {
       text-align: right;
     }
   }
-  @supports (display: grid) {
-    &_content {
-      // For everything other than IE 11
-      min-height: unset;
-    }
-    @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
-      &_container {
-        margin: var(--inner_margin) 0 0 0;
-        .excerpt_main {
-          &.image.content {
-            .excerpt_thumbnail {
-              float: none;
-              padding-right: var(--inner_padding);
-              max-width: 100%;
-            }
-            .excerpt_content {
-              // Avoid overflow at bottom
-              height: auto;
-            }
+  &_content {
+    // For everything other than IE 11
+    min-height: unset;
+  }
+  @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
+    &_container {
+      margin: var(--inner_margin) 0 0 0;
+      .excerpt_main {
+        &.image.content {
+          .excerpt_thumbnail {
+            float: none;
+            padding-right: var(--inner_padding);
+            max-width: 100%;
+          }
+          .excerpt_content {
+            // Avoid overflow at bottom
+            height: auto;
           }
         }
       }
-      &_grid {
-        // Auto-fit as many items on a row as possible without going under $list-excerpt-width
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(#{variables.$list-excerpt-width}, 1fr));
-        grid-auto-flow: dense;
-        grid-gap: var(--inner_padding)  var(--inner_padding);
+    }
+    &_grid {
+      // Auto-fit as many items on a row as possible without going under $list-excerpt-width
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(#{variables.$list-excerpt-width}, 1fr));
+      grid-auto-flow: dense;
+      grid-gap: var(--inner_padding)  var(--inner_padding);
+      margin: 0;
+      .excerpt_container {
         margin: 0;
-        .excerpt_container {
-          margin: 0;
-        }
       }
-      @media screen and (min-width: hugo.$screenViewBreakpointWidthOneColumn) {
-        &_container.featured {
-          grid-column: auto / span 2;
-          .excerpt_main {
-            &.image.content {
-              .excerpt_thumbnail {
-                float: left;
-                padding: var(--inner_padding_4-3) var(--inner_padding_4-2) var(--inner_padding_4-2) var(--inner_padding);
-                max-width: 50%;
-              }
+    }
+    @media screen and (min-width: hugo.$screenViewBreakpointWidthOneColumn) {
+      &_container.featured {
+        grid-column: auto / span 2;
+        .excerpt_main {
+          &.image.content {
+            .excerpt_thumbnail {
+              float: left;
+              padding: var(--inner_padding_4-3) var(--inner_padding_4-2) var(--inner_padding_4-2) var(--inner_padding);
+              max-width: 50%;
             }
           }
         }
@@ -1398,38 +1392,28 @@ svg.qrcode-svg {
     gap: var(--inner_margin);
 
     @include variables.color-scheme_transition;
-    @include variables.inner_horizontal-padding;
-    @media screen and (min-width: hugo.$screenViewBreakpointWidthTwoColumn) {
-      @supports (display: grid) {
-        margin: 0 var(--inner_margin);
-        @include variables.element-padding('inner', 0, 0.5, 0, 0.5);
-      }
-    }
+    @include variables.body_horizontal-padding;
   }
   @media screen and (min-width: hugo.$screenViewBreakpointWidthTwoColumn) {
-    @supports (display: grid) {
-      background: none;
-      &_inner {
-        background: linear-gradient(0deg, transparent 0%, var(--haze) calc(100% - 2px), var(--xhaze) calc(100% - 2px));
-      }
+    background: none;
+    &_inner {
+      background: linear-gradient(0deg, transparent 0%, var(--haze) calc(100% - 2px), var(--xhaze) calc(100% - 2px));
     }
   }
   @media screen and (min-width: hugo.$screenViewBreakpointWidthWide) {
-    @supports (display: grid) {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      &_inner {
-        @include variables.body_full-bleed_left-padding;
-        @include variables.inner_padding_4-2;
-        background: linear-gradient(90deg, transparent 0%, var(--haze) calc(100% - 2px), var(--xhaze) calc(100% - 2px));
-        margin: 0 calc(-1 * var(--inner_padding_4-2)) 0 calc(-1 * var(--inner_padding_4-2));
-        @include variables.color-scheme_transition;
-        h2 {
-          &:first-of-type {
-            margin-top: calc(1em * (1 - var(--line-height-heading)));
-            padding-top: 0;
-          }
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    &_inner {
+      @include variables.body_full-bleed_left-padding;
+      @include variables.inner_padding_4-2;
+      background: linear-gradient(90deg, transparent 0%, var(--haze) calc(100% - 2px), var(--xhaze) calc(100% - 2px));
+      margin: 0 calc(-1 * var(--inner_padding_4-2)) 0 calc(-1 * var(--inner_padding_4-2));
+      @include variables.color-scheme_transition;
+      h2 {
+        &:first-of-type {
+          margin-top: calc(1em * (1 - var(--line-height-heading)));
+          padding-top: 0;
         }
       }
     }

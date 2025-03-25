@@ -7,11 +7,8 @@
   {{- $s := site.Params }}
   {{- $p := .Params }}
   {{- $mainKind := (.Scratch.Get "claris.render.main.kind") }}
-  {{- $mainInnerClassList := (slice "main_inner") }}
+  {{- $mainInnerClassList := (slice "main_inner" "grid-main") }}
   {{ if eq $mainKind "page" }}
-    {{- if not (or (eq $p.singleColumn true) (eq $p.sidebar false) ) }}
-      {{- $mainInnerClassList = append (slice "grid-main-single") $mainInnerClassList }}
-    {{- end }}
     {{ if in ($page.Param "mainSections") .Section }}
       {{- $mainInnerClassList = append (slice "section_main-section") $mainInnerClassList }}
     {{- end }}
@@ -46,7 +43,7 @@
   {{- end }}
 
   {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
-  {{- $mainHeaderClassList := slice "main_header" }}
+  {{- $mainHeaderClassList := slice "main_header" "grid-main" }}
   {{- with $featureImageClassList }}
     {{- $mainHeaderClassList = append $featureImageClassList $mainHeaderClassList }}
   {{- end }}
