@@ -4,7 +4,7 @@
 
 {{- $themeFontPath := default "/fonts" ($page.Param "fontPath") }}
 {{- $fontFamilySans := default "Source Sans 3" ($page.Param "assets.styles.fonts.family.sans") }}
-{{- $fontFamilySerif := default "Alegreya" ($page.Param "fassets.styles.fonts.family.serif") }}
+{{- $fontFamilySerif := default "Alegreya" ($page.Param "assets.styles.fonts.family.serif") }}
 {{- $fontFamilyMono := default "DM Mono" ($page.Param "assets.styles.fonts.family.mono") }}
 {{- $fontFamilies := (slice $fontFamilySans $fontFamilySerif $fontFamilyMono) }}
 
