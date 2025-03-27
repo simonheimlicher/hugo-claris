@@ -1,0 +1,52 @@
+// Font family specification for Source Sans 3
+// This file contains the font family specification for Source Sans 3.
+// It defines the font family, styles, roles, and variants for the Source Sans 3 font.
+$fontFamilySpec: (
+  // Default font-family
+  name: 'Source Sans 3',
+  // Default styles
+  styles: (
+    // Style: `default`, i.e., body text
+    default: (
+      font-weight: 400,
+      line-height: 1.5
+    ),
+    strong: (
+      font-weight: 600,
+    )
+  ),
+  variants: (
+    // Font variant: `small-caps`
+    small-caps: (
+      name: 'Source Sans 3',
+      styles: (
+        default: (
+          font-variant: small-caps
+        )
+      )
+    )
+    all-small-caps: (
+      name: 'Source Sans 3',
+      styles: (
+        default: (
+          font-variant: all-small-caps
+        )
+      )
+    )
+  ),
+  // Alternative roles
+  roles: (
+    // Role: `display`, i.e., short pieces of text such as headings, labels, navigation
+    display: (
+      styles: (
+        default: (
+          font-weight: 400,
+          line-height: 1.2
+        ),
+        strong: (
+          font-weight: 900,
+        )
+      )
+    )
+  ),
+);

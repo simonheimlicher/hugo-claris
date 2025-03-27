@@ -1,5 +1,2 @@
 // Monospace Code from https://github.com/system-fonts/modern-font-stacks#monospace-code
-@use 'functions' as functions;
 $fallbackStack: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
-
-@include fonts.defineFontUtilityClasses($fontFamilySpec, $useAs: ( {{ delimit .useFamilyAs ", " }} ) );

@@ -1,0 +1,45 @@
+// Font family specification for Concourse OT
+// This file is used to generate the font-face declarations for the Concourse OT font family.
+// It defines the font family name, font styles, font weights, and font variants.
+$fontFamilySpec: (
+  // Default, i.e., body text
+  name: '{{ .FontFamilyName }}',
+  styles: (
+    // Weight: `default`, i.e., body text
+    default: (
+      font-weight: 400,
+      line-height: 1.45
+    ),
+    // Weight: `strong`, i.e., bolder than normal text
+    strong: (
+      font-weight: 600,
+    )
+  ),
+  variants: (
+    // Font variant: `small-caps`
+    small-caps: (
+      name: '{{ .FontFamilyName }}',
+      styles: (
+        default: (
+          font-variant: small-caps
+        )
+      )
+    )
+  ),
+  roles: (
+    // Role: `display`, i.e., short pieces of text such as headings, labels, navigation
+    display: (
+      styles: (
+        default: (
+          font-weight: 400,
+          line-height: 1.2
+        ),
+        // Weight: `strong`, i.e., bolder than normal text
+        strong: (
+          font-weight: 600,
+        )
+      )
+    )
+  )
+);
+

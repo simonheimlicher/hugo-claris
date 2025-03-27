@@ -1,17 +1,17 @@
-{{- $styleBundles := dict }}
-{{- $page := .Page }}
-{{- $template := "claris/_functions/style-bundles" }}
-{{- $debug := and false (page.Param "clarisdebug") }}
-{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
-{{- $debugSassDeprecation := or false (page.Param "clarisdebugsassdeprecation") }}
+{{ $styleBundles := dict }}
+{{ $page := .Page }}
+{{ $template := "claris/_functions/style-bundles" }}
+{{ $debug := or true (page.Param "clarisdebug") }}
+{{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{ $debugSassDeprecation := or false (page.Param "clarisdebugsassdeprecation") }}
 
-{{- $assetVariant :=.AssetVariant -}}
+{{ $assetVariant :=.AssetVariant }}
 
-{{- $mediaTypeList := $assetVariant.MediaTypeList }}
-{{- $contentTypeList := $assetVariant.ContentTypeList }}
-{{- $contentTypeListID := $assetVariant.ContentTypeListID }}
-{{- $assetStyle := $assetVariant.AssetStyle }}
-{{- $assetStyleSuffix := $assetVariant.AssetStyleSuffix }}
+{{ $mediaTypeList := $assetVariant.MediaTypeList }}
+{{ $contentTypeList := $assetVariant.ContentTypeList }}
+{{ $contentTypeListID := $assetVariant.ContentTypeListID }}
+{{ $assetStyle := $assetVariant.AssetStyle }}
+{{ $assetStyleSuffix := $assetVariant.AssetStyleSuffix }}
 
 <!-- NOTE: There are two ways to minify styles (CSS) in Hugo:
 1. css.PostCSS: by passing (dict "config" "./relative/path/to/configDir")
@@ -42,303 +42,57 @@ This comes with the caveat that configuration of styles minification
 does not have an effect, as mentioned above.
 -->
 
-{{- $minifyCSS := default false $assetVariant.BundleParams.MinifyBundles -}}
+{{ $minifyCSS := default false $assetVariant.BundleParams.MinifyBundles }}
 
 <!-- https://www.hackification.io/software-development/hugo/html/asset-bundling/ */ -->
-{{- $resourcePathBase := "styles" -}}
-{{- $sourceExt := "scss" }}
-{{- $executedSourceSuffix := "_executed" }}
-{{- $targetExt := "css" -}}
-{{- $fingerprintOptions := default "sha256" site.Params.resourceFingerprintOptions }}
+{{ $resourcePathBase := "styles" }}
+{{ $sourceExt := "scss" }}
+{{ $executedSourceSuffix := "_executed" }}
+{{ $targetExt := "css" }}
+{{ $fingerprintOptions := default "sha256" site.Params.resourceFingerprintOptions }}
 
-{{- $fontParams := dict }}
-
-{{- $fontTypeToFamilyMap := (dict
-  "sans"      ($page.Param "assets.styles.fonts.family.sans"  | default "Source Sans Pro")
-  "serif"     ($page.Param "assets.styles.fonts.family.serif" | default "Alegreya")
-  "mono"      ($page.Param "assets.styles.fonts.family.mono"  | default "DM Mono")
-) -}}
-
-{{- $fontRoleTypeDefault := $page.Param "assets.styles.fonts.type.default" | default "sans" }}
-{{- $fontFamilyDefaultName := index $fontTypeToFamilyMap $fontRoleTypeDefault }}
-{{- $fontTypeToFamilyMap = merge $fontTypeToFamilyMap (dict "default" $fontFamilyDefaultName ) }}
-
-{{- $fontRoleToTypeMap := (dict
-    "default" $fontRoleTypeDefault
-    "content" ($page.Param "assets.styles.fonts.type.content" | default ($page.Param "assets.styles.fonts.type.default"))
-    "article" ($page.Param "assets.styles.fonts.type.article" | default "serif")
-    "code"    ($page.Param "assets.styles.fonts.type.code"    | default "mono")
-    "heading" ($page.Param "assets.styles.fonts.type.heading" | default "inherit")
-    "meta"    ($page.Param "assets.styles.fonts.type.meta"    | default "sans")
-) -}}
-{{- range $fontRole, $fontType := $fontRoleToTypeMap }}
-  {{- $roleKey := printf "role_%v" $fontRole }}
-  {{- $fontParams = merge $fontParams (dict
-      $roleKey $fontType
-  ) }}
-{{- end }}
-
- {{- $defaultFallbackFontFamilyNames := (dict
-  "sans" "Arial"
-  "serif" "Georgia"
-  "mono" "Courier"
- ) }}
-
-{{- $fontsSelfHosted := $page.Param "assets.styles.fonts.selfhosted" | default false }}
-{{- $assetStyleRoot := "styles" }}
-{{- $styleFontsPath := "claris/fonts" }}
-{{- $assetFontPath := printf "%s/%s" $assetStyleRoot $styleFontsPath }}
-{{- $hostedFontPath := default (relURL "fonts") ($page.Param "hostedFontPath") }}
-{{- $hostedFontFallbackPath := printf "%s/fallback" $hostedFontPath }}
-
-{{- $fontParams = merge $fontParams (dict
-    "hosted" $fontsSelfHosted
-) }}
-
-{{- $fontSpecParamsBase := (dict
-  "hostedFontPath" $hostedFontPath
-  "hostedFontFallbackPath" $hostedFontFallbackPath
-) }}
-
-{{- $concatFontResource := "" }}
-{{- $fontSpecFiles := slice }}
-{{- $fontFamilyIDs := slice }}
-{{- range $fontType, $fontFamily := $fontTypeToFamilyMap }}
-  {{- $fontFamilyID   := urlize $fontFamily }}
-  {{- $typeFamilyNameKey := printf "type_%v_name" $fontType }}
-  {{- $typeFamilyIDKey := printf "type_%v_id" $fontType }}
-
-  {{- $fontParams = merge $fontParams (dict
-      $typeFamilyNameKey $fontFamily
-      $typeFamilyIDKey $fontFamilyID
-  ) -}}
-  {{- $fontSpecParams := merge $fontSpecParamsBase (dict
-      "fontFamilyName" $fontFamily
-      "fontFamilyID" $fontFamilyID
-  ) -}}
-
-  {{- $fallbackFamilyNamesKey := printf "type_%v_fallback_names" $fontType }}
-  {{- $fallbackFamily := "" }}
-  {{- $fallbackStack := slice }}
-
-  {{- if eq $fontType "default" }}
-    {{- $fallbackFamily = index $defaultFallbackFontFamilyNames $fontRoleTypeDefault }}
-  {{- else }}
-    {{- $fallbackFamily = index $defaultFallbackFontFamilyNames $fontType }}
-  {{- end}}
-
-  {{- with $fallbackFamily }}
-    {{- $fallbackStack = slice $fallbackFamily }}
-  {{- else }}
-    {{- errorf "%s No fallback font family for fontType=%v found in\n%v"
-        $dbg $fontType (jsonify (dict "indent" "  ") $defaultFallbackFontFamilyNames) }}
-  {{- end }}
-
-  {{- if $fontsSelfHosted }}
-    <!-- Since it's not possible to inspect the SASS module `hugo:vars` from SASS
-    and it is also not possible to access a member of the module using a variable,
-    there is no point in passing the font family ID to the SASS module.
-    Instead, we place the fallback stack under the type because the type is static
-    and can therefore be read from the SASS module using a static key.
-    This may lead to redundant entries in the SASS module, but it is the only way
-    to pass the information to the SASS module. -->
-    {{- if not (in $fontFamilyIDs $fontFamilyID) }}
-      {{- $useFamilyAsType := slice }}
-      {{- range $ft, $fn := $fontTypeToFamilyMap }}
-        {{- if eq $fn $fontFamily }}
-          {{- $useFamilyAsType = append $ft $useFamilyAsType }}
-          {{- if and true $debug }}
-            {{- warnf "%s fn=%v: using fontFamily=%v for fontType ft=%v: useFamilyAsType=%v"
-                $dbg $fn $fontFamily $ft $useFamilyAsType }}
-          {{- end }}
-        {{- else }}
-          {{- if and false $debug }}
-            {{- warnf "%s fn=%v: not using fontFamily=%v for fontType ft=%v: useFamilyAsType=%v"
-                $dbg $fn $fontFamily $ft $useFamilyAsType }}
-          {{- end }}
-        {{- end }}
-      {{- end }}
-
-      {{- $useFamilyForRole := slice }}
-      {{- range $fontRole, $roleType := $fontRoleToTypeMap }}
-        {{- if in $useFamilyAsType $roleType }}
-          {{- if and true $debug }}
-            {{- warnf "%s fontRole=%v: using fontFamily=%v for fontRole=%v as roleType=%v in %v"
-                $dbg $fontRole $fontFamily $fontRole $roleType $useFamilyAsType }}
-          {{- end }}
-          {{- $useFamilyForRole = append $fontRole $useFamilyForRole | uniq }}
-        {{- else }}
-          {{- if and false $debug }}
-            {{- warnf "%s fontRole=%v: not using fontFamily=%v as roleType=%v not in %v"
-                $dbg $fontRole $fontFamily $roleType $useFamilyAsType }}
-          {{- end }}
-        {{- end }}
-      {{- end }}
-
-      {{- $useFamilyAs := append $useFamilyForRole $useFamilyAsType | uniq }}
-      {{- $fontSpecParams = merge $fontSpecParams (dict
-          "useFamilyAs" $useFamilyAs
-      ) }}
-      {{- $specPathGlob := printf "%s/%s.scss" $assetFontPath $fontFamilyID }}
-      {{- with $fontSpecResource := resources.Get $specPathGlob }}
-        {{- if and true $debug }}
-          {{- warnf "%s Self-hosted font %v [%v] to be used for types and roles %v: executing font file '%v' [type=%T] matching '%v' as template with $fontSpecParams:\n%v"
-            $dbg $fontFamily $fontFamilyID $useFamilyAs $fontSpecResource $fontSpecResource $specPathGlob (jsonify (dict "indent" "  ") $fontSpecParams) }}
-        {{- end }}
-        {{- $fontBasename := path.Join (path.Dir $fontSpecResource.Name) (path.BaseName $fontSpecResource.Name) }}
-        {{- $executedFontSpecFile := printf "%s%s%s" $fontBasename $executedSourceSuffix $sourceExt}}
-        {{- $executedFontSpecResource := resources.ExecuteAsTemplate $executedFontSpecFile $fontSpecParams $fontSpecResource }}
-        {{- if and false $debug }}
-          {{- warnf "%s Executed font spec file '%v' [type=%T] matching '%v' as template: \n%v"
-            $dbg $fontSpecResource $fontSpecResource $specPathGlob $executedFontSpecResource.Content }}
-        {{- end }}
-        {{- $fontSpecFiles = append $executedFontSpecResource $fontSpecFiles }}
-      {{- else }}
-        {{- errorf "%s No self-hosted font %v [%v] found matching '%v' with typeFamilyIDKey=%v"
-            $dbg $fontFamily $fontFamilyID $specPathGlob $typeFamilyIDKey }}
-      {{- end }}
-      {{- $fontFamilyIDs = $fontFamilyIDs | append $fontFamilyID | uniq }}
-
-      {{- $assetFallbackFontPath := printf "%s/fallback" $assetFontPath }}
-
-      {{- $fallbackFontSpecPathGlob := printf "%s/%s.*" $assetFallbackFontPath $fontFamilyID }}
-      {{- with $fallbackFontSpecFile := resources.GetMatch $fallbackFontSpecPathGlob }}
-        {{- $fallbackStack = slice }}
-        {{- if and true $debug }}
-          {{- warnf "%s Fallback font spec for %v [%v] found: examining fallback font file '%v' [type=%T] matching '%v'"
-            $dbg $fontFamily $fontFamilyID $fallbackFontSpecFile $fallbackFontSpecFile $fallbackFontSpecPathGlob }}
-        {{- end }}
-        <!-- Add the fallback font spec SCSS file to the main SCSS file -->
-        {{- $fontSpecFiles = append $fallbackFontSpecFile $fontSpecFiles }}
-        {{- range $fallbackFontSuffix := (slice "fallback" "fallback-android") }}
-          {{- $fallbackFamilyID := printf "%s-%s" $fontFamilyID $fallbackFontSuffix }}
-          {{- $fallbackFontFamilyRegex := printf `(?i)font-family:\s*['"]?%s['"]?` $fallbackFamilyID }}
-          {{- with $fallbackMatch := findRE $fallbackFontFamilyRegex $fallbackFontSpecFile.Content }}
-            {{- $fallbackMatch = index $fallbackMatch 0 }}
-            {{- if and false $debug }}
-              {{- warnf "%s Fallback font family for %v [%v] found: adding fallbackFamilyID='%v'. Match: '%v'"
-                $dbg $fontFamily $fontFamilyID $fallbackFamilyID $fallbackMatch }}
-            {{- end }}
-            {{- $fallbackStack = append $fallbackFamilyID $fallbackStack }}
-          {{- else }}
-            {{- if and false $debug }}
-              {{- warnf "%s No fallback font family for %v [%v] found matching fallbackFamilyID='%v'"
-                $dbg $fontFamily $fontFamilyID $fallbackFamilyID }}
-            {{- end }}
-          {{- end }}
-        {{- end }}
-      {{- else }}
-        {{- if and true $debug }}
-          {{- warnf "%s No fallback font spec for %v [%v] found matching '%v': using default fallback family=%v via fontType=%v"
-            $dbg $fontFamily $fontFamilyID $fallbackFontSpecPathGlob $fallbackFamily $fontType }}
-        {{- end }}
-      {{- end }}
-    {{- end }}
-
-  {{- end }}
-
-  {{- $fontParams = merge $fontParams (dict
-      $fallbackFamilyNamesKey (delimit $fallbackStack " ")
-  ) }}
-
-{{- end }}
-
-{{- /* Concatenate font spec files if there are any */ -}}
-{{- with $fontSpecFiles }}
-  {{- if and true $debug }}
-    {{- warnf "%v Concatenating fontSpecFiles\n%v" $dbg $fontSpecFiles }}
-    {{- range $idx, $resource := $fontSpecFiles }}
-      {{- warnf "%v %d --> %v .Name=%v .MediaType=%v" $dbg $idx $resource $resource.Name $resource.MediaType }}
-    {{- end }}
-  {{- end }}
-  {{- $concatFontFile := printf "%s/%s.%s" $resourcePathBase "fonts" $sourceExt }}
-
-  {{- $concatFontResource = $fontSpecFiles | resources.Concat $concatFontFile }}
-
-  {{- if and false $debug }}
-    {{- /* warnf "%v $concatFontResource '%s'.Content:\n%v\n...\n%v"
-        $dbg $concatFontResource (substr $concatFontResource.Content 0 500) (substr $concatFontResource.Content -500) */ -}}
-    {{- warnf "%v $concatFontResource '%s'.Content:\n%v"
-        $dbg $concatFontResource $concatFontResource.Content -}}
-  {{- end }}
-
-{{- end }}
-
-{{- $fontParams = merge $fontParams (dict
-    "family_ids" (delimit $fontFamilyIDs " ")
-    "geometric_scale_factor" ($page.Param "geometric_scale_factor")
-    "fractional_scale_denominator" ($page.Param "fractional_scale_denominator")
-    "fluid_scale_digits" ($page.Param "fluid_scale_digits")
-) }}
-
-{{- $imageParams := (dict
+{{ $imageParams := (dict
     "feature_ratio_min" ($page.Param "assets.styles.images.feature.ratio.min" | default 2)
     "feature_ratio_max" ($page.Param "assets.styles.images.feature.ratio.max" | default 4)
     "feature_viewport_height_max" ($page.Param "assets.styles.images.feature.viewport.height.max" | default 0.5)
 ) }}
 
-{{- $hugoParamsBase := dict }}
-{{- range $categoryKey, $categoryParams := (dict
+{{ $assetParamsKey := "assets" }}
+{{ $hugoParamsBase := (dict
     "colors" site.Params.colors
-    "fonts" $fontParams
     "dimensions" site.Params.responsive.dimensions
     "breakpoints" site.Params.responsive.breakpoints
     "images" $imageParams
-  ) -}}
-  {{- range $outerKey, $outerValue := $categoryParams }}
-    {{- if reflect.IsMap $outerValue }}
-      {{- range $innerKey, $innerValue := $outerValue }}
-        {{- $hugoParamsBase = merge $hugoParamsBase (dict (printf "%s_%s_%s" $categoryKey $outerKey $innerKey) $innerValue) }}
-      {{- end }}
-    {{- else if reflect.IsSlice $outerValue }}
-      {{- $hugoParamsBase = merge $hugoParamsBase (dict (printf "%s_%s" $categoryKey $outerKey) (delimit $outerValue " ") ) }}
-    {{- else }}
-      {{- if (eq "string" (printf "%T" $outerValue) ) }}
-        {{- $hugoParamsBase = merge $hugoParamsBase (dict (printf "%s_%s" $categoryKey $outerKey) $outerValue) }}
-      {{- else if (eq "bool" (printf "%T" $outerValue) ) }}
-        {{- $hugoParamsBase = merge $hugoParamsBase (dict (printf "%s_%s" $categoryKey $outerKey) (printf "%v" $outerValue) ) }}
-      {{- else if (in (slice "int" "float64") (printf "%T" $outerValue) ) }}
-        {{- $hugoParamsBase = merge $hugoParamsBase (dict (printf "%s_%s" $categoryKey $outerKey) $outerValue) }}
-      {{- else if (in (slice "<nil>") (printf "%T" $outerValue) ) }}
-        {{- $hugoParamsBase = merge $hugoParamsBase (dict (printf "%s_%s" $categoryKey $outerKey) "null") }}
-      {{- else }}
-        {{- errorf "%s Invalid type: cannot pass value %v for key %v"
-            $dbg (printf "%v [%T]" $outerValue $outerValue) (printf "%s_%s" $categoryKey $outerKey) }}
-      {{- end }}
-    {{- end }}
-  {{- end }}
-{{- end }}
+  ) }}
 
-{{- $toCSSoptionsBase := (dict
+{{/* Set up the options for the SASS transpiler */}}
+{{ $toCSSoptionsBase := (dict
     "transpiler" "dartsass"
     "includePaths" (slice "node_modules")
 )
--}}
-{{- if not $debugSassDeprecation }}
-  {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict
+}}
+{{ if not $debugSassDeprecation }}
+  {{ $toCSSoptionsBase = merge $toCSSoptionsBase (dict
     "silenceDeprecations" (slice "mixed-decls" "global-builtin")
   ) }}
-{{- end }}
-{{- if $minifyCSS }}
-  {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "compressed" "enableSourceMap" false) -}}
-{{- else }}
-  {{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "expanded" "enableSourceMap" true "sourceMapIncludeSources" true) -}}
-{{- end }}
-{{- $toCSSIncludePaths := slice }}
-{{- range $contentTypeList }}
-  {{- $toCSSIncludePaths = append (printf "assets/%s/%s" $resourcePathBase . ) $toCSSIncludePaths }}
-{{- end }}
-{{- $toCSSoptionsBase = merge $toCSSoptionsBase (dict "includePaths" $toCSSIncludePaths) }}
-{{- if and false $debug }}
-  {{- warnf "hugoParamsBase:\n%v" (jsonify (dict "indent" "  ") $hugoParamsBase) -}}
-{{- end }}
+{{ end }}
+{{ if $minifyCSS }}
+  {{ $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "compressed" "enableSourceMap" false) }}
+{{ else }}
+  {{ $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "expanded" "enableSourceMap" true "sourceMapIncludeSources" true) }}
+{{ end }}
+{{ $toCSSIncludePaths := slice }}
+{{ range $contentTypeList }}
+  {{ $toCSSIncludePaths = append (printf "assets/%s/%s" $resourcePathBase . ) $toCSSIncludePaths }}
+{{ end }}
+{{ $toCSSoptionsBase = merge $toCSSoptionsBase (dict "includePaths" $toCSSIncludePaths) }}
 
 <!-- NOTE: According to [the documentation](https://gohugo.io/hugo-pipes/postcss/#options),
 the css.PostCSS function accepts a parameter indicating the *directory*
 that contains the `postcss.config.js` file - not the file itself. -->
-{{- $postCSSOptions := (dict "config" "assets/styles/claris/postcss" "noMap" $minifyCSS) -}}
+{{ $postCSSOptions := (dict "config" "assets/styles/claris/postcss" "noMap" $minifyCSS) }}
 
-{{- $styleResources := (dict
+{{ $styleResources := (dict
   "main_all" (dict
     "file" "main"
   )
@@ -350,167 +104,232 @@ that contains the `postcss.config.js` file - not the file itself. -->
     "file" "main"
     "media" "print"
   )
-) -}}
+) }}
 
-{{/* {{- $tplParams := (dict "Page" $page "ContentTypeList" $contentTypeList "ContentTypeListID" $contentTypeListID) }} */}}
-{{- /* NOTE: Use key "AssetStyle instead of "Style" in the dict $tplParams. If the dict has a key named "Style", the following error occurs:
+{{/* {{ $tplParams := (dict "Page" $page "ContentTypeList" $contentTypeList "ContentTypeListID" $contentTypeListID) }} */}}
+{{/* NOTE: Use key "AssetStyle instead of "Style" in the dict $tplParams. If the dict has a key named "Style", the following error occurs:
 error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main_all.scss" (text/x-scss): "styles/claris-vitae-main_all.scss:0:15": Expected expression.
-*/ -}}
-{{- $tplParams := (dict "Page" $page
+*/}}
+{{ $tplParams := (dict "Page" $page
     "AssetVariant" $assetVariant
     "AssetStyle" $assetStyle
     "ContentTypeList" $contentTypeList
     "ContentTypeListID" $contentTypeListID) }}
 
-{{- range $resourceID, $params := $styleResources }}
-  {{- $mediaType := default "all" $params.media }}
-  {{- $fetchPriority := default "" $params.fetchpriority }}
-  {{- if (in $mediaTypeList $mediaType) }}
-    {{- $hugoParams := merge $hugoParamsBase (dict "media_type" $mediaType) }}
-    {{- $toCSSoptions := merge $toCSSoptionsBase (dict "vars" $hugoParams) }}
+{{ range $resourceID, $params := $styleResources }}
+  {{ $mediaType := default "all" $params.media }}
+  {{ $fetchPriority := default "" $params.fetchpriority }}
+  {{ if (in $mediaTypeList $mediaType) }}
+    {{ $hugoParams := merge $hugoParamsBase (dict "media_type" $mediaType) }}
 
-    {{- /* warnf "%v Generating style bundle with contentTypeList=%s contentTypeListID=%s for MediaType=%s in MediaTypeList=%v"
-    $dbg $contentTypeList $contentTypeListID $mediaType $mediaTypeList */ -}}
-    {{- /* warnf "%v resourceID=%v params=%v $tplParams=%v" $dbg $resourceID $params $tplParams }} */ -}}
+    {{/* warnf "%v Generating style bundle with contentTypeList=%s contentTypeListID=%s for MediaType=%s in MediaTypeList=%v"
+    $dbg $contentTypeList $contentTypeListID $mediaType $mediaTypeList */}}
+    {{/* warnf "%v resourceID=%v params=%v $tplParams=%v" $dbg $resourceID $params $tplParams }} */}}
 
     <!-- Concat SASS -->
-    {{- $executedResourceList := slice }}
-    {{- range $contentType := $contentTypeList }}
-      {{- $tplParams = merge $tplParams (dict "ContentType" $contentType "MediaType" $mediaType) }}
-      {{- $resourcePathPrefix := printf "%s/%s" $resourcePathBase $contentType -}}
+    {{ $executedResourceList := slice }}
+    {{ range $contentType := $contentTypeList }}
+      {{ $tplParams = merge $tplParams (dict "ContentType" $contentType "MediaType" $mediaType) }}
+      {{/* Determine if the content type has additional params */}}
+      {{ $hugoParamsKey := printf "%s.%s" $contentType $assetParamsKey }}
+
+      {{ with $page.Param $hugoParamsKey }}
+        {{/* Merge the content type params into the template params */}}
+        {{ $hugoParams = merge $hugoParams $hugoParamsContentType }}
+
+        {{ if and true $debug }}
+          {{ warnf "hugoParamsContentType:\n%v" (jsonify (dict "indent" "  ") $hugoParamsContentType) }}
+        {{ end }}
+      {{ else }}
+        {{ if and true $debug }}
+          {{ warnf "%v $contentType=%s: no params in $page.Param %s: %T" $dbg
+            $contentType $hugoParamsKey ($page.Param $hugoParamsKey) }}
+        {{ end }}
+      {{ end }}
+      {{ $resourcePathPrefix := printf "%s/%s" $resourcePathBase $contentType }}
 
       <!-- Get the main SASS/SCSS file resource and execute it as a Go Template -->
-      {{- $mainFileBaseName := (default $resourceID $params.file) }}
+      {{ $mainFileBaseName := (default $resourceID $params.file) }}
       <!-- The main SASS file needs to be outside the contentType directory to avoid
         file name clashes between multiple contentType directories that contain files
         with the same names
       -->
-      {{- $mainFile := printf "%s-%s" $resourcePathPrefix $mainFileBaseName -}}
+      {{ $mainFile := printf "%s-%s" $resourcePathPrefix $mainFileBaseName }}
 
       <!-- Process main SASS file as Go Template Language template -->
-      {{- with resources.GetMatch (printf "%s.*" $mainFile ) -}}
-        {{- $executedFile := printf "%s_%s%s.%s" $mainFile $resourceID $executedSourceSuffix $sourceExt }}
-        {{- with $assetStyleSuffix }}
-          {{- $executedFile = printf "%s_%s%s%s.%s" $mainFile $resourceID . $executedSourceSuffix $sourceExt }}
-        {{- end }}
-        {{- $executedResource := resources.ExecuteAsTemplate $executedFile $tplParams . }}
-        {{- $executedResourceList = append $executedResource $executedResourceList }}
-        {{- if and true $debug }}
-          {{- warnf "%v Added executedResource %v [%v] [type=%T] to executedResourceList\n%v" $dbg
-              $executedResource.Name $executedResource.MediaType $executedResource $executedResourceList }}
-          {{- range $idx, $resource := $executedResourceList }}
-            {{- warnf "%v %d --> %v .Name=%v .MediaType=%v" $dbg $idx $resource $resource.Name $resource.MediaType }}
-          {{- end }}
-        {{- end }}
-      {{- else -}}
-        {{- if (eq $contentType "claris") }} {{- /* Claris is the default contentType, hence `mainFile` must be available */ -}}
-          {{- errorf "%v Default mainFile '%s' not found" $dbg $mainFile }}
-        {{- else}}
-          {{- if and true $debug }}
-            {{- warnf "%v No mainFile '%s' found for contentType=%s: using default mainFile '%s' instead"
+      {{ with resources.GetMatch (printf "%s.*" $mainFile ) }}
+        {{ $executedFile := printf "%s_%s%s.%s" $mainFile $resourceID $executedSourceSuffix $sourceExt }}
+        {{ with $assetStyleSuffix }}
+          {{ $executedFile = printf "%s_%s%s%s.%s" $mainFile $resourceID . $executedSourceSuffix $sourceExt }}
+        {{ end }}
+        {{ $executedResource := resources.ExecuteAsTemplate $executedFile $tplParams . }}
+        {{ $executedResourceList = append $executedResource $executedResourceList }}
+        {{ if and true $debug }}
+          {{ warnf "%v Added executedResource %v [%v] [type=%T] to executedResourceList=%v [type=%T isSlice=%v len=%d]" $dbg
+              $executedResource.Name $executedResource.MediaType $executedResource
+              $executedResourceList $executedResourceList (reflect.IsSlice $executedResourceList) (len $executedResourceList) }}
+        {{ end }}
+      {{ else }}
+        {{ if (eq $contentType "claris") }} {{/* Claris is the default contentType, hence `mainFile` must be available */}}
+          {{ errorf "%v Default mainFile '%s' not found" $dbg $mainFile }}
+        {{ else}}
+          {{ if and true $debug }}
+            {{ warnf "%v No mainFile '%s' found for contentType=%s: using default mainFile '%s' instead"
                 $dbg $mainFile $contentType $mainFileBaseName }}
-          {{- else }}
-            {{- errorf "%v No mainFile '%s' found for contentType=%s: using default mainFile '%s' instead"
+          {{ else }}
+            {{ errorf "%v No mainFile '%s' found for contentType=%s: using default mainFile '%s' instead"
                 $dbg $mainFile $contentType $mainFileBaseName }}
-          {{- end -}}
-        {{- end -}}
-      {{- end -}}
-    {{- end -}}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
 
-    {{- with $concatFontResource }}
-      {{- $executedResourceList = append $concatFontResource $executedResourceList }}
-      {{- if and true $debug }}
-        {{- warnf "%v Added concatFontResource %v [%v] [type=%T] to executedResourceList\n%v" $dbg
-            $concatFontResource.Name $concatFontResource.MediaType $concatFontResource $executedResourceList }}
-        {{- range $idx, $resource := $executedResourceList }}
-          {{- warnf "%v %d --> %v .Name=%v .MediaType=%v" $dbg $idx $resource $resource.Name $resource.MediaType }}
-        {{- end }}
-      {{- end }}
-    {{- end }}
+    {{ with $fontStyles := partial "claris/_functions/font-styles.html" (dict
+        "Page" $page
+        "ResourcePathBase" $resourcePathBase
+        "SourceExt" $sourceExt
+        "ExecutedSourceSuffix" $executedSourceSuffix
+      ) }}
+      {{ $fontStyleResource := .resource }}
+      {{ $fontParams := .params }}
+      {{ $fontParams = (dict
+          "geometric_scale_factor" ($page.Param "geometric_scale_factor")
+          "fractional_scale_denominator" ($page.Param "fractional_scale_denominator")
+          "fluid_scale_digits" ($page.Param "fluid_scale_digits")
+      ) }}
+      {{ $hugoParams = merge $hugoParams (dict "fonts" $fontParams) }}
+      {{ if and true $debug }}
+        {{ warnf "%v fontStyleResource: %v %v .Content:\n%v"
+            $dbg $fontStyleResource.Name $fontStyleResource.MediaType $fontStyleResource.Content }}
+      {{ end }}
+      {{ $executedResourceList = append $fontStyleResource $executedResourceList }}
+      {{ if and true $debug }}
+        {{ warnf "%v Added fontStyleResource %v [%v] [type=%T] to executedResourceList=%v [type=%T isSlice=%v len=%d]" $dbg
+            $fontStyleResource.Name $fontStyleResource.MediaType $fontStyleResource
+            $executedResourceList $executedResourceList (reflect.IsSlice $executedResourceList) (len $executedResourceList) }}
+        {{ if true }}
+          {{ partial "claris/_functions/style-bundles_dump-resource-slice" (dict
+              "Template" $template
+              "Page" $page
+              "ResourceList" $executedResourceList
+          ) }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
 
-    {{- if $debug }}
-      {{- warnf "%v Concatenated SCSS files for content type list=%v ID=%v resourceID=%s. Final executedResourceList: " $dbg
-          $contentTypeList $contentTypeListID $resourceID }}
-      {{- range $idx, $resource := $executedResourceList }}
-        {{- warnf "%v %d --> %v .Name=%v .MediaType=%v" $dbg $idx $resource $resource.Name $resource.MediaType }}
-      {{- end }}
-    {{- end }}
+    {{ $hugoParamsFlat := partial "claris/_functions/flatten-hugo-params.html" (dict
+        "Page" $page
+        "ParamsMap" $hugoParams
+      ) }}
+    {{ if and true $debug }}
+      {{ warnf "hugoParams:\n%v" (jsonify (dict "indent" "  ") $hugoParams) }}
+      {{ warnf "hugoParamsFlat:\n%v" (jsonify (dict "indent" "  ") $hugoParamsFlat) }}
+    {{ end }}
 
-    {{- $importFile := printf "%s/%s-%s%s.%s" $resourcePathBase $contentTypeListID $resourceID $executedSourceSuffix $sourceExt }}
-    {{- $concatResource := false }}
-    {{- if eq (len $executedResourceList) 1 }}
-      {{- $concatResource = index $executedResourceList 0 }}
-    {{- else}}
-      {{- $concatResource = $executedResourceList | resources.Concat $importFile }}
-    {{- end }}
-    {{- if and true $debug }}
-      {{- /* warnf "%v $concatResource '%s'.Content:\n%v\n...\n%v"
-          $dbg $concatResource (substr $concatResource.Content 0 500) (substr $concatResource.Content -500) */ -}}
-      {{- warnf "%v $concatResource '%s'.Content:\n%v"
-          $dbg $concatResource $concatResource.Content -}}
-    {{- end }}
+
+      {{ if and true $debug }}
+        {{ warnf "%v Final hugoParams:\n%v" $dbg (jsonify (dict "indent" "  ") $hugoParams) }}
+      {{ end }}
+    {{ $toCSSoptions := merge $toCSSoptionsBase (dict "vars" $hugoParams) }}
+
+    {{ if $debug }}
+      {{ warnf "%v Concatenated SCSS files for content type list=%v ID=%v resourceID=%s. Final executedResourceList=%v [type=%T isSlice=%v len=%d]" $dbg
+          $contentTypeList $contentTypeListID $resourceID
+          $executedResourceList $executedResourceList (reflect.IsSlice $executedResourceList) (len $executedResourceList) }}
+      {{ range $idx, $resource := $executedResourceList }}
+        {{ warnf "%v %d --> %v .Name=%v .MediaType=%v" $dbg $idx $resource $resource.Name $resource.MediaType }}
+      {{ end }}
+    {{ end }}
+
+    {{ $importFile := printf "%s/%s-%s%s.%s" $resourcePathBase $contentTypeListID $resourceID $executedSourceSuffix $sourceExt }}
+    {{ $concatResource := resources.FromString $importFile (printf `/* Empty stylesheet importFile="%v" */` $importFile) }}
+    {{ if and (reflect.IsSlice $executedResourceList) (len $executedResourceList) }}
+      {{if eq (len $executedResourceList) 1 }}
+        {{ $concatResource = index $executedResourceList 0 }}
+      {{ else}}
+        {{ $concatResource = $executedResourceList | resources.Concat $importFile }}
+      {{ end }}
+    {{ end }}
+
+    {{ if and true $debug }}
+      {{/* warnf "%v $concatResource '%s'.Content:\n%v\n...\n%v"
+          $dbg $concatResource (substr $concatResource.Content 0 500) (substr $concatResource.Content -500) */}}
+      {{ warnf "%v $concatResource '%s'.Content:\n%v"
+          $dbg $concatResource $concatResource.Content }}
+    {{ end }}
 
     <!-- Determine target file path and bundle SASS -->
-    {{- $targetPathPrefix := printf "%s/%s" $resourcePathBase $contentTypeListID -}}
-    {{- $targetFile := printf "%s/%s.%s" $targetPathPrefix $resourceID $targetExt }}
-    {{- with $assetStyleSuffix }}
-      {{- $targetFile = printf "%s/%s%s.%s" $targetPathPrefix $resourceID . $targetExt }}
-    {{- end }}
+    {{ $targetPathPrefix := printf "%s/%s" $resourcePathBase $contentTypeListID }}
+    {{ $targetFile := printf "%s/%s.%s" $targetPathPrefix $resourceID $targetExt }}
+    {{ with $assetStyleSuffix }}
+      {{ $targetFile = printf "%s/%s%s.%s" $targetPathPrefix $resourceID . $targetExt }}
+    {{ end }}
 
-    {{- $toCSSoptions = merge $toCSSoptions (dict "targetPath" $targetFile) -}}
-    {{- $bundle := $concatResource | css.Sass $toCSSoptions }}
+    {{ $toCSSoptions = merge $toCSSoptions (dict "targetPath" $targetFile) }}
+    {{ $bundle := $concatResource | css.Sass $toCSSoptions }}
 
-    {{- $bundleUnMinified := $bundle | resources.Fingerprint $fingerprintOptions }}
-    {{- $bundleMinified := $bundleUnMinified }}
+    {{ $bundleUnMinified := $bundle | resources.Fingerprint $fingerprintOptions }}
+    {{ $bundleMinified := $bundleUnMinified }}
 
-    {{- if and false $debug }}
-      {{- warnf "%v $bundle[%s] %#v: MediaType:%s Content:\n%v\n...\n%v"
+    {{ if and false $debug }}
+      {{ warnf "%v $bundle[%s] %#v: MediaType:%s Content:\n%v\n...\n%v"
           $dbg $bundle $resourceID $bundle.MediaType (substr $bundle.Content 0 500) (substr $bundle.Content -500) }}
-    {{- end }}
+    {{ end }}
 
-    {{- if $minifyCSS }}
+    {{ if $minifyCSS }}
       <!-- We minify CSS using only css.PostCSS (PostCSS) as resources.Minify (tdewolff/minify)
       only further reduces the size by at most 3% -->
-      {{/* {{- $bundleMinified = $bundle | css.PostCSS $postCSSOptions | resources.Minify | resources.Fingerprint $fingerprintOptions | resources.PostProcess }} */}}
-      {{- if and false (eq $resourceID "main_all") }}
-        {{- $afterPostCSS := $bundle | css.PostCSS $postCSSOptions }}
-        {{- $afterMinify := $bundle | css.PostCSS $postCSSOptions | resources.Minify }}
-        {{- $afterPostProcess := $bundle | css.PostCSS $postCSSOptions | resources.Minify | resources.PostProcess }}
-        {{- warnf "%v Size of style bundle '%v':\n Concat=%7.3fkB [%v]\n      css.Sass=%7.3fkB [%v]\n    PostCSS=%7.3fkB [%v]\n     Minify=%7.3fkB [%v]\nPostProcess=%7.3fkB [%v]"
+      {{/* {{ $bundleMinified = $bundle | css.PostCSS $postCSSOptions | resources.Minify | resources.Fingerprint $fingerprintOptions | resources.PostProcess }} */}}
+      {{ if and false (eq $resourceID "main_all") }}
+        {{ $afterPostCSS := $bundle | css.PostCSS $postCSSOptions }}
+        {{ $afterMinify := $bundle | css.PostCSS $postCSSOptions | resources.Minify }}
+        {{ $afterPostProcess := $bundle | css.PostCSS $postCSSOptions | resources.Minify | resources.PostProcess }}
+        {{ warnf "%v Size of style bundle '%v':\n Concat=%7.3fkB [%v]\n      css.Sass=%7.3fkB [%v]\n    PostCSS=%7.3fkB [%v]\n     Minify=%7.3fkB [%v]\nPostProcess=%7.3fkB [%v]"
             $dbg $resourceID
             (div (len $concatResource.Content) 1024.0) $concatResource.RelPermalink
             (div (len $bundle.Content) 1024.0) $bundle.RelPermalink
             (div (len $afterPostCSS.Content) 1024.0) $afterPostCSS.RelPermalink
             (div (len $afterMinify.Content) 1024.0) $afterMinify.RelPermalink
-            (div (len $afterPostProcess.Content) 1024.0) $afterPostProcess.RelPermalink -}}
-        {{- $bundleMinified = $afterPostProcess }}
-    {{- else }}
-        {{/* {{- $bundleMinified = $bundle | css.PostCSS $postCSSOptions | resources.Minify | resources.Fingerprint $fingerprintOptions | resources.PostProcess }} */}}
-        {{- $bundleMinified = $bundle | css.PostCSS $postCSSOptions | resources.Fingerprint $fingerprintOptions }}
-      {{- end }}
-    {{- end }}
+            (div (len $afterPostProcess.Content) 1024.0) $afterPostProcess.RelPermalink }}
+        {{ $bundleMinified = $afterPostProcess }}
+    {{ else }}
+        {{/* {{ $bundleMinified = $bundle | css.PostCSS $postCSSOptions | resources.Minify | resources.Fingerprint $fingerprintOptions | resources.PostProcess }} */}}
+        {{ $bundleMinified = $bundle | css.PostCSS $postCSSOptions | resources.Fingerprint $fingerprintOptions }}
+      {{ end }}
+    {{ end }}
 
-    {{- $styleBundle := (dict
+    {{ $styleBundle := (dict
       "resource" $bundleMinified
       "unminified" $bundleUnMinified
       "media" $mediaType
     ) }}
 
-    {{- with $fetchPriority }}
-      {{- $styleBundle = merge $styleBundle (dict "fetchpriority" $fetchPriority) }}
-    {{- end }}
+    {{ with $fetchPriority }}
+      {{ $styleBundle = merge $styleBundle (dict "fetchpriority" $fetchPriority) }}
+    {{ end }}
 
-    {{- $styleBundles = merge $styleBundles (dict $resourceID $styleBundle) -}}
+    {{ $styleBundles = merge $styleBundles (dict $resourceID $styleBundle) }}
 
-  {{- else }}
-    {{- warnf "%v Not generating style bundle for MediaType=%s: not in MediaTypeList=%v"
+  {{ else }}
+    {{ warnf "%v Not generating style bundle for MediaType=%s: not in MediaTypeList=%v"
         $dbg $mediaType $mediaTypeList }}
-  {{- end }}
-{{- end }}
-{{- if and false $debug }}
-  {{- warnf "%v assetVariant:\n%v\n\ntplParams:\n%v\n\nReturning styleBundles:\n%v"
+  {{ end }}
+{{ end }}
+{{ if and false $debug }}
+  {{ warnf "%v assetVariant:\n%v\n\ntplParams:\n%v\n\nReturning styleBundles:\n%v"
       $dbg (jsonify (dict "indent" "  ") $assetVariant)
       (jsonify (dict "indent" "  ") (merge $tplParams (dict "Page" "omitted")))
       (jsonify (dict "indent" "  ") $styleBundles) }}
-{{- end }}
-{{- return $styleBundles -}}
+{{ end }}
+{{ return $styleBundles }}
+
+{{ define "partials/claris/_functions/style-bundles_dump-resource-slice" }}
+  {{ $template := "claris/_functions/style-bundles_dump-resource-slice" }}
+  {{ $dbg := printf "%s[%s::%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` .Page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
+  {{/* warnf "%s %v %T" $dbg . . */}}
+  {{warnf "%v Elements in %v [type=%T isSlice=%v len=%d]" $dbg .ResourceList .ResourceList
+    (reflect.IsSlice .ResourceList) (len .ResourceList) }}
+  {{ range $idx, $resource := .ResourceList }}
+    {{ warnf "%v %d --> %v .Name=%v .MediaType=%v" $dbg $idx $resource $resource.Name $resource.MediaType }}
+  {{ end }}
+{{ end }}

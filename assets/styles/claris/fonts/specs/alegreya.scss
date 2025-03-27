@@ -1,0 +1,54 @@
+// Font family specification for Alegreya
+// This file contains the font family specification for Alegreya.
+// It defines the font family, styles, roles, and variants for the Alegreya font.
+$fontFamilySpec: (
+  // Default font-family
+  name: 'Alegreya',
+  // Default styles
+  styles: (
+    // Style: `default`, i.e., body text
+    default: (
+      font-weight: 400,
+      line-height: 1.4
+    ),
+    strong: (
+      font-weight: 600,
+    )
+  ),
+  // Alternative roles
+  roles: (
+    // Role: `display`, i.e., short pieces of text such as headings, labels, navigation
+    display: (
+      styles: (
+        default: (
+          font-weight: 400,
+          line-height: 1.2
+        ),
+        strong: (
+          font-weight: 900
+        )
+      )
+    )
+  ),
+  // Font variants such as small-caps, oldstyle-nums
+  variants: (
+    // Font variant: `small-caps`
+    small-caps: (
+      name: 'Alegreya SC',
+      styles: (
+        default: (
+          font-variant: inherit
+        )
+      )
+    ),
+    all-small-caps: (
+      name: 'Alegreya SC',
+      styles: (
+        default: (
+          font-variant: inherit,
+          text-transform: lowercase
+        )
+      )
+    )
+  ),
+);

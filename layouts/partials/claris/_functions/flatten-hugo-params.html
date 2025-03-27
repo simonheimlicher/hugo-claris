@@ -1,0 +1,40 @@
+{{- $hugoParamsMap := dict }}
+{{- $page := .Page }}
+{{- $template := "claris/_functions/flatten-hugo-params" }}
+{{- $debug := or false (page.Param "clarisdebug") }}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
+{{- with .ParamsMap}}
+  {{- range $categoryKey, $categoryParams := . }}
+    {{- range $outerKey, $outerValue := $categoryParams }}
+      {{- if reflect.IsMap $outerValue }}
+        {{- range $innerKey, $innerValue := $outerValue }}
+          {{- $hugoParamsMap = merge $hugoParamsMap (dict (printf "%s_%s_%s" $categoryKey $outerKey $innerKey) $innerValue) }}
+        {{- end }}
+      {{- else if reflect.IsSlice $outerValue }}
+        {{- $hugoParamsMap = merge $hugoParamsMap (dict (printf "%s_%s" $categoryKey $outerKey) (delimit $outerValue " ") ) }}
+      {{- else }}
+        {{- if (eq "string" (printf "%T" $outerValue) ) }}
+          {{- $hugoParamsMap = merge $hugoParamsMap (dict (printf "%s_%s" $categoryKey $outerKey) $outerValue) }}
+        {{- else if (eq "bool" (printf "%T" $outerValue) ) }}
+          {{- $hugoParamsMap = merge $hugoParamsMap (dict (printf "%s_%s" $categoryKey $outerKey) (printf "%v" $outerValue) ) }}
+        {{- else if (in (slice "int" "float64") (printf "%T" $outerValue) ) }}
+          {{- $hugoParamsMap = merge $hugoParamsMap (dict (printf "%s_%s" $categoryKey $outerKey) $outerValue) }}
+        {{- else if (in (slice "<nil>") (printf "%T" $outerValue) ) }}
+          {{- $hugoParamsMap = merge $hugoParamsMap (dict (printf "%s_%s" $categoryKey $outerKey) "null") }}
+        {{- else }}
+          {{- errorf "%s Invalid type: cannot pass value %v for key %v"
+              $dbg (printf "%v [%T]" $outerValue $outerValue) (printf "%s_%s" $categoryKey $outerKey) }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- if and false $debug }}
+    {{- warnf "%s hugoParamsMap:\n%v" $dbg (jsonify (dict "indent" "  ") $hugoParamsMap) }}
+  {{- end }}
+{{- else }}
+  {{- errorf "%s No params found" $dbg }}
+{{- end }}
+
+{{- return $hugoParamsMap }}
+{{- /* EOF */ -}}

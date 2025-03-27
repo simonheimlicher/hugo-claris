@@ -1,0 +1,53 @@
+@font-face {
+  font-display: swap;
+  font-family: '{{ .FontFamilyName }}';
+  font-style: normal;
+  font-weight: 400;
+  src: url('{{ .HostedFontPath }}/{{ .FontFamilyID }}/{{ .FontFamilyID }}_regular.woff2') format('woff2'),
+       url('{{ .HostedFontPath }}/{{ .FontFamilyID }}/{{ .FontFamilyID }}_regular.woff') format('woff');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: '{{ .FontFamilyName }}';
+  font-style: italic;
+  font-weight: 400;
+  src: url('{{ .HostedFontPath }}/{{ .FontFamilyID }}/{{ .FontFamilyID }}_italic.woff2') format('woff2'),
+       url('{{ .HostedFontPath }}/{{ .FontFamilyID }}/{{ .FontFamilyID }}_italic.woff') format('woff');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: '{{ .FontFamilyName }}';
+  font-style: normal;
+  font-weight: 600;
+  src: url('{{ .HostedFontPath }}/{{ .FontFamilyID }}/{{ .FontFamilyID }}_bold.woff2') format('woff2'),
+       url('{{ .HostedFontPath }}/{{ .FontFamilyID }}/{{ .FontFamilyID }}_bold.woff') format('woff');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: '{{ .FontFamilyName }}';
+  font-style: italic;
+  font-weight: 600;
+  src: url('{{ .HostedFontPath }}/{{ .FontFamilyID }}/{{ .FontFamilyID }}_bold_italic.woff2') format('woff2'),
+       url('{{ .HostedFontPath }}/{{ .FontFamilyID }}/{{ .FontFamilyID }}_bold_italic.woff') format('woff');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: '{{ .FontFamilyName }} SC';
+  font-style: normal;
+  font-weight: 400;
+  src: url('{{ .HostedFontPath }}/{{ .FontFamilyID }}-sc/{{ .FontFamilyID }}_caps_regular.woff2') format('woff2'),
+       url('{{ .HostedFontPath }}/{{ .FontFamilyID }}-sc/{{ .FontFamilyID }}_caps_regular.woff') format('woff');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: '{{ .FontFamilyName }} SC';
+  font-style: normal;
+  font-weight: 600;
+  src: url('{{ .HostedFontPath }}/{{ .FontFamilyID }}-sc/{{ .FontFamilyID }}_caps_bold.woff2') format('woff2'),
+       url('{{ .HostedFontPath }}/{{ .FontFamilyID }}-sc/{{ .FontFamilyID }}_caps_bold.woff') format('woff');
+}
