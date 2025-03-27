@@ -1,0 +1,136 @@
+{{ $page := .Page }}
+{{ $template := "claris/_functions/font-spec" }}
+{{ $debug := and false (page.Param "clarisdebug") }}
+{{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{ $debugSassDeprecation := or false (page.Param "clarisdebugsassdeprecation") }}
+
+{{ $assetVariant := .AssetVariant }}
+{{ $resourcePathBase := .ResourcePathBase }}
+{{ $sourceExt := .SourceExt }}
+{{ $executedSourceSuffix := .ExecutedSourceSuffix }}
+
+{{ $fontFamily := .FontFamilyName }}
+{{ $fontFamilyID := .FontFamilyID }}
+{{ $useFamilyAs := .UseFamilyAs }}
+
+{{/* Path to the font spec files of this module: /assets/styles/claris/fonts/{specs | hosted} */}}
+{{ $assetStyleRoot := "styles" }}
+{{ $styleFontsRelative := printf "claris/fonts" }}
+{{ $styleFontsPath := printf "%s/%s" $assetStyleRoot $styleFontsRelative }}
+{{ $styleFontsSpecRelative := printf "%s/specs" $styleFontsRelative }}
+{{ $fontSpecRelative := printf "%s/%s" $styleFontsSpecRelative $fontFamilyID }}
+{{ $assetFallbackFontPath := printf "%s/fallback" $styleFontsPath }}
+{{ $hostedFontUrlsFilePath := printf "%s/hosted" $styleFontsPath }}
+
+{{/* Base URL path for hosted font files */}}
+{{ $hostedFontPath := default (relURL "fonts") ($page.Param "hostedFontPath") }}
+
+{{ $fontSpecParams := merge . (dict
+    "Page" nil
+    "HostedFontUrlsFilePath" $hostedFontUrlsFilePath
+    "HostedFontPath" $hostedFontPath
+) }}
+
+{{ $concatFontSpecResource  := false }}
+{{ $executedFontSpecFileRelative := false }}
+{{ $executedHostedFontUrlsResource := false }}
+{{ $fallbackSpecResource := false }}
+{{ $fallbackStack := slice }}
+
+{{ $fontSpecFile := printf "%s/%s/%s.%s" $assetStyleRoot $styleFontsSpecRelative $fontFamilyID $sourceExt }}
+{{ with $fontSpecResource := resources.Get $fontSpecFile }}
+  {{ $executedFontSpecFileRelative = printf "%s/%s%s" $styleFontsSpecRelative $fontFamilyID $executedSourceSuffix }}
+  {{ $executedFontSpecFile := printf "%s/%s.%s" $assetStyleRoot $executedFontSpecFileRelative $sourceExt}}
+  {{ if and false $debug }}
+    {{ warnf "%s Family=%v [%v]: executing font spec file '%v' [type=%T] to executedFontSpecFile=%v with $fontSpecParams:\n%v"
+      $dbg $fontFamily $fontFamilyID $fontSpecResource $fontSpecResource
+      $executedFontSpecFile (jsonify (dict "indent" "  ") $fontSpecParams) }}
+  {{ end }}
+  {{ $executedFontSpecResource := resources.ExecuteAsTemplate $executedFontSpecFile $fontSpecParams $fontSpecResource }}
+  {{ if and false $debug }}
+    {{ warnf "%s Family=%v [%v]: executed font spec file '%v': \n%v"
+      $dbg $fontFamily $fontFamilyID $fontSpecResource $executedFontSpecResource.Content }}
+  {{ end -}}
+{{- $defineFontStylesRule := printf "// Define font styles for '%s' [%s]\n@include fonts.defineFontUtilityClasses($fontFamilySpec, $useAs: %s);\n"
+    $fontFamily $fontFamilyID $useFamilyAs -}}
+  {{ if and false $debug }}
+    {{ warnf "%v defineFontStylesRule for %s [%s]: '%s'" $dbg $fontFamily $fontFamilyID $defineFontStylesRule }}
+  {{ end }}
+  {{ $defineFontStylesFile := printf "%s/%s/%s_define-font-styles.%s" $assetStyleRoot $styleFontsSpecRelative $fontFamilyID $sourceExt }}
+  {{ $defineFontStylesResource := resources.FromString $defineFontStylesFile $defineFontStylesRule }}
+  {{ if and false $debug }}
+    {{ warnf "%v Final defineFontStylesResource '%v'.Content:\n%v" $dbg
+        $defineFontStylesResource.Name $defineFontStylesResource.Content }}
+  {{ end }}
+  {{ $concatFontSpecFile := printf "%s/%s/%s_font-spec.%s" $assetStyleRoot $styleFontsSpecRelative $fontFamilyID $sourceExt }}
+  {{ $concatFontSpecResource = slice $executedFontSpecResource $defineFontStylesResource | resources.Concat $concatFontSpecFile }}
+
+  {{ if and true $debug }}
+    {{ warnf "%v Final concatFontSpecResource '%s'.Content:\n%v"
+        $dbg $concatFontSpecResource $concatFontSpecResource.Content }}
+  {{ end }}
+{{ else }}
+  {{ if and true $debug }}
+    {{ warnf "%s Family=%v [%v]: no font spec file found matching '%v'" $dbg $fontFamily $fontFamilyID $fontSpecFile }}
+  {{ end }}
+{{ end }}
+
+{{ $hostedfontUrlsFile := printf "%s/%s.%s" $hostedFontUrlsFilePath $fontFamilyID $sourceExt }}
+{{ with $hostedfontUrlsResource := resources.Get $hostedfontUrlsFile }}
+  {{ $fontBasename := path.Join (path.Dir $hostedfontUrlsResource.Name) (path.BaseName $hostedfontUrlsResource.Name) }}
+  {{ $executedHostedFontUrlsFile := printf "%s%s.%s" $fontBasename $executedSourceSuffix $sourceExt}}
+  {{ if and false $debug }}
+    {{ warnf "%s Family=%v [%v]: executing hosted font URLs file '%v' [type=%T] to executedHostedFontUrlsFile=%v with $fontSpecParams:\n%v"
+      $dbg $fontFamily $fontFamilyID $hostedfontUrlsResource $hostedfontUrlsResource
+      $executedHostedFontUrlsFile (jsonify (dict "indent" "  ") $fontSpecParams) }}
+  {{ end }}
+  {{ $executedHostedFontUrlsResource = resources.ExecuteAsTemplate $executedHostedFontUrlsFile $fontSpecParams $hostedfontUrlsResource }}
+  {{ if and true $debug }}
+    {{ warnf "%s Family=%v [%v]: executed hosted font URLs file '%v': \n%v"
+      $dbg $fontFamily $fontFamilyID $hostedfontUrlsResource $executedHostedFontUrlsResource.Content }}
+  {{ end }}
+{{ else }}
+  {{ if and true $debug }}
+    {{ warnf "%s Family=%v [%v]: no hosted font URLs file found matching '%v'" $dbg $fontFamily $fontFamilyID $hostedfontUrlsFile }}
+  {{ end }}
+{{ end }}
+
+{{ $fallbackFontSpecPathGlob := printf "%s/%s.*" $assetFallbackFontPath $fontFamilyID }}
+{{ with $fallbackFontSpecFile := resources.GetMatch $fallbackFontSpecPathGlob }}
+  {{ if and false $debug }}
+    {{ warnf "%s Family=%v [%v]: fallback font spec found: examining fallback font file '%v' [type=%T] matching '%v'"
+      $dbg $fontFamily $fontFamilyID $fallbackFontSpecFile $fallbackFontSpecFile $fallbackFontSpecPathGlob }}
+  {{ end }}
+
+  {{/* Add the fallback font spec SCSS file to the main SCSS file */}}
+  {{ $fallbackSpecResource = $fallbackFontSpecFile }}
+  {{ range $fallbackFontSuffix := (slice "fallback" "fallback-android") }}
+    {{ $fallbackFamilyID := printf "%s-%s" $fontFamilyID $fallbackFontSuffix }}
+    {{ $fallbackFontFamilyRegex := printf `(?i)font-family:\s*['"]?%s['"]?` $fallbackFamilyID }}
+    {{ with $fallbackMatch := findRE $fallbackFontFamilyRegex $fallbackFontSpecFile.Content }}
+      {{ $fallbackStack = append $fallbackFamilyID $fallbackStack }}
+      {{ if and true $debug }}
+        {{ $fallbackMatch = index $fallbackMatch 0 }}
+        {{ warnf "%s Family=%v [%v]: fallbackMatch='%v' matching '%v'. Added fallbackFamilyID=%v to fallbackStack=%v"
+          $dbg $fontFamily $fontFamilyID $fallbackMatch $fallbackFontFamilyRegex $fallbackFamilyID $fallbackStack }}
+      {{ end }}
+    {{ else }}
+      {{ if and true $debug }}
+        {{ warnf "%s Family=%v [%v]: no match for '%v'"
+          $dbg $fontFamily $fontFamilyID $fallbackFontFamilyRegex }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ else }}
+  {{ if and true $debug }}
+    {{ warnf "%s Family=%v [%v]: no fallback font spec found matching '%v'" $dbg $fontFamily $fontFamilyID $fallbackFontSpecPathGlob }}
+  {{ end }}
+{{ end }}
+
+{{ return (dict
+  "SpecResource" $concatFontSpecResource
+  "SpecPathRelative" $executedFontSpecFileRelative
+  "HostedFontUrlsResource" $executedHostedFontUrlsResource
+  "FallbackSpecResource" $fallbackSpecResource
+  "FallbackStack" $fallbackStack
+) }}

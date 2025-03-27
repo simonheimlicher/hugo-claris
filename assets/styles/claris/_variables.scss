@@ -641,9 +641,7 @@ $main-z-index: 1;
   }
 }
 
-/*
- * Ensure headings with ids (e.g. /about#experience) are not hidden by sticky header
- */
+// Ensure headings with ids (e.g. /about#experience) are not hidden by sticky header
 // https://stackoverflow.com/q/4086107/617559
 // Other ideas: https://css-tricks.com/hash-tag-links-padding/, e.g.
 //   https://codepen.io/kirkgleffe/pen/DfvuE

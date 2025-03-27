@@ -1,0 +1,292 @@
+{{ $fontStyles := false }}
+{{ $page := .Page }}
+{{ $template := "claris/_functions/font-styles" }}
+{{ $debug := and false (page.Param "clarisdebug") }}
+{{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{ $debugSassDeprecation := or false (page.Param "clarisdebugsassdeprecation") }}
+
+{{ $assetVariant := .AssetVariant }}
+{{ $resourcePathBase := default "styles" .ResourcePathBase }}
+{{ $sourceExt := default "scss" .SourceExt }}
+{{ $executedSourceSuffix := default "_executed" .ExecutedSourceSuffix }}
+
+{{ $styleFileParamsBase := . }}
+
+{{ $concatFontResource := false }}
+{{ $fontParams := (dict
+    "geometric_scale_factor" ($page.Param "geometric_scale_factor")
+    "fractional_scale_denominator" ($page.Param "fractional_scale_denominator")
+    "fluid_scale_digits" ($page.Param "fluid_scale_digits")
+) }}
+
+{{ $fontTypeToFamilyMap := (dict
+  "sans"      ($page.Param "assets.styles.fonts.family.sans"  | default "Source Sans Pro")
+  "serif"     ($page.Param "assets.styles.fonts.family.serif" | default "Alegreya")
+  "mono"      ($page.Param "assets.styles.fonts.family.mono"  | default "DM Mono")
+) }}
+
+{{ $fontRoleTypeDefault := $page.Param "assets.styles.fonts.type.default" | default "sans" }}
+{{ $fontFamilyDefaultName := index $fontTypeToFamilyMap $fontRoleTypeDefault }}
+{{ $fontTypeToFamilyMap = merge $fontTypeToFamilyMap (dict "default" $fontFamilyDefaultName ) }}
+
+{{ $fontRoleToTypeMap := (dict
+    "default" $fontRoleTypeDefault
+    "content" ($page.Param "assets.styles.fonts.type.content" | default ($page.Param "assets.styles.fonts.type.default"))
+    "article" ($page.Param "assets.styles.fonts.type.article" | default "serif")
+    "code"    ($page.Param "assets.styles.fonts.type.code"    | default "mono")
+    "heading" ($page.Param "assets.styles.fonts.type.heading" | default "inherit")
+    "meta"    ($page.Param "assets.styles.fonts.type.meta"    | default "sans")
+) }}
+{{ range $fontRole, $fontType := $fontRoleToTypeMap }}
+  {{ $roleKey := printf "role_%v" $fontRole }}
+  {{ $fontParams = merge $fontParams (dict
+      $roleKey $fontType
+  ) }}
+{{ end }}
+
+ {{ $defaultFallbackFontFamilyNames := (dict
+  "sans" "Arial"
+  "serif" "Georgia"
+  "mono" "Courier"
+ ) }}
+
+{{ $fontsSelfHosted := $page.Param "assets.styles.fonts.selfhosted" | default false }}
+
+{{/* Gather font and fallback font spec files This theme allows using three
+fonts, which are referred to as font types:
+- sans
+- serif
+- mono The default font type can be set to either sans, serif or mono.
+
+The default font is applied directly to the `html` element. The three font types
+are used based on utility classes named as follows:
+- `font-sans`
+- `font-serif`
+- `font-mono`
+
+In addition to font types, the theme also allows choosing a font based on roles,
+such as:
+- `font-default`
+- `font-content`
+- `font-article`
+- `font-code`
+- `font-heading`
+- `font-meta`
+
+The font roles are mapped to font types based on the following parameters:
+- `assets.styles.fonts.type.default` (default: `sans`)
+- `assets.styles.fonts.type.content` (default: `default`)
+- `assets.styles.fonts.type.article` (default: `serif`)
+- `assets.styles.fonts.type.code` (default: `mono`)
+- `assets.styles.fonts.type.heading` (default: `inherit`)
+- `assets.styles.fonts.type.meta` (default: `sans`)
+
+In the following code, we accomplish the following:
+1. We gather the font spec files for each distinct font family, and execute them
+   as templates with the appropriate parameters.
+2. We gather the fallback font spec files for each font family, and add them to
+   the main SCSS file.
+3. We gather all the types and roles that a font family is used for. We capture
+   this in the `$useAs` variable.
+
+*/}}
+
+{{ $fontStyleResources := slice }}
+{{ $hostedfontUrlsResources := slice }}
+{{/* To ensure that we only process every family once,
+we add the processed font family names to this slice */}}
+{{ $fontFamilyIDs := slice }}
+
+{{ $fontSpecs := slice }}
+
+{{/* The font family that is used for each type is defined in the
+`$fontTypeToFamilyMap`. We iterate over this map in the outer loop.
+
+In each iteration, gather all types (`$fontTypeToFamilyMap`) and roles
+(`$fontRoleToTypeMap`) for which this font family is used.
+
+Note: While untypical, it could be that the font family for sans and serif is
+set to the same value. In that case, we only include the font spec for this
+family once */}}
+{{ range $fontType, $fontFamily := $fontTypeToFamilyMap }}
+  {{ $fontFamilyID   := urlize $fontFamily }}
+  {{ $typeFamilyNameKey := printf "type_%v_name" $fontType }}
+  {{ $typeFamilyIDKey := printf "type_%v_id" $fontType }}
+
+  {{ $fontParams = merge $fontParams (dict
+      $typeFamilyNameKey $fontFamily
+      $typeFamilyIDKey $fontFamilyID
+  ) }}
+
+  {{ $fallbackFamilyNamesKey := printf "type_%v_fallback_names" $fontType }}
+  {{ $fallbackFamily := "" }}
+  {{ $fallbackStack := slice }}
+
+  {{ if eq $fontType "default" }}
+    {{ $fallbackFamily = index $defaultFallbackFontFamilyNames $fontRoleTypeDefault }}
+  {{ else }}
+    {{ $fallbackFamily = index $defaultFallbackFontFamilyNames $fontType }}
+  {{ end}}
+
+  {{ with $fallbackFamily }}
+    {{ $fallbackStack = slice $fallbackFamily }}
+    {{ if and true $debug }}
+      {{ warnf "%s Fallback font family for fontType=%v: %v"
+          $dbg $fontType $fallbackFamily }}
+    {{ end }}
+  {{ else }}
+    {{ errorf "%s No fallback font family for fontType=%v found in\n%v"
+        $dbg $fontType (jsonify (dict "indent" "  ") $defaultFallbackFontFamilyNames) }}
+  {{ end }}
+
+  {{ if not (in $fontFamilyIDs $fontFamilyID) }}
+    {{ $useFamilyAsType := slice }}
+    {{ range $innerFontType, $innerFontFamily := $fontTypeToFamilyMap }}
+      {{ if eq $innerFontFamily $fontFamily }}
+        {{ $useFamilyAsType = append $innerFontType $useFamilyAsType }}
+        {{ if and false $debug }}
+          {{ warnf "%s innerFontFamily=%v: using fontFamily=%v for fontType=%v: useFamilyAsType=%v"
+              $dbg $innerFontFamily $fontFamily $innerFontType $useFamilyAsType }}
+        {{ end }}
+      {{ else }}
+        {{ if and false $debug }}
+          {{ warnf "%s innerFontFamily=%v: not using fontFamily=%v for fontType=%v: useFamilyAsType=%v"
+              $dbg $innerFontFamily $fontFamily $innerFontType $useFamilyAsType }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+
+    {{ $useFamilyForRole := slice }}
+    {{ range $fontRole, $roleType := $fontRoleToTypeMap }}
+      {{ if in $useFamilyAsType $roleType }}
+        {{ if and false $debug }}
+          {{ warnf "%s fontRole=%v: using fontFamily=%v for fontRole=%v as roleType=%v in %v"
+              $dbg $fontRole $fontFamily $fontRole $roleType $useFamilyAsType }}
+        {{ end }}
+        {{ $useFamilyForRole = append $fontRole $useFamilyForRole | uniq }}
+      {{ else }}
+        {{ if and false $debug }}
+          {{ warnf "%s fontRole=%v: not using fontFamily=%v as roleType=%v not in %v"
+              $dbg $fontRole $fontFamily $roleType $useFamilyAsType }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+
+    {{ $useFamilyAs := append $useFamilyForRole $useFamilyAsType | uniq }}
+
+    {{ if and true $debug }}
+      {{ warnf "%s Use family %v [%v] for types and roles %v" $dbg $fontFamily $fontFamilyID $useFamilyAs }}
+    {{ end }}
+
+    {{/* Gather font and fallback font spec files if they are available */}}
+
+    {{ $fontSpecParams := merge $styleFileParamsBase (dict
+        "Page" $page
+        "FontFamilyName" $fontFamily
+        "FontFamilyID" $fontFamilyID
+        "UseFamilyAs" $useFamilyAs
+    ) }}
+
+    {{ $fontSpec := partial "claris/_functions/fonts/font-spec" $fontSpecParams }}
+
+    {{ with $fontSpec.SpecResource }}
+      {{ $fontSpecMap := merge $fontSpec (dict
+        "FontFamilyName" $fontFamily
+        "FontFamilyID" $fontFamilyID
+        "UseFamilyAs" $useFamilyAs
+      ) }}
+      {{ $fontSpecs = append $fontSpecMap $fontSpecs }}
+      {{ if and true $debug }}
+        {{ warnf "%s Found font spec for %v [%v]:\n%v" $dbg $fontFamily $fontFamilyID (jsonify (dict "indent" "  ") $fontSpec) }}
+      {{ end }}
+    {{ else }}
+      {{ if $fontsSelfHosted}}
+        {{ errorf "%s No font spec for self-hosted font %v [%v] found" $dbg $fontFamily $fontFamilyID }}
+      {{ else if and true $debug }}
+        {{ warnf "%s No font spec for self-hosted font %v [%v] found in\n%v" $dbg
+            $fontFamily $fontFamilyID (jsonify (dict "indent" "  ") $fontSpec) }}
+      {{ end }}
+    {{ end }}
+
+    {{ with $fontSpec.HostedFontUrlsResource }}
+      {{ $hostedfontUrlsResources = append $fontSpec.HostedFontUrlsResource $hostedfontUrlsResources }}
+      {{ if and true $debug }}
+        {{ warnf "%s Found hosted font URLs file for %v [%v]: HostedFontUrlsResource=%v .Content:\n%v" $dbg
+            $fontFamily $fontFamilyID
+            $fontSpec.HostedFontUrlsResource $fontSpec.HostedFontUrlsResource.Content }}
+      {{ end }}
+    {{ else }}
+      {{ if $fontsSelfHosted}}
+        {{ errorf "%s No hosted font URLs file for self-hosted font %v [%v] found" $dbg $fontFamily $fontFamilyID }}
+      {{ else if and true $debug }}
+        {{ warnf "%s No hosted font URLs file for self-hosted font %v [%v] found" $dbg $fontFamily $fontFamilyID }}
+      {{ end }}
+    {{ end }}
+
+    {{ with $fontSpec.FallbackStack }}
+      {{ $fallbackStack = $fontSpec.FallbackStack }}
+      {{ if and true $debug }}
+        {{ warnf "%s Found fallback font spec for %v [%v]: fallbackStack=%v" $dbg $fontFamily $fontFamilyID $fallbackStack }}
+      {{ end }}
+    {{ else }}
+      {{ if and true $debug }}
+        {{ warnf "%s No fallback font spec for %v [%v] found: using default fallback family=%v based on fontType=%v"
+          $dbg $fontFamily $fontFamilyID $fallbackFamily $fontType }}
+      {{ end }}
+    {{ end }}
+
+    {{/* Ensure we don't process this font family again */}}
+    {{ $fontFamilyIDs = $fontFamilyIDs | append $fontFamilyID | uniq }}
+
+  {{ end }}
+
+  {{ $fontParams = merge $fontParams (dict
+      $fallbackFamilyNamesKey (delimit $fallbackStack " ")
+  ) }}
+
+{{ end }}
+
+{{/* If there are any font spec files: create an SCSS module that merges them
+into a global map */}}
+{{ with $fontSpecs }}
+  {{ if and true $debug }}
+    {{ warnf "%v Final list of fontSpecs:\n%v" $dbg (jsonify (dict "indent" "  ") $fontSpecs) }}
+  {{ end }}
+
+  {{ range $fontSpecs }}
+    {{ $fontStyleResources = append .SpecResource $fontStyleResources }}
+  {{ end }}
+  {{ if and true $debug }}
+    {{ warnf "%v Concatenating fontStyleResources=%v" $dbg $fontStyleResources }}
+    {{ partial "claris/_functions/style-bundles_dump-resource-slice" (dict
+        "Template" $template
+        "Page" $page
+        "ResourceList" $fontStyleResources
+    ) }}
+  {{ end }}
+{{ else }}
+  {{ if and true $debug }}
+    {{ warnf "%v No font spec files found" $dbg }}
+  {{ end }}
+{{ end }}
+
+{{ with $hostedfontUrlsResources }}
+  {{ $fontStyleResources = append $hostedfontUrlsResources $fontStyleResources }}
+{{ end }}
+{{ with $fontStyleResources }}
+  {{ $concatFontFile := printf "%s/%s.%s" $resourcePathBase "fonts_merged" $sourceExt }}
+  {{ $concatFontResource = $fontStyleResources | resources.Concat $concatFontFile }}
+
+  {{ if and true $debug }}
+    {{ warnf "%v Final concatFontResource '%s'.Content:\n%v"
+        $dbg $concatFontResource $concatFontResource.Content }}
+  {{ end }}
+{{ else }}
+  {{ if and true $debug }}
+    {{ warnf "%v No font spec files or font URL files found" $dbg }}
+  {{ end }}
+{{ end }}
+
+
+{{ $fontStyles = (dict "resource" $concatFontResource "params" $fontParams ) }}
+{{ return $fontStyles }}

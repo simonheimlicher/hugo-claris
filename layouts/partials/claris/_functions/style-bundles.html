@@ -1,7 +1,7 @@
 {{ $styleBundles := dict }}
 {{ $page := .Page }}
 {{ $template := "claris/_functions/style-bundles" }}
-{{ $debug := or true (page.Param "clarisdebug") }}
+{{ $debug := and false (page.Param "clarisdebug") }}
 {{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 {{ $debugSassDeprecation := or false (page.Param "clarisdebugsassdeprecation") }}
 
@@ -13,7 +13,7 @@
 {{ $assetStyle := $assetVariant.AssetStyle }}
 {{ $assetStyleSuffix := $assetVariant.AssetStyleSuffix }}
 
-<!-- NOTE: There are two ways to minify styles (CSS) in Hugo:
+{{/* NOTE: There are two ways to minify styles (CSS) in Hugo:
 1. css.PostCSS: by passing (dict "config" "./relative/path/to/configDir")
    css.PostCSS, PostCSS will process the styles using the config file
    "postcss.config.js" in the directory provided via "config" key.
@@ -40,11 +40,11 @@ PostCSS plugins
 
 This comes with the caveat that configuration of styles minification
 does not have an effect, as mentioned above.
--->
+*/}}
 
 {{ $minifyCSS := default false $assetVariant.BundleParams.MinifyBundles }}
 
-<!-- https://www.hackification.io/software-development/hugo/html/asset-bundling/ */ -->
+{{/* https://www.hackification.io/software-development/hugo/html/asset-bundling/ */}}
 {{ $resourcePathBase := "styles" }}
 {{ $sourceExt := "scss" }}
 {{ $executedSourceSuffix := "_executed" }}
@@ -87,9 +87,9 @@ does not have an effect, as mentioned above.
 {{ end }}
 {{ $toCSSoptionsBase = merge $toCSSoptionsBase (dict "includePaths" $toCSSIncludePaths) }}
 
-<!-- NOTE: According to [the documentation](https://gohugo.io/hugo-pipes/postcss/#options),
+{{/* NOTE: According to [the documentation](https://gohugo.io/hugo-pipes/postcss/#options),
 the css.PostCSS function accepts a parameter indicating the *directory*
-that contains the `postcss.config.js` file - not the file itself. -->
+that contains the `postcss.config.js` file - not the file itself. */}}
 {{ $postCSSOptions := (dict "config" "assets/styles/claris/postcss" "noMap" $minifyCSS) }}
 
 {{ $styleResources := (dict
@@ -120,20 +120,20 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
   {{ $mediaType := default "all" $params.media }}
   {{ $fetchPriority := default "" $params.fetchpriority }}
   {{ if (in $mediaTypeList $mediaType) }}
-    {{ $hugoParams := merge $hugoParamsBase (dict "media_type" $mediaType) }}
+    {{ $hugoParams := merge $hugoParamsBase (dict "media" (dict "type" $mediaType) ) }}
 
     {{/* warnf "%v Generating style bundle with contentTypeList=%s contentTypeListID=%s for MediaType=%s in MediaTypeList=%v"
     $dbg $contentTypeList $contentTypeListID $mediaType $mediaTypeList */}}
     {{/* warnf "%v resourceID=%v params=%v $tplParams=%v" $dbg $resourceID $params $tplParams }} */}}
 
-    <!-- Concat SASS -->
+    {{/* Concat SASS */}}
     {{ $executedResourceList := slice }}
     {{ range $contentType := $contentTypeList }}
       {{ $tplParams = merge $tplParams (dict "ContentType" $contentType "MediaType" $mediaType) }}
       {{/* Determine if the content type has additional params */}}
       {{ $hugoParamsKey := printf "%s.%s" $contentType $assetParamsKey }}
 
-      {{ with $page.Param $hugoParamsKey }}
+      {{ with  $hugoParamsContentType := $page.Param $hugoParamsKey }}
         {{/* Merge the content type params into the template params */}}
         {{ $hugoParams = merge $hugoParams $hugoParamsContentType }}
 
@@ -148,15 +148,15 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
       {{ end }}
       {{ $resourcePathPrefix := printf "%s/%s" $resourcePathBase $contentType }}
 
-      <!-- Get the main SASS/SCSS file resource and execute it as a Go Template -->
+      {{/* Get the main SASS/SCSS file resource and execute it as a Go Template */}}
       {{ $mainFileBaseName := (default $resourceID $params.file) }}
-      <!-- The main SASS file needs to be outside the contentType directory to avoid
+      {{/* The main SASS file needs to be outside the contentType directory to avoid
         file name clashes between multiple contentType directories that contain files
         with the same names
-      -->
+      */}}
       {{ $mainFile := printf "%s-%s" $resourcePathPrefix $mainFileBaseName }}
 
-      <!-- Process main SASS file as Go Template Language template -->
+      {{/* Process main SASS file as Go Template Language template */}}
       {{ with resources.GetMatch (printf "%s.*" $mainFile ) }}
         {{ $executedFile := printf "%s_%s%s.%s" $mainFile $resourceID $executedSourceSuffix $sourceExt }}
         {{ with $assetStyleSuffix }}
@@ -184,61 +184,56 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
       {{ end }}
     {{ end }}
 
-    {{ with $fontStyles := partial "claris/_functions/font-styles.html" (dict
+    {{ with $fontStyles := partial "claris/_functions/fonts/font-styles" (dict
         "Page" $page
         "ResourcePathBase" $resourcePathBase
         "SourceExt" $sourceExt
         "ExecutedSourceSuffix" $executedSourceSuffix
       ) }}
-      {{ $fontStyleResource := .resource }}
       {{ $fontParams := .params }}
-      {{ $fontParams = (dict
-          "geometric_scale_factor" ($page.Param "geometric_scale_factor")
-          "fractional_scale_denominator" ($page.Param "fractional_scale_denominator")
-          "fluid_scale_digits" ($page.Param "fluid_scale_digits")
-      ) }}
       {{ $hugoParams = merge $hugoParams (dict "fonts" $fontParams) }}
-      {{ if and true $debug }}
-        {{ warnf "%v fontStyleResource: %v %v .Content:\n%v"
-            $dbg $fontStyleResource.Name $fontStyleResource.MediaType $fontStyleResource.Content }}
-      {{ end }}
-      {{ $executedResourceList = append $fontStyleResource $executedResourceList }}
-      {{ if and true $debug }}
-        {{ warnf "%v Added fontStyleResource %v [%v] [type=%T] to executedResourceList=%v [type=%T isSlice=%v len=%d]" $dbg
-            $fontStyleResource.Name $fontStyleResource.MediaType $fontStyleResource
-            $executedResourceList $executedResourceList (reflect.IsSlice $executedResourceList) (len $executedResourceList) }}
-        {{ if true }}
-          {{ partial "claris/_functions/style-bundles_dump-resource-slice" (dict
-              "Template" $template
-              "Page" $page
-              "ResourceList" $executedResourceList
-          ) }}
+      {{ with $fontStyleResource := .resource }}
+        {{ if and true $debug }}
+          {{ warnf "%v fontStyleResource: %v [%v] .Content:\n%v"
+              $dbg $fontStyleResource.Name $fontStyleResource.MediaType $fontStyleResource.Content }}
+        {{ end }}
+        {{ $executedResourceList = append $fontStyleResource $executedResourceList }}
+        {{ if and true $debug }}
+          {{ warnf "%v Added fontStyleResource %v [%v] [type=%T] to executedResourceList=%v [type=%T isSlice=%v len=%d]" $dbg
+              $fontStyleResource.Name $fontStyleResource.MediaType $fontStyleResource
+              $executedResourceList $executedResourceList (reflect.IsSlice $executedResourceList) (len $executedResourceList) }}
+          {{ if true }}
+            {{ partial "claris/_functions/style-bundles_dump-resource-slice" (dict
+                "Template" $template
+                "Page" $page
+                "ResourceList" $executedResourceList
+            ) }}
+          {{ end }}
         {{ end }}
       {{ end }}
     {{ end }}
 
-    {{ $hugoParamsFlat := partial "claris/_functions/flatten-hugo-params.html" (dict
+    {{ $hugoParamsFlat := partial "claris/_functions/flatten-hugo-params" (dict
         "Page" $page
         "ParamsMap" $hugoParams
       ) }}
-    {{ if and true $debug }}
-      {{ warnf "hugoParams:\n%v" (jsonify (dict "indent" "  ") $hugoParams) }}
-      {{ warnf "hugoParamsFlat:\n%v" (jsonify (dict "indent" "  ") $hugoParamsFlat) }}
+
+
+    {{ if and false $debug }}
+      {{/* warnf "%v Final hugoParams:\n%v" $dbg (jsonify (dict "indent" "  ") $hugoParams) */}}
+      {{ warnf "%v Final hugoParamsFlat:\n%v" $dbg (jsonify (dict "indent" "  ") $hugoParamsFlat) }}
     {{ end }}
-
-
-      {{ if and true $debug }}
-        {{ warnf "%v Final hugoParams:\n%v" $dbg (jsonify (dict "indent" "  ") $hugoParams) }}
-      {{ end }}
-    {{ $toCSSoptions := merge $toCSSoptionsBase (dict "vars" $hugoParams) }}
+    {{ $toCSSoptions := merge $toCSSoptionsBase (dict "vars" $hugoParamsFlat) }}
 
     {{ if $debug }}
       {{ warnf "%v Concatenated SCSS files for content type list=%v ID=%v resourceID=%s. Final executedResourceList=%v [type=%T isSlice=%v len=%d]" $dbg
           $contentTypeList $contentTypeListID $resourceID
           $executedResourceList $executedResourceList (reflect.IsSlice $executedResourceList) (len $executedResourceList) }}
-      {{ range $idx, $resource := $executedResourceList }}
-        {{ warnf "%v %d --> %v .Name=%v .MediaType=%v" $dbg $idx $resource $resource.Name $resource.MediaType }}
-      {{ end }}
+      {{ partial "claris/_functions/style-bundles_dump-resource-slice" (dict
+          "Template" $template
+          "Page" $page
+          "ResourceList" $executedResourceList
+      ) }}
     {{ end }}
 
     {{ $importFile := printf "%s/%s-%s%s.%s" $resourcePathBase $contentTypeListID $resourceID $executedSourceSuffix $sourceExt }}
@@ -258,7 +253,7 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
           $dbg $concatResource $concatResource.Content }}
     {{ end }}
 
-    <!-- Determine target file path and bundle SASS -->
+    {{/* Determine target file path and bundle SASS */}}
     {{ $targetPathPrefix := printf "%s/%s" $resourcePathBase $contentTypeListID }}
     {{ $targetFile := printf "%s/%s.%s" $targetPathPrefix $resourceID $targetExt }}
     {{ with $assetStyleSuffix }}
@@ -277,9 +272,8 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
     {{ end }}
 
     {{ if $minifyCSS }}
-      <!-- We minify CSS using only css.PostCSS (PostCSS) as resources.Minify (tdewolff/minify)
-      only further reduces the size by at most 3% -->
-      {{/* {{ $bundleMinified = $bundle | css.PostCSS $postCSSOptions | resources.Minify | resources.Fingerprint $fingerprintOptions | resources.PostProcess }} */}}
+      {{/* We minify CSS using only css.PostCSS (PostCSS) as resources.Minify (tdewolff/minify)
+      only further reduces the size by at most 3% */}}
       {{ if and false (eq $resourceID "main_all") }}
         {{ $afterPostCSS := $bundle | css.PostCSS $postCSSOptions }}
         {{ $afterMinify := $bundle | css.PostCSS $postCSSOptions | resources.Minify }}
@@ -324,12 +318,11 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
 {{ return $styleBundles }}
 
 {{ define "partials/claris/_functions/style-bundles_dump-resource-slice" }}
-  {{ $template := "claris/_functions/style-bundles_dump-resource-slice" }}
+  {{ $template := "style-bundles_dump-resource-slice" }}
   {{ $dbg := printf "%s[%s::%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` .Page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
-  {{/* warnf "%s %v %T" $dbg . . */}}
-  {{warnf "%v Elements in %v [type=%T isSlice=%v len=%d]" $dbg .ResourceList .ResourceList
+  {{ warnf "%v Elements in %v [type=%T isSlice=%v len=%d]" $dbg .ResourceList .ResourceList
     (reflect.IsSlice .ResourceList) (len .ResourceList) }}
   {{ range $idx, $resource := .ResourceList }}
-    {{ warnf "%v %d --> %v .Name=%v .MediaType=%v" $dbg $idx $resource $resource.Name $resource.MediaType }}
+    {{ warnf "%v %d */}} %v .Name=%v .MediaType=%v" $dbg $idx $resource $resource.Name $resource.MediaType }}
   {{ end }}
 {{ end }}

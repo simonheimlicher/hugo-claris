@@ -24,6 +24,15 @@ $fontFamilySpec: (
           font-variant: small-caps
         )
       )
+    ),
+    // Font variant: `all-small-caps`
+    all-small-caps: (
+      name: '{{ .FontFamilyName }}',
+      styles: (
+        default: (
+          font-variant: all-small-caps
+        )
+      )
     )
   ),
   roles: (

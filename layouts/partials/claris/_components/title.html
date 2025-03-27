@@ -23,22 +23,22 @@
 {{- if $title }}
       <div{{- with $titleClassList }} class="{{ delimit $titleClassList ` ` }}"{{ end }}>
   {{- with $supertitleOutside -}}
-          <strong class="supertitle variant-small-caps">{{. }}<span class="visually-hidden">: </span></strong>
-  {{- end -}}
+          <strong class="supertitle"><span class="variant-all-small-caps">{{. }}<span class="visually-hidden">: </span></span></strong>
+  {{- end }}
         <h{{ $headingLevel }} id="articleTop">
   {{- with $supertitleInside -}}
-          <strong class="supertitle variant-small-caps">{{. }}<span class="visually-hidden">: </span></strong>
+          <strong class="supertitle"><span class="variant-all-small-caps">{{. }}<span class="visually-hidden">: </span></span></strong>
   {{- end -}}
 
   <span class="title">{{- $title -}}</span>
 
   {{- with $subtitleInside -}}
           <span class="subtitle"><span class="visually-hidden"> – </span>{{. }}</span>
-  {{- end -}}
+  {{- end }}
         </h{{ $headingLevel }}>
   {{- with $subtitleOutside -}}
           <span class="subtitle"><span class="visually-hidden"> – </span>{{. }}</span>
-  {{- end -}}
+  {{- end }}
       </div>
 {{- end }}
 {{ partial "html-comment" (printf "[%s]:   END" $template) -}}

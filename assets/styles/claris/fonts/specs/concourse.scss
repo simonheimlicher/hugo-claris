@@ -37,6 +37,16 @@ $fontFamilySpec: (
           font-variant: inherit
         )
       )
+    ),
+    // Font variant: `all-small-caps`
+    all-small-caps: (
+      name: '{{ .FontFamilyName }} SC',
+      styles: (
+        default: (
+          font-variant: inherit,
+          text-transform: lowercase
+        )
+      )
     )
   ),
   roles: (

@@ -6,14 +6,25 @@
 @use 'hugo:vars' as hugo;
 
 $debug: false !default; // Set to `true` to enable debugging
+$debugMaps: false and $debug !default; // Set to `true` to enable debugging of font type and role maps
+$debugStyleProperties: false and $debug !default; // Set to `true` to enable debugging of style properties
+$debugStyleRules: false and $debug !default; // Set to `true` to enable debugging of style rules
+$debugUtilityRules: false and $debug !default; // Set to `true` to enable debugging of utility rules
+$debugApply: false and $debug !default; // Set to `true` to enable debugging of applyFontStyles
+$debugStyle: false and $debug !default; // Set to `true` to enable debugging of defineFontStyles
+$debugVariant: false and $debug !default; // Set to `true` to enable debugging of defineFontVariants
+$debugRole: false and $debug !default; // Set to `true` to enable debugging of defineFontRoles
+$debugUseAs: true and $debug !default; // Set to `true` to enable debugging of defineFontUtilityClasses
+$debugType: true and $debug !default; // Set to `true` to enable debugging of defineFontUtilityClasses
+
 $debugCSSProperties: false !default; // Set to `true` to enable debugging of CSS properties
 
-$fontTypeMap: (
-  default: (
-    id: if(hugo.$fonts_type_default_id != "null", hugo.$fonts_type_default_id, "source-sans-3"),
-    name: if(hugo.$fonts_type_default_name != "null", hugo.$fonts_type_default_name, "Source Sans 3"),
-    fallback_names: if(hugo.$fonts_type_default_fallback_names != "null", hugo.$fonts_type_default_fallback_names, "null"),
-  ),
+$fontTypeToFamilyMap: (
+  // default: (
+  //   id: if(hugo.$fonts_type_default_id != "null", hugo.$fonts_type_default_id, "source-sans-3"),
+  //   name: if(hugo.$fonts_type_default_name != "null", hugo.$fonts_type_default_name, "Source Sans 3"),
+  //   fallback_names: if(hugo.$fonts_type_default_fallback_names != "null", hugo.$fonts_type_default_fallback_names, "null"),
+  // ),
   sans: (
     id: if(hugo.$fonts_type_sans_id != "null", hugo.$fonts_type_sans_id, "source-sans-3"),
     name: if(hugo.$fonts_type_sans_name != "null", hugo.$fonts_type_sans_name, "Source Sans 3"),
@@ -31,32 +42,29 @@ $fontTypeMap: (
   )
 );
 
-@if $debug {
-  @debug "$fontTypeMap: #{meta.inspect($fontTypeMap)}";
+@if $debugMaps {
+  @debug "$fontTypeToFamilyMap: #{meta.inspect($fontTypeToFamilyMap)}";
 }
 
 // The default font type is 'sans' unless defind in Hugo params
-$fontTypeDefault: if(hugo.$fonts_type_default_name != "null", hugo.$fonts_type_default_name, "sans-serif");
+$fontTypeDefault: if(hugo.$fonts_type_default_name != "null", hugo.$fonts_type_default_name, sans);
 
 // The default font for role 'default' is given by `$fontTypeDefault`
 $fontRoleTypeDefault: if(hugo.$fonts_role_default != "null", hugo.$fonts_role_default, $fontTypeDefault);
 
 // The following map provides a mapping from a font role, such as 'article', to a font type, such as `serif`
-$fontDefinitions: (
+$fontRoleToTypeMap: (
   default: $fontRoleTypeDefault,
   content: if(hugo.$fonts_role_content != null, hugo.$fonts_role_content, $fontRoleTypeDefault),
   article: if(hugo.$fonts_role_article != null, hugo.$fonts_role_article, $fontRoleTypeDefault),
-  code: if(hugo.$fonts_role_code != null, hugo.$fonts_role_code, "monospace"),
+  code: if(hugo.$fonts_role_code != null, hugo.$fonts_role_code, mono),
   heading: if(hugo.$fonts_role_heading != null, hugo.$fonts_role_heading, $fontRoleTypeDefault),
   meta: if(hugo.$fonts_role_meta != null, hugo.$fonts_role_meta, $fontRoleTypeDefault)
 );
 
-@if $debug {
-  @debug "$fontDefinitions: #{meta.inspect($fontDefinitions)}";
+@if $debugMaps {
+  @debug "$fontRoleToTypeMap: #{meta.inspect($fontRoleToTypeMap)}";
 }
-
-// Split the string into a list using meta.split
-$fontsFamilyList: string.split(hugo.$fonts_family_ids, " ");
 
 $fontFamilyDefault: (name: $fontTypeDefault);
 
@@ -89,12 +97,66 @@ $familyDefaultMap: (
   )
 );
 
+$familyFallbackMap: map.merge($familyDefaultMap,
+  (
+    // Include font names and styles for alternative variants:
+    variants: (
+      all-small-caps: (
+        styles: (
+          default: (
+            text-transform: uppercase,
+            // font-size: 80%,
+            // Changing the `font-weight` here does not work
+            // The following rule has no effect:
+            // font-weight: bold
+          )
+        )
+      )
+    )
+  )
+);
+
+/// Merges two lists, adding only unique items from the second list to the first.
+/// @param {List} $primary - The primary list.
+/// @param {List} $secondary - The secondary list.
+/// @return {List} - The merged list containing unique elements.
+@function joinUnique($primary, $secondary) {
+  // Initialize the result with the first list
+  $result: $primary;
+
+  // Iterate over each item in the second list
+  @each $item in $secondary {
+    // Check if the item is not already in the result list
+    @if not index($result, $item) {
+      // Append the unique item to the result list
+      $result: append($result, $item);
+    }
+  }
+
+  @return $result;
+}
+
+@function quoteFontFamilyIfNeeded($font-name) {
+  @if str-index($font-name, ' ') {
+    @return quote($font-name);
+  }
+  @return $font-name;
+}
+
+@function quoteFontStack($stack) {
+  $result: ();
+  @each $font in $stack {
+    $result: append($result, quoteFontFamilyIfNeeded($font), comma);
+  }
+  @return $result;
+}
+
 // Utility mixin to apply style definitions by defining CSS custom properties
 // If $key is in $keysToDefineAsProperty, define the CSS custom property
 // Currently, this is used to ensure we can access the current `line-height`
 // to remove the line-height from the first line usinc `calc`
 @mixin generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef) {
-  @if $debug {
+  @if $debugStyleProperties {
     @debug 'generateFontStyleProperties(#{$styleName}): defaultStyleDef: #{meta.inspect($defaultStyleDef)} baseStyleDef: #{meta.inspect($baseStyleDef)}';
   }
   // To enable consistently using the same style rules, we make some definitions available
@@ -112,12 +174,12 @@ $familyDefaultMap: (
         $baseValue: map.get($baseStyleDef, $key);
       }
       @if $value == $baseValue {
-        @if $debug {
+        @if $debugStyleProperties {
           @debug 'generateFontStyleProperties(#{$styleName}): value=#{$value} == #{$baseValue}';
         }
       }
       @else {
-        @if $debug {
+        @if $debugStyleProperties {
           @debug 'generateFontStyleProperties(#{$styleName}): value=#{$value} != #{$baseValue}';
         }
         $propertyName: $key;
@@ -132,7 +194,7 @@ $familyDefaultMap: (
 
 // Utility mixin to apply style definitions by defining CSS rules if they differ from default
 @mixin generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef) {
-  @if $debug {
+  @if $debugStyleRules {
     @debug 'generateFontStyleRules(#{$styleName}): defaultStyleDef: #{meta.inspect($defaultStyleDef)} baseStyleDef: #{meta.inspect($baseStyleDef)}';
   }
   $overrideStyles: $styleDef;
@@ -142,12 +204,12 @@ $familyDefaultMap: (
     @each $key, $value in $styleDef {
       $baseValue: map.get($defaultStyleDef, $key);
       @if ($baseValue and $value == $baseValue) {
-        @if $debug {
+        @if $debugStyleRules {
           @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} == #{$baseValue}';
         }
       }
       @else {
-        @if $debug {
+        @if $debugStyleRules {
           @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} != #{$baseValue}';
         }
         $overrideStyles: map.merge($overrideStyles, ($key: $value) );
@@ -160,12 +222,12 @@ $familyDefaultMap: (
     @each $key, $value in $styleDef {
       $baseValue: map.get($baseStyleDef, $key);
       @if ($baseValue and $value == $baseValue) {
-        @if $debug {
+        @if $debugStyleRules {
           @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} == #{$baseValue}';
         }
       }
       @else {
-        @if $debug {
+        @if $debugStyleRules {
           @debug 'generateFontStyleRules(#{$styleName}): value=#{$value} != #{$baseValue}';
         }
         $overrideStyles: map.merge($overrideStyles, ($key: $value) );
@@ -183,16 +245,15 @@ $familyDefaultMap: (
 
   @if ($baseSelector == null) {
     @if ($styleName == default) {
-      html {
-        font-family: #{meta.inspect($fontStackVariant)};
-        @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-        @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
+      @if $debugApply {
+        @debug "applyFontStyles(baseSelector: #{$baseSelector}, nestedSelector=#{$nestedSelector}): HTML DEFAULT fontStackVariant: #{meta.inspect($fontStackVariant)} defaultStyleDef: #{meta.inspect($defaultStyleDef)} baseStyleDef: #{meta.inspect($baseStyleDef)} styleDef: #{meta.inspect($styleDef)}";
       }
+      font-family: #{meta.inspect($fontStackVariant)};
+      @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
+      @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
     }
     @else {
-      html {
-        @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
-      }
+      @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
       #{$styleName} {
         @include generateFontStyleRules($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
       }
@@ -251,7 +312,7 @@ $familyDefaultMap: (
     $nestedSelector: null;
     @if $nestedClassNames != null and length($nestedClassNames) > 0 {
       $nestedSelector: '.' + functions.joinArray($nestedClassNames, '.');
-      @if $debug {
+      @if $debugUtilityRules {
         @debug 'nestedSelector=#{$baseSelector} #{$nestedSelector}';
       }
     }
@@ -293,7 +354,7 @@ $familyDefaultMap: (
       $baseStyleDef: ();
     }
 
-    @if $debug {
+    @if $debugStyle {
       @debug 'defineFontStyles: defaultStyleDef: #{meta.inspect($defaultStyleDef)} baseStyleDef: #{meta.inspect($baseStyleDef)} styleDef: #{meta.inspect($styleDef)}';
       // Note: To avoid an invalid CSS value error when $classNames is empty,
       // we append an empty list to it
@@ -309,23 +370,24 @@ $familyDefaultMap: (
 @mixin defineFontVariants($fontNameRole, $fallbackStackRole, $defaultStyleDef, $stylesRole, $specVariants, $classNames) {
   // Go through all variants
   @each $variant, $specVariant in $specVariants {
+    $variantClassNames: $classNames;
     $specStyles: map.get($specVariant, styles);
 
     @if $variant != default {
-      $classNames: append($classNames, variant- + $variant);
+      $variantClassNames: append($variantClassNames, variant- + $variant);
     }
 
     $fontNameVariant: functions.defaultTo($fontNameRole, map.get($specVariant, 'name'));
     $fallbackStackVariant: functions.defaultTo($fallbackStackRole, map.get($specVariant, 'fallback'));
-    $fontStackVariant: join(($fontNameVariant), $fallbackStackVariant);
+    $fontStackVariant: quoteFontStack(join(($fontNameVariant,), $fallbackStackVariant, comma));
 
     $stylesVariant: map.get($specVariant, 'styles');
-    // Note: To avoid an invalid CSS value error when $classNames is empty,
+    // Note: To avoid an invalid CSS value error when $variantClassNames is empty,
     // we append an empty list to it
-    @if $debug {
-      @debug 'defineFontVariants: call defineFontStyles(#{$fontNameRole}, classNames=#{append($classNames, ())})';
+    @if $debugVariant {
+      @debug 'defineFontVariants: call defineFontStyles(#{$fontNameRole}, classNames=#{append($variantClassNames, ())})';
     }
-    @include defineFontStyles($fontStackVariant, $defaultStyleDef, $stylesRole, $stylesVariant, $specStyles, $classNames);
+    @include defineFontStyles($fontStackVariant, $defaultStyleDef, $stylesRole, $stylesVariant, $specStyles, $variantClassNames);
   }
 }
 
@@ -338,7 +400,7 @@ $familyDefaultMap: (
   $fallbackStackFamily: map.get($specFamily, fallback);
   $fallbackStackFamily: functions.defaultTo($fallbackStackDefault, map.get($specFamily, fallback));
 
-  @if $debug {
+  @if $debugRole {
     @debug 'defineFontRoles: fallbackStackFamily=#{meta.inspect($fallbackStackFamily)}';
   }
 
@@ -349,7 +411,7 @@ $familyDefaultMap: (
   $specRolesDefault: functions.updateMap((default: (styles: $specStyles)), map.get($familyDefaultMap, roles));
   $specRoles: functions.updateMap($specRolesDefault, map.get($specFamily, roles));
 
-  @if $debug {
+  @if $debugRole {
     @debug 'defineFontRoles: specRoles=#{meta.inspect($specRoles)}';
   }
 
@@ -378,116 +440,43 @@ $familyDefaultMap: (
     }
     // Note: To avoid an invalid CSS value error when $classNames is empty,
     // we append an empty list to it
-    @if $debug {
+    @if $debugRole {
       @debug 'defineFontRoles: call defineFontVariants(#{$fontNameRole}, classNames=#{append((), $classNames)})';
     }
     @include defineFontVariants($fontNameRole, $fallbackStackRole, $defaultStyleDef, $stylesRole, $specVariants, $classNames);
   }
 }
 
-@mixin defineFontUtilityClasses($specFamily, $useAs: default ) {
+@mixin defineFontUtilityClasses($specFamily, $useAs: default) {
   $useAs: if(type-of($useAs) == list, $useAs, ($useAs,));
-  @if $debug {
-    @debug 'defineFontUtilityClasses: specFamily=#{meta.inspect($specFamily)}';
+  @if $debugType {
+    @debug 'defineFontUtilityClasses: useAs=#{meta.inspect($useAs)}';
+  }
+  $outerClassNames: ();
+  $classNames: ();
+
+  // Create a list of selectors for all types (sans, serif, mono) and roles (default,
+  // display etc.) for which this font family is used
+  $selectorList: ();
+  // If the font family is used as default, add 'html' to the selector list
+  @if index($useAs, default) {
+    $selectorList: (html, $selectorList);
   }
 
+  // If the font family is used as monospace font, add 'pre' and 'code' to the selector list
+  @if index($useAs, mono) {
+    $selectorList: (pre, code, $selectorList);
+  }
+
+  // Append each font type and role as a 'font-{name}' selector
   @each $use in $useAs {
-    $classNames: ();
-    @if ($use != default) {
-      $classNames: (font- + $use, );
-    }
-    @if $debug {
-      @debug 'defineFontUtilityClasses: call defineFontRoles(classNames=#{append( (), $classNames)})';
-    }
+    $selectorList: append($selectorList, unquote(".font-#{$use}"), comma);
+  }
+  @if $debugType {
+    @debug 'defineFontUtilityClasses: selectorList=#{$selectorList}: call defineFontRoles(classNames=#{append( (), $classNames)})';
+  }
+  #{$selectorList} {
     @include defineFontRoles($specFamily, $classNames);
   }
 }
 
-@if not hugo.$fonts_hosted {
-  @each $fontType in $fontTypeMap {
-  $fontTypeKey: $fontType;
-    $fontFamilySpec: (
-      // Default font-family
-      name: $fontFamilyDefault,
-      // Default styles
-      styles: (
-        // Style: `default`, i.e., body text
-        default: (
-          font-weight: 400,
-          line-height: 1.4
-        ),
-        strong: (
-          font-weight: 600,
-        )
-      ),
-      // Alternative roles
-      roles: (
-        // Role: `display`, i.e., short pieces of text such as headings, labels, navigation
-        display: (
-          styles: (
-            default: (
-              font-weight: 400,
-              line-height: 1.2
-            ),
-            strong: (
-              font-weight: 600
-            )
-          )
-        )
-      ),
-      // // Font variants such as small-caps, oldstyle-nums
-      // variants: (
-      //   // Font variant: `small-caps`
-      //   small-caps: (
-      //     name: 'Alegreya SC'
-      //   )
-      // ),
-    );
-  }
-
-  // The font family map may have different structures:
-  // Simple:
-  // name: Alegreya; // font-family
-  // fallback: serif; // fallback font-family
-  //
-  // Include additional settings such as font-weight for default, strong and italic
-  // styles: (
-  //   default: (
-  //     font-weight: 400
-  //   )
-  //   strong: (
-  //     font-weight: 700
-  //   )
-  // );
-  //
-  // Include font names and styles for alternative fontTypes:
-  // fontTypes: (
-  //   display: (
-  //     name: Alegreya Sans, // font-family for display type
-  //       styles: (
-  //         default: (
-  //           font-weight: 400
-  //         )
-  //         strong: (
-  //           font-weight: 700
-  //         )
-  //       )
-  //     )
-  //   )
-  // );
-  //
-  // Include font names and styles for alternative variants:
-  // variants: (
-  //   small-caps: (
-  //     name: Alegreya SC
-  //     styles: (
-  //       default: (
-  //         font-weight: 400
-  //       )
-  //       strong: (
-  //         font-weight: 700
-  //       )
-  //     );
-  //   )
-  // );
-}

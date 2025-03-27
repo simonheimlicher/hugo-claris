@@ -346,7 +346,6 @@
   color: var(--theme-text);
   display: inline-flex;
   padding: 0.5em 1em;
-  // text-transform: uppercase
   text-transform: none;
   border: 1px solid var(--translucent);
   border-radius: 99rem;
@@ -607,9 +606,6 @@
     var(--initial_margin-bottom)
     var(--initial_margin-left);
   }
-  &-words {
-    text-transform: lowercase;
-  }
 }
 
 .main_header .feature-image {
@@ -643,21 +639,23 @@
     z-index: (variables.$main-z-index + 5);
     hyphens: manual;
     h1 {
-      font-size: var(--font-size-title);
+      --font-size: var(--font-size-title);
+      font-size: var(--font-size);
       margin: 0;
       padding: 0;
     }
     .supertitle {
       display: block;
-      font-size: var(--font-size-supertitle);
+      --font-size: var(--font-size-supertitle);
+      font-size: var(--font-size);
       text-align: start;
-      text-transform: lowercase;
     }
     .subtitle {
       display: block;
       margin-top: 0.5em;
       text-align: end;
-      font-size: var(--font-size-subtitle);
+      --font-size: var(--font-size-subtitle);
+      font-size: var(--font-size);
       font-weight: var(--font-weight-subtitle);
     }
   }
