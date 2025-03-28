@@ -1,7 +1,8 @@
 {{- $page := .Page }}
 {{- $meta := $page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/footer/index" }}
-{{- $debug := false }}
+{{- $debug := and false (page.Param "clarisdebug") }}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*/([^/]+)/index$|.*/([^/]+)$` `$1$2` $template) }}
 
 {{- /* The footer of each page comprises several elements.
     Its main part is fed from individual pages that are merged.
@@ -16,39 +17,39 @@
 */ -}}
 {{- $title := site.Title }}
 {{- $siteAuthor := $meta.Site.Data.Author.Name }}
-{{- $footerSection := site.Params.footer.section }}
+{{- $footerSection := default "_footer" site.Params.footer.section }}
 
 <div class="footer_inner inner_bottom">
   {{- $footerPages := slice }}
   {{- with $footerSection }}
     {{- with site.GetPage $footerSection }}
+      {{- if $debug }}
+        {{- warnf "%s site.GetPage '%v' returned %v" $dbg $footerSection .Path }}
+      {{- end }}
       {{- with .Resources.Match "*.md" }}
         {{- $footerPages = sort . ".Params.weight" }}
       {{- else }}
         {{- if $debug }}
-          {{- warnf "%s[%s]: No page resources match '*.md' in '%v'"
-              $page $template $footerSection }}
+          {{- warnf "%s No page resources match '*.md' in '%v'"
+              $dbg $footerSection }}
         {{- end }}
       {{- end }}
     {{- else }}
-      {{- if $debug }}
-        {{- warnf "%s[%s]: site.GetPage %v failed"
-            $page $template $footerSection }}
-      {{- end }}
+      {{- warnf "%s site.GetPage '%v' failed. Note: if the fotter section '%v' is a headless bundle, you need to put an 'index.<LANGUAGE CODE>.md' file for every language separately" $dbg $footerSection }}
     {{- end }}
   {{- else }}
     {{- if site.Params.claris.hints }}
-      {{- warnf "%s[%s]: site.Params.footer.section=%v.\nSet this value to a section, e.g., '_footer', for its pages to show up in the footer of every page."
-          $page $template $footerSection }}
+      {{- warnf "%s site.Params.footer.section=%v.\nSet this value to a section, e.g., '_footer', for its pages to show up in the footer of every page."
+          $dbg $footerSection }}
     {{- end }}
   {{- end }}
 
   {{- with $footerPages }}
     {{- if $debug }}
-      {{- warnf "%s[%s]: site.RegularPages.ByWeight \"Type\" \"in\" %v: %v"
-          $page $template $footerSection $footerPages }}
+      {{- warnf "%s site.RegularPages.ByWeight \"Type\" \"in\" %v: %v"
+          $dbg $footerSection $footerPages }}
       {{- range $id, $page := $footerPages }}
-        {{- warnf "%s[%s]: %v" $page $template . }}
+        {{- warnf "%s Footer page: %v" $dbg .Path }}
       {{- end }}
     {{- end }}
   <div class="footer_main inner_horizontal">
