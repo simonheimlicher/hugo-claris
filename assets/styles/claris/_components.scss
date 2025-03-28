@@ -512,6 +512,7 @@
       &::after {
         content: ".";
         display: inline;
+        padding-right: 0.5em;
       }
       &.heading_link {
         margin-right: 0;
