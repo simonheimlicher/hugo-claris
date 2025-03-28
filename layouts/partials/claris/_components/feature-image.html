@@ -18,8 +18,12 @@
 {{- with $meta.Single.Data.Images }}
   {{- with $featureImage = .feature.variant.default }}
     {{- if $debug }}
+      {{- $featureImageProps := $featureImage }}
+      {{- with $featureImage.version.default.resource }}
+        {{- $featureImageProps = merge $featureImageProps (dict "version" (dict "default" (dict "src" .RelPermalink) ) ) }}
+      {{- end }}
       {{- warnf "%s Render feature image based on .feature.variant.default:\n%v" $dbg
-          (jsonify (dict "indent" "  ") $featureImage) -}}
+          (jsonify (dict "indent" "  ") $featureImageProps) -}}
     {{- end }}
     {{- $classPrefix := printf "feature-image" }}
     {{- $featureImageAspectRatioMin := $page.Param "assets.styles.images.feature.ratio.min" | default 2 }}

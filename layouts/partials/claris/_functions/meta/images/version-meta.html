@@ -20,10 +20,15 @@
       {{ $imgVersionMeta = merge $imgVersionMeta (dict $k $v) }}
     {{ end }}
   {{ end }}
+  {{/* NOTE: Adding `src`, `with` and `height` attributes makes debugging much easier
+  and it also appears to address spurious issues with `partialCached` mixing up images */}}
   {{ $imgVersionMeta = merge $imgVersionMeta (dict "version" (dict
       $versionName (dict
         "index" $versionIndex
         "resource" $versionResource
+        "src" $versionResource.RelPermalink
+        "width" $versionResource.Width
+        "height" $versionResource.Height
         "aspect" $aspectRatio.human
         "ratio" $aspectRatio.float
         "format" $versionResource.MediaType.SubType
