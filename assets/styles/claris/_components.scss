@@ -153,11 +153,6 @@
       flex-direction: row;
       flex-wrap: wrap;
       gap: var(--inner_margin);
-      // NOTE: IE 11 bug
-      // https://github.com/philipwalton/flexbugs/issues/75
-      // Setting a min-height on the container (body does not work)
-      // avoids scaled images taking up as much space as they would if not scaled
-      // NOTE: Does not work. responsive-figure images still blow up
       @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
         & {
           justify-content: space-evenly;
@@ -838,8 +833,6 @@
           100vh
         );
       }
-    }
-    .main_header {
       display: grid;
       grid-template-rows: 1fr minmax(0px, max-content);
 
@@ -1291,6 +1284,7 @@ svg.qrcode-svg {
     // Avoid overflow at bottom
     height: auto;
     padding: 0 var(--inner_padding);
+    min-height: unset;
   }
   &_footer {
     clear: both;
@@ -1319,10 +1313,6 @@ svg.qrcode-svg {
       }
       text-align: right;
     }
-  }
-  &_content {
-    // For everything other than IE 11
-    min-height: unset;
   }
   @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
     &_container {
