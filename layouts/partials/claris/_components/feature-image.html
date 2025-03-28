@@ -1,7 +1,7 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/_components/feature-image" }}
-{{- $debug := and false (page.Param "clarisdebug") }}
+{{- $debug := or true (page.Param "clarisdebug") }}
 {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $title := .Title }}
