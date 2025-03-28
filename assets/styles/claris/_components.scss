@@ -515,7 +515,7 @@
         margin-top: calc(2em * (var(--line-height) - 1));
       }
       &::after {
-        content: ". ";
+        content: ".";
         display: inline;
       }
       &.heading_link {
@@ -922,11 +922,7 @@
 }
 //! purgecss end ignore
 
-.inline-separator-list {
-  // Does not appear to have an effect
-  p {
-    color: var(--text-faint);
-  }
+ul.inline-separator-list {
   @include variables.inline-separator-list;
 }
 

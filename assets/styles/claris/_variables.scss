@@ -546,35 +546,35 @@ $main-z-index: 1;
   }
 }
 
-@mixin inline-separator-list($list-item-separation: 2ch, $list-separator: '•') {
-  $shift-left: math.div($list-item-separation, 3.0);
-  $list-sep-width: $shift-left + 0.5ch;
-  ul {
-    display: inline;
+@mixin inline-separator-list($list-item-separation: 1.25em, $list-separator: '•') {
+  & {
+    --list-item-separation: #{$list-item-separation};
+    --list-sep-width: calc(var(--list-item-separation) / 3);
+    display: inline-flex;
+    flex-wrap: wrap;
+    padding-left: 0;
     list-style: none;
-    margin-left: -$list-item-separation + 0.5ch;
-    &, & > li {
-      margin-left: 0;
-      padding-left: 0;
-      list-style: none;
-    }
-    // The `li + li` is to override potentially existing declarations for siblings
-    & > li, & > li + li {
-      list-style: none;
-      display: inline-block;
-      margin: 0;
-      padding: 0;
-    }
-    & > li:not(:last-child) {
-      &::after {
-        content: $list-separator;
-        display: inline-block;
-        margin: 0 0 0 ($shift-left - 0.5ch);
-        width: $list-sep-width;
-        text-align: center;
-      }
-      margin: 0 (-1 * ($shift-left + $list-sep-width)) 0 0;
-      padding: 0 ($shift-left + $list-sep-width) 0 0;
+    // A regular space's width worth of whitespace before the first item
+    margin: 0 0 0 0.25em;
+  }
+  & > li, & > li + li {
+    margin: 0;
+    padding: 0 0 0 calc(var(--list-sep-width));
+    list-style: none;
+  }
+  & > li::before {
+    content: $list-separator;
+    display: inline-block;
+    margin-right: calc(var(--list-sep-width));
+    width: calc(var(--list-sep-width));
+    text-align: center;
+  }
+  & > li:first-child {
+    margin-left: 0;
+    padding-left: 0;
+    clip-path: none;
+    &::before {
+      content: none;
     }
   }
 }
