@@ -2,10 +2,25 @@
 // This file contains the font family specification for DM Mono.
 // It defines the font family, styles, roles, and variants for the DM Mono font.
 
+// Custom metrics for fallback font
+// Source: https://screenspan.net/fallback
+@font-face {
+    font-family: dm-mono-fallback;
+    font-style: normal;
+    font-weight: 400;
+    src: local(Courier New);
+    size-adjust: 100%;
+    ascent-override: 98%;
+    descent-override: 32%;
+    line-gap-override: normal;
+}
+
+// Use the fallback font with custom metrics
+$fallbackStack: (dm-mono-fallback, monospace);
 $fontFamilySpec: (
   // Default, i.e., body text
   name: "{{ .FontFamilyName }}",
-  fallback: {{ .FallbackFontStack }},
+  fallback: $fallbackStack,
   styles: (
     // Weight: `default`, i.e., body text
     default: (

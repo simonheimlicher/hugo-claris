@@ -2,10 +2,57 @@
 // This file is used to generate the font-face declarations for the Concourse font family.
 // It defines the font family name, font styles, font weights, and font variants.
 
+// Custom metrics for fallback font
+// Source: https://screenspan.net/fallback
+@font-face {
+  font-family: concourse-fallback;
+  font-style: normal;
+  font-weight: 400;
+	src: local(Arial);
+  size-adjust: 88%;
+  ascent-override: 108%;
+  descent-override: 27%;
+  line-gap-override: normal;}
+
+@font-face {
+  font-family: concourse-fallback;
+  font-style: normal;
+  font-weight: 500;
+  src: local(Arial);
+  size-adjust: 87%;
+  ascent-override: 108%;
+  descent-override: 28%;
+  line-gap-override: normal;
+}
+
+@font-face {
+  font-family: concourse-fallback;
+  font-style: normal;
+  font-weight: 600;
+  src: local(Arial);
+  size-adjust: 89%;
+  ascent-override: 106%;
+  descent-override: 26%;
+  line-gap-override: normal;
+}
+
+@font-face {
+  font-family: concourse-fallback;
+  font-style: normal;
+  font-weight: 700;
+  src: local(Arial Black);
+  size-adjust: 87%;
+  ascent-override: 129%;
+  descent-override: 12%;
+  line-gap-override: normal;
+}
+
+// Use the fallback font with custom metrics
+$fallbackStack: (concourse-fallback, sans-serif);
 $fontFamilySpec: (
   // Default, i.e., body text
   name: "{{ .FontFamilyName }}",
-  fallback: {{ .FallbackFontStack }},
+  fallback: $fallbackStack,
   styles: (
     // Weight: `default`, i.e., body text
     default: (
@@ -15,6 +62,21 @@ $fontFamilySpec: (
     // Weight: `strong`, i.e., bolder than normal text
     strong: (
       font-weight: 600,
+    )
+  ),
+  roles: (
+    // Role: `display`, i.e., short pieces of text such as headings, labels, navigation
+    display: (
+      styles: (
+        default: (
+          font-weight: 400,
+          line-height: 1.2
+        ),
+        // Weight: `strong`, i.e., bolder than normal text
+        strong: (
+          font-weight: 600,
+        )
+      )
     )
   ),
   // Font variants such as small-caps, oldstyle-nums
@@ -35,21 +97,6 @@ $fontFamilySpec: (
         default: (
           font-variant: inherit,
           text-transform: lowercase
-        )
-      )
-    )
-  ),
-  roles: (
-    // Role: `display`, i.e., short pieces of text such as headings, labels, navigation
-    display: (
-      styles: (
-        default: (
-          font-weight: 400,
-          line-height: 1.2
-        ),
-        // Weight: `strong`, i.e., bolder than normal text
-        strong: (
-          font-weight: 600,
         )
       )
     )

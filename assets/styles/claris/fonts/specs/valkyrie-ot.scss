@@ -2,9 +2,33 @@
 // This file is used to generate the font-face declarations for the Valkyrie OT font family.
 // It defines the font family name, font styles, font weights, and font variants.
 
+// Custom metrics for fallback font
+// Source: https://screenspan.net/fallback
+@font-face {
+  font-family: valkyrie-ot-fallback;
+  src: local(Georgia);
+  size-adjust: 100.1%;
+  ascent-override: 95.5%;
+  descent-override: 29.1%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: valkyrie-ot-fallback;
+  font-weight: 600;
+  src: local(Georgia);
+  size-adjust: 100.1%;
+  ascent-override: 95.4%;
+  descent-override: 28.4%;
+  line-gap-override: 0%;
+}
+
+// Use the fallback font with custom metrics
+$fallbackStack: (valkyrie-ot-fallback, serif);
 $fontFamilySpec: (
   // Default, i.e., body text
-  name: '{{ .FontFamilyName }}',
+  name: "{{ .FontFamilyName }}",
+  fallback: $fallbackStack,
   styles: (
     // Weight: `default`, i.e., body text
     default: (
@@ -14,17 +38,6 @@ $fontFamilySpec: (
     // Weight: `strong`, i.e., bolder than normal text
     strong: (
       font-weight: 600,
-    )
-  ),
-  variants: (
-    // Font variant: `small-caps`
-    small-caps: (
-      name: '{{ .FontFamilyName }}',
-      styles: (
-        default: (
-          font-variant: small-caps
-        )
-      )
     )
   ),
   roles: (
@@ -38,6 +51,26 @@ $fontFamilySpec: (
         // Weight: `strong`, i.e., bolder than normal text
         strong: (
           font-weight: 600,
+        )
+      )
+    )
+  ),
+  variants: (
+    // Font variant: `small-caps`
+    small-caps: (
+      name: '{{ .FontFamilyName }}',
+      styles: (
+        default: (
+          font-variant: small-caps
+        )
+      )
+    ),
+    // Font variant: `all-small-caps`
+    all-small-caps: (
+      name: '{{ .FontFamilyName }}',
+      styles: (
+        default: (
+          font-variant: all-small-caps
         )
       )
     )

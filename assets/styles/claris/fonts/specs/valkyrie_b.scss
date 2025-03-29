@@ -2,10 +2,33 @@
 // This file is used to generate the font-face declarations for the Valkyrie B font family.
 // It defines the font family name, font styles, font weights, and font variants.
 
+// Custom metrics for fallback font
+// Source: https://screenspan.net/fallback
+@font-face {
+  font-family: valkyrie_b-fallback;
+  src: local(Georgia);
+  size-adjust: 100.1%;
+  ascent-override: 95.5%;
+  descent-override: 29.1%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: valkyrie_b-fallback;
+  font-weight: 600;
+  src: local(Georgia);
+  size-adjust: 100.1%;
+  ascent-override: 95.4%;
+  descent-override: 28.4%;
+  line-gap-override: 0%;
+}
+
+// Use the fallback font with custom metrics
+$fallbackStack: (valkyrie_b-fallback, serif);
 $fontFamilySpec: (
   // Default, i.e., body text
   name: "{{ .FontFamilyName }}",
-  fallback: {{ .FallbackFontStack }},
+  fallback: $fallbackStack,
   styles: (
     // Weight: `default`, i.e., body text
     default: (
@@ -15,6 +38,21 @@ $fontFamilySpec: (
     // Weight: `strong`, i.e., bolder than normal text
     strong: (
       font-weight: 600,
+    )
+  ),
+  roles: (
+    // Role: `display`, i.e., short pieces of text such as headings, labels, navigation
+    display: (
+      styles: (
+        default: (
+          font-weight: 400,
+          line-height: 1.2
+        ),
+        // Weight: `strong`, i.e., bolder than normal text
+        strong: (
+          font-weight: 600,
+        )
+      )
     )
   ),
   // Font variants such as small-caps, oldstyle-nums
@@ -35,21 +73,6 @@ $fontFamilySpec: (
         default: (
           font-variant: inherit,
           text-transform: lowercase
-        )
-      )
-    )
-  ),
-  roles: (
-    // Role: `display`, i.e., short pieces of text such as headings, labels, navigation
-    display: (
-      styles: (
-        default: (
-          font-weight: 400,
-          line-height: 1.2
-        ),
-        // Weight: `strong`, i.e., bolder than normal text
-        strong: (
-          font-weight: 600,
         )
       )
     )

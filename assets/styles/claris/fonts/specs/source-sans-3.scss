@@ -1,9 +1,48 @@
 // Font family specification for Source Sans 3
 // This file contains the font family specification for Source Sans 3.
 // It defines the font family, styles, roles, and variants for the Source Sans 3 font.
+
+// Custom metrics for fallback font
+// Source: https://screenspan.net/fallback
+@font-face {
+  font-family: source-sans-3-fallback;
+  font-style: normal;
+  font-weight: 400;
+	src: local("Arial");
+  size-adjust: 94%;
+	ascent-override: 96.256%;
+	descent-override: 37.6%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: source-sans-3-fallback;
+  font-style: normal;
+  font-weight: 300;
+  src: local("Arial");
+  size-adjust: 87%;
+  ascent-override: 89.088%;
+  descent-override: 34.8%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: source-sans-3-fallback;
+  font-style: normal;
+  font-weight: 500;
+  src: local("Arial");
+  size-adjust: 97%;
+  ascent-override: 99.328%;
+  descent-override: 38.8%;
+  line-gap-override: 0%;
+}
+
+// Use the fallback font with custom metrics
+$fallbackStack: (source-sans-3-fallback, sans-serif);
 $fontFamilySpec: (
-  // Default font-family
-  name: 'Source Sans 3',
+  // Default, i.e., body text
+  name: "{{ .FontFamilyName }}",
+  fallback: $fallbackStack,
   // Default styles
   styles: (
     // Style: `default`, i.e., body text
@@ -13,6 +52,21 @@ $fontFamilySpec: (
     ),
     strong: (
       font-weight: 600,
+    )
+  ),
+  // Alternative roles
+  roles: (
+    // Role: `display`, i.e., short pieces of text such as headings, labels, navigation
+    display: (
+      styles: (
+        default: (
+          font-weight: 400,
+          line-height: 1.2
+        ),
+        strong: (
+          font-weight: 900,
+        )
+      )
     )
   ),
   variants: (
@@ -33,20 +87,5 @@ $fontFamilySpec: (
         )
       )
     )
-  ),
-  // Alternative roles
-  roles: (
-    // Role: `display`, i.e., short pieces of text such as headings, labels, navigation
-    display: (
-      styles: (
-        default: (
-          font-weight: 400,
-          line-height: 1.2
-        ),
-        strong: (
-          font-weight: 900,
-        )
-      )
-    )
-  ),
+  )
 );

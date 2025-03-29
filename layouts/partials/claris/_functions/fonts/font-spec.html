@@ -11,7 +11,6 @@
 {{ $fontFamily := .FontFamilyName }}
 {{ $fontFamilyID := .FontFamilyID }}
 {{ $fontType := .FontType }}
-{{ $defaultFallbackStack := .DefaultFallbackStack }}
 {{ $useFamilyAs := .UseFamilyAs }}
 
 {{/* Path to the font spec files of this module: /assets/styles/claris/fonts/{specs | hosted} */}}
@@ -19,7 +18,6 @@
 {{ $styleFontsRelative := printf "claris/fonts" }}
 {{ $fontAssetsPath := printf "%s/%s" $assetStyleRoot $styleFontsRelative }}
 {{ $fontSpecPath := printf "%s/specs" $fontAssetsPath }}
-{{ $fallbackFontPath := printf "%s/fallback" $fontAssetsPath }}
 {{ $hostedFontUrlsFilePath := printf "%s/hosted" $fontAssetsPath }}
 
 {{/* Base URL path for hosted font files */}}
@@ -27,49 +25,12 @@
 
 {{ $concatFontSpecResource  := false }}
 {{ $executedHostedFontUrlsResource := false }}
-{{ $fallbackSpecResource := false }}
-{{ $fallbackStack := slice }}
 
-{{ $fallbackFontResource := false }}
-{{ $fallbackFontSpecGlob := printf "%s/%s.*" $fallbackFontPath $fontFamilyID }}
-{{ with $fallbackFontResource = resources.GetMatch $fallbackFontSpecGlob }}
-  {{ if and false $debug }}
-    {{ warnf "%s fallback font spec found: examining fallback font file '%v' [type=%T] matching '%v'"
-      $dbg $fallbackFontResource $fallbackFontResource $fallbackFontSpecGlob }}
-  {{ end }}
-  {{/* Add the fallback font spec SCSS file to the main SCSS file */}}
-  {{ $fallbackSpecResource = $fallbackFontResource }}
-  {{ range $fallbackFontSuffix := (slice "fallback" "fallback-android") }}
-    {{ $fallbackFamilyID := printf "%s-%s" $fontFamilyID $fallbackFontSuffix }}
-    {{ $fallbackFontFamilyRegex := printf `(?i)font-family:\s*['"]?%s['"]?` $fallbackFamilyID }}
-    {{ with $fallbackMatch := findRE $fallbackFontFamilyRegex $fallbackFontResource.Content }}
-      {{ $fallbackStack = append $fallbackFamilyID $fallbackStack }}
-      {{ if and true $debug }}
-        {{ $fallbackMatch = index $fallbackMatch 0 }}
-        {{ warnf "%s fallbackMatch='%v' matching '%v'. Added fallbackFamilyID=%v to fallbackStack=%v"
-          $dbg $fallbackMatch $fallbackFontFamilyRegex $fallbackFamilyID $fallbackStack }}
-      {{ end }}
-    {{ else }}
-      {{ if and true $debug }}
-        {{ warnf "%s no match for '%v'"
-          $dbg $fallbackFontFamilyRegex }}
-      {{ end }}
-    {{ end }}
-  {{ end }}
-{{ else }}
-  {{ $fallbackStack = $defaultFallbackStack }}
-  {{ if and true $debug }}
-    {{ warnf "%s no fallback font spec found matching '%v': using fallbackStack=%v" $dbg
-        $fallbackFontSpecGlob $fallbackStack }}
-  {{ end }}
-{{ end }}
-
-{{ $fallbackStackCSS := cond (gt (len $fallbackStack) 1)
-    (printf `("%s")` (delimit $fallbackStack `", "`) )
-    (printf `"%s"` (index $fallbackStack 0) ) }}
-{{ $fontSpecParams := merge . (dict
-    "Page" nil
-    "FallbackFontStack" $fallbackStackCSS
+{{ $fontSpecParams := (dict
+    "FontFamilyName" $fontFamily
+    "FontFamilyID" $fontFamilyID
+    "FontType" $fontType
+    "UseFamilyAs" $useFamilyAs
     "HostedFontUrlsFilePath" $hostedFontUrlsFilePath
     "HostedFontPath" $hostedFontPath
 ) }}
@@ -134,6 +95,4 @@
 {{ return (dict
   "SpecResource" $concatFontSpecResource
   "HostedFontUrlsResource" $executedHostedFontUrlsResource
-  "FallbackSpecResource" $fallbackSpecResource
-  "FallbackStack" $fallbackStack
 ) }}
