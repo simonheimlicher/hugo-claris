@@ -122,9 +122,11 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
   {{ if (in $mediaTypeList $mediaType) }}
     {{ $hugoParams := merge $hugoParamsBase (dict "media" (dict "type" $mediaType) ) }}
 
-    {{/* warnf "%v Generating style bundle with contentTypeList=%s contentTypeListID=%s for MediaType=%s in MediaTypeList=%v"
-    $dbg $contentTypeList $contentTypeListID $mediaType $mediaTypeList */}}
-    {{/* warnf "%v resourceID=%v params=%v $tplParams=%v" $dbg $resourceID $params $tplParams }} */}}
+    {{ if and true $debug }}
+      {{ warnf "%v Generating style bundle with contentTypeList=%s contentTypeListID=%s for MediaType=%s in MediaTypeList=%v"
+      $dbg $contentTypeList $contentTypeListID $mediaType $mediaTypeList }}
+      {{ warnf "%v resourceID=%v params=%v $tplParams=%v" $dbg $resourceID $params $tplParams }} }}
+    {{ end }}
 
     {{/* Concat SASS */}}
     {{ $executedResourceList := slice }}
@@ -133,8 +135,9 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
       {{/* Determine if the content type has additional params */}}
       {{ $hugoParamsKey := printf "%s.%s" $contentType $assetParamsKey }}
 
-      {{ with  $hugoParamsContentType := $page.Param $hugoParamsKey }}
+      {{ with  $page.Param $hugoParamsKey }}
         {{/* Merge the content type params into the template params */}}
+        {{ $hugoParamsContentType := dict $contentType . }}
         {{ $hugoParams = merge $hugoParams $hugoParamsContentType }}
 
         {{ if and true $debug }}
@@ -193,12 +196,12 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
       {{ $fontParams := .params }}
       {{ $hugoParams = merge $hugoParams (dict "fonts" $fontParams) }}
       {{ with $fontStyleResource := .resource }}
-        {{ if and true $debug }}
+        {{ if and false $debug }}
           {{ warnf "%v fontStyleResource: %v [%v] .Content:\n%v"
               $dbg $fontStyleResource.Name $fontStyleResource.MediaType $fontStyleResource.Content }}
         {{ end }}
         {{ $executedResourceList = append $fontStyleResource $executedResourceList }}
-        {{ if and true $debug }}
+        {{ if and false $debug }}
           {{ warnf "%v Added fontStyleResource %v [%v] [type=%T] to executedResourceList=%v [type=%T isSlice=%v len=%d]" $dbg
               $fontStyleResource.Name $fontStyleResource.MediaType $fontStyleResource
               $executedResourceList $executedResourceList (reflect.IsSlice $executedResourceList) (len $executedResourceList) }}
@@ -246,7 +249,7 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
       {{ end }}
     {{ end }}
 
-    {{ if and true $debug }}
+    {{ if and false $debug }}
       {{/* warnf "%v $concatResource '%s'.Content:\n%v\n...\n%v"
           $dbg $concatResource (substr $concatResource.Content 0 500) (substr $concatResource.Content -500) */}}
       {{ warnf "%v $concatResource '%s'.Content:\n%v"
@@ -323,6 +326,6 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
   {{ warnf "%v Elements in %v [type=%T isSlice=%v len=%d]" $dbg .ResourceList .ResourceList
     (reflect.IsSlice .ResourceList) (len .ResourceList) }}
   {{ range $idx, $resource := .ResourceList }}
-    {{ warnf "%v %d */}} %v .Name=%v .MediaType=%v" $dbg $idx $resource $resource.Name $resource.MediaType }}
+    {{ warnf "%v %d %v .Name=%v .MediaType=%v" $dbg $idx $resource $resource.Name $resource.MediaType }}
   {{ end }}
 {{ end }}
