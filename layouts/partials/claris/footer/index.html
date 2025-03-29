@@ -5,19 +5,20 @@
 {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*/([^/]+)/index$|.*/([^/]+)$` `$1$2` $template) }}
 
 {{- /* The footer of each page comprises several elements.
-    Its main part is fed from individual pages that are merged.
-    These pages are loacted in a special section defined in
-    `site.Params.footer.section`, which defaults to `_footer`.
-    It is imperative to keep these pages out of search engine indexes.
+    Its main part is fed from individual pages whose contents are merged
+    These pages are located in a special section defined by the parameter `site.Params.footer.section`.
+    It is imperative to keep the pages in this section out of search engine indexes.
     For this reason, please put an `index.md` file into the footer section
     with the following front matter:
+    ```
       ---
       headless: true
       ---
+    ```
 */ -}}
 {{- $title := site.Title }}
 {{- $siteAuthor := $meta.Site.Data.Author.Name }}
-{{- $footerSection := default "_footer" site.Params.footer.section }}
+{{- $footerSection := $page.Param "footer.section" }}
 
 <div class="footer_inner inner_bottom">
   {{- $footerPages := slice }}
@@ -35,7 +36,26 @@
         {{- end }}
       {{- end }}
     {{- else }}
-      {{- warnf "%s site.GetPage '%v' failed. Note: if the fotter section '%v' is a headless bundle, you need to put an 'index.<LANGUAGE CODE>.md' file for every language separately" $dbg $footerSection }}
+      {{- warnf "%s site.GetPage '%v' failed" $dbg $footerSection }}
+      {{- if site.Params.claris.hints }}
+        {{- $headlessBundleContents := `---
+headless: true
+---
+`        }}
+        {{- $missingIndexFile := printf "index.md" }}
+        {{- if site.LanguagePrefix }}
+          {{- $missingIndexFile = printf "index.%s.md" $page.Language.Lang }}
+          {{- warnf "%s Note: this error occurred with site.LanguagePrefix=%v. To use section '%v' as a headless bundle, add a localized index file '%s' for every language separately"
+              $dbg site.LanguagePrefix $footerSection $missingIndexFile }}
+          {{- warnf "%s For a headless bundle, the localized index file '%s' should contain:\n%s"
+              $dbg $missingIndexFile $headlessBundleContents }}
+        {{- else }}
+          {{- warnf "%s Note: this error occurred with site.LanguagePrefix=%v. To use section '%v' as a headless bundle, add an index file to this section"
+              $dbg site.LanguagePrefix $footerSection }}
+          {{- warnf "%s For a headless bundle, the index file '%s' should contain:\n%s"
+              $dbg $missingIndexFile $headlessBundleContents }}
+        {{- end }}
+      {{- end }}
     {{- end }}
   {{- else }}
     {{- if site.Params.claris.hints }}
