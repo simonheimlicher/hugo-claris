@@ -3,7 +3,7 @@
 {{ $template := "claris/_functions/style-bundles" }}
 {{ $debug := and false (page.Param "clarisdebug") }}
 {{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
-{{ $debugSassDeprecation := or false (page.Param "clarisdebugsassdeprecation") }}
+{{ $debugSassDeprecation := and false (page.Param "clarisdebugsassdeprecation") }}
 
 {{ $assetVariant :=.AssetVariant }}
 

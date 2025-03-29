@@ -5,17 +5,17 @@
 {{- $debug := false }}
 
 {{- $assetVariant := .AssetVariant -}}
-{{- $backgroundLight := default site.Params.colors.colorBackgroundLit ($page.Param "colors.colorBackgroundLit") }}
-{{- $backgroundDark := default site.Params.colors.colorBackgroundDim ($page.Param "colors.colorBackgroundDim") }}
+{{- $backgroundLight := $page.Param "colors.color_background_lit" }}
+{{- $backgroundDark := $page.Param "colors.color_background_dim" }}
 {{- if not (in (slice "page") $page.Kind ) }}
-  {{- $backgroundLight = default site.Params.colors.surfacePrimaryLit ($page.Param "colors.surfacePrimaryLit") }}
-  {{- $backgroundDark = default site.Params.colors.surfacePrimaryDim ($page.Param "colors.surfacePrimaryDim") }}
+  {{- $backgroundLight = $page.Param "colors.surface_primary_lit" }}
+  {{- $backgroundDark = $page.Param "colors.surface_primary_dim" }}
 {{- end }}
 
 {{- with $page }}
     {{- /* partial "html-comment" (printf "%s[%s]: assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) */ -}}
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="{{- $backgroundLight -}}">
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="{{- $backgroundDark -}}">
     {{- $title := default $meta.Site.Data.Headline $meta.Single.Data.Headline | safeHTML }}

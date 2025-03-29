@@ -3,7 +3,6 @@
 {{ $template := "claris/_functions/font-styles" }}
 {{ $debug := and false (page.Param "clarisdebug") }}
 {{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
-{{ $debugSassDeprecation := or false (page.Param "clarisdebugsassdeprecation") }}
 
 {{ $assetVariant := .AssetVariant }}
 {{ $resourcePathBase := default "styles" .ResourcePathBase }}
