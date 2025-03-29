@@ -4,7 +4,8 @@
 
 $fontFamilySpec: (
   // Default, i.e., body text
-  name: '{{ .FontFamilyName }}',
+  name: "{{ .FontFamilyName }}",
+  fallback: {{ .FallbackFontStack }},
   styles: (
     // Weight: `default`, i.e., body text
     default: (
@@ -16,22 +17,11 @@ $fontFamilySpec: (
       font-weight: 600,
     )
   ),
-  // variants: (
-  //   // Font variant: `small-caps`
-  //   small-caps: (
-  //     name: '{{ .FontFamilyName }}',
-  //     styles: (
-  //       default: (
-  //         font-variant: all-small-caps
-  //       )
-  //     )
-  //   )
-  // ),
   // Font variants such as small-caps, oldstyle-nums
   variants: (
     // Font variant: `small-caps`
     small-caps: (
-      name: '{{ .FontFamilyName }} SC',
+      name: "{{ .FontFamilyName }} SC",
       styles: (
         default: (
           font-variant: inherit
@@ -40,7 +30,7 @@ $fontFamilySpec: (
     ),
     // Font variant: `all-small-caps`
     all-small-caps: (
-      name: '{{ .FontFamilyName }} SC',
+      name: "{{ .FontFamilyName }} SC",
       styles: (
         default: (
           font-variant: inherit,

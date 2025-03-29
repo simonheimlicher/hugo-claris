@@ -20,11 +20,6 @@ $debugType: true and $debug !default; // Set to `true` to enable debugging of de
 $debugCSSProperties: false !default; // Set to `true` to enable debugging of CSS properties
 
 $fontTypeToFamilyMap: (
-  // default: (
-  //   id: if(hugo.$fonts_type_default_id != "null", hugo.$fonts_type_default_id, "source-sans-3"),
-  //   name: if(hugo.$fonts_type_default_name != "null", hugo.$fonts_type_default_name, "Source Sans 3"),
-  //   fallback_names: if(hugo.$fonts_type_default_fallback_names != "null", hugo.$fonts_type_default_fallback_names, "null"),
-  // ),
   sans: (
     id: if(hugo.$fonts_type_sans_id != "null", hugo.$fonts_type_sans_id, "source-sans-3"),
     name: if(hugo.$fonts_type_sans_name != "null", hugo.$fonts_type_sans_name, "Source Sans 3"),
@@ -46,31 +41,8 @@ $fontTypeToFamilyMap: (
   @debug "$fontTypeToFamilyMap: #{meta.inspect($fontTypeToFamilyMap)}";
 }
 
-// The default font type is 'sans' unless defind in Hugo params
-$fontTypeDefault: if(hugo.$fonts_type_default_name != "null", hugo.$fonts_type_default_name, sans);
-
-// The default font for role 'default' is given by `$fontTypeDefault`
-$fontRoleTypeDefault: if(hugo.$fonts_role_default != "null", hugo.$fonts_role_default, $fontTypeDefault);
-
-// The following map provides a mapping from a font role, such as 'article', to a font type, such as `serif`
-$fontRoleToTypeMap: (
-  default: $fontRoleTypeDefault,
-  content: if(hugo.$fonts_role_content != null, hugo.$fonts_role_content, $fontRoleTypeDefault),
-  article: if(hugo.$fonts_role_article != null, hugo.$fonts_role_article, $fontRoleTypeDefault),
-  code: if(hugo.$fonts_role_code != null, hugo.$fonts_role_code, mono),
-  heading: if(hugo.$fonts_role_heading != null, hugo.$fonts_role_heading, $fontRoleTypeDefault),
-  meta: if(hugo.$fonts_role_meta != null, hugo.$fonts_role_meta, $fontRoleTypeDefault)
-);
-
-@if $debugMaps {
-  @debug "$fontRoleToTypeMap: #{meta.inspect($fontRoleToTypeMap)}";
-}
-
-$fontFamilyDefault: (name: $fontTypeDefault);
-
 $fontDefinitionMap: () !default;
 $currentFontDefinition: default !default;
-
 
 $familyDefaultMap: (
   styles: (
@@ -140,7 +112,7 @@ $familyFallbackMap: map.merge($familyDefaultMap,
   @if str-index($font-name, ' ') {
     @return quote($font-name);
   }
-  @return $font-name;
+  @return unquote($font-name);
 }
 
 @function quoteFontStack($stack) {
@@ -397,7 +369,6 @@ $familyFallbackMap: map.merge($familyDefaultMap,
   $fallbackStackDefault: ('Arial', );
 
   $fontNameFamily: map.get($specFamily, name);
-  $fallbackStackFamily: map.get($specFamily, fallback);
   $fallbackStackFamily: functions.defaultTo($fallbackStackDefault, map.get($specFamily, fallback));
 
   @if $debugRole {

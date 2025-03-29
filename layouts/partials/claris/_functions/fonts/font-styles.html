@@ -26,12 +26,10 @@
 ) }}
 
 {{ $fontRoleTypeDefault := $page.Param "assets.styles.fonts.type.default" | default "sans" }}
-{{ $fontFamilyDefaultName := index $fontTypeToFamilyMap $fontRoleTypeDefault }}
-{{ $fontTypeToFamilyMap = merge $fontTypeToFamilyMap (dict "default" $fontFamilyDefaultName ) }}
 
 {{ $fontRoleToTypeMap := (dict
     "default" $fontRoleTypeDefault
-    "content" ($page.Param "assets.styles.fonts.type.content" | default ($page.Param "assets.styles.fonts.type.default"))
+    "content" ($page.Param "assets.styles.fonts.type.content" | default $fontRoleTypeDefault )
     "article" ($page.Param "assets.styles.fonts.type.article" | default "serif")
     "code"    ($page.Param "assets.styles.fonts.type.code"    | default "mono")
     "heading" ($page.Param "assets.styles.fonts.type.heading" | default "inherit")
@@ -44,10 +42,14 @@
   ) }}
 {{ end }}
 
+{{/*
+sans: `Humanist` from https://github.com/system-fonts/modern-font-stacks#humanist
+serif: `Antique` from https://github.com/system-fonts/modern-font-stacks#antique
+mono: `Monospace Code` from https://github.com/system-fonts/modern-font-stacks#monospace-code */}}
  {{ $defaultFallbackFontFamilyNames := (dict
-  "sans" "Arial"
-  "serif" "Georgia"
-  "mono" "Courier"
+  "sans" (slice "Seravek" "Gill Sans Nova" "Ubuntu" "Calibri" "DejaVu Sans" "source-sans-pro" "sans-serif")
+  "serif" (slice "Georgia" "URW Bookman" "URW Bookman L" "serif")
+  "mono" (slice "ui-monospace" "Cascadia Code" "Source Code Pro" "Menlo" "Consolas" "DejaVu Sans Mono" "monospace")
  ) }}
 
 {{ $fontsSelfHosted := $page.Param "assets.styles.fonts.selfhosted" | default false }}
@@ -119,23 +121,21 @@ family once */}}
   ) }}
 
   {{ $fallbackFamilyNamesKey := printf "type_%v_fallback_names" $fontType }}
-  {{ $fallbackFamily := "" }}
   {{ $fallbackStack := slice }}
 
   {{ if eq $fontType "default" }}
-    {{ $fallbackFamily = index $defaultFallbackFontFamilyNames $fontRoleTypeDefault }}
+    {{ $fallbackStack = index $defaultFallbackFontFamilyNames $fontRoleTypeDefault }}
   {{ else }}
-    {{ $fallbackFamily = index $defaultFallbackFontFamilyNames $fontType }}
+    {{ $fallbackStack = index $defaultFallbackFontFamilyNames $fontType }}
   {{ end}}
 
-  {{ with $fallbackFamily }}
-    {{ $fallbackStack = slice $fallbackFamily }}
+  {{ with $fallbackStack }}
     {{ if and true $debug }}
-      {{ warnf "%s Fallback font family for fontType=%v: %v"
-          $dbg $fontType $fallbackFamily }}
+      {{ warnf "%s default fallbackStack for fontType=%v: %v"
+          $dbg $fontType $fallbackStack }}
     {{ end }}
   {{ else }}
-    {{ errorf "%s No fallback font family for fontType=%v found in\n%v"
+    {{ errorf "%s No defaultFallbackStack for fontType=%v found in\n%v"
         $dbg $fontType (jsonify (dict "indent" "  ") $defaultFallbackFontFamilyNames) }}
   {{ end }}
 
@@ -184,6 +184,8 @@ family once */}}
         "Page" $page
         "FontFamilyName" $fontFamily
         "FontFamilyID" $fontFamilyID
+        "FontType" $fontType
+        "DefaultFallbackStack" $fallbackStack
         "UseFamilyAs" $useFamilyAs
     ) }}
 
@@ -230,8 +232,8 @@ family once */}}
       {{ end }}
     {{ else }}
       {{ if and true $debug }}
-        {{ warnf "%s No fallback font spec for %v [%v] found: using default fallback family=%v based on fontType=%v"
-          $dbg $fontFamily $fontFamilyID $fallbackFamily $fontType }}
+        {{ warnf "%s No fallback font spec for %v [%v] found: using default fallbackStack=%v based on fontType=%v"
+          $dbg $fontFamily $fontFamilyID $fallbackStack $fontType }}
       {{ end }}
     {{ end }}
 
