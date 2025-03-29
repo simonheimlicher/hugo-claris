@@ -1,6 +1,6 @@
 {{ $page := .Page }}
 {{ $template := "claris/_functions/font-spec" }}
-{{ $debug := or false (page.Param "clarisdebug") }}
+{{ $debug := and false (page.Param "clarisdebug") }}
 {{ $dbg := printf "%s[%s] ID=%s" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) .FontFamilyID }}
 
 {{ $assetVariant := .AssetVariant }}
