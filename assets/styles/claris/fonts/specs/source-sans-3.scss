@@ -5,6 +5,7 @@
 // Custom metrics for fallback font
 // Source: https://screenspan.net/fallback
 @font-face {
+  font-display: swap;
   font-family: source-sans-3-fallback;
   font-style: normal;
   font-weight: 400;
@@ -16,6 +17,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: source-sans-3-fallback;
   font-style: normal;
   font-weight: 300;
@@ -27,6 +29,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: source-sans-3-fallback;
   font-style: normal;
   font-weight: 500;
