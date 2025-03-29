@@ -2,7 +2,7 @@
 {{- $page := . }}
 {{- $template := "_default/baseof" }}
 
-{{ $debug := and false ($page.Param "clarisdebug") }}
+{{- $debug := and false ($page.Param "clarisdebug") }}
 {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}

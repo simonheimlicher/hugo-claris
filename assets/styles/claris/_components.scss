@@ -13,8 +13,8 @@
 
 .main {
   &_claris {
-    background: var(--choice-bg);
     z-index: variables.$main-z-index;
+    background: var(--choice-bg);
     @include variables.color-scheme_transition;
   }
   &_inner {
@@ -117,8 +117,8 @@
   &_item {
     border-top: 2px solid var(--text-faint);
     padding: var(--inner_padding) 0;
-    @include variables.color-scheme_transition;
     background: var(--choice-bg);
+    @include variables.color-scheme_transition;
     &_inner {
       margin: 0 auto;
     }
@@ -476,7 +476,6 @@
   }
   &_content {
     @include variables.list-style_indented;
-    @include variables.color-scheme_transition;
   }
   &_body {
     // For IE 11, otherwise responsive images exceed the width of .article_body
@@ -867,6 +866,7 @@
       padding-top: var(--body_padding_4-4);
       padding-bottom: var(--body_padding_4-4);
       background: var(--choice-bg);
+      @include variables.color-scheme_transition;
       .article_body:first-child {
         margin-top: calc( (1 - var(--line-height)) * 1em);
       }

@@ -2,6 +2,8 @@
 {{- $page := .Page }}
 {{- $assetVariant := .AssetVariant }}
 {{- $template := "claris/_hooks/body-end/scripts" }}
+{{- $debug := and false ($page.Param "clarisdebug") }}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
     <script>
       /**
@@ -78,18 +80,18 @@
       }
     </script>
 
-{{- with partialCached "claris/_functions/asset-bundles" $ctx $assetVariant -}}
+{{- with partialCached "claris/_functions/asset-bundles" $ctx $assetVariant }}
   {{- with .Scripts.body.resource }}
     <script>
-      window.addEventListener("load", function () {
+      requestIdleCallback(() => {
           const script = document.createElement("script");
           script.type = "module";
           script.src = "{{ .RelPermalink }}";
-          script.fetchpriority = "low";
+          script.fetchPriority = "low";
           script.integrity = "{{ .Data.Integrity }}"
-          script.crossorigin = "anonymous";
+          script.crossOrigin = "anonymous";
           document.head.appendChild(script);
-      });
+      }, { timeout: 2000 });
     </script>
-  {{- end -}}
+  {{- end }}
 {{- end -}}
