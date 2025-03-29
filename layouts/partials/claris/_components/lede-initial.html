@@ -117,7 +117,7 @@
         {{- end }}
 
         {{- $initialLetterHTML := printf `<span class="initial-letter">%s</span>` $initialLetter }}
-        {{- $initialWordsHTML := printf `<strong class="initial-words variant-small-caps">%s</strong>` $initialWords }}
+        {{- $initialWordsHTML := printf `<strong class="initial-words"><span class="variant-all-small-caps">%s</span></strong>` $initialWords }}
         {{- $remainingWordsHTML := delimit $modifiedTokens " " }}
         {{- $modifiedInitialPara := printf `<p class="initial">%s%s %s</p>` $initialLetterHTML $initialWordsHTML $remainingWordsHTML }}
         {{- $contentWithoutLede = replaceRE $initialParaRE $modifiedInitialPara $contentWithoutLede 1 }}

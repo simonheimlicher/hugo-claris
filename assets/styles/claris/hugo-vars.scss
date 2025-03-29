@@ -73,8 +73,6 @@ $screenViewNavHeight: 3rem;
 
 $screenViewColumnGap: if(hugo.$dimensions_column_gap != null, hugo.$dimensions_column_gap, 1rem);
 
-$screenViewWidthAsideMin: if(hugo.$dimensions_width_aside_min != null, hugo.$dimensions_width_aside_min, 12rem);
-
 // Breakpoints
 
 // From this width upward, the mobile menu is hidden
@@ -92,16 +90,14 @@ $screenViewBreakpointWidthOneColumn: if(hugo.$breakpoints_width_one_column != nu
 
 // Layout with one aside
 $screenViewBreakpointWidthTwoColumn: if(hugo.$breakpoints_width_two_column != null, hugo.$breakpoints_width_two_column, 60rem);
+$screenViewWidthAsideTwoColumn: $screenViewBreakpointWidthOneColumn - $screenViewBreakpointWidthNarrow;
 
 // Layout with two asides
 $screenViewBreakpointWidthWide: if(hugo.$breakpoints_width_wide != null, hugo.$breakpoints_width_wide, 76rem);
+$screenViewWidthAsideWide: $screenViewBreakpointWidthWide - $screenViewBreakpointWidthTwoColumn;
 
 // Layout with two asides and wider sections in main column, e.g., for code or figures
 $screenViewBreakpointWidthUltrawide: if(hugo.$breakpoints_width_ultra_wide != null, hugo.$breakpoints_width_ultra_wide, 96rem);
-
-// Parameters for layout with two columns: main content and one aside
-$screenViewColumnWidthMin: ($screenViewBreakpointWidthTwoColumn - 2 * $screenViewBodyPaddingOneColumn - $screenViewWidthAsideMin - $screenViewColumnGap);
-$screenViewColumnWidthMax: ($screenViewBreakpointWidthWide - $screenViewWidthAsideMin - 2 * $screenViewBodyPaddingOneColumn - $screenViewColumnGap);
 
 // // Parameters for layout with three columns: main content and two asides
 $screenViewColumnGapWide: if(hugo.$dimensions_column_gap_wide != null, hugo.$dimensions_column_gap_wide, 2rem);

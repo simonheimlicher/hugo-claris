@@ -1,0 +1,35 @@
+@font-face {
+  font-display: swap;
+  font-family: '{{ .FontFamilyName }}';
+  font-style: normal;
+  font-weight: 400;
+  src: url('{{ .HostedFontPath }}/valkyrie-ot/valkyrie_ot_b_regular.woff2') format('woff2'),
+       url('{{ .HostedFontPath }}/valkyrie-ot/valkyrie_ot_b_regular.woff') format('woff');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: '{{ .FontFamilyName }}';
+  font-style: italic;
+  font-weight: 400;
+  src: url('{{ .HostedFontPath }}/valkyrie-ot/valkyrie_ot_b_italic.woff2') format('woff2'),
+       url('{{ .HostedFontPath }}/valkyrie-ot/valkyrie_ot_b_italic.woff') format('woff');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: '{{ .FontFamilyName }}';
+  font-style: normal;
+  font-weight: 600;
+  src: url('{{ .HostedFontPath }}/valkyrie-ot/valkyrie_ot_b_bold.woff2') format('woff2'),
+       url('{{ .HostedFontPath }}/valkyrie-ot/valkyrie_ot_b_bold.woff') format('woff');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: '{{ .FontFamilyName }}';
+  font-style: italic;
+  font-weight: 600;
+  src: url('{{ .HostedFontPath }}/valkyrie-ot/valkyrie_ot_b_bold_italic.woff2') format('woff2'),
+       url('{{ .HostedFontPath }}/valkyrie-ot/valkyrie_ot_b_bold_italic.woff') format('woff');
+}

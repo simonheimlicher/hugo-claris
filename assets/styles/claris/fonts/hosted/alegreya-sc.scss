@@ -1,0 +1,90 @@
+/* alegreya-sc-regular - latin-ext */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Alegreya SC';
+  font-style: normal;
+  font-weight: 400;
+  src: url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-regular.woff2') format('woff2'), /* Chrome 36+, Opera 23+, Firefox 39+ */
+       url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-regular.woff') format('woff'); /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+/* alegreya-sc-italic - latin-ext */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Alegreya SC';
+  font-style: italic;
+  font-weight: 400;
+  src: url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-italic.woff2') format('woff2'), /* Chrome 36+, Opera 23+, Firefox 39+ */
+       url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-italic.woff') format('woff'); /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+/* alegreya-sc-500 - latin-ext */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Alegreya SC';
+  font-style: normal;
+  font-weight: 500;
+  src: url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-500.woff2') format('woff2'), /* Chrome 36+, Opera 23+, Firefox 39+ */
+       url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-500.woff') format('woff'); /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+/* alegreya-sc-500italic - latin-ext */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Alegreya SC';
+  font-style: italic;
+  font-weight: 500;
+  src: url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-500italic.woff2') format('woff2'), /* Chrome 36+, Opera 23+, Firefox 39+ */
+       url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-500italic.woff') format('woff'); /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+/* alegreya-sc-700 - latin-ext */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Alegreya SC';
+  font-style: normal;
+  font-weight: 700;
+  src: url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-700.woff2') format('woff2'), /* Chrome 36+, Opera 23+, Firefox 39+ */
+       url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-700.woff') format('woff'); /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+/* alegreya-sc-700italic - latin-ext */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Alegreya SC';
+  font-style: italic;
+  font-weight: 700;
+  src: url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-700italic.woff2') format('woff2'), /* Chrome 36+, Opera 23+, Firefox 39+ */
+       url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-700italic.woff') format('woff'); /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+/* alegreya-sc-800 - latin-ext */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Alegreya SC';
+  font-style: normal;
+  font-weight: 800;
+  src: url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-800.woff2') format('woff2'), /* Chrome 36+, Opera 23+, Firefox 39+ */
+       url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-800.woff') format('woff'); /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+/* alegreya-sc-800italic - latin-ext */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Alegreya SC';
+  font-style: italic;
+  font-weight: 800;
+  src: url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-800italic.woff2') format('woff2'), /* Chrome 36+, Opera 23+, Firefox 39+ */
+       url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-800italic.woff') format('woff'); /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+/* alegreya-sc-900 - latin-ext */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Alegreya SC';
+  font-style: normal;
+  font-weight: 900;
+  src: url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-900.woff2') format('woff2'), /* Chrome 36+, Opera 23+, Firefox 39+ */
+       url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-900.woff') format('woff'); /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+/* alegreya-sc-900italic - latin-ext */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Alegreya SC';
+  font-style: italic;
+  font-weight: 900;
+  src: url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-900italic.woff2') format('woff2'), /* Chrome 36+, Opera 23+, Firefox 39+ */
+       url('{{ .HostedFontPath }}/alegreya-sc-v25-latin-ext/alegreya-sc-v25-latin-ext-900italic.woff') format('woff'); /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
