@@ -337,7 +337,8 @@ $main-z-index: 1;
 
 @mixin color-scheme_transition {
   html[data-color-scheme-transition] & {
-    transition: background var(--color-scheme-duration) var(--color-scheme-timing);
+    transition: color calc(0.25 * var(--color-scheme-duration) ) var(--color-scheme-timing),
+        background-color var(--color-scheme-duration) var(--color-scheme-timing);
   }
 }
 
