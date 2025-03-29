@@ -5,6 +5,7 @@
 // Custom metrics for fallback font
 // Source: https://screenspan.net/fallback
 @font-face {
+  font-display: swap;
   font-family: merriweather-fallback;
   src: local(Georgia);
   size-adjust: 110%;
@@ -14,6 +15,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: merriweather-fallback-android;
   src: local(Roboto);
 	ascent-override: 98.4%;

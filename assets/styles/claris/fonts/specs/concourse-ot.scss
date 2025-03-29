@@ -5,6 +5,7 @@
 // Custom metrics for fallback font
 // Source: https://screenspan.net/fallback
 @font-face {
+  font-display: swap;
   font-family: concourse-ot-fallback;
   font-style: normal;
   font-weight: 400;
@@ -15,6 +16,7 @@
   line-gap-override: normal;}
 
 @font-face {
+  font-display: swap;
   font-family: concourse-ot-fallback;
   font-style: normal;
   font-weight: 500;
@@ -26,6 +28,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: concourse-ot-fallback;
   font-style: normal;
   font-weight: 600;
@@ -37,6 +40,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: concourse-ot-fallback;
   font-style: normal;
   font-weight: 700;

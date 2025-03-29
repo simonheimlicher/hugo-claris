@@ -5,6 +5,7 @@
 // Custom metrics for fallback font
 // Source: https://screenspan.net/fallback
 @font-face {
+  font-display: swap;
   font-family: valkyrie_b-fallback;
   src: local(Georgia);
   size-adjust: 100.1%;
@@ -14,6 +15,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: valkyrie_b-fallback;
   font-weight: 600;
   src: local(Georgia);

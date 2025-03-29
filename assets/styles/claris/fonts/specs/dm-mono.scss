@@ -5,14 +5,15 @@
 // Custom metrics for fallback font
 // Source: https://screenspan.net/fallback
 @font-face {
-    font-family: dm-mono-fallback;
-    font-style: normal;
-    font-weight: 400;
-    src: local(Courier New);
-    size-adjust: 100%;
-    ascent-override: 98%;
-    descent-override: 32%;
-    line-gap-override: normal;
+  font-display: swap;
+  font-family: dm-mono-fallback;
+  font-style: normal;
+  font-weight: 400;
+  src: local(Courier New);
+  size-adjust: 100%;
+  ascent-override: 98%;
+  descent-override: 32%;
+  line-gap-override: normal;
 }
 
 // Use the fallback font with custom metrics
