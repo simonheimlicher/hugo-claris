@@ -1,0 +1,76 @@
+{{ $page := default page .Page }}
+{{ $template := "_functions/app/webmanifest" }}
+{{ $debug := and false ($page.Param "clarisdebug") }}
+{{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
+{{ $meta := page.Scratch.Get "clarismeta" }}
+
+{{ $siteMeta := (dict
+  "Title" site.Title
+  "Language" site.LanguageCode
+  "Description" site.Params.description
+) }}
+
+{{ with $meta.Site.Data }}
+  {{ if $debug }}
+    {{ warnf "%s Using Site.Data to generate webmanifest:\n%v" $dbg (jsonify (dict "indent" "  ") . ) }}
+  {{ end }}
+  {{ $siteMeta = merge $siteMeta . }}
+{{ end }}
+
+{{ $iconFiles := slice }}
+{{ with $icons := resources.Match "site-icons/android-chrome-*" }}
+  {{ range $icons }}
+    {{ $fp := . | fingerprint }}
+    {{ $name := .Name }}
+    {{ $size := "" }}
+    {{ with (findRE `\d+x\d+` $name) }}
+      {{ $size = index . 0 }}
+    {{ end }}
+    {{ $type := printf "image/%s" (lower (replace (path.Ext $name) "." "")) }}
+    {{ $iconFiles = $iconFiles | append (dict "src" $fp.RelPermalink "sizes" $size "type" $type) }}
+  {{ end }}
+{{ end }}
+
+{{ $themeColor := "#000000" }}
+{{ $backgroundColor := "#ffffff" }}
+
+{{ with site.Params.colors.color_primary_lit }}
+  {{ $themeColor = partial "claris/_functions/color-to-hex" . }}
+  {{ if $debug }}
+    {{ warnf "%s site.Params.colors.color_primary_lit=%v. Using HEX value %s as theme color" $dbg site.Params.colors.color_primary_lit $themeColor }}
+  {{ end }}
+{{ else }}
+  {{ if $debug }}
+    {{ warnf "%s site.Params.colors.color_primary_lit is undefined. Using default theme color: %s" $dbg $themeColor }}
+  {{ end }}
+{{ end }}
+
+{{ with site.Params.colors.surface_primary_lit }}
+  {{ $backgroundColor = partial "claris/_functions/color-to-hex" . }}
+  {{ if $debug }}
+    {{ warnf "%s site.Params.colors.surface_primary_lit=%v. Using HEX value %s as background color" $dbg site.Params.colors.surface_primary_lit $backgroundColor }}
+  {{ end }}
+{{ else }}
+  {{ if $debug }}
+    {{ warnf "%s site.Params.colors.surface_primary_lit is undefined. Using default background color: %s" $dbg $backgroundColor }}
+  {{ end }}
+{{ end }}
+
+{{ $manifest := dict
+  "name" $siteMeta.Headline
+  "short_name" $siteMeta.Name
+  "lang" $siteMeta.Language
+  "description" $siteMeta.Description
+  "copyright" $siteMeta.Copyright
+  "icons" $iconFiles
+  "theme_color" $themeColor
+  "background_color" $backgroundColor
+  "display" "standalone"
+}}
+
+{{ if $debug }}
+  {{ warnf "%s rendering \n%v" $dbg (jsonify (dict "indent" "  ") $manifest) }}
+{{ end }}
+
+{{ return $manifest }}

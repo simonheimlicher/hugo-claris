@@ -1,24 +1,53 @@
 {{- $page := default page .Page }}
 {{- $template := "claris/head/favicon" }}
-{{- /*
-IMPORTANT NOTE: URLs passed to relURL must not start with a '/', unless
-we absolutely want to ignore the path within site.BaseURL
-https://gohugo.io/functions/relURL/
-
-Generate favicons using https://realfavicongenerator.net/
-
-*/ -}}
+{{- $debug := and false ($page.Param "clarisdebug") }}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $faviconPathPrefix := "" }}
 {{- with page.Param "meta.favicon.pathprefix" }}
   {{- $faviconPathPrefix = . | strings.TrimLeft "/" | strings.TrimRight "/" | relURL }}
-  {{- warnf `%s[%s]: page.Param "meta.favicon.pathprefix"='%v' faviconPathPrefix='%v'` $page $template (page.Param "meta.favicon.pathprefix") $faviconPathPrefix }}
+  {{- if $debug }}
+    {{- warnf `%s page.Param "meta.favicon.pathprefix"='%v' faviconPathPrefix='%v'` $dbg (page.Param "meta.favicon.pathprefix") $faviconPathPrefix }}
+  {{- end }}
 {{- end }}
 
 {{- $appleTouch := relURL (printf "%s%s" $faviconPathPrefix "apple-touch-icon.png") }}
-{{- $favicon32 := relURL (printf "%s%s" $faviconPathPrefix "favicon-32x32.png" ) }}
-{{- $favicon16 := relURL (printf "%s%s" $faviconPathPrefix "favicon-16x16.png" ) }}
-{{- $manifest := relURL (printf "%s%s" $faviconPathPrefix "site.webmanifest" ) }}
+{{- $favicon32 := relURL (printf "%s%s" $faviconPathPrefix "favicon-32x32.png") }}
+{{- $favicon16 := relURL (printf "%s%s" $faviconPathPrefix "favicon-16x16.png") }}
+
+{{- $manifest := false }}
+{{- $integrity := false }}
+{{- $staticManifestPath := "static/site.webmanifest" }}
+{{- $manifestPath := relURL (printf "%s%s" $faviconPathPrefix "site.webmanifest") }}
+
+{{- if fileExists $staticManifestPath }}
+  {{- $manifest = resources.FromString $manifestPath (readFile $staticManifestPath) | fingerprint }}
+  {{- if $debug }}
+    {{- warnf "%s Using static manifest from '%s' .RelPermalink=%s .Integrity=%s .Content:\n%s"
+        $dbg $staticManifestPath $manifest.RelPermalink $manifest.Data.Integrity $manifest.Content }}
+  {{- end }}
+{{- else  }}
+  {{- with $manifestData := partial "claris/_functions/app/webmanifest" . }}
+    {{- if $debug }}
+      {{- warnf "%s generating site.webmanifest at manifestPath=%s with manifestData:\n%v" $dbg
+          $manifestPath (jsonify (dict "indent" "  ") $manifestData) }}
+    {{- end }}
+    {{- $manifestContent := (jsonify (dict "indent" "  ") . ) }}
+    {{- with $manifestResource := resources.FromString $manifestPath $manifestContent | fingerprint }}
+      {{- $manifest = . }}
+      {{- if $debug }}
+        {{- warnf "%s Using generated manifest with .RelPermalink=%s .Integrity=%s .Content:\n%s"
+            $dbg $manifest.RelPermalink $manifest.Data.Integrity $manifest.Content }}
+      {{- end }}
+    {{- else }}
+      {{- errorf "%s Failed to generate manifest with manifestData:\n%v"
+          $dbg (jsonify (dict "indent" "  ") $manifestData) }}
+    {{- end }}
+  {{- else }}
+    {{- errorf "%s Failed to generate manifest" $dbg  }}
+  {{- end }}
+{{- end }}
+
 {{- if fileExists (printf "static/%s" $appleTouch) }}
   <link rel="apple-touch-icon" sizes="180x180" href="{{ $appleTouch }}">
 {{- end }}
@@ -28,7 +57,6 @@ Generate favicons using https://realfavicongenerator.net/
 {{- if fileExists (printf "static/%s" $favicon16) }}
   <link rel="icon" type="image/png" sizes="16x16" href="{{ $favicon16 }}">
 {{- end }}
-{{- if fileExists (printf "static/%s" $manifest) }}
-  <link rel="manifest" href="{{ $manifest }}">
+{{- with $manifest }}
+  <link rel="manifest" type="application/manifest+json" href="{{ .RelPermalink }}" {{- with .Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>
 {{- end }}
-{{- /* Eliminate trailing whitespace */ -}}

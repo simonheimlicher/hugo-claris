@@ -1,0 +1,95 @@
+{{/* layouts/partials/claris/_functions/color-to-hex.html — Convert a CSS color to HEX */}}
+{{ $input := . }}
+{{ $template := "_functions/color-to-hex" }}
+{{ $debug := false }}
+{{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
+{{ $color := lower (replaceRE "\\s+" "" $input) }}
+{{ $toHex := "claris/_functions/color-to-hex_toHex" }}
+{{ $result := "" }}
+
+{{ if $debug }}{{ warnf "%s input='%s'" $dbg $input }}{{ end }}
+
+{{/* If RGB or RGBA */}}
+{{ if strings.HasPrefix $color "rgb(" }}
+  {{ $parts := split (trim $color "rgb()") "," }}
+  {{ if $debug }}{{ warnf "%s Detected RGB parts=%v" $dbg $parts }}{{ end }}
+  {{ $result = printf "#%s%s%s"
+      (partial $toHex (index $parts 0))
+      (partial $toHex (index $parts 1))
+      (partial $toHex (index $parts 2))
+  }}
+{{ else if strings.HasPrefix $color "rgba(" }}
+  {{ $parts := split (trim $color "rgba()") "," }}
+  {{ if $debug }}{{ warnf "%s Detected RGBA parts=%v" $dbg $parts }}{{ end }}
+  {{ $result = printf "#%s%s%s"
+      (partial $toHex (index $parts 0))
+      (partial $toHex (index $parts 1))
+      (partial $toHex (index $parts 2))
+  }}
+{{ else if or (strings.HasPrefix $color "hsl(") (strings.HasPrefix $color "hsla(") }}
+  {{ $raw := trim $color "hsl()hsla()" }}
+  {{ $parts := split $raw "," }}
+  {{ $h := float (index $parts 0) }}
+  {{ $s := div (float (trim (index $parts 1) "%")) 100 }}
+  {{ $l := div (float (trim (index $parts 2) "%")) 100 }}
+  {{ if $debug }}{{ warnf "%s Parsed H=%v S=%v L=%v" $dbg $h $s $l }}{{ end }}
+
+  {{ $c := mul (sub 1 (math.Abs (sub (mul 2 $l) 1))) $s }}
+  {{ $h60 := div $h 60 }}
+  {{ $mod2 := sub $h60 (mul 2 (math.Floor (div $h60 2))) }}
+  {{ $x := mul $c (sub 1 (math.Abs (sub $mod2 1))) }}
+  {{ $m := sub $l (div $c 2) }}
+  {{ if $debug }}{{ warnf "%s C=%v X=%v M=%v" $dbg $c $x $m }}{{ end }}
+
+  {{ $r := 0.0 }}{{ $g := 0.0 }}{{ $b := 0.0 }}
+  {{ if lt $h 60 }}
+    {{ $r = $c }}{{ $g = $x }}
+  {{ else if lt $h 120 }}
+    {{ $r = $x }}{{ $g = $c }}
+  {{ else if lt $h 180 }}
+    {{ $g = $c }}{{ $b = $x }}
+  {{ else if lt $h 240 }}
+    {{ $g = $x }}{{ $b = $c }}
+  {{ else if lt $h 300 }}
+    {{ $r = $x }}{{ $b = $c }}
+  {{ else }}
+    {{ $r = $c }}{{ $b = $x }}
+  {{ end }}
+
+  {{ $rf := mul 255 (add $r $m) }}
+  {{ $gf := mul 255 (add $g $m) }}
+  {{ $bf := mul 255 (add $b $m) }}
+  {{ if $debug }}{{ warnf "%s R=%v G=%v B=%v" $dbg $rf $gf $bf }}{{ end }}
+
+  {{ $result = printf "#%s%s%s"
+      (partial $toHex $rf)
+      (partial $toHex $gf)
+      (partial $toHex $bf)
+  }}
+{{ else }}
+  {{ errorf "color-to-hex: unsupported format '%s'" $input }}
+{{ end }}
+{{ if $debug }}{{ warnf "%s result='%s'" $dbg $result }}{{ end }}
+
+{{ return $result }}
+
+{{ define "partials/claris/_functions/color-to-hex_toHex" }}
+{{/* Utility function to clamp a float to [0,255] and format as 2-digit hex */}}
+{{ $v := float . }}
+{{ $hex := "" }}
+
+{{/* Clamp to [0,255] and format as 2-digit hex */}}
+{{/* 0 -> "00", 255 -> "ff" */}}
+{{/* 0.0 -> "00", 255.0 -> "ff" */}}
+{{ if le $v 0.0 }}
+  {{ $hex = "00" }}
+{{ else if ge $v 255.0 }}
+  {{ $hex = "ff" }}
+{{ else }}
+  {{ $int := int (math.Min 255.0 (math.Max 0.0 (math.Round $v))) }}
+  {{ $hex = printf "%02x" $int }}
+{{ end }}
+
+{{ return $hex }}
+{{ end }}
