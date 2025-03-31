@@ -81,9 +81,35 @@
     </script>
 
 {{- with partialCached "claris/_functions/asset-bundles" $ctx $assetVariant }}
-  {{- range $script := .Scripts.body }}
-    {{- with .resource }}
-    <script type="module" src="{{ .RelPermalink }}" fetchpriority="{{ $script.fetchpriority }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
-    {{- end }}
-  {{- end }}
+<script>
+  window.addEventListener("load", function () {
+    const defer = window.requestIdleCallback || function (cb) {
+      setTimeout(cb, 2000);
+    };
+
+    const scripts = [
+      {{- range $i, $script := .Scripts.body }}
+        {{- with .resource }}
+          {
+            src: "{{ .RelPermalink }}",
+            fetchPriority: "{{ $script.fetchpriority }}",
+            integrity: "{{ .Data.Integrity }}"
+          },
+        {{- end }}
+      {{- end }}
+    ];
+
+    scripts.forEach(({ src, fetchPriority, integrity }) => {
+      defer(() => {
+        const script = document.createElement("script");
+        script.type = "module";
+        script.src = src;
+        script.fetchPriority = fetchPriority;
+        script.integrity = integrity;
+        script.crossOrigin = "anonymous";
+        document.head.appendChild(script);
+      });
+    });
+  });
+</script>
 {{- end -}}
