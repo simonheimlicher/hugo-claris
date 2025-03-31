@@ -106,9 +106,10 @@ that contains the `postcss.config.js` file - not the file itself. */}}
   )
 ) }}
 
-{{/* {{ $tplParams := (dict "Page" $page "ContentTypeList" $contentTypeList "ContentTypeListID" $contentTypeListID) }} */}}
-{{/* NOTE: Use key "AssetStyle instead of "Style" in the dict $tplParams. If the dict has a key named "Style", the following error occurs:
-error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main_all.scss" (text/x-scss): "styles/claris-vitae-main_all.scss:0:15": Expected expression.
+{{/* NOTE: Use key "AssetStyle instead of "Style" in the dict $tplParams. If the
+dict has a key named "Style", the following error occurs: error calling Content:
+TOCSS-DART: failed to transform "styles/claris-vitae-main_all.scss"
+(text/x-scss): "styles/claris-vitae-main_all.scss:0:15": Expected expression.
 */}}
 {{ $tplParams := (dict "Page" $page
     "AssetVariant" $assetVariant
@@ -125,7 +126,7 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
     {{ if and true $debug }}
       {{ warnf "%v Generating style bundle with contentTypeList=%s contentTypeListID=%s for MediaType=%s in MediaTypeList=%v"
       $dbg $contentTypeList $contentTypeListID $mediaType $mediaTypeList }}
-      {{ warnf "%v resourceID=%v params=%v $tplParams=%v" $dbg $resourceID $params $tplParams }} }}
+      {{ warnf "%v resourceID=%v params=%v $tplParams=%v" $dbg $resourceID $params $tplParams }}
     {{ end }}
 
     {{/* Concat SASS */}}
@@ -173,7 +174,8 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
               $executedResourceList $executedResourceList (reflect.IsSlice $executedResourceList) (len $executedResourceList) }}
         {{ end }}
       {{ else }}
-        {{ if (eq $contentType "claris") }} {{/* Claris is the default contentType, hence `mainFile` must be available */}}
+        {{ if (eq $contentType "claris") }}
+          {{/* Claris is the default contentType, hence `mainFile` must be available */}}
           {{ errorf "%v Default mainFile '%s' not found" $dbg $mainFile }}
         {{ else}}
           {{ if and true $debug }}
@@ -223,7 +225,9 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
 
 
     {{ if and false $debug }}
-      {{/* warnf "%v Final hugoParams:\n%v" $dbg (jsonify (dict "indent" "  ") $hugoParams) */}}
+      {{ warnf "%v Final hugoParams:\n%v" $dbg (jsonify (dict "indent" "  ") $hugoParams) }}
+    {{ end }}
+    {{ if and false $debug }}
       {{ warnf "%v Final hugoParamsFlat:\n%v" $dbg (jsonify (dict "indent" "  ") $hugoParamsFlat) }}
     {{ end }}
     {{ $toCSSoptions := merge $toCSSoptionsBase (dict "vars" $hugoParamsFlat) }}
@@ -250,8 +254,10 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
     {{ end }}
 
     {{ if and false $debug }}
-      {{/* warnf "%v $concatResource '%s'.Content:\n%v\n...\n%v"
-          $dbg $concatResource (substr $concatResource.Content 0 500) (substr $concatResource.Content -500) */}}
+      {{ warnf "%v $concatResource '%s'.Content:\n%v\n...\n%v"
+          $dbg $concatResource (substr $concatResource.Content 0 500) (substr $concatResource.Content -500) }}
+    {{ end }}
+    {{ if and false $debug }}
       {{ warnf "%v $concatResource '%s'.Content:\n%v"
           $dbg $concatResource $concatResource.Content }}
     {{ end }}
@@ -290,7 +296,6 @@ error calling Content: TOCSS-DART: failed to transform "styles/claris-vitae-main
             (div (len $afterPostProcess.Content) 1024.0) $afterPostProcess.RelPermalink }}
         {{ $bundleMinified = $afterPostProcess }}
     {{ else }}
-        {{/* {{ $bundleMinified = $bundle | css.PostCSS $postCSSOptions | resources.Minify | resources.Fingerprint $fingerprintOptions | resources.PostProcess }} */}}
         {{ $bundleMinified = $bundle | css.PostCSS $postCSSOptions | resources.Fingerprint $fingerprintOptions }}
       {{ end }}
     {{ end }}
