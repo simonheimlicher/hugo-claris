@@ -1,21 +1,31 @@
-/* File='scripts/claris-body.js': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .MediaType='{{ .MediaType }}' */
+/* File='scripts/claris-body_async.js': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .MediaType='{{ .MediaType }}' */
 
-// NOTE: JavaScript code in this file is executed as a module at the bottom of the <body>
+// NOTE: JavaScript code in this file is executed as a module with async at the bottom of the <body>
 // This means that
 // * Loading is "defer" on browsers that support the "module" attribute
 //   while all other browsers ignore this script
-// * Execution is synchronous, i.e., the script does not have the "async" attribute
+// * Execution is asynchronous, i.e., the script has the "async" attribute
 
-import "scripts/claris/base";
-import "scripts/claris/enhanced";
-
+{{- if page.Param "assets.scripts.body_async" }}
+{{/* NOTE: Importing `onDOMContentLoaded` from "scripts/claris/base" also
+imports the rest of this module and breaks mobile menu, color scheme etc. */}}
+{{/* import { onDOMContentLoaded } from "scripts/claris/base"; */}}
+function onDOMContentLoaded(...initializationFunctions) {
+  function init() {
+    initializationFunctions.forEach(function (fn) {
+      fn();
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+};
 // NOTE: Optional modules must be conditionally included at the Go template-level;
 // otherwise, they would have to be installed independently of the Hugo config.
 // Therefore, all optional NPM packages are loaded in this Go template script
 
-{{- if page.Param "assets.scripts.body_async" }}
-{{- else }}
-import { onDOMContentLoaded } from "scripts/claris/base";
 let optionalModules = [];
 {{- if page.Param "assets.scripts.mediumzoom" }}
 import { mediumZoomInit } from "scripts/claris/optional/medium-zoom";
