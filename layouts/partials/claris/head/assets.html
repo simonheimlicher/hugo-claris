@@ -27,7 +27,7 @@
       {{- warnf "%v" $styleSheet.resource.Content }}
     {{- end }}
 
-    {{- if ($page.Param "assets.styles.fonts.selfhosted") -}}
+    {{- with $numFontsToPreload := and ($page.Param "assets.styles.fonts.selfhosted") ($page.Param "assets.styles.fonts.preload") -}}
       {{- if $debug }}
         {{- warnf "%s .Kind=%v: Looking for font matching .Scratch claris.assets.font.main=%v"
             $dbg $page.Kind ($page.Scratch.Get "claris.assets.font.main") }}
@@ -37,7 +37,7 @@
         {{- warnf "%s .Kind=%v: Pre-loading font .Scratch claris.assets.font.main=%v %v"
             $dbg $page.Kind ($page.Scratch.Get "claris.assets.font.main") $preloadFonts }}
       {{- end }}
-      {{- range first 1 $preloadFonts }}
+      {{- range first $numFontsToPreload $preloadFonts }}
       <link rel="preload" href="{{ .URL | safeHTMLAttr }}" as="font" type="font/{{ .Type | safeHTMLAttr }}" crossorigin="anonymous">
       {{- end }}
     {{- end }}
