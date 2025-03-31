@@ -243,7 +243,8 @@ meta:
     # Favicons will be added to the <head> element if they exist in the `static` directory
     # If your favicons live in a sub directory, set the path prefix below
     # If your icons are in `static/icons/`, you would set `meta.favicon.pathprefix = "icons"`
-    # pathprefix: "icons"
+    # The pathprefix also determines the path at which the icons will be published
+    pathprefix: "site-meta"
 
   headline:
     targetlength: [50, 60]

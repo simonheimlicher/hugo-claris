@@ -6,19 +6,14 @@
 {{- /* Based on [How to Favicon in 2025: Three files that fit most needs](
 https://evilmartians.com/chronicles/how-to-favicon-in-2021-six-files-that-fit-most-needs) */ -}}
 
-{{- $faviconPathPrefix := "" }}
+{{- $staticDir := "static" }}
+
+{{- $faviconPathPrefix := "site-meta" }}
 {{- with page.Param "meta.favicon.pathprefix" }}
   {{- $faviconPathPrefix = . | strings.TrimLeft "/" | strings.TrimRight "/" | relURL }}
   {{- if $debug }}
     {{- warnf `%s page.Param "meta.favicon.pathprefix"='%v' faviconPathPrefix='%v'` $dbg (page.Param "meta.favicon.pathprefix") $faviconPathPrefix }}
   {{- end }}
-{{- end }}
-
-{{- $staticDir := "static" }}
-{{- $iconDir := default "site-icons" site.Params.claris.assets.icons_dir }}
-{{- $iconDir = $iconDir | strings.TrimLeft "/" | strings.TrimRight "/" }}
-{{- if $debug }}
-  {{- warnf "%s site.Params.claris.assets.icons_dir='%v' iconDir='%v'" $dbg (site.Params.claris.assets.icons_dir) $iconDir }}
 {{- end }}
 
 {{- /* Find the image file designated to be used as Apple touch icon turn it into a resource
@@ -48,7 +43,7 @@ so we can fingerprint it and allow indefinite caching */ -}}
   {{- if $debug }}
     {{- warnf "%s Using static apple-touch-icon file %s with .Size=%d" $dbg .Name .Size }}
   {{- end }}
-  {{- $staticAppleTouchIconResourcePath := printf "%s/%s/%s" $faviconPathPrefix $iconDir .Name }}
+  {{- $staticAppleTouchIconResourcePath := printf "%s/%s" $faviconPathPrefix .Name }}
   {{- with resources.FromString $staticAppleTouchIconResourcePath $staticAppleTouchIconFileContent }}
     {{ $appleTouchIcon = . | fingerprint }}
     {{- if $debug }}
@@ -65,7 +60,7 @@ so we can fingerprint it and allow indefinite caching */ -}}
   {{- end }}
   {{- /* If no static file was found, look for the largest apple-touch-icon in the assets directory */ -}}
   {{- $assetsAppleTouchIconFile := false }}
-  {{- $assetsAppleTouchIconCandidateFiles := resources.Match (printf "%s/apple*touch*icon*" $iconDir) }}
+  {{- $assetsAppleTouchIconCandidateFiles := resources.Match (printf "%s/apple*touch*icon*" $faviconPathPrefix) }}
   {{- $assetsAppleTouchIconSize := 0 }}
   {{- range $assetsAppleTouchIconCandidateFiles }}
     {{- if $debug }}
@@ -89,7 +84,7 @@ so we can fingerprint it and allow indefinite caching */ -}}
 or generate it based on site metadata that is also used for schema.org (LD+JSON) */ -}}
 {{- $manifest := false }}
 {{- $staticManifestPath := printf "%s/site.webmanifest" $staticDir }}
-{{- $manifestPath := relURL (printf "%s%s" $faviconPathPrefix "site.webmanifest") }}
+{{- $manifestPath := printf "%s/%s" $faviconPathPrefix "site.webmanifest" }}
 
 {{- if fileExists $staticManifestPath }}
   {{- $manifest = resources.FromString $manifestPath (readFile $staticManifestPath) | fingerprint }}

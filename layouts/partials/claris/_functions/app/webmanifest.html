@@ -5,6 +5,14 @@
 
 {{ $meta := page.Scratch.Get "clarismeta" }}
 
+{{- $faviconPathPrefix := "site-meta" }}
+{{- with page.Param "meta.favicon.pathprefix" }}
+  {{- $faviconPathPrefix = . | strings.TrimLeft "/" | strings.TrimRight "/" | relURL }}
+  {{- if $debug }}
+    {{- warnf `%s page.Param "meta.favicon.pathprefix"='%v' faviconPathPrefix='%v'` $dbg (page.Param "meta.favicon.pathprefix") $faviconPathPrefix }}
+  {{- end }}
+{{- end }}
+
 {{ $siteMeta := (dict
   "Title" site.Title
   "Language" site.LanguageCode
@@ -19,7 +27,7 @@
 {{ end }}
 
 {{ $iconFiles := slice }}
-{{ with $icons := resources.Match "site-icons/android-chrome-*" }}
+{{ with $icons := resources.Match (printf "%s/android-chrome-*" $faviconPathPrefix) }}
   {{ range $icons }}
     {{ $fp := . | fingerprint }}
     {{ $name := .Name }}
