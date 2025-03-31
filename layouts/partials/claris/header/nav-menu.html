@@ -2,13 +2,13 @@
           <!-- toggle light or dark color scheme -->
           <div class="nav_color-scheme_choice">
             <div class="nav_color-scheme_choice_mask">
-              <div class="nav_color-scheme_choice_light nav_color-scheme_choice_icon" title="{{ T "color-scheme_light" .}}">{{- partialCached "sprite" (dict "icon" "sun") "sun" -}}</div>
-              <div class="nav_color-scheme_choice_dark nav_color-scheme_choice_icon" title="{{ T "color-scheme_dark" .}}">{{- partialCached "sprite" (dict "icon" "moon") "moon" -}}</div>
+              <div class="nav_color-scheme_choice_light nav_color-scheme_choice_icon" title="{{ T "color-scheme_light" .}}">{{- partialCached "sprite" (dict "icon" "icon-sun") "icon-sun" -}}</div>
+              <div class="nav_color-scheme_choice_dark nav_color-scheme_choice_icon" title="{{ T "color-scheme_dark" .}}">{{- partialCached "sprite" (dict "icon" "icon-moon") "icon-moon" -}}</div>
             </div>
           </div>
           <!-- toggle mobile navigation -->
           <div class="nav_mobile_toggle nav_item{{ with .logoclass }} {{ . }}{{ end }}">
-            <div class="nav_mobile_toggle_open">{{- partialCached "sprite" (dict "icon" "open-menu") "open-menu" -}}</div>
-            <div class="nav_mobile_toggle_close">{{- partialCached "sprite" (dict "icon" "closeme") "close-menu" -}}</div>
+            <div class="nav_mobile_toggle_open">{{- partialCached "sprite" (dict "icon" "icon-burger") "open-menu" -}}</div>
+            <div class="nav_mobile_toggle_close">{{- partialCached "sprite" (dict "icon" "icon-close") "close-menu" -}}</div>
           </div>
         </div>
