@@ -81,31 +81,9 @@
     </script>
 
 {{- with partialCached "claris/_functions/asset-bundles" $ctx $assetVariant }}
-  {{- with .Scripts.body.resource }}
-    <script>
-      requestIdleCallback(() => {
-          const script = document.createElement("script");
-          script.type = "module";
-          script.src = "{{ .RelPermalink }}";
-          script.fetchPriority = "low";
-          script.integrity = "{{ .Data.Integrity }}"
-          script.crossOrigin = "anonymous";
-          document.head.appendChild(script);
-      }, { timeout: 2000 });
-    </script>
-  {{- end }}
-  {{- with .Scripts.body_async.resource }}
-    <script>
-      requestIdleCallback(() => {
-          const script = document.createElement("script");
-          script.type = "module";
-          script.async = true;
-          script.src = "{{ .RelPermalink }}";
-          script.fetchPriority = "low";
-          script.integrity = "{{ .Data.Integrity }}"
-          script.crossOrigin = "anonymous";
-          document.head.appendChild(script);
-      }, { timeout: 2000 });
-    </script>
+  {{- range $script := .Scripts.body }}
+    {{- with .resource }}
+    <script type="module" src="{{ .RelPermalink }}" fetchpriority="{{ $script.fetchpriority }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
+    {{- end }}
   {{- end }}
 {{- end -}}
