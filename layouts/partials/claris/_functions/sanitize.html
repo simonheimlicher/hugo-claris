@@ -4,5 +4,9 @@ Inspired by https://overhead.neocities.org/blog/hugo-extras/
 USAGE: use as a function in the context of a page, as follows:
   {{- sanitized := partial "claris/_functions/sanitize" . }}
 */ -}}
-{{- $sanitized := (replace . "&shy;" "" | page.RenderString | plainify | safeHTML) }}
-{{- return $sanitized }}
+{{ $sanitized := page.RenderString . | plainify }}
+{{/* Remove soft hyphens */}}
+{{ $sanitized = replace $sanitized "&shy;" "" }}
+{{/* Remove leading, trailing and intermediate whitespace */}}
+{{ $sanitized = replaceRE `\s+` " " $sanitized | replaceRE `^\s+` "" | replaceRE `\s+$` "" | safeHTML }}
+{{ return $sanitized }}
