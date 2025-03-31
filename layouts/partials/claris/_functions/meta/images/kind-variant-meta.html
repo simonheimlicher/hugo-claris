@@ -182,23 +182,59 @@
 
   <!-- Add any additional available versions -->
   {{- if $debug }}
-    {{- warnf "%s kind=%v Looking for additional images in imageKindVariantMeta=%v"
-        $dbg $imageKind $imageKindVariantMeta }}
+    {{- warnf "%s kind=%v Looking for additional images in imageKindVariantMeta:\n%v"
+        $dbg $imageKind (jsonify (dict "indent" "  ") $imageKindVariantMeta) }}
   {{- end }}
   {{- range $variantName, $variantMeta := $imageKindVariantMeta }}
 
     {{- $processedVersionMeta := dict }}
 
-    {{- if isset $variantMeta "version" }}
+    {{- with index $variantMeta "version" }}
       {{- range $versionID, $versionMeta := $variantMeta.version }}
-        {{- if not (in (index $processedImageKindVariantMeta $variantName) $versionID) }}
+        {{/* We need to keep this additional image from replacing one that we previously created.
+        To accomplish this, we need to distinguish two cases:
+        1. If `$versionID` is $defaultVersionID: generate a new $versionID based on the aspect ratio of the additional image.
+        2. Otherwise, avoid adding this additional image. */}}
+        {{- $existingVersions := index $processedImageKindVariantMeta $variantName "version" }}
+        {{- if $debug }}
+          {{- if $existingVersions }}
+            {{- warnf "%s %v/%v/*: versionID=%s is %s existingVersions:\n%v\nprocessedImageKindVariantMeta:\n%v"
+                $dbg $imageKind $variantName $versionID
+                (cond (index $existingVersions $versionID) "in" "not in")
+                (jsonify (dict "indent" "  ") $existingVersions)
+                (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
+          {{- else }}
+            {{- warnf "%s %v/%v/*: index processedImageKindVariantMeta variantName=%v returned %v: processedImageKindVariantMeta:\n%v"
+                $dbg $imageKind $variantName $variantName $existingVersions
+                (jsonify (dict "indent" "  ") $processedImageKindVariantMeta) }}
+          {{- end }}
+        {{- end }}
+        {{- if eq $versionID $defaultVersionID }}
+          {{- $versionID = printf "aspect_%s" $versionMeta.aspect }}
+          {{- if $debug }}
+            {{- warnf "%s %v/%v/%v: Modified versionID=%q based on aspect ratio %v[%vx%v] for additional version with initial versionID=%q"
+                $dbg $imageKind $variantName $versionID $versionID
+                $versionMeta.ratio $versionMeta.resource.Width $versionMeta.resource.Height
+                $defaultVersionID }}
+          {{- end }}
+        {{- end }}
+        {{- with index $existingVersions $versionID }}
+          {{- if $debug }}
+            {{- warnf "%s %v/%v/%v Not adding additional available versionMeta since versionID=%s already exists in existingVersions:\n%v\nversionMeta:\n%v\n to processedVersionMeta:\n%v"
+                $dbg $imageKind $variantName $versionID $versionID
+                (jsonify (dict "indent" "  ") $existingVersions)
+                (jsonify (dict "indent" "  ") $versionMeta)
+                (jsonify (dict "indent" "  ") $processedVersionMeta) }}
+          {{- end }}
+        {{- else }}
           <!-- Only add the image `resource` within $versionMeta "as is" and avoid
           referencing its property `.Permalink` as this would cause the image file to be copied
           to the output directory -->
           {{- $processedVersionMeta = merge $processedVersionMeta (dict $versionID $versionMeta) }}
           {{- if $debug }}
-            {{- warnf "%s %v/%v/%v Added additional available versionMeta:\n%v\n to processedVersionMeta:\n%v"
-                $dbg $imageKind $variantName $versionID
+            {{- warnf "%s %v/%v/%v Added additional available versionMeta since versionID=%s does not exist in existingVersions:\n%v\nversionMeta:%v\n to processedVersionMeta:\n%v"
+                $dbg $imageKind $variantName $versionID $versionID
+                (jsonify (dict "indent" "  ") $existingVersions)
                 (jsonify (dict "indent" "  ") $versionMeta)
                 (jsonify (dict "indent" "  ") $processedVersionMeta) }}
           {{- end }}
