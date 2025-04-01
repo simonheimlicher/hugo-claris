@@ -80,9 +80,13 @@
 {{- with partialCached "claris/_functions/asset-bundles" $ctx $assetVariant.Assets }}
 {{- range $bundle := where .Scripts.body "priority" "eq" "high" }}
 {{- with .resource }}
-    <script type="module" src="{{ .RelPermalink }}" fetchpriority="{{ $bundle.priority }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
+    {{- if $inline := $page.Param "assets.scripts.inline" | default false  }}
+    <script>
       {{ .Content | safeJS }}
     </script>
+    {{- else }}
+    <script type="module" src="{{ .RelPermalink }}" fetchpriority="{{ $bundle.priority }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
+    {{- end }}
   {{- end }}
 {{- end }}
 

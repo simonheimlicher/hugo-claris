@@ -130,8 +130,8 @@ assets:
       fluid_scale_digits: null
 
   scripts:
-    # Load optional scripts asynchronously
-    body_async: true
+    # Inline scripts with priority `high`
+    inline: true
     # To enable the `Medium.com`-like zoom effect on responsive images,
     # add the argument `lightbox` when calling the shortcode `responsive-image`
     # and set `assets.scripts.mediumzoom: true`
