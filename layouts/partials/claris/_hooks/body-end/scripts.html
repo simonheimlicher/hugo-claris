@@ -30,10 +30,7 @@
         pictures.forEach((picture) => {
           let variantStyleAttr = null;
 
-          const sources = picture.querySelectorAll(`
-              source[media*="prefers-color-scheme"],
-              source[data-media*="prefers-color-scheme"]
-            `);
+          const sources = picture.querySelectorAll('source[media*="prefers-color-scheme"], source[data-media*="prefers-color-scheme"]');
 
           sources.forEach((source) => {
             // Preserve the source `media` as a data-attribute
@@ -66,7 +63,7 @@
           });
 
           if (variantStyleAttr) {
-            const imgs = picture.querySelectorAll(`img[style]`);
+            const imgs = picture.querySelectorAll("img[style]");
             imgs.forEach((img) => {
               if (img?.style) {
                 img.dataset.style = img.style;
@@ -80,7 +77,15 @@
       }
     </script>
 
-{{- with partialCached "claris/_functions/asset-bundles" $ctx $assetVariant }}
+{{- with partialCached "claris/_functions/asset-bundles" $ctx $assetVariant.Assets }}
+{{- range $bundle := where .Scripts.body "priority" "eq" "high" }}
+{{- with .resource }}
+    <script type="module" src="{{ .RelPermalink }}" fetchpriority="{{ $bundle.priority }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
+      {{ .Content | safeJS }}
+    </script>
+  {{- end }}
+{{- end }}
+
 <script>
   window.addEventListener("load", function () {
     const defer = window.requestIdleCallback || function (cb) {
@@ -88,13 +93,9 @@
     };
 
     const scripts = [
-      {{- range $i, $script := .Scripts.body }}
+      {{- range $bundle := where .Scripts.body "priority" "ne" "high" }}
         {{- with .resource }}
-          {
-            src: "{{ .RelPermalink }}",
-            fetchPriority: "{{ $script.fetchpriority }}",
-            integrity: "{{ .Data.Integrity }}"
-          },
+          {{ printf `{ src: "%s", fetchPriority: "%s", integrity: "%s" },` .RelPermalink $bundle.priority .Data.Integrity | safeJS }}
         {{- end }}
       {{- end }}
     ];
