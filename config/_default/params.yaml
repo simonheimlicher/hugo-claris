@@ -132,16 +132,17 @@ assets:
   scripts:
     # Inline scripts with priority `high`
     inline: true
-    # To enable the `Medium.com`-like zoom effect on responsive images,
-    # add the argument `lightbox` when calling the shortcode `responsive-image`
-    # and set `assets.scripts.mediumzoom: true`
-    # mediumzoom: true
-    # To enable PostHog Analytics, configure the environments, host and key below
-    # posthog:
-    # environments: [production, prod, staging, stage]
-    #   key: <your key>
-    #   host: https://api.posthog.com
-    #   host: https://eu.posthog.com
+    optional:
+      # To enable the `Medium.com`-like zoom effect on responsive images,
+      # add the argument `lightbox` when calling the shortcode `responsive-image`
+      # and set `assets.scripts.optional.mediumzoom: true`
+      # mediumzoom: true
+      # To enable PostHog Analytics, configure the environments, host and key below
+      # posthog:
+      #   environments: [production, prod]
+      #   key: <your key>
+      #   host: https://api.posthog.com
+      #   # host: https://eu.posthog.com
 
   images:
     # Feature image at top of article and section pages

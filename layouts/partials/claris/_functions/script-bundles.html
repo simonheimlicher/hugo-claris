@@ -10,84 +10,73 @@
 {{ $contentTypeList := $assetVariant.ContentTypeList }}
 {{ $contentTypeListID := $assetVariant.ContentTypeListID }}
 
-{{ $targets := (slice
-  (dict
-    "Target" "head"
-    "Media" "all"
-  )
-  (dict
-    "Target" "body"
-    "Media" "all"
-  )
+{{ $bundleMountParams := (slice
+    (dict "base"     (dict "target" "body" "type" "inline") )
+    (dict "enhanced" (dict "target" "body" "type" "module" "priority" "auto") )
+    (dict "optional" (dict "target" "body" "type" "defer" "priority" "low") )
 ) }}
+{{ with $page.Param "assets.scripts.bundles" }}
+  {{ $bundleMountParams = merge $bundleMountParams . }}
+{{ end }}
 
-{{ $priorities := (slice
-  (dict
-    "Match" "base"
-    "priority" "high"
-  )
-  (dict
-    "Match"  "enhanced"
-    "priority" "auto"
-  )
-  (dict
-    "Match" "optional"
-    "priority" "low"
-  )
-) }}
+{{ range $idx, $bundleParams := $bundleMountParams }}
+  {{ range $bundleName, $mountParams := $bundleParams }}
+    {{ if $debug }}
+    {{ warnf "%s creating bundleName=%v with mountParams:\n%v"
+        $dbg $bundleName (jsonify (dict "indent" "  ") $mountParams) }}
+    {{ end }}
+    {{ $mediaType := default "all" $mountParams.media }}
+    {{ if (in $mediaTypeList $mediaType) }}
 
-{{ range $target := $targets }}
-  {{ $mediaType := default "all" $target.Media }}
-  {{ if (in $mediaTypeList $mediaType) }}
-
-    {{ $targetName := $target.Target }}
-    {{ $targetPriorityBundles := slice }}
-    {{ range $priority := $priorities }}
-      {{ $targetPriorityParams := (dict
+      {{ $bundleParams := (dict
           "AssetVariant" $assetVariant
           "MediaType" $mediaType
-          "TargetName" $targetName
-          "PriorityMatch" $priority.Match
+          "BundleName" $bundleName
       ) }}
 
-      {{/* Get the target priority bundle */}}
-      {{ with $targetPriorityBundle := partial "claris/_functions/scripts/target-priority-bundle" $targetPriorityParams }}
-        {{ $scriptBundle := (dict
+      {{/* Get the script bundle */}}
+      {{ with $bundleResource := partial "claris/_functions/scripts/get-bundle" $bundleParams }}
+        {{ $scriptBundle := merge $mountParams (dict
           "media" $mediaType
-          "resource" $targetPriorityBundle
-          "priority" $priority.priority
+          "name" $bundleName
+          "resource" $bundleResource
         ) }}
-        {{ $targetPriorityBundles = append $scriptBundle $targetPriorityBundles }}
+        {{ $targetTypeBundles := index $scriptBundles $mountParams.target $mountParams.type | default slice }}
+        {{ $targetTypeBundles = append $scriptBundle $targetTypeBundles }}
+        {{ $scriptBundles = merge $scriptBundles (dict $mountParams.target (dict $mountParams.type $targetTypeBundles) ) }}
         {{ if $debug }}
-          {{ warnf "%s contentTypeListID=%s targetName=%s bundle: Created target priority bundle with targetPriorityParams:\n%v"
-              $dbg $contentTypeListID $targetName (jsonify (dict "indent" "  ") $targetPriorityParams) }}
+          {{ warnf "%s contentTypeListID=%s bundleName=%s bundle: Added script bundle to scriptBundles:\n%v\nbundleParams:\n%v"
+              $dbg $contentTypeListID $bundleName
+              (jsonify (dict "indent" "  ") $scriptBundles)
+              (jsonify (dict "indent" "  ") $bundleParams) }}
         {{ end }}
       {{ else }}
-        {{ if $debug }}
-          {{ warnf "%s contentTypeListID=%s targetName=%s bundle: No target priority bundle from targetPriorityParams:\n%v"
-              $dbg $contentTypeListID $targetName (jsonify (dict "indent" "  ") $targetPriorityParams) }}
+        {{ if and true $debug }}
+          {{ warnf "%s contentTypeListID=%s bundleName=%s bundle: No script bundle from bundleParams:\n%v"
+              $dbg $contentTypeListID $bundleName (jsonify (dict "indent" "  ") $bundleParams) }}
         {{ end }}
       {{ end }}
 
+    {{ else }}
+
+      {{ if $debug }}
+        {{ warnf "%s contentTypeListID=%s: Not generating script bundle for MediaType=%s: not in MediaTypeList=%v"
+            $dbg $contentTypeListID $mediaType $mediaTypeList }}
+      {{ end }}
     {{ end }}
 
-    {{ $scriptBundles = merge $scriptBundles (dict $targetName $targetPriorityBundles)}}
-
-  {{ else }}
-    {{ if $debug }}
-      {{ warnf "%s contentTypeListID=%s: Not generating script bundle for MediaType=%s: not in MediaTypeList=%v"
-          $dbg $contentTypeListID $mediaType $mediaTypeList }}
-    {{ end }}
   {{ end }}
 {{ end }}
 
 {{ if $debug }}
   {{ warnf "%s returning scriptBundles:" $dbg }}
-  {{ range $target, $targetBundles := $scriptBundles }}
-    {{ range $targetBundles }}
-      {{ $resourceStr := printf "%s [%s] (%d bytes)" .resource.Name .resource.MediaType.Type (len .resource.Content) }}
-      {{ $bundleJSON := merge . (dict "resource" $resourceStr ) }}
-      {{ warnf "%s" (jsonify (dict "indent" "  ") $bundleJSON) }}
+  {{ range $target, $type := $scriptBundles }}
+    {{ range $typeID, $bundles := $type }}
+      {{ range $idx, $bundle := $bundles }}
+        {{ $resourceStr := printf "%s [%s] (%d bytes)" .resource.Name .resource.MediaType.Type (len .resource.Content) }}
+        {{ $bundleRepr := merge $bundle (dict "resource" $resourceStr) }}
+        {{ warnf "%s target=%s type=%s idx=%d %s" $dbg $target $typeID $idx (jsonify (dict "indent" "  ") $bundleRepr) }}
+      {{ end }}
     {{ end }}
   {{ end }}
 {{ end }}

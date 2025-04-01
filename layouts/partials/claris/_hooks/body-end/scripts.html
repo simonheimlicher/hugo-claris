@@ -77,44 +77,73 @@
       }
     </script>
 
-{{- with partialCached "claris/_functions/asset-bundles" $ctx $assetVariant.Assets }}
-{{- range $bundle := where .Scripts.body "priority" "eq" "high" }}
-{{- with .resource }}
-    {{- if $inline := $page.Param "assets.scripts.inline" | default false  }}
+{{- with $assetBundles := partialCached "claris/_functions/asset-bundles" $ctx $assetVariant.Assets }}
+  {{- with $inlineBundles := index $assetBundles "Scripts" "body" "inline" }}
+    {{- if $debug }}
+      {{- warnf "%s mounting bundles with target=body type=inline: %v" $dbg $inlineBundles }}
+    {{- end }}
+    {{- range $bundle := $inlineBundles }}
+      {{- with .resource }}
     <script>
       {{ .Content | safeJS }}
     </script>
-    {{- else }}
-    <script type="module" src="{{ .RelPermalink }}" fetchpriority="{{ $bundle.priority }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
+      {{- end }}
+    {{- end }}
+  {{- else }}
+    {{- if $debug }}
+      {{- warnf "%s no bundle found with target=body type=inline" $dbg }}
     {{- end }}
   {{- end }}
-{{- end }}
 
-<script>
-  window.addEventListener("load", function () {
-    const defer = window.requestIdleCallback || function (cb) {
-      setTimeout(cb, 2000);
-    };
-
-    const scripts = [
-      {{- range $bundle := where .Scripts.body "priority" "ne" "high" }}
-        {{- with .resource }}
-          {{ printf `{ src: "%s", fetchPriority: "%s", integrity: "%s" },` .RelPermalink $bundle.priority .Data.Integrity | safeJS }}
-        {{- end }}
+  {{- with $moduleBundles := index $assetBundles "Scripts" "body" "module" }}
+    {{- if $debug }}
+      {{- warnf "%s mounting bundles with target=body type=module: %v" $dbg $moduleBundles }}
+    {{- end }}
+    {{- range $bundle := $moduleBundles }}
+      {{- with .resource }}
+    <script type="module" src="{{ .RelPermalink }}" fetchpriority="{{ $bundle.priority }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
       {{- end }}
-    ];
+    {{- end }}
+  {{- else }}
+    {{- if $debug }}
+      {{- warnf "%s no bundle found with target=body type=module" $dbg }}
+    {{- end }}
+  {{- end }}
 
-    scripts.forEach(({ src, fetchPriority, integrity }) => {
-      defer(() => {
-        const script = document.createElement("script");
-        script.type = "module";
-        script.src = src;
-        script.fetchPriority = fetchPriority;
-        script.integrity = integrity;
-        script.crossOrigin = "anonymous";
-        document.head.appendChild(script);
+  {{- with $deferBundles := index $assetBundles "Scripts" "body" "defer" }}
+    {{- if $debug }}
+      {{- warnf "%s mounting bundles with target=body type=module: %v" $dbg $deferBundles }}
+    {{- end }}
+    <script>
+      window.addEventListener("load", function () {
+        const defer = window.requestIdleCallback || function (cb) {
+          setTimeout(cb, 2000);
+        };
+
+        const scripts = [
+          {{- range $bundle := $deferBundles }}
+            {{- with .resource }}
+              {{ printf `{ src: "%s", fetchPriority: "%s", integrity: "%s" },` .RelPermalink $bundle.priority .Data.Integrity | safeJS }}
+            {{- end }}
+          {{- end }}
+        ];
+
+        scripts.forEach(({ src, fetchPriority, integrity }) => {
+          defer(() => {
+            const script = document.createElement("script");
+            script.type = "module";
+            script.src = src;
+            script.fetchPriority = fetchPriority;
+            script.integrity = integrity;
+            script.crossOrigin = "anonymous";
+            document.head.appendChild(script);
+          });
+        });
       });
-    });
-  });
-</script>
+    </script>
+  {{- else }}
+    {{- if $debug }}
+      {{- warnf "%s no bundle found with target=body type=defer" $dbg }}
+    {{- end }}
+  {{- end }}
 {{- end -}}
