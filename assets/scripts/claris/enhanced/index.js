@@ -1,4 +1,4 @@
-import { onDOMContentLoaded } from "scripts/claris/base";
+import { onDOMContentLoaded } from "scripts/claris/base/functions";
 
 import { tableOfContentsInit } from "./table-of-contents";
 import { codeBlocksInit } from "./code-blocks";

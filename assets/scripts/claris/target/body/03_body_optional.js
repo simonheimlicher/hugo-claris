@@ -6,21 +6,8 @@
 //   while all other browsers ignore this script
 // * Execution is synchronous, i.e., the script does not have the "async" attribute
 
-{{/* NOTE: Importing `onDOMContentLoaded` from "scripts/claris/base" also
-imports the rest of this module and breaks mobile menu, color scheme etc. */}}
-{{/* import { onDOMContentLoaded } from "scripts/claris/base"; */}}
-function onDOMContentLoaded(...initializationFunctions) {
-  function init() {
-    initializationFunctions.forEach(function (fn) {
-      fn();
-    });
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-};
+import { onDOMContentLoaded } from "scripts/claris/base/functions";
+
 // NOTE: Optional modules must be conditionally included at the Go template-level;
 // otherwise, they would have to be installed independently of the Hugo config.
 // Therefore, all optional NPM packages are loaded in this Go template script

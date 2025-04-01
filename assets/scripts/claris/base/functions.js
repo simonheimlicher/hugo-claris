@@ -108,3 +108,22 @@ export function parseBoolean(string) {
       return undefined;
   }
 }
+
+// Ensure we load all modules in the right order and exactly once
+// Earliest when DOMContentLoaded fires
+// However, as this event might already have passed, especially on fast connections,
+// we check the `readyState` and execute `init()` immediately if the document is
+// no longer in the `loading` state
+// From https://stackoverflow.com/a/7053197/617559
+export function onDOMContentLoaded(...initializationFunctions) {
+  function init() {
+    initializationFunctions.forEach(function (fn) {
+      fn();
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+};
