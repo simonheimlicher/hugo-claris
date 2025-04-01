@@ -1,0 +1,76 @@
+{{/*
+  Test partial to validate `color-to-hex.html` using random HSL samples.
+  Usage: {{ partial "claris/test-color-to-hex" . }}
+*/}}
+
+{{ $testCount := 10 }}
+{{ $colorToHex := "claris/_functions/color-to-hex" }}
+{{ $debug := true }}
+
+<table style="border-collapse: collapse; font-family: sans-serif; font-size: 0.9rem">
+  <thead>
+    <tr>
+      <th style="padding: 0.3rem; border: 1px solid #ccc;">HSL Input</th>
+      <th style="padding: 0.3rem; border: 1px solid #ccc;">Expected HEX</th>
+      <th style="padding: 0.3rem; border: 1px solid #ccc;">Actual HEX</th>
+      <th style="padding: 0.3rem; border: 1px solid #ccc;">Match</th>
+    </tr>
+  </thead>
+  <tbody>
+  {{/* Hardcoded test cases */}}
+  {{ $cases := slice
+    (dict "hsl" "hsl(0, 100%, 50%)" "expected" "#ff0000")
+    (dict "hsl" "hsl(60, 100%, 50%)" "expected" "#ffff00")
+    (dict "hsl" "hsl(120, 100%, 50%)" "expected" "#00ff00")
+    (dict "hsl" "hsl(180, 100%, 50%)" "expected" "#00ffff")
+    (dict "hsl" "hsl(240, 100%, 50%)" "expected" "#0000ff")
+    (dict "hsl" "hsl(300, 100%, 50%)" "expected" "#ff00ff")
+
+    (dict "hsl" "hsl(0, 33%, 50%)" "expected" "#aa5555")
+    (dict "hsl" "hsl(7, 33%, 50%)" "expected" "#aa5f55")
+    (dict "hsl" "hsl(67, 33%, 50%)" "expected" "#a0aa55")
+    (dict "hsl" "hsl(127, 33%, 50%)" "expected" "#55aa5f")
+    (dict "hsl" "hsl(187, 33%, 50%)" "expected" "#55a0aa")
+    (dict "hsl" "hsl(247, 33%, 50%)" "expected" "#5f55aa")
+    (dict "hsl" "hsl(307, 33%, 50%)" "expected" "#aa55a0")
+
+    (dict "hsl" "hsl(60, 33%, 50%)" "expected" "#aaaa55")
+    (dict "hsl" "hsl(120, 33%, 50%)" "expected" "#55aa55")
+    (dict "hsl" "hsl(180, 33%, 25%)" "expected" "#2b5555")
+    (dict "hsl" "hsl(240, 33%, 50%)" "expected" "#5555aa")
+    (dict "hsl" "hsl(300, 33%, 50%)" "expected" "#aa55aa")
+
+    (dict "hsl" "hsl(7, 33%, 41%)" "expected" "#8b4e46")
+    (dict "hsl" "hsl(67, 33%, 41%)" "expected" "#838b46")
+    (dict "hsl" "hsl(127, 33%, 41%)" "expected" "#468b4e")
+    (dict "hsl" "hsl(187, 33%, 41%)" "expected" "#46838b")
+    (dict "hsl" "hsl(247, 33%, 41%)" "expected" "#4e468b")
+    (dict "hsl" "hsl(307, 33%, 41%)" "expected" "#8b4683")
+
+  }}
+
+  {{ range $cases }}
+    {{ $hsl := .hsl }}
+    {{ $expectedHex := .expected }}
+    {{ $actual := partial "claris/_functions/color-to-hex" $hsl }}
+    {{ $match := eq $expectedHex $actual }}
+    <tr>
+      <td style="padding: 0.3rem; border: 1px solid #ccc;">
+        <div style="width: 100%; height: 1rem; background: {{ $hsl | safeCSS }}; border: 1px solid #aaa;"></div>
+        <div>{{ $hsl }}</div>
+      </td>
+      <td style="padding: 0.3rem; border: 1px solid #ccc;">
+        <div style="width: 100%; height: 1rem; background: {{ $expectedHex | safeCSS }}; border: 1px solid #aaa;"></div>
+        <div>{{ $expectedHex }}</div>
+      </td>
+      <td style="padding: 0.3rem; border: 1px solid #ccc;">
+        <div style="width: 100%; height: 1rem; background: {{ $actual | safeCSS }}; border: 1px solid #aaa;"></div>
+        <div>{{ $actual }}</div>
+      </td>
+      <td style="padding: 0.3rem; border: 1px solid #ccc;">
+        <div>{{ if $match }}✅{{ else }}❌{{ end }}</div>
+      </td>
+    </tr>
+  {{ end }}
+  </tbody>
+</table>

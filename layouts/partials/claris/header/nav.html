@@ -204,7 +204,7 @@
       {{- $relatedNavEntries = true }}
     {{- end }}
           <div class="nav_parent nav_parent_language">
-            <a href="#" title="{{ T "switch_language_page" }}" class="nav_item">{{ partial "sprite" (dict "icon" "language-icon") }}</a>
+            <a href="#" title="{{ T "switch_language_page" }}" class="nav_item">{{ partial "sprite" (dict "icon" "icon-language") }}</a>
             <div class="nav_sub">
               <span class="nav_child"></span>
     {{- partial "html-comment" (printf "%s: available translations: %v" $template $page.Translations) -}}
@@ -226,7 +226,7 @@
           </div>
   {{- else if (and site.Params.alwaysShowLanguageSelector site.IsMultiLingual) }}
           <div class="nav_parent nav_parent_language">
-            <a href="#" title="{{ T "switch_language_page" }}" class="nav_item">{{ partial "sprite" (dict "icon" "language-icon") }}</a>
+            <a href="#" title="{{ T "switch_language_page" }}" class="nav_item">{{ partial "sprite" (dict "icon" "icon-language") }}</a>
             <div class="nav_sub">
               <span class="nav_child"></span>
     {{ range site.Home.AllTranslations }}

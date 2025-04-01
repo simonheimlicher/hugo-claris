@@ -75,4 +75,6 @@
   )
 ) -}}
 
-{{- return $assetVariant }}
+{{ $assetKey := (sha256 (printf "$#v" $assetVariant) )}}
+
+{{- return (merge $assetVariant (dict "AssetKey" $assetKey) ) }}

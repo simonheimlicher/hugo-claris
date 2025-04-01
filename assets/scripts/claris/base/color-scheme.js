@@ -48,10 +48,7 @@ function updateSourceMedia(scheme) {
   pictures.forEach((picture) => {
     let variantStyleAttr = null;
 
-    const sources = picture.querySelectorAll(`
-        source[media*="prefers-color-scheme"],
-        source[data-media*="prefers-color-scheme"]
-      `);
+    const sources = picture.querySelectorAll('source[media*="prefers-color-scheme"], source[data-media*="prefers-color-scheme"]');
 
     sources.forEach((source) => {
       // Preserve the source `media` as a data-attribute
@@ -85,7 +82,7 @@ function updateSourceMedia(scheme) {
     });
 
     if (variantStyleAttr) {
-      const imgs = picture.querySelectorAll(`img[style]`);
+      const imgs = picture.querySelectorAll("img[style]");
       imgs.forEach((img) => {
         if (img?.style) {
           img.dataset.style = img.style;
@@ -231,5 +228,5 @@ export function colorSchemeInit() {
     setUserColorScheme(true, true);
   });
   // Note: Moved call to `setUserColorScheme` into `claris/head/assets`
-  // to allow loading variant images before JavaScript bundle has been fetchd
+  // to allow loading variant images before JavaScript bundle has been fetched
 }

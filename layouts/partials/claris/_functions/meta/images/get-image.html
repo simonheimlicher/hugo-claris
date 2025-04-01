@@ -10,13 +10,20 @@
 {{ $imageVariant := default $defaultKey .variant }}
 {{ $imageVersion := .version }}
 {{ $imageAspect := .aspect }}
+{{ $imageRatio := .ratio }}
+{{ $imageWidth := .width }}
+{{ $imageHeight := .height }}
 {{ $return := default false (lower .return) }}
+
+{{ if and (or $imageWidth $imageHeight) (not (and $imageWidth $imageHeight) ) }}
+  {{ errorf "%s invalid value for .width=%v and .height%v: either none must be set or both" $dbg $imageWidth $imageHeight }}
+{{ end }}
 
 {{- $getImageParams := . }}
 {{ if $debug }}
   {{- $getImageParams = merge . (dict "Page" "omitted")}}
-  {{ warnf "%s lang=%v key=.Data.Images.%v.variant.%v.version.%v with imageAspect=%v based on arguments\n%v"
-      $dbg site.Language.Lang $imageKind $imageVariant $imageVersion $imageAspect
+  {{ warnf "%s lang=%v key=.Data.Images.%v.variant.%v.version.%v with imageAspect=%v imageRatio=%v based on arguments\n%v"
+      $dbg site.Language.Lang $imageKind $imageVariant $imageVersion $imageAspect $imageRatio
       (jsonify (dict "indent" "  ") $getImageParams) }}
 {{ end }}
 
@@ -36,6 +43,20 @@
               {{ warnf `%s cannot find any meta for lang=%v matching key=".Data.Images.%v.variant.%v.version.%v" nor ".%v":\n%v`
                   $dbg site.Language.Lang $imageKind $imageVariant $imageVersion $defaultKey (jsonify (dict "indent" "  ") . ) }}
             {{ end }}
+          {{ else if and $imageWidth $imageHeight }}
+            {{ with $bestMatchVersion := partial "claris/_functions/resources/images/closest-aspect" (dict
+                "Page" $page
+                "width" $imageWidth
+                "height" $imageHeight
+                "version" .
+                "Debug" $debug
+              ) }}
+              {{ $result = .meta }}
+              {{ if $debug }}
+                {{ warnf "%s using closest match for width=%v height=%v:\n%v"
+                    $dbg $imageWidth $imageHeight (jsonify (dict "indent" "  ") $result ) }}
+              {{ end }}
+            {{ end }}
           {{ else if $imageAspect }}
             {{ with $bestMatchVersion := partial "claris/_functions/resources/images/closest-aspect" (dict
                 "Page" $page
@@ -44,6 +65,23 @@
                 "Debug" $debug
               ) }}
               {{ $result = .meta }}
+              {{ if $debug }}
+                {{ warnf "%s using closest match for aspect=%v:\n%v"
+                    $dbg $imageAspect (jsonify (dict "indent" "  ") $result ) }}
+              {{ end }}
+            {{ end }}
+          {{ else if $imageRatio }}
+            {{ with $bestMatchVersion := partial "claris/_functions/resources/images/closest-aspect" (dict
+                "Page" $page
+                "ratio" $imageRatio
+                "version" .
+                "Debug" $debug
+              ) }}
+              {{ $result = .meta }}
+              {{ if $debug }}
+                {{ warnf "%s using closest match for ratio=%v:\n%v"
+                    $dbg $imageRatio (jsonify (dict "indent" "  ") $result ) }}
+              {{ end }}
             {{ end }}
           {{ else }}
             {{ $results = . }}

@@ -1,4 +1,4 @@
-/* File='scripts/claris-head.js': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .MediaType='{{ .MediaType }}' */
+/* File='scripts/claris/target/01_head_base.js': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .MediaType='{{ .MediaType }}' */
 
 // NOTE: JavaScript code in this file is executed as a module in the <head>
 // This means that
