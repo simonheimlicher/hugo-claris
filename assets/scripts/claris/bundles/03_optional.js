@@ -1,15 +1,15 @@
-/* File='scripts/claris/target/body/03_body_optional.js': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .MediaType='{{ .MediaType }}' */
+/* File='scripts/claris/bundles/03_optional.js': hugo.Environment='{{ hugo.Environment }}' .Page='{{ .Page }}' .MediaType='{{ .MediaType }}' */
 
-// NOTE: JavaScript code in this file is executed as a module at the bottom of <body>
-// This means that
-// * Loading is "defer" on browsers that support the "module" attribute
-//   while all other browsers ignore this script
-// * Execution is synchronous, i.e., the script does not have the "async" attribute
-{{- $initializers := slice }}
+// JavaScript code in this file is loaded on the `load` event based on
+// code that is added at the bottom of <body> This means that
+// * Loading only starts after *First Contentful Paint*
+// * Execution is synchronous, i.e., the script does not have the "async"
+//   attribute
 
 // NOTE: Optional modules must be conditionally included at the Go template-level;
 // otherwise, they would have to be installed independently of the Hugo config.
 // Therefore, all optional NPM packages are loaded in this Go template script
+{{- $initializers := slice }}
 
 {{- if page.Param "assets.scripts.optional.mediumzoom" }}
 import { mediumZoomInit } from "scripts/claris/optional/medium-zoom";
