@@ -1,0 +1,28 @@
+{{ $page := default page .Page }}
+{{ $template := "partials/_functions/is-minify-enabled" }}
+{{ $debug := false }}
+{{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
+{{ $envMinifyValue := default "unset" (getenv "HUGO_MINIFY") }}
+{{ $envMinifySet := ne $envMinifyValue "unset" }}
+{{ $envMinify := and $envMinifyValue (in $envMinifyValue (slice "true" "on" "1") ) }}
+{{ $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
+{{ $isMinifyEnabled := or $envMinify (and $envProd (or (not $envMinifySet) $envMinify ) ) }}
+{{ if $debug }}
+{{ warnf "%s returning isMinifyEnabled=%v from envMinify=%v envMinifyValue=%v envMinifySet=%v envProd=%v [hugo.Environment=%s hugo.IsProduction=%v: hugo.IsDevelopment=%v]"
+    $dbg $isMinifyEnabled $envMinify $envMinifyValue $envMinifySet $envProd hugo.Environment hugo.IsProduction hugo.IsDevelopment
+    }}
+{{ end }}
+{{ return $isMinifyEnabled }}
+
+{{/* {{ $testFile := printf "scripts/claris/test/%s.js" (sha256 (printf "%#v" math.Rand) ) }}
+{{ $testFileContent := "let    x    =    1.000000; let    y    =    x + 1.000000;" }}
+{{ $testResource := resources.FromString $testFile $testFileContent }}
+{{ $testResourceMinified := js.Build $testResource }}
+{{ $isMinifyEnabled := ne $testResource.Content $testResourceMinified.Content }}
+{{ warnf "%s returning isMinifyEnabled=%v [hugo.Environment=%s hugo.IsProduction=%v: hugo.IsDevelopment=%v]\nFile:       '%v'\nScript:     '%v'\nResource:   '%v' has .Content:\n%v\nMinified:   '%v' has .Content:\n%v"
+    $dbg $isMinifyEnabled hugo.Environment hugo.IsProduction hugo.IsDevelopment
+    $testFile $testFileContent
+    $testResource $testResource.Content
+     $testResourceMinified $testResourceMinified.Content
+    }} */}}

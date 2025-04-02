@@ -57,7 +57,7 @@
 {{- end }}
 {{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
 {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
-{{- $minifyBundles := $envProd }}
+{{- $minifyBundles := partialCached "claris/_functions/is-minify-enabled" . hugo.Environment }}
 
 {{- $assetVariant = (dict
   "MainKind" $mainKind
