@@ -1,10 +1,14 @@
 {{ $page := .Page }}
 {{ $template := "claris/_functions/meta/index" }}
 {{ $debug := false }}
+{{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (default "meta/index: MISSING .Template" .Template) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{ $assetVariant := .AssetVariant }}
 {{ if not $assetVariant }}
-  {{ $assetVariant = partial "claris/_functions/assets/asset-variant" $page }}
+  {{ warnf "%s .AssetVariant is unset" $dbg }}
+  {{ with $page }}
+    {{ $assetVariant = partialCached "claris/_functions/assets/asset-variant" (dict "Page" . "Template" $template) .Type .Kind .AlternativeOutputFormats .OutputFormats }}
+  {{ end }}
 {{ end }}
 
 {{ $metaParams := (dict "Page" $page "AssetVariant" $assetVariant "Template" $template "Debug" $debug) }}

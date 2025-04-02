@@ -1,12 +1,15 @@
 {{- $assetVariant := false }}
 {{- $page := .Page }}
 {{- $template := "claris/_functions/assets/asset-variant" }}
-{{- $outputFormat := partial "claris/_functions/output-format" . }}
+{{- $outputFormat := partial "claris/_functions/output-format" (merge . (dict "AlternativeOutputFormats" $page.AlternativeOutputFormats "OutputFormats" $page.OutputFormats) ) }}
 {{- $onlyMediaType := default "all" ($page.Param "onlyMediaType") }}
 {{- $mediaTypeList := (slice "all" "screen" "print") }}
 {{- if not (eq $onlyMediaType "all") }}
   {{- $mediaTypeList = (slice $onlyMediaType) }}
 {{- end }}
+
+{{ $debug := and false ($page.Param "clarisdebug") }}
+{{ $dbg := printf "%s[%s] template=%s" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) .Template }}
 
 {{- $kindMap := (dict
     "page" "page"
@@ -75,6 +78,16 @@
   )
 ) -}}
 
-{{ $assetKey := (sha256 (printf "$#v" $assetVariant) )}}
-
-{{- return (merge $assetVariant (dict "AssetKey" $assetKey) ) }}
+{{ $assetKey := sha256 (jsonify $assetVariant) }}
+{{ $coalesceMainKindKey := sha256 (jsonify (merge $assetVariant (dict "MainKind" nil) ) ) }}
+{{ $coalesceLanguageKey := sha256 (jsonify (merge $assetVariant (dict "Language" nil) ) ) }}
+{{ $coalesceMainKindLanguageKey := sha256 (jsonify (merge $assetVariant (dict "MainKind" nil "Language" nil) ) ) }}
+{{ $assetVariantWithKeys := (merge $assetVariant (dict
+    "Key" $assetKey
+    "CoalesceMainKindKey" $coalesceMainKindKey
+    "CoalesceMainKindLanguageKey" $coalesceMainKindLanguageKey
+) ) }}
+{{ if $debug }}
+  {{ warnf "%s AssetVariant:\n%v" $dbg (jsonify (dict "indent" "  ") $assetVariantWithKeys) }}
+{{ end }}
+{{ return $assetVariantWithKeys }}

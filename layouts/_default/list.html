@@ -1,9 +1,8 @@
 {{- define "main" }}
 {{- $template := "_default/list" }}
-{{- $debug := false }}
-{{- $assetVariant := partial "claris/_functions/assets/asset-variant" . }}
+{{- $assetVariant := partialCached "claris/_functions/assets/asset-variant" (dict "Page" $.Page "Template" $template) $.Type $.Kind $.AlternativeOutputFormats $.OutputFormats }}
 
 {{ partial "html-comment" (printf "[%s]: BEGIN define main" $template) }}
-{{ partial "claris/main/index" (dict "Page" . "AssetVariant" $assetVariant) }}
+{{ partial "claris/main/index" (dict "Page" . "Template" $template "AssetVariant" $assetVariant) }}
 {{ partial "html-comment" (printf "[%s]: END   define main" $template) }}
 {{- end }}

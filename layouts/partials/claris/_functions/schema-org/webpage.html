@@ -1,11 +1,10 @@
 {{ $page := .Page }}
 {{ $meta := page.Scratch.Get "clarismeta" }}
-{{ $entityParams := . }}
 {{ $template := "claris/_functions/schema-org/webpage" }}
 {{ $debug := false }}
 {{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
-{{ $entityParams := merge . (dict "Debug" $debug) }}
+{{ $entityParams := merge . (dict "Template" (printf "%s->%s" .Template $template) "Debug" $debug) }}
 
 {{ $dateFormat := default "2006-01-02T15:04:05.00Z" .Format.Date }}
 
@@ -97,8 +96,9 @@
       {{ warnf "%skind=%v: entityType=%v" $dbg $page.Kind $specificEntityType }}
     {{ end }}
     {{ $entityParams = merge $entityParams (dict "SchemaOrgMeta" $schemaOrgMeta) }}
+    {{ $schemaOrgPartial := printf "claris/_functions/schema-org/%s" (lower . ) }}
     {{ $schemaOrgMeta = (merge $schemaOrgMeta
-      (partial (printf "claris/_functions/schema-org/%s" (lower .) ) $entityParams)
+      (partial $schemaOrgPartial $entityParams)
     ) }}
   {{/* {{ else }}
     {{ warnf "%skind=%v: no entityType=%v" $dbg $page.Kind $specificEntityType }} */}}

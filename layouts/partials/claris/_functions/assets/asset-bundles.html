@@ -3,7 +3,7 @@
 {{- $template := "claris/_functions/assets/asset-bundles" }}
 
 {{- $assetVariant := .AssetVariant }}
-{{- partial "html-comment" (printf "%s[%s]: assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) }}
+{{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{/* {{- warnf "%s[%s]: RelPermalink=%s .Type=%s .Layout=%s $contentTypeList=%s $mediaTypeList=%s"
     .Page $template .Page.RelPermalink .Type .Layout

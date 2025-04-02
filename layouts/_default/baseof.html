@@ -8,8 +8,8 @@
 {{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
 {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
 
-{{- $assetVariant := partial "claris/_functions/assets/asset-variant" . }}
-{{- $partialContext := (dict "Page" . "AssetVariant" $assetVariant) }}
+{{- $assetVariant := partialCached "claris/_functions/assets/asset-variant" (dict "Page" $.Page "Template" $template) $.Type $.Kind $.AlternativeOutputFormats $.OutputFormats }}
+{{- $partialContext := (dict "Page" . "Template" $template "AssetVariant" $assetVariant) }}
 {{- /* partial "html-comment" (printf "%s assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) */ -}}
 
 {{- if $debug }}
@@ -45,7 +45,7 @@
   {{- end -}}
 {{- end }}
 
-{{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "Debug" $debug) $page.Permalink $assetVariant }}
+{{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "AssetVariant" $assetVariant "Template" $template "Debug" $debug) $page.Permalink $assetVariant.CoalesceMainKindLanguageKey }}
 {{- .Scratch.Set "clarismeta" $meta }}
 
 {{- /* {{- if (and $assetVariant.OutputFormat (strings.Contains (lower $assetVariant.OutputFormat.Name) "print") ) }}
@@ -96,7 +96,7 @@
   {{- /* partial "html-comment" (printf "[%s]: .Type=%s .Layout=%s .MediaType=%s $assetVariant.OutputFormat=%s meta.Classification=%v]"
     $template .Type .Layout .MediaType $assetVariant.OutputFormat.Name (jsonify (dict "indent" "  ") $meta.Classification)) */ -}}
   {{- partial "claris/head/index" $partialContext }}
-  {{- partialCached "claris/_hooks/head-end/index" $partialContext $assetVariant }}
+  {{- partialCached "claris/_hooks/head-end/index" $partialContext $assetVariant.CoalesceMainKindLanguageKey }}
 </head>
 <body id="documentContainer" {{- block "body-data" . -}} {{- end -}}>
   {{ block "body" . -}}{{ end }}
@@ -105,7 +105,7 @@
       <script src="{{ relURL . }}" ></script>
     {{- end }}
   {{- end }}
-  {{- partialCached "claris/_hooks/body-end/index" $partialContext $assetVariant }}
+  {{- partialCached "claris/_hooks/body-end/index" $partialContext $assetVariant.CoalesceMainKindLanguageKey }}
 </body>
 </html>
 
