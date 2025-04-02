@@ -3,7 +3,8 @@
     "*.html": "gohtml",
     "fonts/hosted/*.scss": "gocss",
     "fonts/fallback/*.scss": "gocss",
-    "*.js": "javascript",
+    "bundles/*.js": "gojs",
+    "bundles/*.ts": "gots",
     "robots.txt": "gohtml"
   },
   "emmet.includeLanguages": {

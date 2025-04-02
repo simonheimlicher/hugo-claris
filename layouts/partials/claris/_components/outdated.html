@@ -1,4 +1,6 @@
-{{- $ageYears := div (sub now.Unix .Date.Unix) 31556952 }}
+{{- $page := default page .Page }}
+
+{{- $ageYears := div (sub now.Unix $page.Date.Unix) 31556952 }}
 <div class="outdated_wrap">
   <div class="outdated font-meta">
     <h2>Beyond best before date...</h2>

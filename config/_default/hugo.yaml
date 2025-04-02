@@ -38,7 +38,7 @@ security:
     urls: [".*"]
 
 permalinks:
-  articles: ":sections/:filename"
+  articles: ":sections/:contentbasename"
 
 taxonomies:
   category: categories

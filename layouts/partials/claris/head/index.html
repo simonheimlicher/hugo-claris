@@ -1,7 +1,7 @@
-{{- $ctx := . }}
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/head/index" }}
+{{- $ctx := merge . (dict "Template" (printf "%s->%s" .Template $template) ) }}
 {{- $debug := false }}
 
 {{- $assetVariant := .AssetVariant -}}
@@ -12,7 +12,7 @@
   {{- $backgroundDark = $page.Param "colors.surface_primary_dim" }}
 {{- end }}
 
-{{- with $page }}
+{{- with $ctx }}
     {{- /* partial "html-comment" (printf "%s[%s]: assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) */ -}}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -42,9 +42,7 @@
     <link rel="canonical" type="text/html" href="{{ partial `claris/_functions/canonical-url` . }}" title="{{ (partial `claris/_functions/sanitize` $title) }}">
     {{- partialCached "claris/head/favicon" . }}
 
-{{- /* NOTE: To avoid creating the same bundle multiple times, we remove `.Kind` from the cache busters and only keep `$assetVariant` */ -}}
-{{- /* partialCached "claris/head/assets" . $assetVariant .Kind */ -}}
-{{- partialCached "claris/head/assets" $ctx $assetVariant -}}
+{{- partialCached "claris/head/assets" $ctx $assetVariant.CoalesceMainKindLanguageKey -}}
     <noscript>
       <style>.noscript-hide { display: none !important; }</style>
     </noscript>

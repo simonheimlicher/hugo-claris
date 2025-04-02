@@ -2,6 +2,7 @@
 {{ $rootPage := default $page .RootPage }}
 {{ $template := "claris/_functions/meta/list" }}
 {{ $debug := false }}
+{{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (default "meta/list: MISSING .Template" .Template) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{ if $debug }}
   {{ warnf "%s[%s]: .ListItems=%v .ListParams=%v" $page $template .ListItems .ListParams }}
@@ -10,6 +11,12 @@
 {{ $limit := 0 }}
 
 {{ $assetVariant := .AssetVariant }}
+{{ if not $assetVariant }}
+  {{ warnf "%s .AssetVariant is unset" $dbg }}
+  {{ with $page }}
+    {{ $assetVariant = partialCached "claris/_functions/assets/asset-variant" (dict "Page" . "Template" $template) .Type .Kind .AlternativeOutputFormats .OutputFormats }}
+  {{ end }}
+{{ end }}
 
 {{ $ephemeralSections := default slice ($page.Param "ephemeralSections") }}
 {{ $listMeta := dict }}
@@ -84,7 +91,7 @@
       {{ warnf "%s[%s]: Found items to list: validListItems=%v" $page $template $validListItems }}
     {{ end }}
     {{ range $validListItems }}
-      {{ $listItemMetaParams := (dict "Page" . "AssetVariant" $assetVariant "Template" $template "Debug" $debug) }}
+      {{ $listItemMetaParams := (dict "Page" . "RootPage" $rootPage "AssetVariant" $assetVariant "Template" $template "Debug" $debug) }}
       {{ $singleMeta := partialCached "claris/_functions/meta/single" $listItemMetaParams .Permalink }}
       {{ $classificationMeta := partialCached "claris/_functions/meta/classification" $listItemMetaParams .Permalink }}
       {{ $itemMeta := merge $singleMeta $classificationMeta }}
@@ -97,7 +104,7 @@
           {{ warnf "%s[%s]: .Kind=%v: $page=%v $rootPage=%v" $page $template .Kind $page $rootPage }}
         {{ end }}
         {{ if (eq $rootPage $page) }}
-          {{ $itemListMeta := (partial "claris/_functions/meta/list" (dict "Page" . "RootPage" $rootPage "Debug" $debug) ) }}
+          {{ $itemListMeta := partial "claris/_functions/meta/list" $listItemMetaParams }}
           {{ $itemMeta = merge $itemMeta $itemListMeta }}
           {{ if $debug }}
             {{ warnf "%s[%s]: .Kind=%v: added itemListMeta for %d items" $page $template .Kind (len $itemMeta.List.Data.Items) }}

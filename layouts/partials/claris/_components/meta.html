@@ -1,7 +1,17 @@
 {{- $page := .Page }}
+{{- $template := "claris/_components/meta" }}
+{{- $debug := and false (or .Debug (page.Param "clarisdebug") ) }}
+{{- $dbg := printf "%s [%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` page.RelPermalink)
+    (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
 {{- $subjectPage := default $page .SubjectPage }}
+{{- $assetVariant := .AssetVariant }}
+{{- $subjectMetaParams := merge . (dict
+    "Page" $subjectPage
+    "Template" (printf "%s->%s" .Template $template)
+) }}
 {{- $subjectMeta := default ($subjectPage.Scratch.Get "clarismeta")
-    (partialCached "claris/_functions/meta/index" (dict "Page" $subjectPage) $subjectPage.Permalink) }}
+    (partialCached "claris/_functions/meta/index" $subjectMetaParams $subjectPage.Permalink) }}
 {{- $showAuthor := default ($page.Param "showauthor") .ShowAuthor }}
 {{- $showDate := default ($page.Param "showdate") .ShowDate }}
 {{- $dateFormat := default ":date_long" ($page.Param "dateformat") }}

@@ -1,11 +1,9 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
-{{- $template := "partials/claris/main/index" }}
+{{- $template := "claris/main/index" }}
 {{- $itemType := "article" }}
 {{- $type := "claris" }}
 {{- with $page }}
-  {{- $s := site.Params }}
-  {{- $p := .Params }}
   {{- $mainKind := (.Scratch.Get "claris.render.main.kind") }}
   {{- $mainInnerClassList := (slice "main_inner" "grid-main") }}
   {{ if eq $mainKind "page" }}
@@ -30,8 +28,9 @@
     {{- end }}
   {{- end }}
 
-  {{- $componentParams := (dict
+  {{- $componentParams := merge $ (dict
     "Page" $page
+    "Template" (printf "%s->%s" $.Template $template)
     "Meta" $meta
     "ItemType" $itemType
     "HeadingLevel" 1
@@ -52,7 +51,8 @@
     {{- partial "claris/_components/title" . }}
   </header>
   <div class="{{ delimit $mainInnerClassList ` ` }}" id="contentContainer">
-    {{- partial (printf "%s/main/%s" $type $mainKind) $componentParams }}
+    {{- $mainPartial := printf "%s/main/%s" $type $mainKind }}
+    {{- partial $mainPartial $componentParams }}
     {{- if $sidebar }}
       {{ partial "claris/_components/sidebar" (merge $componentParams (dict
         "HeadingLevel" 2

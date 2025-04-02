@@ -14,9 +14,11 @@
 {{- $containerClass := default "content_multicolumn content" .ContainerClass }}
 {{- $fetchPriority := default false .FetchPriority }}
 
-{{- $mainSection := (in (page.Param "mainSections") page.Section) -}}
+{{- $mainSection := (in ($page.Param "mainSections") $page.Section) -}}
 
-{{- $listMeta := partial "claris/_functions/meta/list" . page.Permalink }}
+{{- $assetVariant := .AssetVariant }}
+{{- $listMetaParams := merge $ (dict "Template" (printf "%s->%s" .Template $template) ) }}
+{{- $listMeta := partial "claris/_functions/meta/list" $listMetaParams $page.Permalink }}
 
 {{- $itemsMeta := where $listMeta.List.Data.Items ".Classification.Hidden" "ne" true }}
 
@@ -41,6 +43,7 @@
   "RelativeDates" false
   "ShowAuthor" false
   "ShowTags" false
+  "Template" (printf "%s->%s" $.Template $template)
 ) -}}
 
 {{- with $itemsMeta }}
@@ -52,14 +55,14 @@
   {{- else if (eq $listLayout "list") }}
     <ul class="content_list">
   {{- else }}
-    {{- errorf "%s[%s]: Invalid .ListLayout=%v" $dbg $listLayout }}
+    {{- errorf "%s Invalid .ListLayout=%v" $dbg $listLayout }}
   {{- end }}
 
   {{- $paginated := $itemsMeta }}
   {{- /* Paginator is only supported if kind is section or taxonomy
       https://gohugo.io/templates/pagination/#list-paginator-pages */ -}}
-  {{- /* {{- if (in (slice "section" "taxonomy") page.Kind) }}
-    {{- $paginated = (page.Paginate $itemsMeta).Pages }}
+  {{- /* {{- if (in (slice "section" "taxonomy") $page.Kind) }}
+    {{- $paginated = ($page.Paginate $itemsMeta).Pages }}
   {{- end }} */ -}}
   {{- with $paginated }}
     {{- range $idx, $item := . }}
@@ -87,7 +90,7 @@
     </div>
     {{- end }} */ -}}
   {{- else }}
-    {{- errorf "%s[%s]: page.Paginate returned %v. $itemsMeta=%v" $dbg $paginated $itemsMeta }}
+    {{- errorf "%s page.Paginate returned %v. $itemsMeta=%v" $dbg $paginated $itemsMeta }}
   {{- end }}
 
   {{- if (eq $listLayout "grid") }}

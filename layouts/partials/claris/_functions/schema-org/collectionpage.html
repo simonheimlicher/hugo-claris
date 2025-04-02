@@ -3,7 +3,7 @@
 {{- $schemaOrgMeta := .SchemaOrgMeta }}
 {{- $template := "claris/_functions/schema-org/collectionpage" }}
 {{- $debug := false }}
-{{- $entityParams := merge . (dict "Debug" $debug) }}
+{{- $entityParams := merge $ (dict "Template" (printf "%s->%s" $.Template $template) "Debug" $debug) }}
 
 <!-- [Schema.org entity CollectionPage](https://schema.org/CollectionPage)
 # Background

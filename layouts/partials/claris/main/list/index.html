@@ -1,4 +1,4 @@
-{{- $template := "partials/claris/main/list/index" }}
+{{- $template := "claris/main/list/index" }}
 {{- $debug := and false (or .Debug (page.Param "clarisdebug") ) }}
 {{- $dbg := printf "%s [%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` page.RelPermalink)
     (replaceRE `.*?([^/]+)$` `$1` $template) }}
@@ -6,7 +6,8 @@
 {{- $layout := default "grid" page.Layout }}
 {{ partial "html-comment" (printf "[%s]: BEGIN: layout=%v" $template $layout) }}
 {{- $listPartialTemplate := printf "claris/main/list/%s" $layout }}
-{{- $listPartialParams := merge . (dict
+{{- $listPartialParams := merge $ (dict
+  "Template" (printf "%s->%s" $.Template $template)
   "Debug" $debug
 ) }}
 {{- if $debug }}

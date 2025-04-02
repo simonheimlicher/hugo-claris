@@ -14,7 +14,7 @@
 {{- if $debug }}
   {{- warnf "%s assetVariant:\n%v" $dbg (jsonify (dict "indent" "  ") $assetVariant) -}}
 {{- end}}
-{{- $assets := partialCached "claris/_functions/asset-bundles" $ctx $assetVariant -}}
+{{- $assets := partialCached "claris/_functions/assets/asset-bundles" $ctx $assetVariant -}}
 
 {{- $scriptBundles := $assets.Scripts }}
 {{- $styleBundles := $assets.Styles }}
