@@ -1,6 +1,6 @@
 {{- $page := default page .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
-{{- $template := "partials/claris/main/content/page" }}
+{{- $template := "claris/main/content/page" }}
 
 {{- $itemType := $meta.Single.Data.ItemType }}
 {{- $outdated := $meta.Classification.Outdated }}
@@ -19,13 +19,16 @@
 {{- end }}
 <article class="article_content content_singlecolumn content">
   {{- if (and (eq $itemType "article") $mainSection) -}}
-    {{- partial "claris/_components/meta" (dict
-      "Page" $page
-      "ShowAuthor" true
-      "ShowDate" true
-      "AuthorLink" true
-      "AuthorAvatar" false
+    {{- $metaParams := (merge $ (dict
+        "Page" $page
+        "ShowAuthor" true
+        "ShowDate" true
+        "AuthorLink" true
+        "AuthorAvatar" false
+        "Template" (printf "%s->%s" $.Template $template)
+      )
     ) }}
+    {{- partial "claris/_components/meta" $metaParams }}
   {{- end -}}
   <div class="article_body">
   {{- if $outdated }}
@@ -34,7 +37,7 @@
     {{- end }}
     {{- partial "claris/_components/outdated" . -}}
   {{- end -}}
-  {{- partial "claris/_components/lede-initial" .Content }}
+  {{- partial "claris/_components/lede-initial" $page.Content }}
   </div>
   {{- if $showComments }}
     {{- partial "claris/_components/comments" . }}

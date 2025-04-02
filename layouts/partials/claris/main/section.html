@@ -1,6 +1,6 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
-{{- $template := "partials/claris/main/section" }}
+{{- $template := "claris/main/section" }}
 {{- $debug := false }}
 
 {{- $itemType := "article" }}
@@ -9,14 +9,15 @@
   {{- $itemType = "section" }}
 {{- end }}
 
-
 {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
 
 {{- if $page.Content }}
-  {{ partial "claris/main/content/index" . }}
+  {{- $contentParams := merge $ (dict "Template" (printf "%s->%s" $.Template $template) ) }}
+  {{ partial "claris/main/content/index" $contentParams }}
 {{- end }}
 {{- if (default (not $page.Content) ($page.Param "list")) }}
-  {{- partial "claris/main/list/index" (merge . (dict "HeadingLevel" (sub .HeadingLevel 1))) }}
+  {{- $listParams := merge $ (dict "Template" (printf "%s->%s" $.Template $template) "HeadingLevel" (sub $.HeadingLevel 1)) }}
+  {{- partial "claris/main/list/index" $listParams }}
 {{- end }}
 
 {{ partial "html-comment" (printf "[%s]:   END" $template) }}

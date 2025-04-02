@@ -14,8 +14,8 @@
 
 {{- if $schemaOrg }}
 
-  {{- $entityParams := (dict
-    "Page" $page
+  {{- $entityParams := merge $ (dict
+    "Template" (printf "%s->%s" $.Template $template)
     "Meta" $meta
     "Format" (dict
       "Date" $dateUTCISO8601

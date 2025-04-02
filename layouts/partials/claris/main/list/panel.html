@@ -1,11 +1,13 @@
 {{- $meta := page.Scratch.Get "clarismeta" }}
-{{- $template := "partials/claris/main/list/panel" }}
+{{- $template := "claris/main/list/panel" }}
 {{- $debug := false }}
 
 {{- $headingLevel := default 2 .HeadingLevel }}
 
-{{- $panelsPartialParams := (dict
-  "HeadingLevel" $headingLevel) }}
+{{- $panelsPartialParams := merge $ (dict
+  "Template" (printf "%s->%s" $.Template $template)
+  "HeadingLevel" $headingLevel
+) }}
 
 {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
 <div class="panel_content content_full-bleed">

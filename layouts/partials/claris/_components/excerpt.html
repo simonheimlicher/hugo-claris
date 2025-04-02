@@ -38,7 +38,7 @@
   {{- $excerptMeta = partialCached "claris/_functions/meta/single" (dict
     "Page" $subjectPage
     "AssetVariant" $assetVariant
-    "Template" $template) $subjectPage.Permalink }}
+    "Template" (printf "%s->%s" .Template $template) ) $subjectPage.Permalink }}
 {{- end }}
 
 {{- if and false $debug }}
@@ -127,8 +127,8 @@
           {{ $excerptTitle }}
           </h{{ $headingLevel }}>
           {{- with $headerPartial }}
-            {{ partial $headerPartial (dict
-              "Page" $page
+            {{- $headerParams := merge $ (dict
+              "Template" (printf "%s->%s" $.Template $template)
               "SubjectPage" $subjectPage
               "ContainerClass" "excerpt_meta"
               "ShowAuthor" $showAuthor
@@ -137,6 +137,7 @@
               "ShowDate" $showDate
               "RelativeDates" $relativeDates
               "ShowTags" $showTags) }}
+            {{ partial $headerPartial $headerParams }}
           {{- end }}
         </div>
         <div class="excerpt_main{{ if $excerptImage }} image{{ end }}{{ if $excerptContent }} content{{ end }}">
