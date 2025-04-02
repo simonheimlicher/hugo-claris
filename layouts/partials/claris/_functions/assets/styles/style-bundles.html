@@ -1,6 +1,6 @@
 {{ $styleBundles := dict }}
 {{ $page := .Page }}
-{{ $template := "claris/_functions/style-bundles" }}
+{{ $template := "claris/_functions/assets/styles/style-bundles" }}
 {{ $debug := and false (page.Param "clarisdebug") }}
 {{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 {{ $debugSassDeprecation := and false (page.Param "clarisdebugsassdeprecation") }}
@@ -208,7 +208,7 @@ TOCSS-DART: failed to transform "styles/claris-vitae-main_all.scss"
               $fontStyleResource.Name $fontStyleResource.MediaType $fontStyleResource
               $executedResourceList $executedResourceList (reflect.IsSlice $executedResourceList) (len $executedResourceList) }}
           {{ if true }}
-            {{ partial "claris/_functions/style-bundles_dump-resource-slice" (dict
+            {{ partial "claris/_functions/assets/styles/dump-resource-slice" (dict
                 "Template" $template
                 "Page" $page
                 "ResourceList" $executedResourceList
@@ -236,7 +236,7 @@ TOCSS-DART: failed to transform "styles/claris-vitae-main_all.scss"
       {{ warnf "%v Concatenated SCSS files for content type list=%v ID=%v resourceID=%s. Final executedResourceList=%v [type=%T isSlice=%v len=%d]" $dbg
           $contentTypeList $contentTypeListID $resourceID
           $executedResourceList $executedResourceList (reflect.IsSlice $executedResourceList) (len $executedResourceList) }}
-      {{ partial "claris/_functions/style-bundles_dump-resource-slice" (dict
+      {{ partial "claris/_functions/assets/styles/dump-resource-slice" (dict
           "Template" $template
           "Page" $page
           "ResourceList" $executedResourceList
@@ -324,13 +324,3 @@ TOCSS-DART: failed to transform "styles/claris-vitae-main_all.scss"
       (jsonify (dict "indent" "  ") $styleBundles) }}
 {{ end }}
 {{ return $styleBundles }}
-
-{{ define "partials/claris/_functions/style-bundles_dump-resource-slice" }}
-  {{ $template := "style-bundles_dump-resource-slice" }}
-  {{ $dbg := printf "%s[%s::%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` .Page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
-  {{ warnf "%v Elements in %v [type=%T isSlice=%v len=%d]" $dbg .ResourceList .ResourceList
-    (reflect.IsSlice .ResourceList) (len .ResourceList) }}
-  {{ range $idx, $resource := .ResourceList }}
-    {{ warnf "%v %d %v .Name=%v .MediaType=%v" $dbg $idx $resource $resource.Name $resource.MediaType }}
-  {{ end }}
-{{ end }}

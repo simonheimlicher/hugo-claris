@@ -8,7 +8,7 @@
 {{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
 {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
 
-{{- $assetVariant := partial "claris/_functions/asset-variant" . }}
+{{- $assetVariant := partial "claris/_functions/assets/asset-variant" . }}
 {{- $partialContext := (dict "Page" . "AssetVariant" $assetVariant) }}
 {{- /* partial "html-comment" (printf "%s assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) */ -}}
 

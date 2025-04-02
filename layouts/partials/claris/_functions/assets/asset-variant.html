@@ -1,6 +1,6 @@
 {{- $assetVariant := false }}
 {{- $page := .Page }}
-{{- $template := "claris/_functions/asset-variant" }}
+{{- $template := "claris/_functions/assets/asset-variant" }}
 {{- $outputFormat := partial "claris/_functions/output-format" . }}
 {{- $onlyMediaType := default "all" ($page.Param "onlyMediaType") }}
 {{- $mediaTypeList := (slice "all" "screen" "print") }}

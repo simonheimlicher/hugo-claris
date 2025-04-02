@@ -1,6 +1,6 @@
 {{ $fontStyles := false }}
 {{ $page := .Page }}
-{{ $template := "claris/_functions/font-styles" }}
+{{ $template := "claris/_functions/fonts/font-styles" }}
 {{ $debug := and false (page.Param "clarisdebug") }}
 {{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
@@ -259,7 +259,7 @@ into a global map */}}
   {{ end }}
   {{ if and true $debug }}
     {{ warnf "%v Concatenating fontStyleResources=%v" $dbg $fontStyleResources }}
-    {{ partial "claris/_functions/style-bundles_dump-resource-slice" (dict
+    {{ partial "claris/_functions/assets/styles/dump-resource-slice" (dict
         "Template" $template
         "Page" $page
         "ResourceList" $fontStyleResources

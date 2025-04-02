@@ -4,7 +4,7 @@
 
 {{ $assetVariant := .AssetVariant }}
 {{ if not $assetVariant }}
-  {{ $assetVariant = partial "claris/_functions/asset-variant" $page }}
+  {{ $assetVariant = partial "claris/_functions/assets/asset-variant" $page }}
 {{ end }}
 
 {{ $metaParams := (dict "Page" $page "AssetVariant" $assetVariant "Template" $template "Debug" $debug) }}

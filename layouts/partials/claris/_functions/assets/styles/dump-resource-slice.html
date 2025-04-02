@@ -1,0 +1,7 @@
+{{ $template := "claris/_functions/assets/styles/dump-resource-slice" }}
+{{ $dbg := printf "%s[%s::%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` .Page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{ warnf "%v Elements in %v [type=%T isSlice=%v len=%d]" $dbg .ResourceList .ResourceList
+  (reflect.IsSlice .ResourceList) (len .ResourceList) }}
+{{ range $idx, $resource := .ResourceList }}
+  {{ warnf "%v %d %v .Name=%v .MediaType=%v" $dbg $idx $resource $resource.Name $resource.MediaType }}
+{{ end }}

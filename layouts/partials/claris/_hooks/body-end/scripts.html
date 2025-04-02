@@ -77,7 +77,7 @@
       }
     </script>
 
-{{- with $assetBundles := partialCached "claris/_functions/asset-bundles" $ctx $assetVariant.Assets }}
+{{- with $assetBundles := partialCached "claris/_functions/assets/asset-bundles" $ctx $assetVariant.Assets }}
   {{- with $inlineBundles := index $assetBundles "Scripts" "body" "inline" }}
     {{- if $debug }}
       {{- warnf "%s mounting bundles with target=body type=inline: %v" $dbg $inlineBundles }}

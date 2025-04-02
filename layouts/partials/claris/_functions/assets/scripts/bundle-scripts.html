@@ -1,6 +1,6 @@
 {{ $targetPriorityBundle := false }}
 {{ $page := default page .Page }}
-{{ $template := "claris/_functions/scripts/get-bundle" }}
+{{ $template := "claris/_functions/assets/scripts/bundle-scripts" }}
 {{ $debug := and false ($page.Param "clarisdebug") }}
 {{ $dbg := printf "%s[%s] bundleName=%s"
     (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink)

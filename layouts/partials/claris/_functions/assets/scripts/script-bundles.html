@@ -1,6 +1,6 @@
 {{ $scriptBundles := dict }}
 {{ $page := .Page }}
-{{ $template := "claris/_functions/script-bundles" }}
+{{ $template := "claris/_functions/assets/scripts/script-bundles" }}
 {{ $debug := and false ($page.Param "clarisdebug") }}
 {{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
@@ -35,7 +35,7 @@
       ) }}
 
       {{/* Get the script bundle */}}
-      {{ with $bundleResource := partial "claris/_functions/scripts/get-bundle" $bundleParams }}
+      {{ with $bundleResource := partial "claris/_functions/assets/scripts/bundle-scripts" $bundleParams }}
         {{ $scriptBundle := merge $mountParams (dict
           "media" $mediaType
           "name" $bundleName

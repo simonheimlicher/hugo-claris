@@ -1,6 +1,6 @@
 {{- $assets := dict }}
 {{- $page := .Page }}
-{{- $template := "claris/_functions/asset-bundles" }}
+{{- $template := "claris/_functions/assets/asset-bundles" }}
 
 {{- $assetVariant := .AssetVariant }}
 {{- partial "html-comment" (printf "%s[%s]: assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) }}
@@ -15,11 +15,11 @@
 "claris/_functions/style-bundles", which changes the stylesheets, is
 only reflected in `/index.html` but not in other files.
 Trying to add a hash of $assetVariant as cache key for partialCached, maybe this helps -->
-{{- $styleBundles := partialCached "claris/_functions/style-bundles" . $assetVariant $assetVariant.AssetKey }}
+{{- $styleBundles := partialCached "claris/_functions/assets/styles/style-bundles" . $assetVariant $assetVariant.AssetKey }}
 {{/* {{- $styleBundles := partialCached "claris/_functions/style-bundles" (dict "Page" $page "AssetVariant" $assetVariant) }} */}}
 
 <!-- Bundle JS: styles from all content types merged per mediaType type -->
-{{- $scriptBundles := partialCached "claris/_functions/script-bundles" . $assetVariant $assetVariant.AssetKey }}
+{{- $scriptBundles := partialCached "claris/_functions/assets/scripts/script-bundles" . $assetVariant $assetVariant.AssetKey }}
 {{/* {{- $scriptBundles := partialCached "claris/_functions/script-bundles" (dict "Page" $page "AssetVariant" $assetVariant) }} */}}
 
 {{- $assets = (dict "Styles" $styleBundles "Scripts" $scriptBundles) }}
