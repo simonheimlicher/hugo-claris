@@ -5,10 +5,14 @@
 {{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{ $assetVariant := .AssetVariant }}
-
 {{ $mediaTypeList := $assetVariant.MediaTypeList }}
 {{ $contentTypeList := $assetVariant.ContentTypeList }}
 {{ $contentTypeListID := $assetVariant.ContentTypeListID }}
+
+{{ if $debug }}
+  {{ warnf "%s ContentTypeListID=%s CoalesceMainKindLanguageKey=%s"
+      $dbg $assetVariant.ContentTypeListID $assetVariant.CoalesceMainKindLanguageKey }}
+{{ end }}
 
 {{ $bundleMountParams := (slice
     (dict "base"     (dict "target" "body" "type" "inline") )
