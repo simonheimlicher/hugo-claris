@@ -16,11 +16,16 @@
 
 {{ $bundleMountParams := (slice
     (dict "base"     (dict "target" "body" "type" "inline") )
-    (dict "enhanced" (dict "target" "body" "type" "module" "priority" "auto") )
+    (dict "enhanced" (dict "target" "body" "type" "defer" "priority" "auto") )
     (dict "optional" (dict "target" "body" "type" "defer" "priority" "low") )
 ) }}
 {{ with $page.Param "assets.scripts.bundles" }}
-  {{ $bundleMountParams = merge $bundleMountParams . }}
+  {{ if $debug }}
+    {{ warnf "%s Replace default bundleMountParams:\n%v\n with param assets.scripts.bundles:\n%v"
+        $dbg (jsonify (dict "indent" "  ") $bundleMountParams)
+        (jsonify (dict "indent" "  ") . ) }}
+  {{ end }}
+  {{ $bundleMountParams = . }}
 {{ end }}
 
 {{ range $idx, $bundleParams := $bundleMountParams }}

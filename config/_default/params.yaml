@@ -130,8 +130,19 @@ assets:
       fluid_scale_digits: null
 
   scripts:
-    # Inline scripts with priority `high`
-    inline: true
+    bundles:
+      - base:
+          target: body
+          type: inline
+      - enhanced:
+          target: body
+          type: defer
+          priority: auto
+      - optional:
+          target: body
+          type: defer
+          priority: low
+
     optional:
       # To enable the `Medium.com`-like zoom effect on responsive images,
       # add the argument `lightbox` when calling the shortcode `responsive-image`
