@@ -8,9 +8,12 @@
 {{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
 {{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
 
-{{- $assetVariant := partialCached "claris/_functions/assets/asset-variant" (dict "Page" $.Page "Template" $template) $.Type $.Kind $.AlternativeOutputFormats $.OutputFormats }}
+{{- $assetVariant := partialCached "claris/_functions/assets/asset-variant" (dict "Page" $.Page "Template" $template)
+  $.Type $.Kind
+  $.AlternativeOutputFormats $.OutputFormats
+  $page.Params.assets $page.Params.render
+  hugo.Environment (getenv "HUGO_MINIFY") -}}
 {{- $partialContext := (dict "Page" . "Template" $template "AssetVariant" $assetVariant) }}
-{{- /* partial "html-comment" (printf "%s assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) */ -}}
 
 {{- if $debug }}
   {{- warnf "%s hugo.Environment=%v envDevel=%v envProd=%v" $dbg hugo.Environment $envDevel $envProd -}}
@@ -48,9 +51,9 @@
 {{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "AssetVariant" $assetVariant "Template" $template "Debug" $debug) $page.Permalink $assetVariant.CoalesceMainKindLanguageKey }}
 {{- .Scratch.Set "clarismeta" $meta }}
 
-{{- /* {{- if (and $assetVariant.OutputFormat (strings.Contains (lower $assetVariant.OutputFormat.Name) "print") ) }}
+{{- /* {{- if (and $assetVariant.OutputFormat (strings.Contains (lower $assetVariant.OutputFormatName) "print") ) }}
   {{- warnf "%s outputFormat=%v: meta.Output=\n%v\n.Classification=\n%v"
-    $dbg $assetVariant.OutputFormat.Name
+    $dbg $assetVariant.OutputFormatName
     (jsonify (dict "indent" "  ") $meta.Output)
     (jsonify (dict "indent" "  ") $meta.Classification ) }}
 {{- end }} */ -}}
@@ -71,7 +74,7 @@
     {{- $forceColorScheme = " data-color-scheme=\"dim\"" }}
   {{- end -}}
 {{- end -}}
-{{- if (and $assetVariant.OutputFormat (strings.Contains (lower $assetVariant.OutputFormat.Name) "print") ) }}
+{{- if (and $assetVariant.OutputFormat (strings.Contains (lower $assetVariant.OutputFormatName) "print") ) }}
   {{- $forceColorScheme = " data-color-scheme=\"lit\"" }}
 {{- end -}}
 
@@ -87,15 +90,16 @@
   {{- with .Type }}{{ $htmlClassList = append (slice (printf "type-%s" . )) $htmlClassList }}{{ end -}}
   {{- with .Kind }}{{ $htmlClassList = append (slice (printf "kind-%s" . )) $htmlClassList }}{{ end -}}
   {{- with (default .Layout .Params.layout) }}{{ $htmlClassList = append (slice (printf "layout-%s" . )) $htmlClassList }}{{ end -}}
-  {{- with $assetVariant.OutputFormat.Name }}{{ $htmlClassList = append (slice (printf "outputformat-%s" . )) $htmlClassList }}{{ end -}}
+  {{- with $assetVariant.OutputFormatName }}{{ $htmlClassList = append (slice (printf "outputformat-%s" . )) $htmlClassList }}{{ end -}}
   {{- with $htmlClassList }}{{ printf " class=%q" (delimit $htmlClassList " ") | safeHTMLAttr }}{{ end -}}
   {{- with $forceColorScheme }} {{ safeHTMLAttr . }}{{ end -}}
   {{- with $openGraphNSDeclaration }} {{ safeHTMLAttr . }} {{ end -}}
 >
 <head>
-  {{- /* partial "html-comment" (printf "[%s]: .Type=%s .Layout=%s .MediaType=%s $assetVariant.OutputFormat=%s meta.Classification=%v]"
-    $template .Type .Layout .MediaType $assetVariant.OutputFormat.Name (jsonify (dict "indent" "  ") $meta.Classification)) */ -}}
-  {{- partial "claris/head/index" $partialContext }}
+{{ partial "html-comment" (printf "%s assetVariant:\n%v" $dbg (jsonify (dict "indent" "  ") $assetVariant) ) }}
+{{ partial "html-comment" (printf "[%s]: .Type=%s .Layout=%s .MediaType=%s $assetVariant.OutputFormat=%s meta.Classification=%v]"
+    $template .Type .Layout .MediaType $assetVariant.OutputFormatName (jsonify (dict "indent" "  ") $meta.Classification)) }}
+  {{ partial "claris/head/index" $partialContext }}
   {{- partialCached "claris/_hooks/head-end/index" $partialContext $assetVariant.CoalesceMainKindLanguageKey }}
 </head>
 <body id="documentContainer" {{- block "body-data" . -}} {{- end -}}>

@@ -1,0 +1,67 @@
+{{ $hash := "" }}
+{{ $page := default page .Page }}
+{{ $template := "claris/_functions/stable-hash" }}
+{{ $debug := and false ($page.Param "clarisdebug") }}
+{{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{/* Since the order of maps is unstable, we turn the map into a sorted list of
+strings before we hash it */}}
+
+{{ $object := default . .Object }}
+{{ $flattened := partial "claris/_functions/stable-hash_flatten" $object }}
+
+{{ if $debug }}
+  {{ warnf "%s flattened:\n%v" $dbg (jsonify $flattened ) }}
+{{ end }}
+{{ $hash = sha256 (jsonify $flattened) }}
+
+{{ return $hash }}
+
+{{ define "partials/claris/_functions/stable-hash_flatten" }}
+  {{ $template := "claris/_functions/stable-hash_flatten" }}
+  {{ $debug := false }}
+  {{ if $debug }}
+    {{ warnf "%s called with %v [type=%T]" $template . . }}
+  {{ end }}
+  {{ $flatList := . }}
+  {{ if or (reflect.IsSlice . ) (reflect.IsMap .) }}
+    {{ $flatList = slice }}
+    {{ if reflect.IsMap . }}
+      {{ range $key, $value := . }}
+        {{ if eq (printf "%T" . ) "<nil>" }}
+        {{ else }}
+          {{ $keyValue := slice $key $value }}
+          {{ $keyFlattenedKValue := (printf "%s=%v" $key $value) }}
+          {{ if or (reflect.IsSlice . ) (reflect.IsMap .) }}
+            {{ $flattenedValue := partial "partials/claris/_functions/stable-hash_flatten" . }}
+            {{ $keyFlattenedKValue = (printf "%s:{%v}" $key $flattenedValue ) }}
+            {{ if $debug }}
+              {{ warnf "%s MAP:  recursive call with %v [type=%T] returned type=%T:\n%#v"
+                  $template . . $keyFlattenedKValue $keyFlattenedKValue }}
+            {{ end }}
+          {{ end }}
+          {{ $flatList = append $keyFlattenedKValue $flatList }}
+        {{ end }}
+      {{ end }}
+    {{ else }}
+      {{ range $value := . }}
+        {{ if eq (printf "%T" . ) "<nil>" }}
+        {{ else }}
+          {{ $flattenedKValue := (printf "%v" . ) }}
+          {{ if or (reflect.IsSlice . ) (reflect.IsMap .) }}
+            {{ $flattenedValue = partial "partials/claris/_functions/stable-hash_flatten" . }}
+            {{ if $debug }}
+              {{ warnf "%s SLICE: recursive call with %v [type=%T] returned type=%T:\n%#v" $template . . $flattenedKValue $flattenedKValue }}
+            {{ end }}
+          {{ end }}
+          {{ $flatList = append $flattenedKValue $flatList }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+    {{ $flatList = delimit (sort $flatList) "," }}
+  {{ end }}
+  {{ if $debug }}
+    {{ warnf "%s return flattened %v as type=%T:\n%v"
+        $template . $flatList (jsonify (dict "indent" "  ") $flatList) }}
+  {{ end }}
+  {{ return $flatList }}
+{{ end }}

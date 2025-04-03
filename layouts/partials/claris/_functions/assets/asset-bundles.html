@@ -1,26 +1,24 @@
-{{- $assets := dict }}
-{{- $page := .Page }}
-{{- $template := "claris/_functions/assets/asset-bundles" }}
+{{ $assets := dict }}
+{{ $page := .Page }}
+{{ $template := "claris/_functions/assets/asset-bundles" }}
 
-{{- $assetVariant := .AssetVariant }}
+{{ $assetVariant := .AssetVariant }}
 {{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
-{{/* {{- warnf "%s[%s]: RelPermalink=%s .Type=%s .Layout=%s $contentTypeList=%s $mediaTypeList=%s"
+{{/* {{ warnf "%s[%s]: RelPermalink=%s .Type=%s .Layout=%s $contentTypeList=%s $mediaTypeList=%s"
     .Page $template .Page.RelPermalink .Type .Layout
     $assetVariant.ContentTypeList $assetVariant.MediaTypeList }} */}}
     <!-- (jsonify (dict "indent" "  ")  $assetVariant) -->
 
 <!-- Bundle CSS: styles from all content types merged per mediaType type -->
-<!-- NOTE: Sometimes a change to a template file such as
-"claris/_functions/style-bundles", which changes the stylesheets, is
-only reflected in `/index.html` but not in other files.
-Trying to add a hash of $assetVariant as cache key for partialCached, maybe this helps -->
-{{- $styleBundles := partialCached "claris/_functions/assets/styles/style-bundles" . $assetVariant $assetVariant.AssetKey }}
-{{/* {{- $styleBundles := partialCached "claris/_functions/style-bundles" (dict "Page" $page "AssetVariant" $assetVariant) }} */}}
+<!-- NOTE: Need to use the full hash of AssetVariant for `partialCached`
+of `style-bundles` and `script-bundles` with`$assetVariant.AssetKey`;
+coalescing by Kind and Language with
+`$assetVariant.CoalesceMainKindLanguageKey` leads to issue in Hugo Vitae -->
+{{ $styleBundles := partialCached "claris/_functions/assets/styles/style-bundles" . $assetVariant.AssetKey }}
 
 <!-- Bundle JS: styles from all content types merged per mediaType type -->
-{{- $scriptBundles := partialCached "claris/_functions/assets/scripts/script-bundles" . $assetVariant $assetVariant.AssetKey }}
-{{/* {{- $scriptBundles := partialCached "claris/_functions/script-bundles" (dict "Page" $page "AssetVariant" $assetVariant) }} */}}
+{{ $scriptBundles := partialCached "claris/_functions/assets/scripts/script-bundles" . $assetVariant.AssetKey }}
 
-{{- $assets = (dict "Styles" $styleBundles "Scripts" $scriptBundles) }}
-{{- return $assets }}
+{{ $assets = (dict "Styles" $styleBundles "Scripts" $scriptBundles) }}
+{{ return $assets }}

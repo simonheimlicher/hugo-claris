@@ -14,22 +14,22 @@
       $dbg $assetVariant.ContentTypeListID $assetVariant.CoalesceMainKindLanguageKey }}
 {{ end }}
 
-{{ $bundleMountParams := (slice
+{{ $bundleMap := (slice
     (dict "base"     (dict "target" "body" "type" "inline") )
     (dict "enhanced" (dict "target" "body" "type" "defer" "priority" "auto") )
     (dict "optional" (dict "target" "body" "type" "defer" "priority" "low") )
 ) }}
 {{ with $page.Param "assets.scripts.bundles" }}
   {{ if $debug }}
-    {{ warnf "%s Replace default bundleMountParams:\n%v\n with param assets.scripts.bundles:\n%v"
-        $dbg (jsonify (dict "indent" "  ") $bundleMountParams)
+    {{ warnf "%s Replace default bundleMap:\n%v\n with param assets.scripts.bundles:\n%v"
+        $dbg (jsonify (dict "indent" "  ") $bundleMap)
         (jsonify (dict "indent" "  ") . ) }}
   {{ end }}
-  {{ $bundleMountParams = . }}
+  {{ $bundleMap = . }}
 {{ end }}
 
-{{ range $idx, $bundleParams := $bundleMountParams }}
-  {{ range $bundleName, $mountParams := $bundleParams }}
+{{ range $idx, $mountParams := $bundleMap }}
+  {{ range $bundleName, $mountParams := $mountParams }}
     {{ if $debug }}
     {{ warnf "%s creating bundleName=%v with mountParams:\n%v"
         $dbg $bundleName (jsonify (dict "indent" "  ") $mountParams) }}
@@ -37,8 +37,7 @@
     {{ $mediaType := default "all" $mountParams.media }}
     {{ if (in $mediaTypeList $mediaType) }}
 
-      {{ $bundleParams := (dict
-          "AssetVariant" $assetVariant
+      {{ $bundleParams := merge $ (dict
           "MediaType" $mediaType
           "BundleName" $bundleName
       ) }}

@@ -17,7 +17,7 @@
 {{ $singleMeta := partialCached "claris/_functions/meta/single" $metaParams $page.Permalink }}
 
 {{ $outputMeta := (dict "Output" (dict
-    "Format" $assetVariant.OutputFormat.Name
+    "Format" $assetVariant.OutputFormatName
   )
 ) }}
 
@@ -30,9 +30,9 @@
   $classificationMeta
 ) }}
 
-{{/* f (and $assetVariant.OutputFormat (strings.Contains (lower $assetVariant.OutputFormat.Name) "print") ) }}
+{{/* f (and $assetVariant.OutputFormat (strings.Contains (lower $assetVariant.OutputFormatName) "print") ) }}
   {{ warnf "%s[%s]: $assetVariant.OutputFormat=%v: meta.Output=\n%v\n.Classification=\n%v"
-    $page $template $assetVariant.OutputFormat.Name
+    $page $template $assetVariant.OutputFormatName
     (jsonify (dict "indent" "  ") $meta.Format)
     (jsonify (dict "indent" "  ") $meta.Classification ) }}
 {{ end */ -}}

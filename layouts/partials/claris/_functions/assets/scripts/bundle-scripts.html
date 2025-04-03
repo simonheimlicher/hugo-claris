@@ -284,8 +284,8 @@ export const clarisHugoParams = {
 
 {{ else }}
   {{ if $debug }}
-    {{ warnf "%s not adding contentTypeListID=%s bundle as bundleResources is empty"
-        $dbg $contentTypeListID $bundleName }}
+    {{ warnf "%s not adding bundleName=%v with contentTypeListID=%s as bundleResources is empty"
+        $dbg $bundleName $contentTypeListID }}
   {{ end }}
 {{ end }}
 
