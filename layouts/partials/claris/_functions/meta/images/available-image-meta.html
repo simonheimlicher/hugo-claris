@@ -185,8 +185,9 @@ $imageKindMeta = (dict
         {{- end }}
 
         {{- $imgResource := false }}
+        {{- $imageResourceArgs := false }}
         {{- with $validVersionParam }}
-          {{- $imageResourceArgs := merge $imageResourceBaseArgs $validVersionParam }}
+          {{- $imageResourceArgs = merge $imageResourceBaseArgs $validVersionParam }}
           {{- $imgResource = partialCached "claris/_functions/resources/get-resource" (merge $imageResourceArgs (dict "Page" $page) ) $imageResourceArgs }}
         {{- end }}
 
@@ -221,8 +222,8 @@ $imageKindMeta = (dict
                 (jsonify (dict "indent" "  ") $imageKindVariantMeta) }}
           {{- end }}
         {{- else }}
-          {{- errorf "%s Failed to get image resource based on argument .resource=%v [type=%T] .src=%v [type=%T]" $dbg
-              .resource .resource .src .src }}
+          {{- errorf "%s Failed to get image resource based on validVersionParam:\n%v\nimageResourceArgs:\n%v" $dbg
+              (jsonify (dict "indent" "  ") $validVersionParam) (jsonify (dict "indent" "  ") $imageResourceArgs) }}
         {{- end }}
       {{- end }}
 
