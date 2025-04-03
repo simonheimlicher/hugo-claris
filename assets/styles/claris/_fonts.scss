@@ -6,7 +6,7 @@
 @use 'hugo:vars' as hugo;
 
 $debug: false !default; // Set to `true` to enable debugging
-$debugMaps: false and $debug !default; // Set to `true` to enable debugging of font type and role maps
+$debugMaps: true and $debug !default; // Set to `true` to enable debugging of font type and role maps
 $debugStyleProperties: false and $debug !default; // Set to `true` to enable debugging of style properties
 $debugStyleRules: false and $debug !default; // Set to `true` to enable debugging of style rules
 $debugUtilityRules: false and $debug !default; // Set to `true` to enable debugging of utility rules
@@ -14,8 +14,8 @@ $debugApply: false and $debug !default; // Set to `true` to enable debugging of 
 $debugStyle: false and $debug !default; // Set to `true` to enable debugging of defineFontStyles
 $debugVariant: false and $debug !default; // Set to `true` to enable debugging of defineFontVariants
 $debugRole: false and $debug !default; // Set to `true` to enable debugging of defineFontRoles
-$debugUseAs: true and $debug !default; // Set to `true` to enable debugging of defineFontUtilityClasses
-$debugType: true and $debug !default; // Set to `true` to enable debugging of defineFontUtilityClasses
+$debugUseAs: false and $debug !default; // Set to `true` to enable debugging of defineFontUtilityClasses
+$debugType: false and $debug !default; // Set to `true` to enable debugging of defineFontUtilityClasses
 
 $debugCSSProperties: false !default; // Set to `true` to enable debugging of CSS properties
 

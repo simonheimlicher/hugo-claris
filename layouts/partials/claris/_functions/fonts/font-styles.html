@@ -53,6 +53,19 @@ mono: `Monospace Code` from https://github.com/system-fonts/modern-font-stacks#m
 
 {{ $fontsSelfHosted := $page.Param "assets.styles.fonts.selfhosted" | default false }}
 
+{{ if $debug }}
+  {{ warnf "%s" $dbg }}
+{{ end }}
+
+{{ if $debug }}
+  {{ warnf "%s Maps defined based on \"assets.styles.fonts\":\n%v"
+      $dbg  (jsonify (dict "indent" "  ") ($page.Param "assets.styles.fonts") ) }}
+  {{ warnf "  fontTypeToFamilyMap:\n%v" (jsonify (dict "indent" "  ") $fontTypeToFamilyMap) }}
+  {{ warnf "  fontRoleToTypeMap:\n%v" (jsonify (dict "indent" "  ") $fontRoleToTypeMap) }}
+  {{ warnf "  fontParams:\n%v" (jsonify (dict "indent" "  ") $fontParams) }}
+  {{ warnf "  defaultFallbackFontFamilyNames:\n%v" (jsonify (dict "indent" "  ") $defaultFallbackFontFamilyNames) }}
+{{ end }}
+
 {{/* Gather font and fallback font spec files This theme allows using three
 fonts, which are referred to as font types:
 - sans
@@ -211,7 +224,7 @@ family once */}}
 
     {{ with $fontSpec.HostedFontUrlsResource }}
       {{ $hostedfontUrlsResources = append $fontSpec.HostedFontUrlsResource $hostedfontUrlsResources }}
-      {{ if and true $debug }}
+      {{ if and false $debug }}
         {{ warnf "%s Found hosted font URLs file for %v [%v]: HostedFontUrlsResource=%v .Content:\n%v" $dbg
             $fontFamily $fontFamilyID
             $fontSpec.HostedFontUrlsResource $fontSpec.HostedFontUrlsResource.Content }}
@@ -226,7 +239,7 @@ family once */}}
 
     {{ with $fontSpec.FallbackStack }}
       {{ $fallbackStack = $fontSpec.FallbackStack }}
-      {{ if and true $debug }}
+      {{ if and false $debug }}
         {{ warnf "%s Found fallback font spec for %v [%v]: fallbackStack=%v" $dbg $fontFamily $fontFamilyID $fallbackStack }}
       {{ end }}
     {{ else }}
@@ -278,7 +291,7 @@ into a global map */}}
   {{ $concatFontFile := printf "%s/%s.%s" $resourcePathBase "fonts_merged" $sourceExt }}
   {{ $concatFontResource = $fontStyleResources | resources.Concat $concatFontFile }}
 
-  {{ if and true $debug }}
+  {{ if and false $debug }}
     {{ warnf "%v Final concatFontResource '%s'.Content:\n%v"
         $dbg $concatFontResource $concatFontResource.Content }}
   {{ end }}
