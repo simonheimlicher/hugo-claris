@@ -10,8 +10,8 @@
 {{ $contentTypeListID := $assetVariant.ContentTypeListID }}
 
 {{ if $debug }}
-  {{ warnf "%s ContentTypeListID=%s CoalesceMainKindLanguageKey=%s"
-      $dbg $assetVariant.ContentTypeListID $assetVariant.CoalesceMainKindLanguageKey }}
+  {{ warnf "%s ContentTypeListID=%s CoalesceLanguageKey=%s"
+      $dbg $assetVariant.ContentTypeListID $assetVariant.CoalesceLanguageKey }}
 {{ end }}
 
 {{ $bundleMap := (slice
@@ -20,7 +20,7 @@
     (dict "optional" (dict "target" "body" "type" "defer" "priority" "low") )
 ) }}
 {{ with $page.Param "assets.scripts.bundles" }}
-  {{ if $debug }}
+  {{ if and false $debug }}
     {{ warnf "%s Replace default bundleMap:\n%v\n with param assets.scripts.bundles:\n%v"
         $dbg (jsonify (dict "indent" "  ") $bundleMap)
         (jsonify (dict "indent" "  ") . ) }}
@@ -53,10 +53,8 @@
         {{ $targetTypeBundles = append $scriptBundle $targetTypeBundles }}
         {{ $scriptBundles = merge $scriptBundles (dict $mountParams.target (dict $mountParams.type $targetTypeBundles) ) }}
         {{ if $debug }}
-          {{ warnf "%s contentTypeListID=%s bundleName=%s bundle: Added script bundle to scriptBundles:\n%v\nbundleParams:\n%v"
-              $dbg $contentTypeListID $bundleName
-              (jsonify (dict "indent" "  ") $scriptBundles)
-              (jsonify (dict "indent" "  ") $bundleParams) }}
+          {{ warnf "%s contentTypeListID=%s bundleName=%s bundle: Added script bundle to scriptBundles:\n%v"
+              $dbg $contentTypeListID $bundleName $scriptBundles }}
         {{ end }}
       {{ else }}
         {{ if and true $debug }}
@@ -81,7 +79,7 @@
   {{ range $target, $type := $scriptBundles }}
     {{ range $typeID, $bundles := $type }}
       {{ range $idx, $bundle := $bundles }}
-        {{ $resourceStr := printf "%s [%s] (%d bytes)" .resource.Name .resource.MediaType.Type (len .resource.Content) }}
+        {{ $resourceStr := printf "%s at %s [%s] (%d bytes)" .resource.Name  .resource.RelPermalink .resource.MediaType.Type (len .resource.Content) }}
         {{ $bundleRepr := merge $bundle (dict "resource" $resourceStr) }}
         {{ warnf "%s target=%s type=%s idx=%d %s" $dbg $target $typeID $idx (jsonify (dict "indent" "  ") $bundleRepr) }}
       {{ end }}

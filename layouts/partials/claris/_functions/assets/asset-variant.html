@@ -194,26 +194,33 @@ such as `print` for printing */}}
 {{/* Since the order of maps is unstable, we call `stable-hash` to turn the map
 into a sorted list of strings and then hash this string with `sha256` */}}
 {{ $assetKey                    := partial "claris/_functions/stable-hash"        $assetVariant }}
+{{ $coalesceLanguageKey := partial "claris/_functions/stable-hash" (merge $assetVariant (dict "Language" nil) ) }}
 {{ $coalesceMainKindKey         := partial "claris/_functions/stable-hash" (merge $assetVariant (dict "MainKind" nil) ) }}
 {{ $coalesceMainKindLanguageKey := partial "claris/_functions/stable-hash" (merge $assetVariant (dict "MainKind" nil "Language" nil) ) }}
 
-{{ $assetVariantWithKeys := (merge $assetVariant (dict
+{{ $assetVariant := (merge $assetVariant (dict
     "Key" $assetKey
     "CoalesceMainKindKey" $coalesceMainKindKey
+    "CoalesceLanguageKey" $coalesceLanguageKey
     "CoalesceMainKindLanguageKey" $coalesceMainKindLanguageKey
 ) ) }}
+
+{{ $assetVariant = merge $assetVariant (dict
+  "Summary" (printf ".Type=%v .Kind=%v mainKind=%v TypeList=%v TypeID=%s Key=%s xLang=%s xMainKind=%s xMainKind|xLang=%s format=%s"
+  $page.Type $page.Kind $mainKind
+  $assetVariant.ContentTypeList $assetVariant.ContentTypeListID
+  (substr $assetVariant.Key 0 8)
+  (substr $assetVariant.CoalesceLanguageKey 0 8)
+  (substr $assetVariant.CoalesceMainKindKey 0 8)
+  (substr $assetVariant.CoalesceMainKindLanguageKey 0 8)
+  $assetVariant.OutputFormatName)
+) }}
 
 {{ if and false $debug }}
   {{ warnf "%s AssetVariant:\n%v" $dbg (jsonify (dict "indent" "  ") $assetVariant) }}
 {{ end }}
 
 {{ if $debug }}
-  {{ warnf ".Type=%v .Kind=%v mainKind=%v TypeList=%v TypeID=%s Key=%s xMainKind=%s xMainKind|xLang=%s [%s format=%s]"
-  $page.Type $page.Kind $mainKind
-  $assetVariantWithKeys.ContentTypeList $assetVariantWithKeys.ContentTypeListID
-  (substr $assetVariantWithKeys.Key 0 8)
-  (substr $assetVariantWithKeys.CoalesceMainKindKey 0 8)
-  (substr $assetVariantWithKeys.CoalesceMainKindLanguageKey 0 8)
-  $dbg $assetVariantWithKeys.OutputFormatName }}
+  {{ warnf "%s %s" $assetVariant.Summary $dbg }}
 {{ end }}
-{{ return $assetVariantWithKeys }}
+{{ return $assetVariant }}

@@ -11,10 +11,10 @@
       try { document.documentElement.dataset.colorScheme = window.localStorage.getItem('userSelectedColorScheme'); } catch (e) { }
     </script>
 
-{{- if $debug }}
+{{- if and false $debug }}
   {{- warnf "%s assetVariant:\n%v" $dbg (jsonify (dict "indent" "  ") $assetVariant) -}}
 {{- end}}
-{{- $assets := partialCached "claris/_functions/assets/asset-bundles" $ctx $assetVariant -}}
+{{- $assets := partialCached "claris/_functions/assets/asset-bundles" $ctx $assetVariant.Key -}}
 
 {{- $scriptBundles := $assets.Scripts }}
 {{- $styleBundles := $assets.Styles }}
@@ -22,7 +22,7 @@
 {{- range $styleBundleID := (slice "main_all") }}
   {{- $styleSheet := (index $styleBundles $styleBundleID) }}
   {{- with $styleSheet }}
-    {{- if $debug }}
+    {{- if and false $debug }}
       {{- warnf "%s .Kind=%v: Rendering stylesheet from %v" $dbg $page.Kind $styleSheet }}
       {{- warnf "%v" $styleSheet.resource.Content }}
     {{- end }}
@@ -32,7 +32,7 @@
         {{- warnf "%s .Kind=%v: Looking for font matching .Scratch claris.assets.font.main=%v"
             $dbg $page.Kind ($page.Scratch.Get "claris.assets.font.main") }}
       {{- end }}
-      {{- $preloadFonts := partialCached "claris/_functions/resources/fonts/preload" (dict "Page" $page "StyleSheet" .) $assetVariant }}
+      {{- $preloadFonts := partialCached "claris/_functions/resources/fonts/preload" (dict "Page" $page "StyleSheet" .) $assetVariant.CoalesceLanguageKey }}
       {{- if $debug }}
         {{- warnf "%s .Kind=%v: Pre-loading font .Scratch claris.assets.font.main=%v %v"
             $dbg $page.Kind ($page.Scratch.Get "claris.assets.font.main") $preloadFonts }}
@@ -57,7 +57,7 @@
     <script type="module" src="{{ .resource.RelPermalink }}" integrity="{{ .resource.Data.Integrity }}" crossorigin="anonymous"></script>
 {{- end }}
 
-{{- partialCached "claris/head/fonts" . $assetVariant }}
+{{- partialCached "claris/head/fonts" . $assetVariant.CoalesceLanguageKey }}
 
 {{- with ($page.Param "customCSS") }}
   {{- range . -}}

@@ -17,7 +17,7 @@
 
 {{- if $debug }}
   {{- warnf "%s hugo.Environment=%v envDevel=%v envProd=%v" $dbg hugo.Environment $envDevel $envProd -}}
-  {{- warnf "%s assetVariant=\n%v" $dbg (jsonify (dict "indent" "  ") $assetVariant ) -}}
+  {{- warnf "%s assetVariant: %v" $dbg $assetVariant.Summary -}}
 {{- end }}
 
 {{- .Scratch.Set "claris.render.main.kind" (default "page" $assetVariant.MainKind) }}
@@ -48,7 +48,7 @@
   {{- end -}}
 {{- end }}
 
-{{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "AssetVariant" $assetVariant "Template" $template "Debug" $debug) $page.Permalink $assetVariant.CoalesceMainKindLanguageKey }}
+{{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "AssetVariant" $assetVariant "Template" $template "Debug" $debug) $page.Permalink $assetVariant.Key }}
 {{- .Scratch.Set "clarismeta" $meta }}
 
 {{- /* {{- if (and $assetVariant.OutputFormat (strings.Contains (lower $assetVariant.OutputFormatName) "print") ) }}
@@ -100,7 +100,7 @@
 {{ partial "html-comment" (printf "[%s]: .Type=%s .Layout=%s .MediaType=%s $assetVariant.OutputFormat=%s meta.Classification=%v]"
     $template .Type .Layout .MediaType $assetVariant.OutputFormatName (jsonify (dict "indent" "  ") $meta.Classification)) }}
   {{ partial "claris/head/index" $partialContext }}
-  {{- partialCached "claris/_hooks/head-end/index" $partialContext $assetVariant.CoalesceMainKindLanguageKey }}
+  {{- partialCached "claris/_hooks/head-end/index" $partialContext $assetVariant.CoalesceLanguageKey }}
 </head>
 <body id="documentContainer" {{- block "body-data" . -}} {{- end -}}>
   {{ block "body" . -}}{{ end }}
@@ -109,7 +109,7 @@
       <script src="{{ relURL . }}" ></script>
     {{- end }}
   {{- end }}
-  {{- partialCached "claris/_hooks/body-end/index" $partialContext $assetVariant.CoalesceMainKindLanguageKey }}
+  {{- partialCached "claris/_hooks/body-end/index" $partialContext $assetVariant.CoalesceLanguageKey }}
 </body>
 </html>
 

@@ -5,20 +5,11 @@
 {{ $assetVariant := .AssetVariant }}
 {{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
-{{/* {{ warnf "%s[%s]: RelPermalink=%s .Type=%s .Layout=%s $contentTypeList=%s $mediaTypeList=%s"
-    .Page $template .Page.RelPermalink .Type .Layout
-    $assetVariant.ContentTypeList $assetVariant.MediaTypeList }} */}}
-    <!-- (jsonify (dict "indent" "  ")  $assetVariant) -->
-
 <!-- Bundle CSS: styles from all content types merged per mediaType type -->
-<!-- NOTE: Need to use the full hash of AssetVariant for `partialCached`
-of `style-bundles` and `script-bundles` with`$assetVariant.AssetKey`;
-coalescing by Kind and Language with
-`$assetVariant.CoalesceMainKindLanguageKey` leads to issue in Hugo Vitae -->
-{{ $styleBundles := partialCached "claris/_functions/assets/styles/style-bundles" . $assetVariant.AssetKey }}
+{{ $styleBundles := partialCached "claris/_functions/assets/styles/style-bundles" . $assetVariant.CoalesceLanguageKey }}
 
 <!-- Bundle JS: styles from all content types merged per mediaType type -->
-{{ $scriptBundles := partialCached "claris/_functions/assets/scripts/script-bundles" . $assetVariant.AssetKey }}
+{{ $scriptBundles := partialCached "claris/_functions/assets/scripts/script-bundles" . $assetVariant.CoalesceLanguageKey }}
 
 {{ $assets = (dict "Styles" $styleBundles "Scripts" $scriptBundles) }}
 {{ return $assets }}
