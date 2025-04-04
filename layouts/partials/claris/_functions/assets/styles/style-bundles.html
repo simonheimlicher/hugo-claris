@@ -67,9 +67,7 @@ does not have an effect, as mentioned above.
 
 {{/* Set up the options for the SASS transpiler */}}
 {{ $toCSSoptionsBase := (dict
-    "transpiler" "dartsass"
-    "includePaths" (slice "node_modules")
-)
+    "transpiler" "dartsass")
 }}
 {{ if not $debugSassDeprecation }}
   {{ $toCSSoptionsBase = merge $toCSSoptionsBase (dict
@@ -81,7 +79,7 @@ does not have an effect, as mentioned above.
 {{ else }}
   {{ $toCSSoptionsBase = merge $toCSSoptionsBase (dict "outputStyle" "expanded" "enableSourceMap" true "sourceMapIncludeSources" true) }}
 {{ end }}
-{{ $toCSSIncludePaths := slice }}
+{{ $toCSSIncludePaths := slice "node_modules" }}
 {{ range $contentTypeList }}
   {{ $toCSSIncludePaths = append (printf "assets/%s/%s" $resourcePathBase . ) $toCSSIncludePaths }}
 {{ end }}
