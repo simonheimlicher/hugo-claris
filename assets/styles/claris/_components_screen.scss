@@ -282,11 +282,6 @@ $indicator-width: var(--toc_indicator_width)) {
     }
     &_group {
       &_color-scheme_mobile.nav_group {
-        position: absolute;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        height: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -492,7 +487,7 @@ $indicator-width: var(--toc_indicator_width)) {
     &_color-scheme_choice {
       position: relative;
       height: 100%;
-      padding: 0 var(--inner_padding);
+      padding: 0 0 0 var(--inner_padding);
       cursor: pointer;
       z-index: 1000;
       .icon {
@@ -814,7 +809,7 @@ $indicator-width: var(--toc_indicator_width)) {
       &_item {
         padding: math.div(hugo.$screenViewNavHeight - 1.5rem, 2) var(--inner_padding_4-2);
       }
-      &_group_menu {
+      &_group {
         margin-left:  calc(0px - var(--inner_padding_4-2) );
       }
       &_color-scheme_choice {

@@ -3,9 +3,10 @@
 {{- $contentType := default "claris" (partialCached "claris/_functions/alternative-type" . .Kind .Type) }}
       <div class="header_inner grid-main">
         <nav class="nav header_multicolumn inner_horizontal inner_top-0 font-sans role-display">
-          {{- /* NOTE: partial "claris/header/logo" is required for mobile navigation to work. Otherwise, JS "theme/navigation-menu.js" will terminate early" */ -}}
+          {{- /* NOTE: partial "claris/header/logo" is required for mobile
+          navigation to work. Otherwise, JS "theme/navigation-menu.js" will
+          terminate early" */ -}}
           {{- partialCached "claris/header/logo" (dict "Page" $page) }}
-          {{- partialCached "claris/header/nav-menu" (dict "logoclass" "" "Page" $page) }}
           <div class='nav_body nav_body_{{ default "right" (page.Param "mobileNavigation") }}'>
             {{- $menuData := site.Data.menu }}
             {{- with $menuData }}
@@ -21,5 +22,6 @@
             </div>
             {{- end }}
           </div>
+          {{- partialCached "claris/header/nav-menu" (dict "logoclass" "" "Page" $page) }}
         </nav>
       </div>
