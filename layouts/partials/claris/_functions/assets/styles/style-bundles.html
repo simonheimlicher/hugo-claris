@@ -124,7 +124,7 @@ TOCSS-DART: failed to transform "styles/claris-vitae-main_all.scss"
     {{ if and true $debug }}
       {{ warnf "%v Generating style bundle with contentTypeList=%s contentTypeListID=%s for MediaType=%s in MediaTypeList=%v"
       $dbg $contentTypeList $contentTypeListID $mediaType $mediaTypeList }}
-      {{ warnf "%v resourceID=%v params=%v $tplParams=%v" $dbg $resourceID $params $tplParams }}
+      {{ warnf "%v resourceID=%v params=%v tplParams=%v" $dbg $resourceID $params $tplParams }}
     {{ end }}
 
     {{/* Concat SASS */}}
@@ -144,7 +144,7 @@ TOCSS-DART: failed to transform "styles/claris-vitae-main_all.scss"
         {{ end }}
       {{ else }}
         {{ if and true $debug }}
-          {{ warnf "%v $contentType=%s: no params in $page.Param %s: %T" $dbg
+          {{ warnf "%v $contentType=%s: no params in page.Param %s: %T" $dbg
             $contentType $hugoParamsKey ($page.Param $hugoParamsKey) }}
         {{ end }}
       {{ end }}
@@ -187,9 +187,11 @@ TOCSS-DART: failed to transform "styles/claris-vitae-main_all.scss"
       {{ end }}
     {{ end }}
 
+    {{ $generatedResourcePathBase := printf "%s/%s" $resourcePathBase $contentTypeListID }}
+    {{/* Generate the font styles */}}
     {{ with $fontStyles := partial "claris/_functions/fonts/font-styles" (dict
         "Page" $page
-        "ResourcePathBase" $resourcePathBase
+        "GeneratedResourcePathBase" $generatedResourcePathBase
         "SourceExt" $sourceExt
         "ExecutedSourceSuffix" $executedSourceSuffix
       ) }}
@@ -252,15 +254,15 @@ TOCSS-DART: failed to transform "styles/claris-vitae-main_all.scss"
     {{ end }}
 
     {{ if and false $debug }}
-      {{ warnf "%v $concatResource '%s'.Content:\n%v\n...\n%v"
+      {{ warnf "%v concatResource '%s'.Content:\n%v\n...\n%v"
           $dbg $concatResource (substr $concatResource.Content 0 500) (substr $concatResource.Content -500) }}
     {{ end }}
-    {{ if and false $debug }}
-      {{ warnf "%v $concatResource '%s'.Content:\n%v"
+    {{ if and (eq "$media" "all") $debug }}
+      {{ warnf "%v concatResource '%s'.Content:\n%v"
           $dbg $concatResource $concatResource.Content }}
     {{ end }}
 
-    {{/* Determine target file path and bundle SASS */}}
+    {{/* Determine target file path */}}
     {{ $targetPathPrefix := printf "%s/%s" $resourcePathBase $contentTypeListID }}
     {{ $targetFile := printf "%s/%s.%s" $targetPathPrefix $resourceID $targetExt }}
     {{ with $assetStyleSuffix }}
@@ -268,6 +270,8 @@ TOCSS-DART: failed to transform "styles/claris-vitae-main_all.scss"
     {{ end }}
 
     {{ $toCSSoptions = merge $toCSSoptions (dict "targetPath" $targetFile) }}
+
+    {{/* Bundle SCSS with Dart SASS */}}
     {{ $bundle := $concatResource | css.Sass $toCSSoptions }}
 
     {{ $bundleUnMinified := $bundle | resources.Fingerprint $fingerprintOptions }}

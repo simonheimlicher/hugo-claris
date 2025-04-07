@@ -44,7 +44,7 @@ $fontTypeToFamilyMap: (
 $fontDefinitionMap: () !default;
 $currentFontDefinition: default !default;
 
-$familyDefaultMap: (
+$fontFamilySpecDefault: (
   styles: (
     default: (
       font-weight: 400,
@@ -63,25 +63,6 @@ $familyDefaultMap: (
         ),
         strong: (
           font-weight: 600,
-        )
-      )
-    )
-  )
-);
-
-$familyFallbackMap: map.merge($familyDefaultMap,
-  (
-    // Include font names and styles for alternative variants:
-    variants: (
-      all-small-caps: (
-        styles: (
-          default: (
-            text-transform: uppercase,
-            // font-size: 80%,
-            // Changing the `font-weight` here does not work
-            // The following rule has no effect:
-            // font-weight: bold
-          )
         )
       )
     )
@@ -218,7 +199,7 @@ $familyFallbackMap: map.merge($familyDefaultMap,
   @if ($baseSelector == null) {
     @if ($styleName == default) {
       @if $debugApply {
-        @debug "applyFontStyles(baseSelector: #{$baseSelector}, nestedSelector=#{$nestedSelector}): HTML DEFAULT fontStackVariant: #{meta.inspect($fontStackVariant)} defaultStyleDef: #{meta.inspect($defaultStyleDef)} baseStyleDef: #{meta.inspect($baseStyleDef)} styleDef: #{meta.inspect($styleDef)}";
+        @debug "applyFontStyles(baseSelector: #{$baseSelector}, nestedSelector=#{$nestedSelector}): fontStackVariant: #{meta.inspect($fontStackVariant)} defaultStyleDef: #{meta.inspect($defaultStyleDef)} baseStyleDef: #{meta.inspect($baseStyleDef)} styleDef: #{meta.inspect($styleDef)}";
       }
       font-family: #{meta.inspect($fontStackVariant)};
       @include generateFontStyleProperties($defaultStyleDef, $baseStyleDef, $styleName, $styleDef);
@@ -375,11 +356,11 @@ $familyFallbackMap: map.merge($familyDefaultMap,
     @debug 'defineFontRoles: fallbackStackFamily=#{meta.inspect($fallbackStackFamily)}';
   }
 
-  $defaultStyleDef: map.get(map.get($familyDefaultMap, styles), default);
+  $defaultStyleDef: map.get(map.get($fontFamilySpecDefault, styles), default);
 
-  $specStyles: functions.updateMap(map.get($familyDefaultMap, styles), map.get($specFamily, styles));
+  $specStyles: functions.updateMap(map.get($fontFamilySpecDefault, styles), map.get($specFamily, styles));
 
-  $specRolesDefault: functions.updateMap((default: (styles: $specStyles)), map.get($familyDefaultMap, roles));
+  $specRolesDefault: functions.updateMap((default: (styles: $specStyles)), map.get($fontFamilySpecDefault, roles));
   $specRoles: functions.updateMap($specRolesDefault, map.get($specFamily, roles));
 
   @if $debugRole {
@@ -390,7 +371,7 @@ $familyFallbackMap: map.merge($familyDefaultMap,
     name: $fontNameFamily,
     fallback: $fallbackStackFamily,
     styles: $specStyles
-  )), map.get($familyDefaultMap, variants));
+  )), map.get($fontFamilySpecDefault, variants));
 
   $specVariants: functions.updateMap($specVariantsDefault, map.get($specFamily, variants));
   @if $debugCSSProperties {
@@ -412,16 +393,18 @@ $familyFallbackMap: map.merge($familyDefaultMap,
     // Note: To avoid an invalid CSS value error when $classNames is empty,
     // we append an empty list to it
     @if $debugRole {
+      @debug "hugo.$fonts_type_serif_name #{meta.inspect(hugo.$fonts_type_serif_name)}";
       @debug 'defineFontRoles: call defineFontVariants(#{$fontNameRole}, classNames=#{append((), $classNames)})';
     }
     @include defineFontVariants($fontNameRole, $fallbackStackRole, $defaultStyleDef, $stylesRole, $specVariants, $classNames);
   }
 }
 
-@mixin defineFontUtilityClasses($specFamily, $useAs: default) {
+@mixin defineFontUtilityClasses($specFamilyOverride, $useAs: default) {
+  $specFamily: map-merge($fontFamilySpecDefault, $specFamilyOverride);
   $useAs: if(type-of($useAs) == list, $useAs, ($useAs,));
   @if $debugType {
-    @debug 'defineFontUtilityClasses: useAs=#{meta.inspect($useAs)}';
+    @debug 'defineFontUtilityClasses: specFamilyOverride:\n#{meta.inspect($specFamilyOverride)}\nuseAs: #{meta.inspect($useAs)}';
   }
   $outerClassNames: ();
   $classNames: ();

@@ -11,6 +11,7 @@
 {{ $fontFamily := .FontFamilyName }}
 {{ $fontFamilyID := .FontFamilyID }}
 {{ $fontType := .FontType }}
+{{ $defaultFallbackStack := .DefaultFallbackStack}}
 {{ $useFamilyAs := .UseFamilyAs }}
 
 {{/* Path to the font spec files of this module: /assets/styles/claris/fonts/{specs | hosted} */}}
@@ -35,8 +36,10 @@
     "HostedFontPath" $hostedFontPath
 ) }}
 
+{{ $fontSpecResources := slice }}
 {{ $fontSpecFile := printf "%s/%s.%s" $fontSpecPath $fontFamilyID $sourceExt }}
-{{ with $fontSpecResource := resources.Get $fontSpecFile }}
+{{ $fontSpecResource := resources.Get $fontSpecFile }}
+{{ with $fontSpecResource }}
   {{ $executedFontSpecFile := printf "%s/%s%s.%s" $fontSpecPath $fontFamilyID $executedSourceSuffix $sourceExt}}
   {{ if and false $debug }}
     {{ warnf "%s executing font spec file '%v' [type=%T] to executedFontSpecFile=%v with $fontSpecParams:\n%v"
@@ -44,32 +47,50 @@
       $executedFontSpecFile (jsonify (dict "indent" "  ") $fontSpecParams) }}
   {{ end }}
   {{ $executedFontSpecResource := resources.ExecuteAsTemplate $executedFontSpecFile $fontSpecParams $fontSpecResource }}
-  {{ if and false $debug }}
+  {{ $fontSpecResources = append $executedFontSpecResource $fontSpecResources }}
+  {{ if and true $debug }}
     {{ warnf "%s executed font spec file '%v': \n%v"
       $dbg $fontSpecResource $executedFontSpecResource.Content }}
   {{ end -}}
-{{- $defineFontStylesRule := printf "// Define font styles for '%s' [%s]\n@include fonts.defineFontUtilityClasses($fontFamilySpec, $useAs: %s);\n"
-    $fontFamily $fontFamilyID $useFamilyAs -}}
-  {{ if and false $debug }}
-    {{ warnf "%v defineFontStylesRule for %s [%s]: '%s'" $dbg $defineFontStylesRule }}
-  {{ end }}
-  {{ $defineFontStylesFile := printf "%s/%s_define-font-styles.%s" $fontSpecPath $fontFamilyID $sourceExt }}
-  {{ $defineFontStylesResource := resources.FromString $defineFontStylesFile $defineFontStylesRule }}
-  {{ if and false $debug }}
-    {{ warnf "%v Final defineFontStylesResource '%v'.Content:\n%v" $dbg
-        $defineFontStylesResource.Name $defineFontStylesResource.Content }}
-  {{ end }}
-  {{ $concatFontSpecFile := printf "%s/%s_font-spec.%s" $fontSpecPath $fontFamilyID $sourceExt }}
-  {{ $concatFontSpecResource = slice $executedFontSpecResource $defineFontStylesResource | resources.Concat $concatFontSpecFile }}
-
-  {{ if and true $debug }}
-    {{ warnf "%v Final concatFontSpecResource '%s'.Content:\n%v"
-        $dbg $concatFontSpecResource $concatFontSpecResource.Content }}
-  {{ end }}
 {{ else }}
   {{ if and true $debug }}
     {{ warnf "%s no font spec file found matching '%v'" $dbg $fontSpecFile }}
   {{ end }}
+  {{ $fallbackStr := partial "claris/_functions/font-spec_quote-font-stack" $defaultFallbackStack }}
+  {{ $fontSpecRule := printf "// Generated minimal font spec for '%s' [%s]\n$fontFamilySpec: (\n  name: \"%s\",\n  fallback: (%s)\n);\n"
+    $fontFamily $fontFamilyID $fontFamily $fallbackStr -}}
+  {{ if and true $debug }}
+    {{ warnf "%v generated font spec for %s [%s]: '%s'" $dbg $fontFamily $fontFamilyID $fontSpecRule }}
+  {{ end }}
+  {{ $defineFontSpecFile := printf "%s/%s_define-font-spec.%s" $fontSpecPath $fontFamilyID $sourceExt }}
+  {{ $fontSpecResource := resources.FromString $defineFontSpecFile $fontSpecRule }}
+  {{ if and true $debug }}
+    {{ warnf "%v generated font spec resource '%v'.Content:\n%v" $dbg
+        $fontSpecResource.Name $fontSpecResource.Content }}
+  {{ end }}
+  {{ $fontSpecResources = append $fontSpecResource $fontSpecResources }}
+{{ end }}
+
+{{ $defineFontStylesRule := printf "// Define font styles for '%s' [%s]\n@include fonts.defineFontUtilityClasses($fontFamilySpec, $useAs: %s);\n"
+  $fontFamily $fontFamilyID $useFamilyAs -}}
+{{ if and true $debug }}
+  {{ warnf "%v defineFontStylesRule for %s [%s]: '%s'" $dbg $fontFamily $fontFamilyID $defineFontStylesRule }}
+{{ end }}
+{{ $defineFontStylesFile := printf "%s/%s_define-font-styles.%s" $fontSpecPath $fontFamilyID $sourceExt }}
+{{ $defineFontStylesResource := resources.FromString $defineFontStylesFile $defineFontStylesRule }}
+{{ if and false $debug }}
+  {{ warnf "%v Final defineFontStylesResource '%v'.Content:\n%v" $dbg
+      $defineFontStylesResource.Name $defineFontStylesResource.Content }}
+{{ end }}
+{{ $fontSpecResources = append $defineFontStylesResource $fontSpecResources }}
+
+{{/* Concatenate the SCSS resources for this font spec */}}
+{{ $concatFontSpecFile := printf "%s/%s_font-spec.%s" $fontSpecPath $fontFamilyID $sourceExt }}
+{{ $concatFontSpecResource = $fontSpecResources | resources.Concat $concatFontSpecFile }}
+
+{{ if and true $debug }}
+  {{ warnf "%v Final concatFontSpecResource '%s'.Content:\n%v"
+      $dbg $concatFontSpecResource $concatFontSpecResource.Content }}
 {{ end }}
 
 {{ $hostedfontUrlsFile := printf "%s/%s.%s" $hostedFontUrlsFilePath $fontFamilyID $sourceExt }}
@@ -96,3 +117,23 @@
   "SpecResource" $concatFontSpecResource
   "HostedFontUrlsResource" $executedHostedFontUrlsResource
 ) }}
+
+{{ define "partials/claris/_functions/font-spec_quote-font-stack" }}
+  {{ $template := "claris/_functions/font-spec_quote-font-stack" }}
+  {{ $quotedFontStack := slice }}
+
+  {{ range . }}
+    {{ if findRE `\s` . }}
+      {{ $quotedFontStack = append (printf "%q" . ) $quotedFontStack }}
+    {{ else }}
+      {{ $quotedFontStack = append . $quotedFontStack }}
+    {{ end }}
+  {{ end }}
+
+  {{ $quotedFontStackString := delimit $quotedFontStack ", " }}
+  {{ if and true }}
+    {{ warnf "%s: quotedFontStackString: '%s'" $template $quotedFontStackString }}
+  {{ end }}
+
+  {{ return $quotedFontStackString }}
+{{ end }}

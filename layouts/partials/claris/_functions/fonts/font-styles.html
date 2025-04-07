@@ -4,10 +4,10 @@
 {{ $debug := and false (page.Param "clarisdebug") }}
 {{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
-{{ $assetVariant := .AssetVariant }}
-{{ $resourcePathBase := default "styles" .ResourcePathBase }}
+{{ $generatedResourcePathBase := default "styles" .GeneratedResourcePathBase }}
 {{ $sourceExt := default "scss" .SourceExt }}
 {{ $executedSourceSuffix := default "_executed" .ExecutedSourceSuffix }}
+{{ $resourceID := default "fonts" .ResourceID }}
 
 {{ $styleFileParamsBase := . }}
 
@@ -216,8 +216,8 @@ family once */}}
     {{ else }}
       {{ if $fontsSelfHosted}}
         {{ errorf "%s No font spec for self-hosted font %v [%v] found" $dbg $fontFamily $fontFamilyID }}
-      {{ else if and true $debug }}
-        {{ warnf "%s No font spec for self-hosted font %v [%v] found in\n%v" $dbg
+      {{ else }}
+        {{ errorf "%s No font spec for font %v [%v] found in\n%v" $dbg
             $fontFamily $fontFamilyID (jsonify (dict "indent" "  ") $fontSpec) }}
       {{ end }}
     {{ end }}
@@ -233,7 +233,7 @@ family once */}}
       {{ if $fontsSelfHosted}}
         {{ errorf "%s No hosted font URLs file for self-hosted font %v [%v] found" $dbg $fontFamily $fontFamilyID }}
       {{ else if and true $debug }}
-        {{ warnf "%s No hosted font URLs file for self-hosted font %v [%v] found" $dbg $fontFamily $fontFamilyID }}
+        {{ warnf "%s No hosted font URLs file for non-self-hosted font %v [%v] found" $dbg $fontFamily $fontFamilyID }}
       {{ end }}
     {{ end }}
 
@@ -288,7 +288,9 @@ into a global map */}}
   {{ $fontStyleResources = append $hostedfontUrlsResources $fontStyleResources }}
 {{ end }}
 {{ with $fontStyleResources }}
-  {{ $concatFontFile := printf "%s/%s.%s" $resourcePathBase "fonts_merged" $sourceExt }}
+
+  {{/* Determine target file path */}}
+  {{ $concatFontFile := printf "%s/%s.%s" $generatedResourcePathBase $resourceID $sourceExt }}
   {{ $concatFontResource = $fontStyleResources | resources.Concat $concatFontFile }}
 
   {{ if and false $debug }}
