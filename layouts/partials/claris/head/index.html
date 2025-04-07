@@ -39,7 +39,11 @@
     {{ printf `<link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .RelPermalink (partial `claris/_functions/sanitize` site.Title) | safeHTML -}}
   {{- end }}
 {{- end }}
-    <link rel="canonical" type="text/html" href="{{ partial `claris/_functions/canonical-url` . }}" title="{{ (partial `claris/_functions/sanitize` $title) }}">
+    {{- $canonicalURL := partialCached `claris/_functions/canonical-url` $page $page.Permalink site.Language.Lang }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: canonicalURL=%v [type=%T]" $template $page.RelPermalink $canonicalURL $canonicalURL }}
+    {{- end }}
+    <link rel="canonical" type="text/html" href="{{ $canonicalURL }}" title="{{ (partial `claris/_functions/sanitize` $title) }}">
     {{- partialCached "claris/head/favicon" . }}
 
 {{- partialCached "claris/head/assets" $ctx $assetVariant.CoalesceLanguageKey -}}
