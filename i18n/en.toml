@@ -199,3 +199,6 @@ other = "access link address"
 
 [view_author_profile]
 other = "View profile of {{ .Name }}"
+
+[logo_alt]
+other = "Logo of {{ .WebsiteName }}"

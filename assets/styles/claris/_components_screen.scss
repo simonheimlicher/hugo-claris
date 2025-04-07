@@ -5,7 +5,7 @@
 @use "functions" as functions;
 @use "variables" as variables;
 
-@mixin nav-background($color: var(--text-active), $background: var(--theme-bg-active), $border: var(--theme-bg-active), $underline: var(--theme-bg-active), $top-left: 0.5rem, $top-right: 0.5rem, $bottom-right: 0.5rem, $bottom-left: 0.5rem) {
+@mixin nav-background($color: var(--text-active), $background: var(--theme-bg-active), $border: var(--theme-bg-active), $underline: var(--theme-bg-active), $top-left: 0.25rem, $top-right: 0.25rem, $bottom-right: 0.25rem, $bottom-left: 0.25rem) {
   color: $color;
   z-index: (variables.$main-z-index + 1);
   &::after {
@@ -19,7 +19,7 @@
     background: $background;
     border: 0.125em solid $border;
     height: unset;
-    border-radius: 0.25rem;
+    border-radius: $top-left $top-right $bottom-right $bottom-left;
   }
   @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
     .nav_group_menu &::after {
@@ -34,6 +34,7 @@
     fill: $color;
   }
 }
+
 @mixin nav-active-background($color: var(--text), $background: var(--theme-xxhaze), $border: var(--theme-xxhaze), $underline: var(--theme-bg-active) ) {
   @include nav-background($color, $background, $border, $underline);
   cursor: default;
@@ -41,12 +42,23 @@
     color: $color;
   }
 }
+
 @mixin nav-active-section-background($color: var(--text), $background: transparent, $border: var(--theme-haze), $underline: var(--theme-haze) ) {
   @include nav-background($color, $background, $border);
 }
+
 @mixin nav-hover-background($color: var(--theme-text-hover), $background: var(--theme-bg-hover), $border: var(--theme-bg-hover), $underline: var(--theme-bg-hover)) {
   @include nav-background($color, $background, $border, $underline);
 }
+
+@mixin nav-hover-background_flush-left($color: var(--theme-text-hover), $background: var(--theme-bg-hover), $border: var(--theme-bg-hover), $underline: var(--theme-bg-hover), $border-radius: 0.25rem) {
+  @include nav-background($color, $background, $border, $underline, 0, $border-radius, $border-radius, 0);
+}
+
+@mixin nav-hover-background_flush-right($color: var(--theme-text-hover), $background: var(--theme-bg-hover), $border: var(--theme-bg-hover), $underline: var(--theme-bg-hover), $border-radius: 0.25rem) {
+  @include nav-background($color, $background, $border, $underline, $border-radius, 0, 0, $border-radius);
+}
+
 @mixin nav-open-background($color: var(--theme-text), $background: var(--theme-bg), $border: var(--theme-bg), $underline: var(--theme-haze) ) {
   @include nav-background($color, $background, $border);
 }
@@ -285,6 +297,7 @@ $indicator-width: var(--toc_indicator_width)) {
         display: flex;
         justify-content: center;
         align-items: center;
+        min-width: fit-content;
       }
       &_follow {
         display: flex;
@@ -314,6 +327,15 @@ $indicator-width: var(--toc_indicator_width)) {
       @media (any-hover: hover) {
         &:not(.nav_active):hover, a.nav_active_in_section:hover {
           @include nav-hover-background;
+        }
+      }
+      &:last-child {
+        margin-right: calc(0px - var(--inner_padding));
+        padding-right: var(--inner_padding);
+        @media (any-hover: hover) {
+          &:not(.nav_active):hover, a.nav_active_in_section:hover {
+            @include nav-hover-background_flush-right;
+          }
         }
       }
     }
@@ -426,32 +448,36 @@ $indicator-width: var(--toc_indicator_width)) {
       }
     }
     &_brand {
+      position: relative;
+      margin-left: calc(0px - var(--inner_padding));
+      margin-right: 0;
+      padding-left: var(--inner_padding);
+      width: min-content;
       display: flex;
+      align-items: center;
+      column-gap: var(--inner_margin_4-2);
+      color: var(--theme-text);
+      @media (any-hover: hover) {
+        &:not(.nav_active):hover {
+          @include nav-hover-background_flush-left;
+        }
+      }
       &_logo {
-        position: relative;
         align-items: center;
         border-radius: 0.5rem;
         z-index: (variables.$main-z-index + 2);
-        @media (any-hover: hover) {
-          &:not(.nav_active):hover {
-            @include nav-hover-background;
-          }
-        }
-        margin-left: calc(0px - var(--inner_padding));
-        margin-right: 0rem;
-        padding: 0 var(--inner_padding_4-1) 0 var(--inner_padding);
-        width: min-content;
         // Setting min-height is required to avoid nav bar incl. burger menu icon from collapsing
         height: hugo.$screenViewNavHeightNarrow;
         img {
-          padding: 0.5rem 0;
-          max-height: 100%;
-          width: auto;
           max-width: unset;
+          width: auto;
           background: transparent !important;
-        }
-        &_parent {
-          margin-right: auto;
+          max-height: unset;
+          height: (hugo.$screenViewNavHeightNarrow - 0.5rem);
+          margin-top: 0.2rem;
+          @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
+            height: (hugo.$screenViewNavHeight - 0.5rem);
+          }
         }
         &.padding-1 {
           img {
@@ -477,10 +503,8 @@ $indicator-width: var(--toc_indicator_width)) {
       &_text {
         display: block;
         font-weight: var(--font-weight-strong);
-        color: var(--theme-text);
         line-height: (hugo.$screenViewNavHeightNarrow - 1.5rem);
-        padding: math.div(hugo.$screenViewNavHeightNarrow - 1rem, 2) 0.25rem;
-        padding: math.div(hugo.$screenViewNavHeightNarrow - 1rem, 2) var(--inner_padding_4-1);
+        padding: math.div(hugo.$screenViewNavHeightNarrow - 1rem, 2) var(--inner_padding_4-2) math.div(hugo.$screenViewNavHeightNarrow - 1rem, 2) var(--inner_padding_4-1);
       }
     }
     &_mobile_toggle,
@@ -558,6 +582,7 @@ $indicator-width: var(--toc_indicator_width)) {
       }
     }
     &_mobile_toggle {
+      position: relative;
       display: flex;
       justify-content: center;
       align-items: center;

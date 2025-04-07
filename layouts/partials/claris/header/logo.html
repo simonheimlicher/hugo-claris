@@ -3,58 +3,63 @@
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $debug := and false (and .Debug (eq site.LanguagePrefix "") ) }}
 {{- $dbg := printf "%s [%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
-
-{{- $logoImagePath := default site.Params.logo site.Params.header.logo.src }}
 {{- $logoImageWidth := 96 }}
 {{- $logoImageHeight := $logoImageWidth }}
 {{- $logoClass := .logoclass }}
-{{- $logoURL := (site.GetPage "/").RelPermalink }}
-{{- with (page.Param "header.logo.linkpath") }}
-  {{- $logoURL = printf "%s" . | relLangURL }}
+{{- $mastheadURL := (site.GetPage "/").RelPermalink }}
+{{- with (page.Param "masthead.linkpath") }}
+  {{- $mastheadURL = printf "%s" . | relLangURL }}
 {{- end }}
 
-{{- $siteTitle := $meta.Site.Formatted.Title | default site.Title -}}
+{{- $siteTitle := default $meta.Site.Formatted.Title | default site.Title }}
+{{- $wordMark := false }}
+{{- with $wordMark = site.Params.masthead.wordmark }}
+  {{- if $debug }}
+    {{- warnf "%s wordMark:\n%v" $dbg (jsonify (dict "indent" "  ") $wordMark) }}
+  {{- end }}
+{{- end }}
 
-{{- $siteLogoParams := false }}
-{{- with $siteLogoParams = site.Params.header.logo }}
+
+{{- $logoParams := false }}
+{{- with $logoParams = site.Params.masthead.logo }}
+  {{- if $debug }}
+    {{- warnf "%s logoParams:\n%v" $dbg (jsonify (dict "indent" "  ") $logoParams) }}
+  {{- end }}
   {{- if .src }}
     {{- if not .alt }}
-      {{ $siteLogoParams = merge $siteLogoParams (dict
-        "alt" $siteTitle
-      ) }}
+      {{- $altText := T "logo_alt" (dict "WebsiteName" $siteTitle) }}
+      {{ $logoParams = merge $logoParams (dict "alt" $altText) }}
     {{- end }}
   {{- else }}
-    {{- warnf "%s missing attribute .src in site.Params.header.logo:\n%v"
-        $dbg (jsonify (dict "indent" "  ") site.Params.header.logo) }}
-    {{- $siteLogoParams = false }}
+    {{- errorf "%s missing attribute .src in site.Params.masthead.logo:\n%v"
+        $dbg (jsonify (dict "indent" "  ") site.Params.masthead.logo) }}
+    {{- $logoParams = false }}
   {{- end }}
 {{- end }}
 
-    <div class="nav_brand">
-{{- with $siteLogoParams }}
-  {{- with $logoURL }}
-        <a href='{{ . }}' title='{{ $siteTitle }}' class='nav_brand_logo_parent'>
-  {{- end }}
-          <div class="nav_brand_logo{{ with $logoClass }} {{ . }}{{ end }}">
-            {{- if $debug }}
-            {{- warnf "%s calling render-image with siteLogoParams:\n%v" $dbg
-                (jsonify (dict "indent" "  ") $siteLogoParams) }}
-            {{- end }}
-            {{- partialCached "claris/_components/render-image"
-                (merge $siteLogoParams (dict "Page" $page "Debug" $debug) ) $siteLogoParams }}
-          </div>
-  {{- if $logoURL }}
-        </a>
-  {{- end }}
-{{- else -}}
-      <div class="nav_group nav_brand_text_parent">
-  {{- with $logoURL }}
-        <a href='{{ . }}' title='{{ $siteTitle }}' class='nav_brand_text nav_item'>
-  {{- end }}
-        {{- $siteTitle -}}
-  {{- if $logoURL -}}
-        </a>
-      </div>
-  {{- end }}
+{{- with $mastheadURL }}
+    <a href='{{ . }}' title="{{ $siteTitle }}" class="nav_brand">
+{{- else }}
+  <div class="nav_brand">
 {{- end }}
+{{- with $logoParams }}
+      <div class="nav_brand_logo">
+        {{- if $debug }}
+        {{- warnf "%s calling render-image with logoParams:\n%v" $dbg
+            (jsonify (dict "indent" "  ") $logoParams) }}
+        {{- end }}
+        {{- partialCached "claris/_components/render-image"
+            (merge $logoParams (dict "Page" $page "Debug" $debug) ) $logoParams }}
+      </div>
+{{- end }}
+
+{{- if or (not $logoParams) $wordMark }}
+      <div class="nav_brand_text">
+        {{- $wordMark | default $siteTitle -}}
+      </div>
+{{- end }}
+{{- if $mastheadURL -}}
+    </a>
+{{- else }}
     </div>
+{{- end }}

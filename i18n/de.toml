@@ -199,3 +199,6 @@ other = "die Web-Adresse zu sehen"
 
 [view_author_profile]
 other = "Profil von {{ .Name }} ansehen"
+
+[logo_alt]
+other = "Logo von {{ .WebsiteName }}"
