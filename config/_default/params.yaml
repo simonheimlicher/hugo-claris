@@ -1,6 +1,6 @@
 # As a value for canonicalBaseURL can be set in the 'Site' configuration object
 #  but not retrieved from site.CanonicalBaseURL, we set it here in 'site.Params'
-# canonicalBaseURL: "https://simon.heimlicher.com/"  # Include trailing slash
+# canonicalBaseURL: "https://claris.heimlicher.com/"  # Include trailing slash
 
 # If you would like to get hints as to how to enable additional features,
 # set `claris.hints` to `true`
@@ -288,7 +288,7 @@ website:
   established: 2016
 
   # license:
-  #   text: "simon.heimlicher.com © 1999 by Simon Heimlicher is licensed under CC BY-NC-ND 4.0"
+  #   text: "claris.heimlicher.com © 1999 by Simon Heimlicher is licensed under CC BY-NC-ND 4.0"
 
 robots:
   # configuration of robots tag in head of individual pages
