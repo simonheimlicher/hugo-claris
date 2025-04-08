@@ -50,38 +50,61 @@ or generate it based on site metadata that is also used for schema.org (LD+JSON)
   {{- end }}
 {{- end }}
 
+{{- $siteIcons := slice }}
+{{- $siteIconFallbackSizes := slice 16 32 }}
+{{- $siteIconFallbackFormat := "png" }}
 {{- $siteIconParams := (dict
   "pathprefix" $faviconPathPrefix
   "match" "*logo*"
   "formats" (slice "svg" "png")
 ) }}
-{{- $siteIcon := partial "claris/_functions/resources/images/get-icon-resource" $siteIconParams $siteIconParams }}
-
-{{- if $debug }}
-  {{- warnf "%s siteIcon:\n%v" $dbg (jsonify (dict "indent" "  ") $siteIcon) }}
+{{- with $siteIcon := partial "claris/_functions/resources/images/get-icon-resource" $siteIconParams $siteIconParams }}
+  {{- $siteIcons = append . $siteIcons }}
+  {{- if $debug }}
+    {{- warnf "%s added site icon %v to siteIcons=%v" $dbg . $siteIcons }}
+  {{- end }}
+  {{- $siteIconFallbackParams := merge $siteIconParams (dict
+    "formats" (slice "png")
+) }}
+  {{- with $siteIconFallback := partial "claris/_functions/resources/images/get-icon-resource" $siteIconFallbackParams $siteIconFallbackParams }}
+    {{- $resizeParams := (dict
+        "resource" $siteIconFallback
+        "format" $siteIconFallbackFormat
+    ) }}
+    {{- range $siteIconFallbackSizes }}
+      {{- with partial "claris/_functions/resources/images/get-process-image" (merge $resizeParams (dict "width" . ) ) }}
+        {{- if $debug }}
+          {{- warnf "%s added site icon %v to siteIcons=%v" $dbg . $siteIcons }}
+        {{- end }}
+        {{- $siteIcons = append . $siteIcons }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
 {{- end }}
 
+{{- $appleTouchIcons := slice }}
 {{- $appleTouchIconParams := (dict
   "pathprefix" $faviconPathPrefix
   "match" "apple*touch*"
   "formats" (slice "svg" "png")
 ) }}
-{{- $appleTouchIcon := partial "claris/_functions/resources/images/get-icon-resource" $appleTouchIconParams $appleTouchIconParams }}
-
-{{- if $debug }}
-  {{- warnf "%s appleTouchIcon:\n%v" $dbg (jsonify (dict "indent" "  ") $appleTouchIcon) }}
-{{- end }}
-
-{{- with $siteIcon }}
-  {{- if eq .MediaType.Type "image/svg+xml" }}
-    <link rel="icon" type="image/svg+xml" href="{{ .RelPermalink }}"{{ with .Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>
-  {{- else }}
-    <link rel="icon" type="image/png" sizes="{{ .Width }}x{{ .Height }}" href="{{ .RelPermalink }}"{{ with .Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>
+{{- with partial "claris/_functions/resources/images/get-icon-resource" $appleTouchIconParams $appleTouchIconParams }}
+  {{- $appleTouchIcons = append . $appleTouchIcons }}
+  {{- if $debug }}
+    {{- warnf "%s added Apple touch icon %v to appleTouchIcons=%v" $dbg . $appleTouchIcons }}
   {{- end }}
 {{- end }}
-{{- with $appleTouchIcon }}
-    <link rel="apple-touch-icon" sizes="{{ .Width }}x{{ .Height }}" href="{{ .RelPermalink }}"{{ with .Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>
+
+{{- range $siteIcons }}
+  {{- $iconSizes := false }}
+  {{- if ne .MediaType.Type "image/svg+xml" }}
+    {{- $iconSizes = printf "%vx%v" .Width .Height }}
+  {{- end }}
+    <link rel="icon"{{ with .MediaType.Type }}{{ printf ` type=%q` . | safeHTMLAttr }}{{ end }}{{ with $iconSizes }}{{ printf ` sizes=%q` . | safeHTMLAttr }}{{ end }} href="{{ .RelPermalink }}">
+{{- end }}
+{{- range $appleTouchIcons }}
+    <link rel="apple-touch-icon" type="{{ .MediaType.Type }}" sizes="{{ .Width }}x{{ .Height }}" href="{{ .RelPermalink }}">
 {{- end }}
 {{- with $manifest }}
-    <link rel="manifest" type="application/manifest+json" href="{{ .RelPermalink }}" {{- with .Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>
-{{- end }}
+    <link rel="manifest" type="application/manifest+json" href="{{ .RelPermalink }}">
+{{- end -}}
