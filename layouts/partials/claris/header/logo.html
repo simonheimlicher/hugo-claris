@@ -21,7 +21,7 @@
 
 
 {{- $logoParams := false }}
-{{- with $logoParams = site.Params.masthead.logo }}
+{{- with $logoParams = site.Params.masthead.logo | default site.Params.website.logo }}
   {{- if $debug }}
     {{- warnf "%s logoParams:\n%v" $dbg (jsonify (dict "indent" "  ") $logoParams) }}
   {{- end }}

@@ -16,70 +16,6 @@ https://evilmartians.com/chronicles/how-to-favicon-in-2021-six-files-that-fit-mo
   {{- end }}
 {{- end }}
 
-{{- /* Find the image file designated to be used as Apple touch icon turn it into a resource
-so we can fingerprint it and allow indefinite caching */ -}}
-{{- $appleTouchIcon := false }}
-{{- $staticFiles := readDir $staticDir }}
-{{- $staticAppleTouchIconFile := false }}
-{{- with $staticAppleTouchCandidateFiles := $staticFiles }}
-  {{- $staticAppleTouchCandidateFiles = where $staticAppleTouchCandidateFiles "Name" "like" "(?i)^apple.*touch.*icon.*" }}
-  {{- if $debug }}
-    {{- warnf "%s staticAppleTouchCandidateFiles:\n%#v" $dbg $staticAppleTouchCandidateFiles }}
-  {{- end }}
-  {{- $staticAppleTouchIconSize := 0 }}
-  {{- range $staticAppleTouchCandidateFiles }}
-    {{- if $debug }}
-      {{- warnf "%s Found static apple-touch-icon file %s with .Size=%d" $dbg .Name .Size }}
-    {{- end }}
-    {{- if gt .Size $staticAppleTouchIconSize }}
-      {{- $staticAppleTouchIconSize = .Size }}
-      {{- $staticAppleTouchIconFile = . }}
-    {{- end }}
-  {{- end }}
-{{- end }}
-{{- with $staticAppleTouchIconFile }}
-  {{- $staticAppleTouchIconFilePath := printf "%s/%s" $staticDir $staticAppleTouchIconFile.Name }}
-  {{- $staticAppleTouchIconFileContent := readFile $staticAppleTouchIconFilePath }}
-  {{- if $debug }}
-    {{- warnf "%s Using static apple-touch-icon file %s with .Size=%d" $dbg .Name .Size }}
-  {{- end }}
-  {{- $staticAppleTouchIconResourcePath := printf "%s/%s" $faviconPathPrefix .Name }}
-  {{- with resources.FromString $staticAppleTouchIconResourcePath $staticAppleTouchIconFileContent }}
-    {{ $appleTouchIcon = . | fingerprint }}
-    {{- if $debug }}
-      {{- warnf "%s Using static apple-touch-icon file %s with .RelPermalink=%s .Integrity=%s" $dbg
-          $appleTouchIcon.Name $appleTouchIcon.RelPermalink $appleTouchIcon.Data.Integrity }}
-    {{- end }}
-  {{- else }}
-    {{- errorf "%s Failed to create resource from static apple-touch-icon file %s" $dbg .Name }}
-  {{- end }}
-{{- end }}
-{{- if not $appleTouchIcon }}
-  {{- if $debug }}
-    {{- warnf "%s No static apple-touch-icon file found" $dbg }}
-  {{- end }}
-  {{- /* If no static file was found, look for the largest apple-touch-icon in the assets directory */ -}}
-  {{- $assetsAppleTouchIconFile := false }}
-  {{- $assetsAppleTouchIconCandidateFiles := resources.Match (printf "%s/apple*touch*icon*" $faviconPathPrefix) }}
-  {{- $assetsAppleTouchIconSize := 0 }}
-  {{- range $assetsAppleTouchIconCandidateFiles }}
-    {{- if $debug }}
-      {{- warnf "%s Found asset apple-touch-icon file %s with (len .Content)=%d" $dbg .Name (len .Content) }}
-    {{- end }}
-    {{- if gt (len .Content) $assetsAppleTouchIconSize }}
-      {{- $assetsAppleTouchIconSize = (len .Content) }}
-      {{- $assetsAppleTouchIconFile = . }}
-    {{- end }}
-  {{- end }}
-  {{- with $assetsAppleTouchIconFile }}
-    {{- $appleTouchIcon = . | fingerprint }}
-    {{- if $debug }}
-      {{- warnf "%s Using resource apple-touch-icon .RelPermalink=%s .Integrity=%s" $dbg
-          $appleTouchIcon.RelPermalink $appleTouchIcon.Data.Integrity }}
-    {{- end }}
-  {{- end }}
-{{- end }}
-
 {{- /* Generate the PWA manifest based on `static/site.webmanifest`
 or generate it based on site metadata that is also used for schema.org (LD+JSON) */ -}}
 {{- $manifest := false }}
@@ -114,9 +50,38 @@ or generate it based on site metadata that is also used for schema.org (LD+JSON)
   {{- end }}
 {{- end }}
 
+{{- $siteIconParams := (dict
+  "pathprefix" $faviconPathPrefix
+  "match" "*logo*"
+  "formats" (slice "svg" "png")
+) }}
+{{- $siteIcon := partial "claris/_functions/resources/images/get-icon-resource" $siteIconParams $siteIconParams }}
+
+{{- if $debug }}
+  {{- warnf "%s siteIcon:\n%v" $dbg (jsonify (dict "indent" "  ") $siteIcon) }}
+{{- end }}
+
+{{- $appleTouchIconParams := (dict
+  "pathprefix" $faviconPathPrefix
+  "match" "apple*touch*"
+  "formats" (slice "svg" "png")
+) }}
+{{- $appleTouchIcon := partial "claris/_functions/resources/images/get-icon-resource" $appleTouchIconParams $appleTouchIconParams }}
+
+{{- if $debug }}
+  {{- warnf "%s appleTouchIcon:\n%v" $dbg (jsonify (dict "indent" "  ") $appleTouchIcon) }}
+{{- end }}
+
+{{- with $siteIcon }}
+  {{- if eq .MediaType.Type "image/svg+xml" }}
+    <link rel="icon" type="image/svg+xml" href="{{ .RelPermalink }}"{{ with .Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>
+  {{- else }}
+    <link rel="icon" type="image/png" sizes="{{ .Width }}x{{ .Height }}" href="{{ .RelPermalink }}"{{ with .Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>
+  {{- end }}
+{{- end }}
 {{- with $appleTouchIcon }}
-  <link rel="apple-touch-icon" sizes="{{ .Width }}x{{ .Height }}" href="{{ .RelPermalink }}"{{ with .Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>
+    <link rel="apple-touch-icon" sizes="{{ .Width }}x{{ .Height }}" href="{{ .RelPermalink }}"{{ with .Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>
 {{- end }}
 {{- with $manifest }}
-  <link rel="manifest" type="application/manifest+json" href="{{ .RelPermalink }}" {{- with .Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>
+    <link rel="manifest" type="application/manifest+json" href="{{ .RelPermalink }}" {{- with .Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>
 {{- end }}
