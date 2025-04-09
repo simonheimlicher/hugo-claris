@@ -1,10 +1,13 @@
 {{- $page := .Page }}
 {{- $menu := .Menu }}
-{{- $s := site.Params }}
 {{- $template := "claris/header/nav" }}
 {{- $menuData := $page.Site.Data.menu }}
+{{- $template := "claris/header/nav" }}
+{{- $debug := and false ($page.Param "clarisdebug") }}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
 {{- $link := $page.RelPermalink }}
-{{- $logoURL := relLangURL site.Params.logoURL }}
+{{- $logoURL := relLangURL site.Params.masthead.linkpath }}
 {{- $url := "" }}
 {{- $name := "" }}
 {{- $children := false }}
@@ -14,82 +17,91 @@
           <div class="nav_group nav_group_menu">
   {{- range $menu }}
     {{- /* partial "html-comment" ( . | jsonify (dict "indent" "  " "prefix" "      ") ) */ -}}
-    {{- if eq $menu $menuData }}
-      {{- /* partial "html-comment" (printf "        %v =  %v" $menu $menuData) */ -}}
-      {{- $children = .submenu }}
-      {{- $name = .name }}
-      {{- $url = relURL .link }}
-      {{- /* partial "html-comment" (printf "Page menu.    .URL:%s relURL:%s relLangURL:%s" .URL (relURL .URL) (relLangURL .URL) ) */ -}}
-    {{- else }}
-      {{- $children = .Children }}
-      {{- $name = or (T .Name) .Name }}
-      {{- $url = relURL .URL }}
-      {{- $permalink := (site.GetPage (printf "%s" .URL)) }}
-      {{- /* partial "html-comment" (printf "site.GetPage '/resume/print':'%s' site.GetPage '%s':%s .RelPermalink:%s"
-          (site.GetPage "/resume/print") (printf "%s" .URL) (site.GetPage (printf "%s" .URL)) $permalink ) */ -}}
-      {{- /* NOTE: site.GetPage seems to expect URLs without trailing slash */ -}}
-      {{- if site.GetPage (strings.TrimRight "/" (printf "%s" .URL)) }}
-        {{- $url = relLangURL .URL }}
+    {{- $children = .Children }}
+    {{- $name = or (T .Name) .Name }}
+    {{- $url = relURL .URL }}
+    {{- $permalink := (site.GetPage (printf "%s" .URL)) }}
+    {{- /* partial "html-comment" (printf "site.GetPage '/resume/print':'%s' site.GetPage '%s':%s .RelPermalink:%s"
+        (site.GetPage "/resume/print") (printf "%s" .URL) (site.GetPage (printf "%s" .URL)) $permalink ) */ -}}
+    {{- /* Determine if the page pointed to by this menu item exists
+    in the current language site.
+
+    1. If the page is found by `site.GetPage`, we use the
+        language-specific URL provided by `relLangURL .URL`.
+    2. Otherwise, we use the language-agnostic URL returned by `relURL .URL`.
+
+    This way, the menu entry will point at an existing page, albeit
+    in the default language rather than returning a 404 */ -}}
+    {{- /* NOTE: site.GetPage seems to expect URLs without trailing slash */ -}}
+    {{- if site.GetPage (strings.TrimRight "/" (printf "%s" .URL)) }}
+      {{- $url = relLangURL .URL }}
+    {{- end }}
+    {{- /* Ensure the URL has exactly one trailing slash */ -}}
+    {{- $url = printf "%s/" (strings.TrimRight "/" $url) -}}
+
+    {{- if $debug }}
+      {{- if and (not .HasChildren) (eq $url $link) }}
+        {{- $relLangURL := relLangURL .URL }}
+        {{- warnf "%s link=%v != url=%v .URL=%v relLangURL=%v" $dbg
+            $link $url .URL $relLangURL }}
       {{- end }}
     {{- end }}
-    {{- $url = printf "%s/" (strings.TrimRight "/" $url) -}}
-    {{/* {{ partial "html-comment" (printf ".URL:%s $url:%s $link:%s currentPage.Section:%s currentPage.RelPermalink:%s" .URL $url $link $page.Section $page.RelPermalink ) }} */}}
+    {{- /* {{ partial "html-comment" (printf ".URL:%s $url:%s $link:%s currentPage.Section:%s currentPage.RelPermalink:%s" .URL $url $link $page.Section $link ) }} */ -}}
+
     {{- $parentID := default "" (printf "%s-%s" $elementIdPrefix (default $name .Identifier) | plainify | urlize) }}
-      {{- with $children }}
-            <div class="nav_parent">
+    {{- with $children }}
+          <div class="nav_parent">
+    {{- end }}
+            <a href="{{ $url }}" id="{{ $parentID }}" class="nav_menu nav_item
+    {{- if (and (not .HasChildren) (eq $url $logoURL) ) }} nav_logourl{{ end -}}
+    {{- if (and (not .HasChildren) (eq $url $link) ) }} nav_active{{ end -}}
+    {{- if eq $url $link }} nav_active nav_active_page{{ end -}}
+    {{- if ( $page.IsMenuCurrent .Menu . ) }} nav_active nav_active_is_menu{{ end -}}
+    {{- if ( $page.HasMenuCurrent .Menu . ) }} nav_active nav_active_has_menu{{ end -}}
+    {{- if or (eq $page.Section $link) (and $page.Section ( (site.GetPage .URL).InSection $page) ) }} nav_active nav_active_in_section{{ end -}}
+    {{- if $page.Parent -}}
+      {{- if $page.Parent.IsMenuCurrent .Menu . }} nav_active_parent_is_menu{{ end -}}
+      {{- if $page.Parent.HasMenuCurrent .Menu . }} nav_active_parent_has_menu{{ end -}}
+      {{- if $page.Parent.Parent -}}
+        {{- if $page.Parent.Parent.IsMenuCurrent .Menu . }} nav_active_parent_parent_is_menu{{ end -}}
+        {{- if $page.Parent.Parent.HasMenuCurrent .Menu . }} nav_active_parent_parent_has_menu{{ end -}}
+      {{- end -}}
+    {{- end -}}" title="{{ partial `claris/_functions/sanitize` $name }}">{{ $name }}{{ with $children }}<span class="nav_icon">{{ partial "sprite" (dict "icon" "arrow") }}</span>{{ end }}</a>
+
+    {{- with $children }}
+            <div class="nav_sub">
+              <span class="nav_child"></span>
+
+      {{- range . }}
+        {{- $name = or (T .Name) .Name }}
+        {{- $url = relLangURL .URL }}
+
+        {{- $childID := default "" (printf "%s-%s" $parentID ( (default $name .Identifier) | plainify | urlize) ) }}
+                <a href="{{ $url }}" id="{{ $childID }}" class="nav_child nav_item
+        {{- if eq $url $link }} nav_active nav_active_page{{ end -}}
+        {{- if ( $page.IsMenuCurrent .Menu . ) }} nav_active nav_active_is_menu{{ end -}}
+        {{- if ( $page.HasMenuCurrent .Menu . ) }} nav_active nav_active_has_menu{{ end -}}
+        {{- /* if (site.GetPage .URL).InSection $page }} nav_active nav_active_in_section{{ end */ -}}
+        {{- if $page.Parent -}}
+          {{- if $page.Parent.IsMenuCurrent .Menu . }} nav_active_parent_is_menu{{ end -}}
+          {{- if $page.Parent.HasMenuCurrent .Menu . }} nav_active_parent_has_menu{{ end -}}
+          {{- if $page.Parent.Parent -}}
+            {{- if $page.Parent.Parent.IsMenuCurrent .Menu . }} nav_active_parent_parent_is_menu{{ end -}}
+            {{- if $page.Parent.Parent.HasMenuCurrent .Menu . }} nav_active_parent_parent_has_menu{{ end -}}
+          {{- end -}}
+        {{- end -}}" title="{{ partial `claris/_functions/sanitize` $name }}">{{ $name }}</a>
       {{- end }}
-              <a href="{{ $url }}" id="{{ $parentID }}" class="nav_menu nav_item
-      {{- if (and (not .HasChildren) (eq $url $logoURL) ) }} nav_logourl{{ end -}}
-      {{- if (and (not .HasChildren) (eq $url $link) ) }} nav_active{{ end -}}
-      {{- if eq $page.RelPermalink .URL }} nav_active_page{{ end -}}
-      {{- if ( $page.IsMenuCurrent .Menu . ) }} nav_active_is_menu{{ end -}}
-      {{- if ( $page.HasMenuCurrent .Menu . ) }} nav_active_has_menu{{ end -}}
-      {{- if or (eq $page.Section $page.RelPermalink) (and $page.Section ( (site.GetPage .URL).InSection $page) ) }} nav_active_in_section{{ end -}}
-      {{- if $page.Parent -}}
-        {{- if $page.Parent.IsMenuCurrent .Menu . }} nav_active_parent_is_menu{{ end -}}
-        {{- if $page.Parent.HasMenuCurrent .Menu . }} nav_active_parent_has_menu{{ end -}}
-        {{- if $page.Parent.Parent -}}
-          {{- if $page.Parent.Parent.IsMenuCurrent .Menu . }} nav_active_parent_parent_is_menu{{ end -}}
-          {{- if $page.Parent.Parent.HasMenuCurrent .Menu . }} nav_active_parent_parent_has_menu{{ end -}}
-        {{- end -}}
-      {{- end -}}" title="{{ partial `claris/_functions/sanitize` $name }}">{{ $name }}{{ with $children }}<span class="nav_icon">{{ partial "sprite" (dict "icon" "arrow") }}</span>{{ end }}</a>
-      {{- with $children }}
-              <div class="nav_sub">
-                <span class="nav_child"></span>
-        {{- range . }}
-          {{- if eq $menu $menuData }}
-            {{- $name = .name }}
-            {{- $url = relURL .link }}
-          {{- else }}
-            {{- $name = or (T .Name) .Name }}
-            {{- $url = relLangURL .URL }}
-          {{- end }}
-          {{- $childID := default "" (printf "%s-%s" $parentID ( (default $name .Identifier) | plainify | urlize) ) }}
-                  <a href="{{ $url }}" id="{{ $childID }}" class="nav_child nav_item
-          {{- if eq $page.RelPermalink $url }} nav_active_page{{ end -}}
-          {{- if ( $page.IsMenuCurrent .Menu . ) }} nav_active_is_menu{{ end -}}
-          {{- if ( $page.HasMenuCurrent .Menu . ) }} nav_active_has_menu{{ end -}}
-          {{- /* if (site.GetPage .URL).InSection $page }} nav_active_in_section{{ end */ -}}
-          {{- if $page.Parent -}}
-            {{- if $page.Parent.IsMenuCurrent .Menu . }} nav_active_parent_is_menu{{ end -}}
-            {{- if $page.Parent.HasMenuCurrent .Menu . }} nav_active_parent_has_menu{{ end -}}
-            {{- if $page.Parent.Parent -}}
-              {{- if $page.Parent.Parent.IsMenuCurrent .Menu . }} nav_active_parent_parent_is_menu{{ end -}}
-              {{- if $page.Parent.Parent.HasMenuCurrent .Menu . }} nav_active_parent_parent_has_menu{{ end -}}
-            {{- end -}}
-          {{- end -}}" title="{{ partial `claris/_functions/sanitize` $name }}">{{ $name }}</a>
-        {{- end }}
-              </div>
             </div>
-      {{- end }}
+          </div>
+    {{- end }}
   {{- end }}
           </div>
 {{- end }}
 
 {{- with $page }}
   {{- $relatedNavEntries := false }}
-  {{ partial "html-comment" (printf "[%s]: Listing related pages if .Type=%v in %v and .Section=%v in %v"
-    $template .Type (.Param "navListCurrentSectionForTypes")  .Section (.Param "navListCurrentSectionInSection")) }}
+  {{- /* partial "html-comment" (printf "[%s]: Listing related pages if .Type=%v in %v and .Section=%v in %v"
+    $template .Type (.Param "navListCurrentSectionForTypes")  .Section (.Param "navListCurrentSectionInSection")) */ -}}
   {{- $invisibleSections := slice }}
   {{- with site.Params.hidden.sections }}
     {{- $invisibleSections = append . $invisibleSections }}
@@ -102,17 +114,17 @@
     {{- /* Exclude sections that are in site.Params.hidden.sections but
     still list pages if the current page is in a hidden section */ -}}
     {{- $excludeSections := complement (slice (printf "%s" .Section)) $invisibleSections }}
-    {{/* {{- partial "html-comment" (printf "%s[%s]: .Section=%v .CurrentSection=%v $excludeSections=%v" $page $template .Section .CurrentSection $excludeSections) }} */}}
+    {{- /* partial "html-comment" (printf "%s[%s]: .Section=%v .CurrentSection=%v $excludeSections=%v" $page $template .Section .CurrentSection $excludeSections) */ -}}
     {{- with .CurrentSection }}
       {{- if not $relatedNavEntries }}
-              <div class="nav_group nav_group_related">
+            <div class="nav_group nav_group_related">
         {{- $relatedNavEntries = true }}
       {{- end }}
       {{- $menuTitle := default .Title .Params.MenuTitle }}
-          <div class="nav_parent nav_parent_section currentsection">
-            {{- $activeClass := cond (eq $page.RelPermalink .RelPermalink) " nav_active" "" }}
-            <a href="{{ .RelPermalink }}" class="nav_item{{ $activeClass }}" title="{{ partial `claris/_functions/sanitize` .Title }}">{{ $menuTitle }}</a>
-          </div>
+            <div class="nav_parent nav_parent_section currentsection">
+              {{- $activeClass := cond (eq $link .RelPermalink) " nav_active" "" }}
+              <a href="{{ .RelPermalink }}" class="nav_item{{ $activeClass }}" title="{{ partial `claris/_functions/sanitize` .Title }}">{{ $menuTitle }}</a>
+            </div>
     {{- end }}
     {{- partial "html-comment" (printf "[%s]: .Section=%v $invisibleSections=%v .Pages=%v"
         $template .Section $invisibleSections (delimit .Pages ", ") ) }}
@@ -124,7 +136,7 @@
         {{- end }}
         {{- $menuTitle := default .Title .Params.MenuTitle }}
           <div class="nav_parent nav_parent_section pages">
-            {{- $activeClass := cond (eq $page.RelPermalink .RelPermalink) " nav_active" "" }}
+            {{- $activeClass := cond (eq $link .RelPermalink) " nav_active" "" }}
             <a href="{{ .RelPermalink }}" class="nav_item{{ $activeClass }}" title="{{ partial `claris/_functions/sanitize` .Title }}">{{ $menuTitle }}</a>
           </div>
       {{- end }}
@@ -141,7 +153,7 @@
             {{- if not (in $invisibleSections .CurrentSection) }}
             {{- $menuTitle := default .Title .Params.MenuTitle }}
         <div class="nav_parent nav_parent_section parent_pages">
-            {{- $activeClass := cond (eq $page.RelPermalink .RelPermalink) " nav_active" "" }}
+            {{- $activeClass := cond (eq $link .RelPermalink) " nav_active" "" }}
           <a href="{{ .RelPermalink }}" class="nav_item{{ $activeClass }}" title="{{ partial `claris/_functions/sanitize` .Title }}">{{ $menuTitle }}</a>
         </div>
             {{- end }}
@@ -155,38 +167,38 @@
     $template .AlternativeOutputFormats) -}}
   {{- with .AlternativeOutputFormats.Get "print" -}}
     {{- if not $relatedNavEntries }}
-        <div class="nav_group nav_group_related">
+          <div class="nav_group nav_group_related">
       {{- $relatedNavEntries = true }}
     {{- end }}
           <div class="nav_parent nav_parent_print">
-            <a href="{{ .RelPermalink }}" class="nav_item" title="{{ T "print-view" }}">{{ partial "sprite" (dict "icon" "print") }}</a>
+            <a href="{{ .RelPermalink }}" class="nav_item" title="{{ T `print-view` }}">{{ partial "sprite" (dict "icon" "print") }}</a>
           </div>
   {{- end }}
   {{- with .AlternativeOutputFormats.Get "html" -}}
     {{- if not $relatedNavEntries }}
-        <div class="nav_group nav_group_related">
+          <div class="nav_group nav_group_related">
       {{- $relatedNavEntries = true }}
     {{- end }}
           <div class="nav_parent nav_parent_print">
-            <a href="{{ .RelPermalink }}" class="nav_item" title="{{ T "screen-view" }}">{{ partial "sprite" (dict "icon" "arrow") }}</a>
+            <a href="{{ .RelPermalink }}" class="nav_item" title="{{ T `screen-view` }}">{{ partial "sprite" (dict "icon" "arrow") }}</a>
           </div>
   {{- end }}
 
   {{- partial "html-comment" (printf "[%s]: .Param assetDownloadFolders=%v"
     $template (.Param "assetDownloadFolders") ) -}}
   {{- with $page.Param "assetDownloadFolders" }}
-    {{/* {{- partial "html-comment" (printf "%s[%s]: Resources.ByType=%v" $page $template ($page.Resources.ByType "application") ) }} */}}
+     {{- /* partial "html-comment" (printf "%s[%s]: Resources.ByType=%v" $page $template ($page.Resources.ByType "application") ) */ -}}
     {{- range $downloadFolder := . }}
       {{- with $page.Param "downloadBaseNames" }}
         {{- range $fileBaseName := . }}
           {{- $fileGlob := (printf "assets/%s/*%s*.pdf" $downloadFolder $fileBaseName) }}
           {{- with $page.Resources.GetMatch $fileGlob }}
             {{- if not $relatedNavEntries }}
-        <div class="nav_group nav_group_related">
+          <div class="nav_group nav_group_related">
               {{- $relatedNavEntries = true }}
             {{- end }}
           <div class="nav_parent nav_parent_download">
-            <a href="{{ .RelPermalink }}" class="nav_item" title="{{ T "download-pdf" }} {{ partial `claris/_functions/sanitize` .Title }}">{{ partial "sprite" (dict "icon" "file-pdf") }}</a>
+            <a href="{{ .RelPermalink }}" class="nav_item" title="{{ T `download-pdf` }} {{ partial `claris/_functions/sanitize` .Title }}">{{ partial "sprite" (dict "icon" "file-pdf") }}</a>
           </div>
           {{- else }}
             {{- partial "html-comment" (printf "%s[%s]: fileGlob=%v" $page $template $fileGlob ) }}
@@ -200,43 +212,43 @@
     $template .IsTranslated) -}}
   {{- if .IsTranslated }}
     {{- if not $relatedNavEntries }}
-        <div class="nav_group nav_group_related">
+          <div class="nav_group nav_group_related">
       {{- $relatedNavEntries = true }}
     {{- end }}
-          <div class="nav_parent nav_parent_language">
-            <a href="#" title="{{ T "switch_language_page" }}" class="nav_item">{{ partial "sprite" (dict "icon" "icon-language") }}</a>
-            <div class="nav_sub">
-              <span class="nav_child"></span>
+            <div class="nav_parent nav_parent_language">
+              <a href="#" title="{{ T `switch_language_page` }}" class="nav_item">{{ partial "sprite" (dict "icon" "icon-language") }}</a>
+              <div class="nav_sub">
+                <span class="nav_child"></span>
     {{- partial "html-comment" (printf "%s: available translations: %v" $template $page.Translations) -}}
     {{- range sort site.Languages "Weight" "asc" }}
       {{- partial "html-comment" (printf "%s: ctx.Lang:%v translation: %v" $template $page.Lang . ) -}}
       {{- if (eq (printf "%s" $page.Lang) (printf "%s" .)) }}
-              <a href="{{ $page.RelPermalink }}" class="nav_child nav_item nav_active">{{ $page.Language.LanguageName }}</a>
+                <a href="{{ $link }}" class="nav_child nav_item nav_active">{{ $page.Language.LanguageName }}</a>
       {{- else }}
         {{- $matchingTranslation := where $page.Translations "Lang" .Lang }}
         {{- with $matchingTranslation }}
           {{- with (index . 0) }}
             {{- $languageName := .Language.LanguageName }}
-              <a href="{{ .RelPermalink }}" class="nav_child nav_item" title="{{ T "view_page_in_language" (dict "Count" 1 "Language" $languageName) }}">{{ $languageName }}</a>
+                <a href="{{ .RelPermalink }}" class="nav_child nav_item" title="{{ T `view_page_in_language` (dict `Count` 1 `Language` $languageName) }}">{{ $languageName }}</a>
           {{- end }}
         {{- end }}
       {{- end }}
     {{- end }}
+              </div>
             </div>
-          </div>
   {{- else if (and site.Params.alwaysShowLanguageSelector site.IsMultiLingual) }}
-          <div class="nav_parent nav_parent_language">
-            <a href="#" title="{{ T "switch_language_page" }}" class="nav_item">{{ partial "sprite" (dict "icon" "icon-language") }}</a>
-            <div class="nav_sub">
-              <span class="nav_child"></span>
+            <div class="nav_parent nav_parent_language">
+              <a href="#" title="{{ T `switch_language_page` }}" class="nav_item">{{ partial "sprite" (dict "icon" "icon-language") }}</a>
+              <div class="nav_sub">
+                <span class="nav_child"></span>
     {{ range site.Home.AllTranslations }}
-              <a href="{{ .RelPermalink }}" title="{{ T "switch_language_site" }}" class="nav_child nav_item">{{ .Language.LanguageName }}</a>
+                <a href="{{ .RelPermalink }}" title="{{ T `switch_language_site` }}" class="nav_child nav_item">{{ .Language.LanguageName }}</a>
     {{ end }}
+              </div>
             </div>
-          </div>
   {{- end }}
   {{- if $relatedNavEntries }}
-        </div>
+          </div>
   {{- end }}
 {{- end }}
-{{ partial "html-comment" (printf "END   %v" $template) }}
+{{- partial "html-comment" (printf "END   %v" $template) -}}

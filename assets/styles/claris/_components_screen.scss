@@ -329,15 +329,6 @@ $indicator-width: var(--toc_indicator_width)) {
           @include nav-hover-background;
         }
       }
-      &:last-child {
-        margin-right: calc(0px - var(--inner_padding));
-        padding-right: var(--inner_padding);
-        @media (any-hover: hover) {
-          &:not(.nav_active):hover, a.nav_active_in_section:hover {
-            @include nav-hover-background_flush-right;
-          }
-        }
-      }
     }
     &_parent {
       // Display as grid to position sub menus properly
@@ -586,6 +577,13 @@ $indicator-width: var(--toc_indicator_width)) {
       display: flex;
       justify-content: center;
       align-items: center;
+      margin-right: calc(0px - var(--inner_padding));
+      padding-right: var(--inner_padding);
+      @media (any-hover: hover) {
+        &:not(.nav_active):hover, a.nav_active_in_section:hover {
+          @include nav-hover-background_flush-right;
+        }
+      }
       &_open {
         display: block;
       }
@@ -832,7 +830,8 @@ $indicator-width: var(--toc_indicator_width)) {
         }
       }
       &_item {
-        padding: math.div(hugo.$screenViewNavHeight - 1.5rem, 2) var(--inner_padding_4-2);
+        padding-top: math.div(hugo.$screenViewNavHeight - 1.5rem, 2);
+        padding-bottom: math.div(hugo.$screenViewNavHeight - 1.5rem, 2);
       }
       &_color-scheme_choice {
         &_mask,
@@ -841,23 +840,14 @@ $indicator-width: var(--toc_indicator_width)) {
           height: hugo.$screenViewNavHeight;
         }
       }
+      &_mobile_toggle {
+        padding-right: var(--inner_padding);
+      }
       &_body {
         &::after {
           top: hugo.$screenViewNavHeight;
         }
 
-      }
-    }
-  }
-
-  // Full navigation menu bar
-  @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
-    .nav {
-      &_item {
-        &:last-child {
-          margin-right: var(--inner_padding_4-2);
-          padding-right: var(--inner_padding_4-2);
-        }
       }
     }
   }

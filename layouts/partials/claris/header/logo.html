@@ -1,4 +1,4 @@
-{{ $template := "claris/header/logo" }}
+{{- $template := "claris/header/logo" }}
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $debug := and false (and .Debug (eq site.LanguagePrefix "") ) }}
@@ -38,28 +38,28 @@
 {{- end }}
 
 {{- with $mastheadURL }}
-    <a href='{{ . }}' title="{{ $siteTitle }}" class="nav_brand">
+          <a href='{{ . }}' title="{{ $siteTitle }}" class="nav_brand">
 {{- else }}
-  <div class="nav_brand">
+          <div class="nav_brand">
 {{- end }}
 {{- with $logoParams }}
-      <div class="nav_brand_logo">
+            <div class="nav_brand_logo">
         {{- if $debug }}
         {{- warnf "%s calling render-image with logoParams:\n%v" $dbg
             (jsonify (dict "indent" "  ") $logoParams) }}
         {{- end }}
         {{- partialCached "claris/_components/render-image"
             (merge $logoParams (dict "Page" $page "Debug" $debug) ) $logoParams }}
-      </div>
+            </div>
 {{- end }}
 
 {{- if or (not $logoParams) $wordMark }}
-      <div class="nav_brand_text">
+          <div class="nav_brand_text">
         {{- $wordMark | default $siteTitle -}}
-      </div>
+            </div>
 {{- end }}
-{{- if $mastheadURL -}}
-    </a>
+{{- if $mastheadURL }}
+          </a>
 {{- else }}
-    </div>
-{{- end }}
+          </div>
+{{- end -}}

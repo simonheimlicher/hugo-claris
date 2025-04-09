@@ -7,13 +7,8 @@
           navigation to work. Otherwise, JS "theme/navigation-menu.js" will
           terminate early" */ -}}
           {{- partialCached "claris/header/logo" (dict "Page" $page) }}
-          <div class='nav_body nav_body_{{ default "right" (page.Param "mobileNavigation") }}'>
-            {{- $menuData := site.Data.menu }}
-            {{- with $menuData }}
-              {{ partial "claris/header/nav" (dict "ctx" $page "Page" $page "Menu" $menuData) }}
-            {{- else }}
-              {{ partial "claris/header/nav" (dict "ctx" $page "Page" . "Menu" site.Menus.main) }}
-            {{- end }}
+          <div class="nav_body nav_body_{{ default `right` (page.Param `mobileNavigation`) }}">
+            {{- partial "claris/header/nav" (dict "ctx" $page "Page" . "Menu" site.Menus.main) }}
             {{- with site.Menus.social }}
             <div class="nav_group nav_group_follow">
               <div class="nav_parent_follow">
@@ -22,6 +17,7 @@
             </div>
             {{- end }}
           </div>
-          {{- partialCached "claris/header/nav-menu" (dict "logoclass" "" "Page" $page) }}
+  {{ partialCached "claris/header/nav-menu" (dict "logoclass" "" "Page" $page) }}
         </nav>
       </div>
+{{- /* avoid trailing newline */ -}}
