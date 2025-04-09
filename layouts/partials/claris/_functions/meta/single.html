@@ -3,6 +3,10 @@
 {{ $debug := false }}
 {{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
+{{ if and (eq .Page.WordCount 0) (in .Kind (slice "page" "section" "home") ) }}
+  {{ errorf "%s .Page.Wordcount=%d .Page=%v[%T] page.WordCount=%d page=%v[%T]"
+      $dbg .Page.WordCount .Page .Page page.WordCount page page }}
+{{ end }}
 {{ with $page.Title }}
 {{ else }}
   {{ warnf "%s missing title: .Page=%v[%T] page=%v[%T] .Page.Title=%q[%T] page.Title=%q[%T]"
@@ -62,7 +66,7 @@
   {{ end }}
   {{ $metaVariant = merge $metaVariant (partialCached $defaultMetaPartial $headMetaParams .Permalink) }}
 
-  {{ $mainSections := $page.Param "mainSections" }}
+  {{ $mainSections := .Param "mainSections" }}
   {{ $itemType := "page" }}
   {{ with .Page }}
     {{ if in (slice "page" "term") .Kind }}
@@ -116,7 +120,6 @@
   {{ end }}
 
   {{ $genre := default (index .Params.categories 0) .Params.genre }}
-  {{ $keywords := apply (default (default (split (anchorize $metaVariant.Title) "-") .Params.tags) .Params.keywords) "lower" "." }}
 
   <!-- HTML 'id' attribute of the DOM container of the main content -->
   {{ $articleID := default "contentContainer" ($page.Param "articleID") }}
@@ -147,7 +150,7 @@
       "WordCount" .WordCount
       "License" $license
       "Genre" $genre
-      "Keywords" $keywords
+      "Keywords" $metaVariant.Keywords
     )
     "Page" $page
   ) }}

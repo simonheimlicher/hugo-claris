@@ -16,7 +16,7 @@
     {{- /* partial "html-comment" (printf "%s[%s]: assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) */ -}}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="{{- $backgroundLight -}}">
+    <meta name="theme-color" content="{{- $backgroundLight -}}">
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="{{- $backgroundDark -}}">
     {{- $title := default $meta.Site.Data.Headline $meta.Single.Data.Headline | safeHTML }}
     {{- if not $meta.Single.Data.Headline }}
@@ -43,7 +43,7 @@
     {{- if $debug }}
       {{- warnf "%s[%s]: canonicalURL=%v [type=%T]" $template $page.RelPermalink $canonicalURL $canonicalURL }}
     {{- end }}
-    <link rel="canonical" type="text/html" href="{{ $canonicalURL }}" title="{{ (partial `claris/_functions/sanitize` $title) }}">
+    <link rel="canonical" href="{{ $canonicalURL }}">
     {{- partialCached "claris/head/app-meta" . }}
 
 {{- partialCached "claris/head/assets" $ctx $assetVariant.CoalesceLanguageKey -}}

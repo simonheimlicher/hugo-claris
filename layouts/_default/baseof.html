@@ -85,7 +85,7 @@
 {{- end -}}
 
 <!DOCTYPE html>
-{{ partial "html-comment" (printf "BASEOF %s BEGIN" $dbg) }}
+{{- if $debug }}{{ partial "html-comment" (printf "BASEOF %s BEGIN" $dbg) }}{{ end }}
 <html lang="{{ .Lang }}"
   {{- with .Type }}{{ $htmlClassList = append (slice (printf "type-%s" . )) $htmlClassList }}{{ end -}}
   {{- with .Kind }}{{ $htmlClassList = append (slice (printf "kind-%s" . )) $htmlClassList }}{{ end -}}
@@ -96,10 +96,10 @@
   {{- with $openGraphNSDeclaration }} {{ safeHTMLAttr . }} {{ end -}}
 >
 <head>
-{{ partial "html-comment" (printf "%s assetVariant:\n%v" $dbg (jsonify (dict "indent" "  ") $assetVariant) ) }}
-{{ partial "html-comment" (printf "[%s]: .Type=%s .Layout=%s .MediaType=%s $assetVariant.OutputFormat=%s meta.Classification=%v]"
-    $template .Type .Layout .MediaType $assetVariant.OutputFormatName (jsonify (dict "indent" "  ") $meta.Classification)) }}
-  {{ partial "claris/head/index" $partialContext }}
+{{- if $debug }}{{ partial "html-comment" (printf "%s assetVariant:\n%v" $dbg (jsonify (dict "indent" "  ") $assetVariant) ) }}{{ end }}
+{{- if $debug }}{{ partial "html-comment" (printf "[%s]: .Type=%s .Layout=%s .MediaType=%s $assetVariant.OutputFormat=%s meta.Classification=%v]"
+    $template .Type .Layout .MediaType $assetVariant.OutputFormatName (jsonify (dict "indent" "  ") $meta.Classification)) }}{{ end }}
+    {{ partial "claris/head/index" $partialContext }}
   {{- partialCached "claris/_hooks/head-end/index" $partialContext $assetVariant.CoalesceLanguageKey }}
 </head>
 <body id="documentContainer" {{- block "body-data" . -}} {{- end -}}>
