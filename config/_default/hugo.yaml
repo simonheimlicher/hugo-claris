@@ -4,8 +4,7 @@ copyright: Copyright © Simon Heimlicher
 # set `baseurl` to your root domain including trailing slash
 baseURL: "https://claris.heimlicher.com/" # Include trailing slash
 
-defaultContentLanguage: en
-languageCode: en-us
+defaultContentLanguage: en-US
 
 # https://gohugo.io/templates/robots/
 enableRobotsTXT: true

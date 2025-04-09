@@ -99,15 +99,15 @@
 
   <!-- Get proper case for locale for use in OpenGraph meta tags
   See Hugo issue: https://github.com/gohugoio/hugo/issues/7344 -->
-  {{ $locale := site.LanguageCode }}
-  {{ $localeRE := `^[a-zA-Z][-_][a-zA-Z]$` }}
-  {{ with replaceRE $localeRE "$1-$2" $locale }}
-    {{ with split . "-" }}
-      {{ $locale = printf "%s-%s" (lower (index . 0) ) (upper (index . 1) )  }}
+  {{ $locale := site.Language.LanguageCode }}
+  {{ $localeRE := `(?i)^([a-z]{2,2})[-_]([a-z]{2,2})$` }}
+  {{ if findRE $localeRE $locale }}
+    {{ $locale = printf "%s-%s" (substr $locale 0 2) (substr $locale 3 2 | upper) }}
+    {{ if $debug }}
+      {{ warnf "%s site.Language.LanguageCode=%v matches %q: setting locale=%q" $dbg site.Language.LanguageCode $localeRE $locale }}
     {{ end }}
   {{ else }}
-    {{ errorf "%s Invalid locale=%v does not match %v"
-        $dbg $locale $localeRE }}
+    {{ errorf "%s Invalid locale=%v does not match %v. Make sure to set \"languageCode\" in hugo.{toml,yaml,json}" $dbg $locale $localeRE }}
   {{ end }}
 
   {{ $alternativeLanguages := slice }}
