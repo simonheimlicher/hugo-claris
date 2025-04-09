@@ -2,7 +2,7 @@
 {{- $excerptMeta := .Meta }}
 {{- $template := "claris/_components/excerpt" }}
 {{- $subjectPage := .SubjectPage }}
-{{- $debug := and false or (findRE `quantum-supremacy` $subjectPage.RelPermalink) (or .Debug ($page.Param "clarisdebug") ($subjectPage.Param "clarisdebug") ) }}
+{{- $debug := and false (or (findRE `render-meta-images` $subjectPage.RelPermalink) (or .Debug ($page.Param "clarisdebug") ($subjectPage.Param "clarisdebug") ) ) }}
 {{- $dbg := printf "%s subject=%s [%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink)
     (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $subjectPage.RelPermalink)
     (replaceRE `.*?([^/]+)$` `$1` $template) }}
@@ -94,7 +94,7 @@
     {{- if $showContent }}
       {{- with $excerptContent = .Params.excerpt | default .Params.summary | default .Params.description }}
         {{- $excerptContent = $subjectPage.RenderString $excerptContent }}
-        {{- if and false $debug }}
+        {{- if and true $debug }}
           {{- warnf "%s excerptContent=%q from subjectPage.Params:\n%v" $dbg $excerptContent
               (jsonify (dict "indent" "  ") $subjectPage.Params) }}
         {{- end }}
@@ -102,15 +102,24 @@
         {{- $paragraphs := .Content | findRE `<p>.*?</p>` }}
         {{- $excerptContent = index $paragraphs 0 | safeHTML }}
         {{- with $excerptContent }}
-          {{- if and false $debug }}
+          {{- if and true $debug }}
             {{- warnf "%s excerptContent=%q from .Content:\n%v" $dbg $excerptContent
                 (jsonify (dict "indent" "  ") $subjectPage.Content) }}
           {{- end }}
         {{- else }}
-          {{- $excerptContent = .Summary }}
-          {{- if and false $debug }}
-            {{- warnf "%s excerptContent=%q from subjectPage.Summary:\n%v" $dbg $excerptContent
-                (jsonify (dict "indent" "  ") $subjectPage.Summary) }}
+          {{- /* Only continue if .Summary does not contain any `<a>` tags */ -}}
+          {{- with $anchorTags := findRE `<a.*?>` .Summary }}
+            {{- if and true $debug }}
+              {{- warnf "%s cannot use subjectPage.Summary [%T] as it contains <a> tag:\n%v" $dbg
+                 $subjectPage.Summary $anchorTags }}
+            {{- end }}
+          {{- else }}
+            {{- $excerptContent = .Summary }}
+            {{- if and true $debug }}
+              {{- warnf "%s excerptContent=%q from subjectPage.Summary [%T]:\n%v" $dbg
+                  $excerptContent $subjectPage.Summary
+                  (jsonify (dict "indent" "  ") $subjectPage.Summary) }}
+            {{- end }}
           {{- end }}
         {{- end }}
       {{- end }}
