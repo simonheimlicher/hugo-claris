@@ -8,10 +8,11 @@
  * [Correct use of mainEntityOfPage schema](https://stackoverflow.com/a/52496080/617559)
 -->
 
-{{- $schemaOrgMeta = merge $schemaOrgMeta (partialCached "claris/_functions/schema-org/_entities/article"
-    (dict "Page" $page "Meta" $meta)
-    $meta.Single.Data.URL
-  ) }}
+  {{/* Avoid caching with `partialCached` as this leads to the use of cached but
+  invalid Schema.org data */}}
+{{ $schemaOrgMeta = merge $schemaOrgMeta (
+  partial "claris/_functions/schema-org/_entities/article" $entityParams
+) }}
 
 {{- $mainEntityOfPage := (dict "@type" "WebPage" "@id" (partial "claris/_functions/canonical-url" .Page) ) }}
 
