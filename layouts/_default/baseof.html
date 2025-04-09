@@ -51,13 +51,6 @@
 {{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "AssetVariant" $assetVariant "Template" $template "Debug" $debug) $page.Permalink $assetVariant.Key }}
 {{- .Scratch.Set "clarismeta" $meta }}
 
-{{- /* {{- if (and $assetVariant.OutputFormat (strings.Contains (lower $assetVariant.OutputFormatName) "print") ) }}
-  {{- warnf "%s outputFormat=%v: meta.Output=\n%v\n.Classification=\n%v"
-    $dbg $assetVariant.OutputFormatName
-    (jsonify (dict "indent" "  ") $meta.Output)
-    (jsonify (dict "indent" "  ") $meta.Classification ) }}
-{{- end }} */ -}}
-
 {{- $htmlClassList := (slice "no-js") }}
 {{- if .Params.heroImageStyle }}
   {{- if (eq .Params.heroImageStyle "cover") }}

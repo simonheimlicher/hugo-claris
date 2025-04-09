@@ -5,7 +5,9 @@
 
 {{ $assetVariant := .AssetVariant }}
 {{ if not $assetVariant }}
-  {{ warnf "%s .AssetVariant is unset" $dbg }}
+  {{ if $debug }}
+    {{ warnf "%s .AssetVariant is unset" $dbg }}
+  {{ end }}
   {{ with $page }}
     {{ $assetVariant = partialCached "claris/_functions/assets/asset-variant" (dict "Page" . "Template" $template) .Type .Kind .AlternativeOutputFormats .OutputFormats }}
   {{ end }}
