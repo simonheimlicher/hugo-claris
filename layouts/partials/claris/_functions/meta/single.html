@@ -1,11 +1,12 @@
 {{ $page := .Page }}
 {{ $template := "claris/_functions/meta/single" }}
-{{ $debug := false }}
+{{ $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
 {{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
-{{ if and (eq .Page.WordCount 0) (in .Kind (slice "page" "section" "home") ) }}
+{{ $wordCount := .Page.WordCount }}
+{{ if and (eq $wordCount 0) (in .Kind (slice "page" "section" "home") ) }}
   {{ errorf "%s .Page.Wordcount=%d .Page=%v[%T] page.WordCount=%d page=%v[%T]"
-      $dbg .Page.WordCount .Page .Page page.WordCount page page }}
+      $dbg $wordCount .Page .Page page.WordCount page page }}
 {{ end }}
 {{ with $page.Title }}
 {{ else }}
@@ -17,7 +18,9 @@
 
 {{ $assetVariant := .AssetVariant }}
 {{ if not $assetVariant }}
-  {{ warnf "%s .AssetVariant is unset" $dbg }}
+  {{ if $debug }}
+    {{ warnf "%s .AssetVariant is unset" $dbg }}
+  {{ end }}
   {{ with $page }}
     {{ $assetVariant = partialCached "claris/_functions/assets/asset-variant" (dict "Page" . "Template" $template) .Type .Kind .AlternativeOutputFormats .OutputFormats }}
   {{ end }}
@@ -72,7 +75,7 @@
     {{ if in (slice "page" "term") .Kind }}
       {{ if (in $mainSections .Section) }}
         {{ $itemType = "article" }}
-        {{ if $debug }}
+        {{ if and false $debug }}
           {{ warnf "%s .Kind=%v .Section=%v in mainSections=%v"
               $dbg .Kind .Section $mainSections }}
         {{ end }}
@@ -97,7 +100,10 @@
   ) }}
   {{ $imageMeta := partialCached "claris/_functions/meta/images/from-params" $metaImagesParams $metaImagesParams }}
 
-  {{ $license := .Param "license" }}
+  {{ $license := false }}
+  {{ with .Param "license" }}
+    {{ $license = . }}
+  {{ end }}
 
   {{ $language := $page.Language.Lang }}
 
@@ -107,7 +113,7 @@
   {{ $localeRE := `(?i)^([a-z]{2,2})[-_]([a-z]{2,2})$` }}
   {{ if findRE $localeRE $locale }}
     {{ $locale = printf "%s-%s" (substr $locale 0 2) (substr $locale 3 2 | upper) }}
-    {{ if $debug }}
+    {{ if and false $debug }}
       {{ warnf "%s site.Language.LanguageCode=%v matches %q: setting locale=%q" $dbg site.Language.LanguageCode $localeRE $locale }}
     {{ end }}
   {{ else }}
@@ -128,30 +134,35 @@
 
   <!-- NOTE: For consistency, in the `Data` key, we apply the partial `claris/_functions/sanitize`
        to all strings that might contain HTML or soft hyphens -->
-  {{ $singleMeta = (dict
-    "Data" (dict
-      "URL" $page.RelPermalink
-      "CanonicalURL" $canonicalURL
-      "ArticleSection" ( default "Root" (default .Params.section (humanize .Section) ) )
-      "ArticleID" $articleID
-      "EntityID" (printf "%s#%s" $canonicalURL $articleID)
-      "ItemType" $itemType
-      "Language" $language
-      "Locale" $locale
-      "AlternativeLanguages" $alternativeLanguages
-      "CopyrightYear" ( now.Format "2006" )
-      "Date" (dict
-        "Created" .Date
-        "Published" .PublishDate
-        "Modified" .Lastmod
-      )
-      "Author" $authorMeta
-      "Images" $imageMeta
-      "WordCount" .WordCount
-      "License" $license
-      "Genre" $genre
-      "Keywords" $metaVariant.Keywords
+  {{ $singleData := (dict
+    "URL" $page.RelPermalink
+    "CanonicalURL" $canonicalURL
+    "ArticleSection" ( default "Root" (default .Params.section (humanize .Section) ) )
+    "ArticleID" $articleID
+    "EntityID" (printf "%s#%s" $canonicalURL $articleID)
+    "ItemType" $itemType
+    "Language" $language
+    "Locale" $locale
+    "AlternativeLanguages" $alternativeLanguages
+    "CopyrightYear" ( now.Format "2006" )
+    "Date" (dict
+      "Created" .Date
+      "Published" .PublishDate
+      "Modified" .Lastmod
     )
+    "Author" $authorMeta
+    "Images" $imageMeta
+    "Genre" $genre
+    "Keywords" $metaVariant.Keywords
+  ) }}
+  {{ with $license }}
+    {{ $singleData = merge $singleData (dict "License" . ) }}
+  {{ end }}
+  {{ with $wordCount }}
+    {{ $singleData = merge $singleData (dict "WordCount" . ) }}
+  {{ end }}
+  {{ $singleMeta = merge $singleMeta (dict
+    "Data" $singleData
     "Page" $page
   ) }}
 

@@ -2,8 +2,8 @@
 {{ $meta := page.Scratch.Get "clarismeta" }}
 {{ $schemaOrgMeta := .SchemaOrgMeta }}
 {{ $template := "claris/_functions/schema-org/website" }}
-{{ $debug := false }}
-{{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{ $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
+{{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 <!-- Get meta data for home page -->
 {{/* {{ $args := merge . (dict "Page" (site.GetPage "/")) }}
@@ -20,10 +20,12 @@
         "headline" .Headline
         "description" (default .Headline .Description)
         "inLanguage" .Language
-        "license" .License.HTML
         "url" .CanonicalURL
       )
     ) }}
+  {{ with .License.HTML }}
+    {{ $rootMeta = merge $rootMeta (dict "license" . ) }}
+  {{ end }}
   {{- $shareImageURLs := slice }}
   {{ with $shareImageURLs := partial "claris/_functions/meta/images/get-image" (dict
     "Page" $page

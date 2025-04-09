@@ -1,9 +1,9 @@
-{{- $page := .Page }}
-{{- $meta := page.Scratch.Get "clarismeta" }}
-{{- $schemaOrgMeta := .SchemaOrgMeta }}
-{{- $template := "claris/_functions/schema-org/collectionpage" }}
-{{- $debug := false }}
-{{- $entityParams := merge $ (dict "Template" (printf "%s->%s" $.Template $template) "Debug" $debug) }}
+{{ $page := .Page }}
+{{ $meta := page.Scratch.Get "clarismeta" }}
+{{ $schemaOrgMeta := .SchemaOrgMeta }}
+{{ $template := "claris/_functions/schema-org/collectionpage" }}
+{{ $debug := false }}
+{{ $entityParams := merge $ (dict "Template" (printf "%s->%s" $.Template $template) "Debug" $debug) }}
 
 <!-- [Schema.org entity CollectionPage](https://schema.org/CollectionPage)
 # Background
@@ -11,33 +11,33 @@
 (https://webmasters.stackexchange.com/a/99106/135400)
 -->
 
-{{- with $meta.Single.Data }}
-  {{- $schemaOrgMeta = merge $schemaOrgMeta (dict
+{{ with $meta.Single.Data }}
+  {{ $schemaOrgMeta = merge $schemaOrgMeta (dict
     "Root" (dict
       "@type" "CollectionPage"
     )
   ) }}
-{{- else }}
-  {{- errorf "%s[%s]: Missing parameter $meta.Single.Data" $page $template }}
-{{- end }}
+{{ else }}
+  {{ errorf "%s[%s]: Missing parameter $meta.Single.Data" $page $template }}
+{{ end }}
 
-{{- $itemList := slice }}
+{{ $itemList := slice }}
 
-{{- $listMeta := partial "claris/_functions/meta/list" $entityParams }}
+{{ $listMeta := partial "claris/_functions/meta/list" $entityParams }}
 
-{{- with $listMeta.List.Data }}
-  {{- range .Items }}
-    {{- with . }}
-      {{- $item := partialCached "claris/_functions/schema-org/_entities/article"
-        (dict "Page" $page "Meta" .)
+{{ with $listMeta.List.Data }}
+  {{ range .Items }}
+    {{ with . }}
+      {{ $item := partialCached "claris/_functions/schema-org/_entities/article"
+        (dict "Page" $page "Meta" . )
         .Single.Data.URL }}
-      {{- $itemList = append (slice $item.Entities.Article.Entity) $itemList }}
-    {{- else }}
-      {{- errorf "%s[%s]: Invalid entry at .List.Data.Items: %v" $page $template . }}
-    {{- end }}
-  {{- end }}
+      {{ $itemList = append (slice $item.Entities.Article.Entity) $itemList }}
+    {{ else }}
+      {{ errorf "%s[%s]: Invalid entry at .List.Data.Items: %v" $page $template . }}
+    {{ end }}
+  {{ end }}
 
-  {{- $schemaOrgMeta = merge $schemaOrgMeta (dict
+  {{ $schemaOrgMeta = merge $schemaOrgMeta (dict
     "Root" (dict
       "mainEntity" (dict
         "@type" "ItemList"
@@ -45,12 +45,12 @@
       )
     )
   ) }}
-{{- else }}
-  {{- errorf "%s[%s]: Failed to obtain $listMeta.List.Data" $page $template }}
-{{- end }}
+{{ else }}
+  {{ errorf "%s[%s]: Failed to obtain $listMeta.List.Data" $page $template }}
+{{ end }}
 
-{{- if $debug }}
-  {{- warnf "%s[%s]: returning %v" $page $template
+{{ if $debug }}
+  {{ warnf "%s[%s]: returning %v" $page $template
   (jsonify (dict "indent" "  ") $schemaOrgMeta) }}
-{{- end }}
-{{- return $schemaOrgMeta }}
+{{ end }}
+{{ return $schemaOrgMeta }}

@@ -1,12 +1,15 @@
-{{- $page := .Page }}
-{{- $meta := page.Scratch.Get "clarismeta" }}
-{{- $schemaOrgMeta := .SchemaOrgMeta }}
-{{- $template := "claris/_functions/schema-org/article" }}
+{{ $page := .Page }}
+{{ $meta := page.Scratch.Get "clarismeta" }}
+{{ $schemaOrgMeta := .SchemaOrgMeta }}
+{{ $template := "claris/_functions/schema-org/article" }}
+{{ $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
+{{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 <!-- [Schema.org entity Article](https://schema.org/Article)
 ## Background
  * [Correct use of mainEntityOfPage schema](https://stackoverflow.com/a/52496080/617559)
 -->
+{{ $entityParams := merge . (dict "Template" (printf "%s->%s" .Template $template) "Debug" $debug) }}
 
   {{/* Avoid caching with `partialCached` as this leads to the use of cached but
   invalid Schema.org data */}}
@@ -14,17 +17,17 @@
   partial "claris/_functions/schema-org/_entities/article" $entityParams
 ) }}
 
-{{- $mainEntityOfPage := (dict "@type" "WebPage" "@id" (partial "claris/_functions/canonical-url" .Page) ) }}
+{{ $mainEntityOfPage := (dict "@type" "WebPage" "@id" (partial "claris/_functions/canonical-url" .Page) ) }}
 
-{{- with $meta.Single.Data }}
-  {{- $schemaOrgMeta = merge $schemaOrgMeta (dict
+{{ with $meta.Single.Data }}
+  {{ $schemaOrgMeta = merge $schemaOrgMeta (dict
     "Root" (merge $schemaOrgMeta.Entities.Article.Entity (dict
         "mainEntityOfPage" $mainEntityOfPage
       )
     )
   ) }}
-{{- else }}
-  {{- errorf "%s[%s]: Missing parameter $meta.Single.Data" $page $template }}
-{{- end }}
+{{ else }}
+  {{ errorf "%s[%s]: Missing parameter $meta.Single.Data" $page $template }}
+{{ end }}
 
-{{- return $schemaOrgMeta }}
+{{ return $schemaOrgMeta }}

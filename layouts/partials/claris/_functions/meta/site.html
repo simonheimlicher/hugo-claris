@@ -1,6 +1,7 @@
 {{ $page := .Page }}
 {{ $template := "claris/_functions/meta/site" }}
-{{ $debug := false }}
+{{ $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
+{{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{ $homePage := (site.GetPage "/") }}
 
@@ -36,7 +37,7 @@
 
 {{ $description := site.Params.website.description | partial `claris/_functions/sanitize` }}
 {{ if and (not $description) site.Params.claris.hints }}
-  {{ warnf "%s[%s]: Missing website description. To include a description of your website, add it to site.Params.website.description" $page $template }}
+  {{ warnf "%s Missing website description. To include a description of your website, add it to site.Params.website.description" $dbg }}
 {{ end }}
 
 {{ $organization := site.Params.organization.name }}
@@ -64,11 +65,11 @@
         "URL" (site.Params.website.license.URL | safeHTML | safeJS)
       )
     ) }}
-  {{ (T "license_website" $licenseParams) }}
-  {{ (T "license_website_HTML" $licenseParams) }}
+  {{ $licenseText = T "license_website" $licenseParams }}
+  {{ $licenseHTML = T "license_website_HTML" $licenseParams }}
   {{ if $debug }}
-    {{ warnf "%s[%s]: licenseHTML=%s [licenseParams=%v]" $page $template
-        $licenseHTML $licenseParams }}
+    {{ warnf "%s licenseText=%s licenseHTML=%s [licenseParams=%v]" $dbg
+        $licenseText $licenseHTML $licenseParams }}
   {{ end }}
 {{ end }}
 
@@ -95,6 +96,38 @@
 
 {{ $metaImages := partialCached "claris/_functions/meta/images/from-params" $metaImagesParams $metaImagesParams }}
 
+{{ $siteData := (dict
+    "CanonicalURL" $canonicalURL
+    "WebsiteID" $websiteID
+    "EntityID" (printf "%s#%s" $canonicalURL $websiteID)
+    "Name" $name
+    "Title" $titlePlain
+    "Headline" $headlinePlain
+    "Tagline" $taglinePlain
+    "Description" $description
+    "Author" $authorMeta
+    "Social" $socialMeta
+    "Images" $metaImages
+    "Language" $language
+    "AlternativeLanguages" $alternativeLanguages
+    "Copyright" $copyright
+) }}
+{{ with and $licenseText $licenseHTML }}
+  {{ $license := (dict
+      "Text" $licenseText
+      "HTML" $licenseHTML
+  ) }}
+  {{ if $debug }}
+    {{ warnf "%s adding license=%s" $dbg $license }}
+  {{ end }}
+  {{ $singleData = merge $singleData (dict "License" $license ) }}
+{{ else }}
+  {{ if $debug }}
+    {{ warnf "%s no license: licenseText=%s licenseHTML=%s" $dbg $licenseText $licenseHTML }}
+  {{ end }}
+{{ end }}
+
+
 {{ $siteMeta = (dict
   "Site" (dict
     "Classification" (dict
@@ -103,26 +136,7 @@
       "Opengraph" $metaOpengraph
       "TwitterCard" $metaTwitterCard
     )
-    "Data" (dict
-      "CanonicalURL" $canonicalURL
-      "WebsiteID" $websiteID
-      "EntityID" (printf "%s#%s" $canonicalURL $websiteID)
-      "Name" $name
-      "Title" $titlePlain
-      "Headline" $headlinePlain
-      "Tagline" $taglinePlain
-      "Description" $description
-      "Author" $authorMeta
-      "Social" $socialMeta
-      "Images" $metaImages
-      "Language" $language
-      "AlternativeLanguages" $alternativeLanguages
-      "Copyright" $copyright
-      "License" (dict
-        "Text" $licenseText
-        "HTML" $licenseHTML
-      )
-    )
+    "Data" $siteData
     "Formatted" (dict
       "Title" $title
       "Headline" $headline
@@ -132,7 +146,7 @@
 ) }}
 
 {{ if $debug }}
-  {{ warnf "%s[%s]: returning %v" $page $template
+  {{ warnf "%s returning %v" $dbg
       (jsonify (dict "indent" "  " "noHTMLEscape" true) $siteMeta) }}
 {{ end }}
 

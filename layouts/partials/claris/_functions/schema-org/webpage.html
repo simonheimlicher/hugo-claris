@@ -1,8 +1,8 @@
 {{ $page := .Page }}
 {{ $meta := page.Scratch.Get "clarismeta" }}
 {{ $template := "claris/_functions/schema-org/webpage" }}
-{{ $debug := false }}
-{{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{ $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
+{{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{ $entityParams := merge . (dict "Template" (printf "%s->%s" .Template $template) "Debug" $debug) }}
 
@@ -71,7 +71,7 @@
   {{ with $page.Params.schemaorg.entitytype }}
     {{ if (eq (lower .) "profilepage") }}
       {{ $specificEntityType = . }}
-      {{/* {{ warnf "%s.Params.SchemaOrg.EntityType=%v" $dbg $specificEntityType }} */}}
+      {{/* {{ warnf "%s .Params.SchemaOrg.EntityType=%v" $dbg $specificEntityType }} */}}
     {{ else }}
       {{ errorf "%sInvalid Schema.org EntityType specified in .Params.SchemaOrg.EntityType=%v" $dbg . }}
     {{ end }}
@@ -106,7 +106,7 @@
 {{ end }}
 
 {{ if $debug }}
-  {{ warnf "%sreturning %v" $dbg
+  {{ warnf "%s returning %v" $dbg
   (jsonify (dict "indent" "  ") $schemaOrgMeta) }}
 {{ end }}
 {{ return $schemaOrgMeta }}
