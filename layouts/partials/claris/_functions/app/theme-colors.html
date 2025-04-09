@@ -1,0 +1,37 @@
+{{ $siteColors := dict }}
+{{ $page := default page .Page }}
+{{ $template := "claris/_functions/app/site-icons" }}
+{{ $debug := and false ($page.Param "clarisdebug") }}
+{{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
+
+{{ $themeColor := default "#000000" .ThemeColor }}
+{{ $backgroundColor := default "#ffffff" .BackgroundColor }}
+
+{{ with site.Params.colors.color_primary_lit }}
+  {{ $themeColor = partial "claris/_functions/color-to-hex" . }}
+  {{ if $debug }}
+    {{ warnf "%s site.Params.colors.color_primary_lit=%v. Using HEX value %s as theme color" $dbg site.Params.colors.color_primary_lit $themeColor }}
+  {{ end }}
+  {{ $siteColors = merge $siteColors (dict "ThemeColor" $themeColor) }}
+{{ else }}
+  {{ if $debug }}
+    {{ warnf "%s site.Params.colors.color_primary_lit is undefined. Using default theme color: %s" $dbg $themeColor }}
+  {{ end }}
+{{ end }}
+
+{{ with site.Params.colors.surface_primary_lit }}
+  {{ $backgroundColor = partial "claris/_functions/color-to-hex" . }}
+  {{ if $debug }}
+    {{ warnf "%s site.Params.colors.surface_primary_lit=%v. Using HEX value %s as background color" $dbg site.Params.colors.surface_primary_lit $backgroundColor }}
+  {{ end }}
+  {{ $siteColors = merge $siteColors (dict "BackgroundColor" $backgroundColor) }}
+{{ else }}
+  {{ if $debug }}
+    {{ warnf "%s site.Params.colors.surface_primary_lit is undefined. Using default background color: %s" $dbg $backgroundColor }}
+  {{ end }}
+{{ end }}
+{{ if $debug }}
+  {{ warnf "%s siteColors:\n%v" $dbg (jsonify (dict "indent" "  ") $siteColors) }}
+{{ end }}
+{{ return $siteColors }}

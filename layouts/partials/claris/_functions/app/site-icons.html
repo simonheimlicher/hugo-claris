@@ -1,0 +1,91 @@
+{{ $siteIcons := dict }}
+{{ $page := default page .Page }}
+{{ $template := "claris/_functions/app/site-icons" }}
+{{ $debug := and false ($page.Param "clarisdebug") }}
+{{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
+{{/* Based on [How to Favicon in 2025: Three files that fit most needs](
+https://evilmartians.com/chronicles/how-to-favicon-in-2021-six-files-that-fit-most-needs) */}}
+
+{{ $staticDir := default "static" .StaticDir }}
+{{ $faviconPathPrefix := default "site-meta" .FaviconPathPrefix }}
+
+{{ $siteIconVersions := (slice
+    (dict "disposition" "head" "rel" "icon" "size" 32)
+    (dict "disposition" "head" "rel" "icon" "size" 16)
+    (dict "disposition" "manifest" "purpose" "maskable" "rel" "android-chrome" "size" 512 "mask" 409)
+    (dict "disposition" "manifest" "purpose" "any" "rel" "android-chrome" "size" 192)
+    (dict "disposition" "head" "rel" "apple-touch-icon" "size" 180 "mask" 140)
+) }}
+
+{{ $siteIconParams := (dict
+  "pathprefix" $faviconPathPrefix
+  "match" "*logo*"
+  "formats" (slice "svg" "png")
+) }}
+{{ $scalableVersionMeta := dict "disposition" "head" "rel" "icon" }}
+{{ with partial "claris/_functions/resources/images/get-icon-resource" $siteIconParams $siteIconParams }}
+  {{ $scalableVersionMeta = merge $scalableVersionMeta (dict "resource" . ) }}
+  {{ $siteIcons = merge $siteIcons (dict $scalableVersionMeta.disposition (slice $scalableVersionMeta) ) }}
+  {{ if $debug }}
+    {{ warnf "%s added scalable site icon meta %v to siteIcons=%v" $dbg . $siteIcons }}
+  {{ end }}
+{{ else }}
+  {{ $scalableVersionMeta = merge $scalableVersionMeta (dict "size" 512) }}
+  {{ $siteIconVersions = append $scalableVersionMeta $siteIconVersions }}
+  {{ if $debug }}
+    {{ warnf "%s no scalable site icon found. Added fixed size version meta %v to siteIconVersions=%v"
+        $dbg $scalableVersionMeta $siteIconVersions }}
+  {{ end }}
+{{ end }}
+
+{{ $siteIconRasterFormat := "png" }}
+{{ $siteIconRasterParams := merge $siteIconParams (dict "formats" (slice "png") ) }}
+{{ with $res := partial "claris/_functions/resources/images/get-icon-resource" $siteIconRasterParams $siteIconRasterParams }}
+  {{ $resizeParams := (dict
+      "resource" $res
+      "format" $siteIconRasterFormat
+  ) }}
+  {{ if $debug }}
+    {{ warnf "%s Generating rastered icons matching siteIconVersions:\n%v" $dbg (jsonify (dict "indent" "  ") $siteIconVersions ) }}
+  {{ end }}
+  {{ range $versionMeta := $siteIconVersions }}
+    {{ $size := int .size }}
+    {{ $resize := $size }}
+    {{ $padding := false }}
+    {{/* Note: maskable icons must be opaque */}}
+    {{ $paddingColor := "#ffffffff" }}
+    {{ with $mask := int .mask }}
+      {{ $resize = (div (float $mask) 2.0) | math.Floor | mul 2 | cast.ToInt }}
+      {{ $padding = div (float (sub $size $resize) ) 2.0 | math.Floor | cast.ToInt }}
+      {{ if $debug }}
+        {{ warnf "%s resizing icon %v %dx%d [%s] to resize=%dx%d, then padding it with padding=%d pixels [color=%v] to size=%dx%d"
+            $dbg $res $res.Width $res.Height $res.MediaType.Type
+            $resize $resize $padding $paddingColor (add $resize (mul 2 $padding) ) (add $resize (mul 2 $padding) ) }}
+      {{ end }}
+    {{ end }}
+    {{ with $vers := partial "claris/_functions/resources/images/process-image" (merge $resizeParams (dict "width" $resize "height" $resize ) ) }}
+      {{ if $debug }}
+        {{ warnf "%s resized icon %v from %dx%d [%s] to %dx%d [%s]" $dbg $res $res.Width $res.Height $res.MediaType.Type .Width .Height .MediaType.Type }}
+      {{ end }}
+      {{ if $padding }}
+        {{ with $padded := images.Filter (images.Padding $padding $paddingColor) $vers }}
+          {{ if $debug }}
+            {{ warnf "%s padded icon %v from %dx%d [%s] to %dx%d [%s]" $dbg $res $vers.Width $vers.Height $vers.MediaType.Type .Width .Height .MediaType.Type }}
+          {{ end }}
+          {{ $vers = $padded }}
+        {{ end }}
+      {{ end }}
+      {{ $versionMeta = merge $versionMeta (dict "resource" $vers) }}
+      {{ with $availableIcons := index $siteIcons $versionMeta.disposition }}
+        {{ $siteIcons = merge $siteIcons (dict $versionMeta.disposition (append $versionMeta $availableIcons) ) }}
+      {{ else }}
+        {{ $siteIcons = merge $siteIcons (dict $versionMeta.disposition (slice $versionMeta) ) }}
+      {{ end }}
+      {{ if $debug }}
+        {{ warnf "%s added site icon meta %v to siteIcons=%v" $dbg $versionMeta $siteIcons }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return $siteIcons }}

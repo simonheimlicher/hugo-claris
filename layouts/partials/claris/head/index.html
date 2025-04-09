@@ -44,7 +44,7 @@
       {{- warnf "%s[%s]: canonicalURL=%v [type=%T]" $template $page.RelPermalink $canonicalURL $canonicalURL }}
     {{- end }}
     <link rel="canonical" type="text/html" href="{{ $canonicalURL }}" title="{{ (partial `claris/_functions/sanitize` $title) }}">
-    {{- partialCached "claris/head/favicon" . }}
+    {{- partialCached "claris/head/app-meta" . }}
 
 {{- partialCached "claris/head/assets" $ctx $assetVariant.CoalesceLanguageKey -}}
     <noscript>

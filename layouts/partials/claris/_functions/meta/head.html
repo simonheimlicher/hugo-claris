@@ -212,6 +212,39 @@
     {{ $title = site.Title }}
   {{ end }}
 
+  {{ $keywords := slice }}
+  {{ with $keywords = .Params.keywords }}
+  {{ else }}
+    {{ range slice $title $supertitle $subtitle $description }}
+      {{ with $anchorized := anchorize . }}
+        {{ $words := split . "-" }}
+        {{ range $words }}
+          {{ $keywords = append . $keywords }}
+        {{ end }}
+        {{/* {{ warnf "%s anchorized=%v: added %d words=%v [type=%T], resulting in %d keywords=%v"
+            $dbg $anchorized (len $words) $words $words (len $keywords) $keywords }} */}}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ $keywordsPlain := $keywords | sort | uniq }}
+
+  {{/*  Load list of stopwords as a slice array Add stop words for your content
+  language from https://countwordsfree.com/stopwords in JSON format to
+  `data/stopwords.xy.json`, where `xy` is the language prefix, e.g., `en`. */}}
+  {{ $stopwordIndex := printf "stopwords.%s" site.Language.Lang }}
+  {{ with $stopWords := index site.Data $stopwordIndex }}
+    {{/*  Compare string words to stopwords and return only non-matches  */}}
+    {{ $keywordsFiltered := complement $stopWords $keywordsPlain | sort | uniq }}
+    {{ if $debug }}
+      {{ warnf "%s stop word list with %d entries removed %d stop words, leaving %d keywords: %s"
+        $dbg (len $stopWords) (sub (len $keywordsPlain) (len $keywordsFiltered) ) (len $keywordsFiltered) $keywordsFiltered }}
+    {{ end }}
+    {{ $keywordsPlain = $keywordsFiltered }}
+  {{ else }}
+    {{ warnf "%s no data for stop words in language with language code=%s found [using \"index site.Data %s\"]"
+        $dbg site.Language.Lang $stopwordIndex }}
+  {{ end }}
+
   {{ $titleVariant = (dict
     "Data" (dict
       "Title" $titlePlain
@@ -220,6 +253,7 @@
       "Headline" $headlinePlain
       "Tagline" $taglinePlain
       "Description" $descriptionPlain
+      "Keywords" $keywordsPlain
     )
     "Formatted" (dict
       "Title" $title
