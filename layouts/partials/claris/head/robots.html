@@ -3,6 +3,9 @@
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{- $template := "claris/head/robots" }}
+{{- $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
+{{- $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
 {{- $robotsGenerate := false -}}
 {{- if (or (isset $page.Params "robots") (isset site.Params "robots") ) -}}
   {{- $robotsIndex := default true (index ($page.Param "robots") "index") }}
@@ -37,11 +40,24 @@
 
   {{- $robotsIndexImages := default $robotsIndex $page.Params.robots.indeximages }}
 
-  {{- $robotsUnified := printf "%sindex, %sindeximages, %sfollow"
-    (cond $robotsIndex "" "no")
-    (cond $robotsIndexImages "" "no")
-    (cond $robotsFollow "" "no")
-  -}}
+  {{- $impliedDirectives := slice "indeximages" }}
+  {{- $robotPermissions := (dict
+      "index" $robotsIndex
+      "indeximages" $robotsIndexImages
+      "follow" $robotsFollow
+    ) }}
+  {{- $robotDirectives := slice "index" "indeximages" "follow" }}
+  {{- $definedDirectives := slice }}
+  {{- range $directive := $robotDirectives }}
+    {{- with $value := index $robotPermissions $directive }}
+      {{- if not (in $impliedDirectives $directive) }}
+        {{- $definedDirectives = append $directive $definedDirectives }}
+      {{- end }}
+    {{- else }}
+      {{- $definedDirectives = append (printf "no%s" $directive) $definedDirectives }}
+    {{- end }}
+  {{- end }}
+  {{- $robotsUnified := delimit $definedDirectives ", " }}
 
   {{- with $robotsUnified -}}
 <meta name="robots" content="{{ . }}">
