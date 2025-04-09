@@ -834,9 +834,6 @@ $indicator-width: var(--toc_indicator_width)) {
       &_item {
         padding: math.div(hugo.$screenViewNavHeight - 1.5rem, 2) var(--inner_padding_4-2);
       }
-      &_group {
-        margin-left:  calc(0px - var(--inner_padding_4-2) );
-      }
       &_color-scheme_choice {
         &_mask,
         &_icon {
@@ -856,10 +853,10 @@ $indicator-width: var(--toc_indicator_width)) {
   // Full navigation menu bar
   @media screen and (min-width: hugo.$screenViewBreakpointWidthMobileMenu) {
     .nav {
-      &_brand {
-        &_text {
-          border-right: 2px solid var(--theme);
-          border-radius: 0;
+      &_item {
+        &:last-child {
+          margin-right: var(--inner_padding_4-2);
+          padding-right: var(--inner_padding_4-2);
         }
       }
     }
