@@ -69,7 +69,6 @@ export function codeBlocksInit () {
         blocks.push(markedCodeBlocks[idx]);
       }
     }
-    console.log(`codeBlocks returns: `, blocks);
     return blocks;
   }
   const blocks = codeBlocks();
