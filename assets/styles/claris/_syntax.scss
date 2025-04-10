@@ -90,8 +90,6 @@ pre {
     // NOTE: No limitation of width to allow long syntax names
     // such as Go HTML Template
     padding: 0.5rem 1rem;
-    @extend .font-meta !optional;
-    font-style: italic;
     text-transform: uppercase;
     font-size: 80%;
     opacity: 0;

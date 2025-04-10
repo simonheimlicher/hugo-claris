@@ -30,7 +30,8 @@ export function codeBlocksInit () {
   const panelFrom = 'panel_from';
   const panelBox = 'panel_box';
   const fullHeight = 'initial';
-  const highlightClass = 'highlight';
+  const highlightCreateClass = 'highlight font-meta';
+  const highlightMatchClass = 'highlight';
   const highlightInnerClass = 'highlight_inner';
 
   const codeActionButtons = [
@@ -68,6 +69,7 @@ export function codeBlocksInit () {
         blocks.push(markedCodeBlocks[idx]);
       }
     }
+    console.log(`codeBlocks returns: `, blocks);
     return blocks;
   }
   const blocks = codeBlocks();
@@ -87,12 +89,12 @@ export function codeBlocksInit () {
     const pres = elems('pre');
     for (let idx = 0, pre = pres[idx]; idx < pres.length; pre = pres[++idx]) {
       const parent = pre.parentNode;
-      const isOrphaned = !containsClass(parent, 'highlight');
+      const isOrphaned = !containsClass(parent, highlightMatchClass);
       if (isOrphaned) {
         const preWrapper = createEl('div');
         preWrapper.className = highlightInnerClass;
         const outerWrapper = createEl('div');
-        outerWrapper.className = highlightClass;
+        outerWrapper.className = highlightCreateClass;
         wrapEl(pre, preWrapper);
         wrapEl(preWrapper, outerWrapper);
       }
@@ -248,7 +250,7 @@ export function codeBlocksInit () {
     if (isActionable) {
       event.preventDefault();
       showActive(target, 'icon');
-      const codeElement = target.closest(`.${highlightClass}`).firstElementChild.firstElementChild;
+      const codeElement = target.closest(`.${highlightMatchClass}`).firstElementChild.firstElementChild;
       let lineNumbers = elems('.ln', codeElement);
 
       isWrapIcon && toggleLineWrap(codeElement);
@@ -308,7 +310,7 @@ export function codeBlocksInit () {
         const labelEl = createEl('div');
         labelEl.textContent = label;
         pushClass(labelEl, 'lang');
-        block.closest(`.${highlightClass}`).appendChild(labelEl);
+        block.closest(`.${highlightMatchClass}`).appendChild(labelEl);
       }
     }
   })();
