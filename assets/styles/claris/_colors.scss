@@ -204,6 +204,13 @@ $colors-lit: (
   translucent-hover: hsla(0, 0%, 100%, 0.1),
   choice-bg: var(--bg),
   print-bg: white,
+
+  logo-fill-primary: hugo.$colorPrimaryLit,
+  logo-fill-secondary: hugo.$colorPrimaryDim,
+  logo-fill-tertiary: hugo.$colorSurfaceDim,
+  logo-fill-primary-inverse: hugo.$colorPrimaryDim,
+  logo-fill-secondary-inverse: hugo.$colorPrimaryLit,
+  logo-fill-tertiary-inverse: hugo.$colorSurfaceLit,
 );
 
 $colors-dim: (
@@ -289,5 +296,12 @@ $colors-dim: (
   translucent: hsla(0, 0%, 100%, 0.05),
   translucent-hover: hsla(0, 0%, 100%, 0.25),
   choice-bg: var(--bg),
+
+  logo-fill-primary-inverse: hugo.$colorPrimaryLit,
+  logo-fill-secondary-inverse: hugo.$colorPrimaryDim,
+  logo-fill-tertiary-inverse: hugo.$colorSurfaceDim,
+  logo-fill-primary: hugo.$colorPrimaryDim,
+  logo-fill-secondary: hugo.$colorPrimaryLit,
+  logo-fill-tertiary: hugo.$colorSurfaceLit,
 );
 

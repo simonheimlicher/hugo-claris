@@ -451,6 +451,19 @@ $indicator-width: var(--toc_indicator_width)) {
       @media (any-hover: hover) {
         &:not(.nav_active):hover {
           @include nav-hover-background_flush-left;
+          svg {
+            .primary {
+              stroke: var(--logo-stroke-primary-inverse);
+              fill: var(--logo-fill-primary-inverse); }
+            .secondary {
+              stroke: var(--logo-stroke-secondary-inverse);
+              fill: var(--logo-fill-secondary-inverse);
+            }
+            .tertiary {
+              stroke: var(--logo-stroke-tertiary-inverse);
+              fill: var(--logo-fill-tertiary-inverse);
+            }
+          }
         }
       }
       &_logo {
@@ -471,6 +484,19 @@ $indicator-width: var(--toc_indicator_width)) {
           transition: 0.3s var(--ease);
           @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
             height: (0.6 * hugo.$screenViewNavHeight);
+          }
+        }
+        svg {
+          .primary {
+            stroke: var(--logo-stroke-primary);
+            fill: var(--logo-fill-primary); }
+          .secondary {
+            stroke: var(--logo-stroke-secondary);
+            fill: var(--logo-fill-secondary);
+          }
+          .tertiary {
+            stroke: var(--logo-stroke-tertiary);
+            fill: var(--logo-fill-tertiary);
           }
         }
         &.padding-1 {
