@@ -186,9 +186,11 @@ $colors-lit: (
   choice-bg: var(--bg),
   print-bg: white,
 
+  logo-fill-background: transparent /* hugo.$surfacePrimaryLit */,
   logo-fill-primary: hugo.$colorPrimaryLit,
   logo-fill-secondary: hugo.$colorSecondaryLit,
   logo-fill-tertiary: hugo.$colorTertiaryLit,
+  logo-fill-background-inverse: transparent /* hugo.$surfacePrimaryDim */,
   logo-fill-primary-inverse: hugo.$colorPrimaryDim,
   logo-fill-secondary-inverse: hugo.$colorSecondaryDim,
   logo-fill-tertiary-inverse: hugo.$colorTertiaryDim,
@@ -233,13 +235,6 @@ $colors-dim: (
   theme-text-hover: $theme-text-hover-dim,
   neutral-theme: hsl(0, 0%, 80%),
 
-  // dark-bg-hue-0: $dark-bg-hue-0-dim,
-  // dark-bg-hue-1: $dark-bg-hue-1-dim,
-  // dark-bg-hue-2: $dark-bg-hue-2-dim,
-  // dark-bg-hue-3: $dark-bg-hue-3-dim,
-  // dark-bg-hue-4: $dark-bg-hue-4-dim,
-  // dark-bg-hue-5: $dark-bg-hue-5-dim,
-
   accent: hsl(20, 100%, 40%),
   xaccent: hsl(20, 100%, 65%),
   dark-hover: hsla(0,0%,20%,1),
@@ -271,9 +266,11 @@ $colors-dim: (
   translucent-hover: hsla(0, 0%, 100%, 0.25),
   choice-bg: var(--bg),
 
+  logo-fill-background-inverse: transparent /* hugo.$surfacePrimaryLit */,
   logo-fill-primary-inverse: hugo.$colorPrimaryLit,
   logo-fill-secondary-inverse: hugo.$colorSecondaryLit,
   logo-fill-tertiary-inverse: hugo.$colorTertiaryLit,
+  logo-fill-background: transparent /* hugo.$surfacePrimaryDim */,
   logo-fill-primary: hugo.$colorPrimaryDim,
   logo-fill-secondary: hugo.$colorSecondaryDim,
   logo-fill-tertiary: hugo.$colorTertiaryDim,

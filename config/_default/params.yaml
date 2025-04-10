@@ -289,12 +289,12 @@ colors:
   surface_secondary_lit: "hsl(0, 50%, 95%)"
   surface_secondary_dim: "hsl(0, 30%, 10%)"
 
-  color_tertiary_lit: "hsl(270, 60%, 30%)"
-  color_tertiary_dim: "hsl(270, 40%, 80%)"
-  on_tertiary_lit: "hsl(270, 50%, 25%)"
-  on_tertiary_dim: "hsl(270, 85%, 85%)"
-  surface_tertiary_lit: "hsl(270, 50%, 95%)"
-  surface_tertiary_dim: "hsl(270, 30%, 10%)"
+  color_tertiary_lit: "hsl(200, 100%, 20%)"
+  color_tertiary_dim: "hsl(200, 100%, 80%)"
+  on_tertiary_lit: "hsl(200, 50%, 25%)"
+  on_tertiary_dim: "hsl(200, 85%, 85%)"
+  surface_tertiary_lit: "hsl(200, 50%, 95%)"
+  surface_tertiary_dim: "hsl(200, 30%, 10%)"
 
 meta:
   favicon:

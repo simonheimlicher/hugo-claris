@@ -474,9 +474,14 @@ $indicator-width: var(--toc_indicator_width)) {
           }
         }
         svg {
+          .background {
+            stroke: var(--logo-stroke-background);
+            fill: var(--logo-fill-background);
+          }
           .primary {
             stroke: var(--logo-stroke-primary);
-            fill: var(--logo-fill-primary); }
+            fill: var(--logo-fill-primary);
+          }
           .secondary {
             stroke: var(--logo-stroke-secondary);
             fill: var(--logo-fill-secondary);

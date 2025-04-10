@@ -25,8 +25,8 @@ $onSecondaryDim: if(hugo.$colors_on_secondary_dim != null, hugo.$colors_on_secon
 $surfaceSecondaryLit: if(hugo.$colors_surface_secondary_lit != null, hugo.$colors_surface_secondary_lit, lighten(desaturate($colorSecondaryLit, 50%), 45%));
 $surfaceSecondaryDim: if(hugo.$colors_surface_secondary_dim != null, hugo.$colors_surface_secondary_dim, darken(desaturate($colorSecondaryDim, 60%), 35%));
 
-$colorTertiaryLit: if(hugo.$colors_color_tertiary_lit != null, hugo.$colors_color_tertiary_lit, hsl(270, 60%, 30%));
-$colorTertiaryDim: if(hugo.$colors_color_tertiary_dim != null, hugo.$colors_color_tertiary_dim, hsl(270, 40%, 80%));
+$colorTertiaryLit: if(hugo.$colors_color_tertiary_lit != null, hugo.$colors_color_tertiary_lit, hsl(200, 100%, 20%));
+$colorTertiaryDim: if(hugo.$colors_color_tertiary_dim != null, hugo.$colors_color_tertiary_dim, hsl(200, 100%, 80%));
 $onTertiaryLit: if(hugo.$colors_on_tertiary_lit != null, hugo.$colors_on_tertiary_lit, darken(desaturate($colorTertiaryLit, 50%), 45%));
 $onTertiaryDim: if(hugo.$colors_on_tertiary_dim != null, hugo.$colors_on_tertiary_dim, lighten(desaturate($colorTertiaryDim, 60%), 35%));
 $surfaceTertiaryLit: if(hugo.$colors_surface_tertiary_lit != null, hugo.$colors_surface_tertiary_lit, lighten(desaturate($colorTertiaryLit, 50%), 45%));
