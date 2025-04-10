@@ -1,7 +1,7 @@
 {{- $template := "claris/header/logo" }}
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
-{{- $debug := and false (and .Debug (eq site.LanguagePrefix "") ) }}
+{{- $debug := and false ($page.Param "clarisdebug") (and .Debug (eq site.LanguagePrefix "") ) }}
 {{- $dbg := printf "%s [%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 {{- $logoImageWidth := 96 }}
 {{- $logoImageHeight := $logoImageWidth }}
@@ -11,17 +11,16 @@
   {{- $mastheadURL = printf "%s" . | relLangURL }}
 {{- end }}
 
-{{- $siteTitle := default $meta.Site.Formatted.Title | default site.Title }}
+{{- $siteTitle := $meta.Site.Formatted.Title | default site.Title }}
 {{- $wordMark := false }}
-{{- with $wordMark = site.Params.masthead.wordmark }}
+{{- with $wordMark = $page.Param "masthead.wordmark" }}
   {{- if $debug }}
     {{- warnf "%s wordMark:\n%v" $dbg (jsonify (dict "indent" "  ") $wordMark) }}
   {{- end }}
 {{- end }}
 
-
 {{- $logoParams := false }}
-{{- with $logoParams = site.Params.masthead.logo | default site.Params.website.logo }}
+{{- with $logoParams = $page.Param "masthead.logo" | default ($page.Param "website.logo") }}
   {{- if $debug }}
     {{- warnf "%s logoParams:\n%v" $dbg (jsonify (dict "indent" "  ") $logoParams) }}
   {{- end }}
@@ -41,7 +40,7 @@
   {{- if not .fetchpriority }}
       {{ $logoParams = merge $logoParams (dict "fetchpriority" "high") }}
   {{- end }}
-  {{- if not (isset . "inline") }}
+  {{- if and (eq (path.Ext .src) "svg" ) not (isset . "inline") }}
       {{ $logoParams = merge $logoParams (dict "inline" true) }}
   {{- end }}
 {{- end }}
