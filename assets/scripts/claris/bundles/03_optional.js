@@ -23,8 +23,8 @@ import { qrCodeInit } from "scripts/claris/optional/qrcode-svg";
 
 // Only load PostHog Analytics in production and staging environments
 {{- $postHogEnv := page.Param "assets.scripts.optional.posthog.environments" | default (slice "production" "prod" "staging" "stage") }}
+{{- $postHogKey := page.Param "assets.scripts.optional.posthog.key" | default "" }}
 {{- if in $postHogEnv hugo.Environment }}
-  {{- $postHogKey := page.Param "assets.scripts.optional.posthog.key" | default "" }}
   {{- $postHogHost := page.Param "assets.scripts.optional.posthog.host" | default "" }}
   {{- $postHogKey = strings.TrimSpace $postHogKey }}
   {{- $postHogHost = strings.TrimSpace $postHogHost }}
@@ -35,8 +35,8 @@ const postHogAnalyticsInitParametrized = () => postHogAnalyticsInit({{ printf "%
   {{- else }}
     {{- warnf "Optional module 'posthog-analytics' is not loaded because the parameters in map `assets.scripts.optional.posthog` are missing." }}
   {{- end }}
-  {{- else }}
-    {{- warnf "Optional module 'posthog-analytics' is not loaded because the Hugo environment %s is not in %s." hugo.Environment $postHogEnv }}
+{{- else if $postHogKey }}
+  {{- warnf "Optional module 'posthog-analytics' is not loaded because the Hugo environment %s is not in %s." hugo.Environment $postHogEnv }}
 {{- end }}
 
 {{- with $initializers }}

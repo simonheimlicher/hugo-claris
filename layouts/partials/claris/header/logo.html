@@ -34,14 +34,21 @@
         $dbg (jsonify (dict "indent" "  ") site.Params.masthead.logo) }}
     {{- $logoParams = false }}
   {{- end }}
-  {{- if not .loading }}
-      {{ $logoParams = merge $logoParams (dict "loading" "eager") }}
+  {{- if and (eq (path.Ext .src) ".svg" ) (not (isset . "inline") ) }}
+    {{- if site.Params.claris.hints }}
+      {{- warnf "%s Rendering the logo=%v inline based on its suffix=%v"
+          $dbg .src (path.Ext .src) }}
+    {{- end }}
+    {{ $logoParams = merge $logoParams (dict "inline" true) }}
   {{- end }}
-  {{- if not .fetchpriority }}
-      {{ $logoParams = merge $logoParams (dict "fetchpriority" "high") }}
-  {{- end }}
-  {{- if and (eq (path.Ext .src) "svg" ) not (isset . "inline") }}
-      {{ $logoParams = merge $logoParams (dict "inline" true) }}
+  {{- with $logoParams.inline }}
+  {{- else }}
+    {{- if not .loading }}
+        {{ $logoParams = merge $logoParams (dict "loading" "eager") }}
+    {{- end }}
+    {{- if not .fetchpriority }}
+        {{ $logoParams = merge $logoParams (dict "fetchpriority" "high") }}
+    {{- end }}
   {{- end }}
 {{- end }}
 
