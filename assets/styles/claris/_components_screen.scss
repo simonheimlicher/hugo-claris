@@ -454,20 +454,23 @@ $indicator-width: var(--toc_indicator_width)) {
         }
       }
       &_logo {
+        display: flex;
         align-items: center;
+        overflow: hidden; /* ensures excess image height is clipped */
         border-radius: 0.5rem;
         z-index: (variables.$main-z-index + 2);
         // Setting min-height is required to avoid nav bar incl. burger menu icon from collapsing
         height: hugo.$screenViewNavHeightNarrow;
-        img {
+        img, svg {
           max-width: unset;
           width: auto;
           background: transparent !important;
           max-height: unset;
-          height: (hugo.$screenViewNavHeightNarrow - 0.5rem);
-          margin-top: 0.2rem;
+          height: (0.6 * hugo.$screenViewNavHeightNarrow);
+          fill: var(--theme-text);
+          transition: 0.3s var(--ease);
           @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
-            height: (hugo.$screenViewNavHeight - 0.5rem);
+            height: (0.6 * hugo.$screenViewNavHeight);
           }
         }
         &.padding-1 {

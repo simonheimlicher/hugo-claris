@@ -35,6 +35,15 @@
         $dbg (jsonify (dict "indent" "  ") site.Params.masthead.logo) }}
     {{- $logoParams = false }}
   {{- end }}
+  {{- if not .loading }}
+      {{ $logoParams = merge $logoParams (dict "loading" "eager") }}
+  {{- end }}
+  {{- if not .fetchpriority }}
+      {{ $logoParams = merge $logoParams (dict "fetchpriority" "high") }}
+  {{- end }}
+  {{- if not (isset . "inline") }}
+      {{ $logoParams = merge $logoParams (dict "inline" true) }}
+  {{- end }}
 {{- end }}
 
 {{- with $mastheadURL }}
