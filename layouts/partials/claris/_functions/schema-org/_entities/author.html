@@ -28,7 +28,7 @@
   {{- $siteAuthorEntity = (dict "Entity"
     (dict
       "@type" "Person"
-      "@id" .ID
+      "@id" .EntityID
       "name" .Name
       "url" .CanonicalURL
       "description" .Description
@@ -36,8 +36,7 @@
     )
     "Reference"
     (dict
-      "@type" "Person"
-      "@id" .ID
+      "@id" .EntityID
     )
   ) }}
   {{- if $debug }}
@@ -53,15 +52,14 @@
   {{- $pageAuthorEntity = (dict
     "Entity" (dict
         "@type" "Person"
-        "@id" .ID
+        "@id" .EntityID
         "name" .Name
         "url" .CanonicalURL
         "description" .Description
         "sameAs" $socialProfileURLs
     )
     "Reference" (dict
-      "@type" "Person"
-      "@id" .ID
+      "@id" .EntityID
     )
   ) }}
 {{- else }}

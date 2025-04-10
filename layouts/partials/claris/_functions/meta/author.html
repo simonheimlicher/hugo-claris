@@ -34,12 +34,12 @@
 
   {{ $authorProfileURL := $authorProfilePage.RelPermalink }}
   {{ $authorProfileCanonicalURL := (partial "claris/_functions/canonical-url" $authorProfilePage) }}
-  {{ $contentContainerID := "contentContainer" }}
+  {{ $contentContainerID := "authorProfile" }}
 
   {{ $avatarImage := default site.Params.logo (index site.Params.authors $author).avatar }}
   {{ $authorMeta = (dict
     "Name" $author
-    "ID" (printf "%s#%s" $authorProfileCanonicalURL $contentContainerID)
+    "EntityID" (printf "%s#%s" $authorProfileCanonicalURL $contentContainerID)
     "URL" $authorProfileURL
     "CanonicalURL" $authorProfileCanonicalURL
     "ContentID" $contentContainerID
