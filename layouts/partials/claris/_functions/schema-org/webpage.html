@@ -97,9 +97,14 @@
     {{ end }}
     {{ $entityParams = merge $entityParams (dict "SchemaOrgMeta" $schemaOrgMeta) }}
     {{ $schemaOrgPartial := printf "claris/_functions/schema-org/%s" (lower . ) }}
-    {{ $schemaOrgMeta = (merge $schemaOrgMeta
-      (partial $schemaOrgPartial $entityParams)
-    ) }}
+    {{ $specificEntityMeta := partial $schemaOrgPartial $entityParams }}
+    {{ if $debug }}
+      {{ warnf "%s using specificEntityMeta from %v as schemaOrgMeta. specificEntityMeta:\n%v\nschemaOrgMeta:\n%v"
+          $dbg $schemaOrgPartial
+          (jsonify (dict "indent" "  ") $specificEntityMeta)
+          (jsonify (dict "indent" "  ") $schemaOrgMeta)}}
+    {{ end }}
+    {{ $schemaOrgMeta = $specificEntityMeta }}
   {{/* {{ else }}
     {{ warnf "%skind=%v: no entityType=%v" $dbg $page.Kind $specificEntityType }} */}}
   {{ end }}

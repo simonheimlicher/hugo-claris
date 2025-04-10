@@ -1,0 +1,105 @@
+{{ $schemaOrgEntities := .Entities }}
+{{ $entityParams := .}}
+{{ $page := .Page }}
+{{ $meta := page.Scratch.Get "clarismeta" }}
+{{ $template := "claris/_functions/schema-org/_entities/website" }}
+{{ $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
+{{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
+{{ $dateFormat := default "2006-01-02T15:04:05.00Z" .Format.Date }}
+
+{{ $entityParams := merge . (dict "Debug" $debug) }}
+
+<!-- [Schema.org entity Article](https://schema.org/Article)
+-->
+
+{{ $webSiteEntity := dict }}
+{{ $webSiteData := dict "@type" "WebSite" }}
+
+{{ with $schemaOrgEntities }}
+  {{ $webSiteData = merge $webSiteData (dict
+      "author" .PageAuthor.Reference
+      "creator" .PageAuthor.Reference
+      "accountablePerson" .PageAuthor.Reference
+      "copyrightHolder" .PageAuthor.Reference
+      "publisher"  .SiteAuthor.Reference
+  ) }}
+  {{ if $debug }}
+    {{ warnf "%s added author data to webSiteData:\n%v" $dbg (jsonify (dict "indent" "  ") $webSiteData) }}
+  {{ end }}
+{{ else }}
+  {{ errorf "%s Missing parameter .Entities" $dbg }}
+{{ end }}
+
+
+{{ with $meta.Site.Data }}
+  {{ $webSiteData = merge $webSiteData (dict
+      "@type" "WebSite"
+      "@id" .EntityID
+      "name" .Name
+      "headline" .Headline
+      "description" (default .Headline .Description)
+      "inLanguage" .Language
+      "url" .CanonicalURL
+    ) }}
+  {{ with .License.HTML }}
+    {{ $webSiteData = merge $webSiteData (dict "license" . ) }}
+  {{ end }}
+  {{- $shareImageURLs := slice }}
+  {{ with $shareImageURLs := partial "claris/_functions/meta/images/get-image" (dict
+    "Page" $page
+    "kind" "share"
+    "return" "canonicalurls"
+    "Debug" $debug
+  ) }}
+    {{ $webSiteData = merge $webSiteData (dict
+        "image" .
+      ) }}
+  {{ else }}
+    {{ if $debug }}
+      {{ warnf "%s[%s]: Missing share images for website in lang=%v" $page $template site.LanguagePrefix -}}
+    {{ end }}
+  {{ end }}
+
+  {{ with $thumbnailImageURLs := partial "claris/_functions/meta/images/get-image" (dict
+    "Page" $page
+    "kind" "thumbnail"
+    "return" "canonicalurls"
+    "Debug" $debug
+  ) }}
+    {{- $thumbnailImageUniqueURLs := complement $shareImageURLs $thumbnailImageURLs }}
+    {{- with $thumbnailImageUniqueURLs }}
+      {{ $webSiteData = merge $webSiteData (dict
+          "thumbnailUrl" .
+        ) }}
+    {{ else }}
+      {{ if $debug }}
+        {{ warnf "%s[%s]: None of the thumbnail images for website differ from share images in lang=%v" $page $template site.LanguagePrefix -}}
+      {{ end }}
+    {{ end }}
+  {{ else }}
+    {{ if $debug }}
+      {{ warnf "%s[%s]: Missing thumbnail images for website in lang=%v" $page $template site.LanguagePrefix -}}
+    {{ end }}
+  {{ end }}
+{{ else }}
+  {{ errorf "%s Missing .Scratch for .Site.Data" $dbg }}
+{{ end }}
+
+{{ with $webSiteData}}
+  {{ $webSiteEntity = (dict
+      "Entity" $webSiteData
+      "Reference" (dict "@id" (index $webSiteData "@id") )
+    ) }}
+  {{ $schemaOrgEntities = merge $schemaOrgEntities (dict
+    "Entities" (dict "WebSite" $webSiteEntity)
+  ) }}
+{{ else }}
+  {{ errorf "%s failed to create WebSite entity" $dbg }}
+{{ end }}
+
+{{ if $debug }}
+  {{ warnf "%s returning %v" $dbg (jsonify (dict "indent" "  ") $schemaOrgEntities) }}
+{{ end }}
+
+{{ return $schemaOrgEntities }}

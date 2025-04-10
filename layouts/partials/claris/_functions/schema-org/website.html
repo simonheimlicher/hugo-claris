@@ -13,15 +13,7 @@
 
 {{ with $meta.Site.Data }}
   {{ $rootMeta := (dict
-      "isPartOf" (dict
-        "@type" "WebSite"
-        "@id" .EntityID
-        "name" .Name
-        "headline" .Headline
-        "description" (default .Headline .Description)
-        "inLanguage" .Language
-        "url" .CanonicalURL
-      )
+      "isPartOf" (dict "@id" .EntityID)
     ) }}
   {{ with .License.HTML }}
     {{ $rootMeta = merge $rootMeta (dict "license" . ) }}

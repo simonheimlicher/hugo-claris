@@ -11,8 +11,8 @@
 -->
 {{ $entityParams := merge . (dict "Template" (printf "%s->%s" .Template $template) "Debug" $debug) }}
 
-  {{/* Avoid caching with `partialCached` as this leads to the use of cached but
-  invalid Schema.org data */}}
+{{/* Avoid caching with `partialCached` as this leads to the use of cached but
+invalid Schema.org data */}}
 {{ $schemaOrgMeta = merge $schemaOrgMeta (
   partial "claris/_functions/schema-org/_entities/article" $entityParams
 ) }}
