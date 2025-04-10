@@ -1,0 +1,10 @@
+{{- $wrapperClass := "highlight font-meta" }}
+{{- $opts := dict }}
+{{- if len .Params | eq 2 }}
+  {{- $opts = .Get 1 }}
+  {{- with $opts.wrapperClass }}
+    {{- $wrapperClass = printf "%s %s" $wrapperClass . }}
+  {{- end }}
+{{- end }}
+{{- $opts = merge $opts (dict "wrapperClass" $wrapperClass) }}
+{{- highlight (trim .InnerDeindent "\n\r") (.Get 0) $opts }}
