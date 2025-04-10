@@ -39,10 +39,10 @@ $bg-light-hover-lit: color.mix(white, $bg-light-lit, 20%);
 $bg-light-dim: color.mix(white, $bg-dim, 70%);
 $bg-light-hover-dim: color.mix(white, $bg-light-dim, 20%);
 
-$bg-dark-lit: color.mix(black, $bg-lit, 90%);
-$bg-dark-hover-lit: color.mix(white, $bg-dark-lit, 20%);
+$bg-dark-lit: color.mix(black, $bg-lit, 95%);
+$bg-dark-hover-lit: color.mix(white, $bg-dark-lit, 25%);
 
-$bg-dark-dim: color.mix(white, $bg-dim, 15%);
+$bg-dark-dim: color.mix(black, $bg-dim, 50%);
 $bg-dark-hover-dim: color.mix(white, $bg-dark-dim, 20%);
 
 $theme-lit: hugo.$colorPrimaryLit;
@@ -52,14 +52,14 @@ $theme-dim: hugo.$colorPrimaryDim;
 $theme-hover-dim: color.mix(white, $theme-dim, 10%);
 
 $theme-text-lit: hugo.$onPrimaryLit;
-$theme-text-active-lit: color.mix(white, $theme-text-lit, 100%);
-$theme-text-hover-lit: color.mix(white, $theme-text-lit, 100%);
+$theme-text-active-lit: color.mix(black, $theme-text-lit, 20%);
+$theme-text-hover-lit: color.mix(black, $theme-text-lit, 20%);
 
 $theme-text-dim: hugo.$onPrimaryDim;
-$theme-text-active-dim: color.mix(black, $theme-text-dim, 100%);
-$theme-text-hover-dim: color.mix(black, $theme-text-dim, 100%);
+$theme-text-active-dim: color.mix(white, $theme-text-dim, 20%);
+$theme-text-hover-dim: color.mix(white, $theme-text-dim, 20%);
 
-$link-lit: color.scale(hugo.$colorPrimaryLit, $lightness: -50%);
+$link-lit: color.scale(hugo.$colorPrimaryLit, $lightness: -10%);
 $link-visited-lit: color.scale(
   color.adjust(hugo.$colorPrimaryLit, $hue: 30, $saturation: -40%),
   $lightness: -20%
@@ -68,34 +68,22 @@ $link-hover-lit: color.scale(hugo.$colorPrimaryLit, $lightness: -10%);
 $link-focus-lit: hugo.$colorPrimaryLit;
 $link-active-lit: hugo.$colorPrimaryLit;
 
-$link-dim: color.scale(hugo.$colorPrimaryDim, $lightness: -5%);
+$link-dim: color.scale(hugo.$colorPrimaryDim, $lightness: 5%);
 $link-visited-dim: color.scale(
-  color.adjust(hugo.$colorPrimaryDim, $hue: 30, $saturation: -40%),
-  $lightness: 50%
+  color.adjust(hugo.$colorPrimaryDim, $hue: 30, $saturation: -20%),
+  $lightness: 60%
 );
 $link-hover-dim: color.scale(hugo.$colorPrimaryDim, $lightness: 30%);
 $link-focus-dim: hugo.$colorPrimaryDim;
 $link-active-dim: hugo.$colorPrimaryDim;
 
 $theme-bg-lit: hugo.$surfacePrimaryLit;
-$theme-bg-active-lit: color.mix(black, $theme-bg-lit, 20%);
-$theme-bg-hover-lit: color.mix(black, $theme-bg-lit, 60%);
+$theme-bg-active-lit: color.mix(white, $theme-lit, 30%);
+$theme-bg-hover-lit: color.mix(white, $theme-lit, 75%);
 
 $theme-bg-dim: hugo.$surfacePrimaryDim;
-$theme-bg-active-dim: color.mix(white,$theme-bg-dim, 30%);
-$theme-bg-hover-dim: color.mix(white, $theme-bg-dim, 95%);
-
-$theme-bg-hue-0-lit: color.adjust(color.mix(white, #1b3348, 60%), $alpha: 1.0);
-$theme-bg-hue-1-lit: color.adjust(color.mix(white, #2c3352, 60%), $alpha: 1.0);
-$theme-bg-hue-2-lit: color.adjust(color.mix(white, #332b4f, 60%), $alpha: 1.0);
-$theme-bg-hue-3-lit: color.adjust(color.mix(white, #382440, 60%), $alpha: 1.0);
-$theme-bg-hue-4-lit: color.adjust(color.mix(white, #482a3a, 60%), $alpha: 1.0);
-
-$theme-bg-hue-0-dim: color.adjust(#1b3348, $alpha: 1.0);
-$theme-bg-hue-1-dim: color.adjust(#2c3352, $alpha: 1.0);
-$theme-bg-hue-2-dim: color.adjust(#332b4f, $alpha: 1.0);
-$theme-bg-hue-3-dim: color.adjust(#382440, $alpha: 1.0);
-$theme-bg-hue-4-dim: color.adjust(#482a3a, $alpha: 1.0);
+$theme-bg-active-dim: color.mix(black,$theme-dim, 50%);
+$theme-bg-hover-dim: color.mix(black, $theme-dim, 60%);
 
 $haze-lit: hugo.$colorSurfaceLit;
 $xhaze-lit: color.adjust($haze-lit, $lightness: -10%);
@@ -154,13 +142,6 @@ $colors-lit: (
   theme-bg-active: $theme-bg-active-lit,
   theme-bg-hover: $theme-bg-hover-lit,
 
-  theme-bg-hue-0: $theme-bg-hue-0-lit,
-  theme-bg-hue-1: $theme-bg-hue-1-lit,
-  theme-bg-hue-2: $theme-bg-hue-2-lit,
-  theme-bg-hue-3: $theme-bg-hue-3-lit,
-  theme-bg-hue-4: $theme-bg-hue-4-lit,
-  // theme-bg-hue-5: $theme-bg-hue-5-lit,
-
   theme-text: $theme-text-lit,
   theme-text-active: $theme-text-active-lit,
   theme-text-hover: $theme-text-hover-lit,
@@ -206,11 +187,11 @@ $colors-lit: (
   print-bg: white,
 
   logo-fill-primary: hugo.$colorPrimaryLit,
-  logo-fill-secondary: hugo.$colorPrimaryDim,
-  logo-fill-tertiary: hugo.$colorSurfaceDim,
+  logo-fill-secondary: hugo.$colorSecondaryLit,
+  logo-fill-tertiary: hugo.$colorTertiaryLit,
   logo-fill-primary-inverse: hugo.$colorPrimaryDim,
-  logo-fill-secondary-inverse: hugo.$colorPrimaryLit,
-  logo-fill-tertiary-inverse: hugo.$colorSurfaceLit,
+  logo-fill-secondary-inverse: hugo.$colorSecondaryDim,
+  logo-fill-tertiary-inverse: hugo.$colorTertiaryDim,
 );
 
 $colors-dim: (
@@ -246,13 +227,6 @@ $colors-dim: (
   theme-bg: $theme-bg-dim,
   theme-bg-active: $theme-bg-active-dim,
   theme-bg-hover: $theme-bg-hover-dim,
-
-  theme-bg-hue-0: $theme-bg-hue-0-dim,
-  theme-bg-hue-1: $theme-bg-hue-1-dim,
-  theme-bg-hue-2: $theme-bg-hue-2-dim,
-  theme-bg-hue-3: $theme-bg-hue-3-dim,
-  theme-bg-hue-4: $theme-bg-hue-4-dim,
-  // theme-bg-hue-5: $theme-bg-hue-5-dim,
 
   theme-text: $theme-text-dim,
   theme-text-active: $theme-text-active-dim,
@@ -298,10 +272,10 @@ $colors-dim: (
   choice-bg: var(--bg),
 
   logo-fill-primary-inverse: hugo.$colorPrimaryLit,
-  logo-fill-secondary-inverse: hugo.$colorPrimaryDim,
-  logo-fill-tertiary-inverse: hugo.$colorSurfaceDim,
+  logo-fill-secondary-inverse: hugo.$colorSecondaryLit,
+  logo-fill-tertiary-inverse: hugo.$colorTertiaryLit,
   logo-fill-primary: hugo.$colorPrimaryDim,
-  logo-fill-secondary: hugo.$colorPrimaryLit,
-  logo-fill-tertiary: hugo.$colorSurfaceLit,
+  logo-fill-secondary: hugo.$colorSecondaryDim,
+  logo-fill-tertiary: hugo.$colorTertiaryDim,
 );
 

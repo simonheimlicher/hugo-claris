@@ -267,26 +267,34 @@ responsive:
       sticky_footer: 42rem
 
 colors:
-  color_primary_lit: "hsl(200, 100%, 50%)"
+  color_primary_lit: "hsl(200, 100%, 30%)"
   color_primary_dim: "hsl(200, 100%, 50%)"
   on_primary_lit: "hsl(200, 50%, 25%)"
   on_primary_dim: "hsl(200, 85%, 85%)"
   surface_primary_lit: "hsl(200, 10%, 95%)"
   surface_primary_dim: "hsl(200, 30%, 10%)"
   color_surface_lit: "hsl(200, 20%, 90%)"
-  color_surface_dim: "hsl(200, 50%, 20%)"
+  color_surface_dim: "hsl(200, 10%, 20%)"
   on_surface_lit: "hsl(200, 100%, 13%)"
   on_surface_dim: "hsl(200, 100%, 95%)"
   color_background_lit: "hsl(200, 10%, 95%)"
-  color_background_dim: "hsl(200, 10%, 10%)"
+  color_background_dim: "hsl(200, 15%, 15%)"
   on_background_lit: "hsl(200, 10%, 13%)"
   on_background_dim: "hsl(200, 10%, 100%)"
-  color_secondary_lit: "hsl(200, 100%, 50%)"
-  color_secondary_dim: "hsl(200, 100%, 50%)"
-  on_secondary_lit: "hsl(200, 50%, 25%)"
-  on_secondary_dim: "hsl(200, 85%, 85%)"
-  surface_secondary_lit: "hsl(200, 50%, 95%)"
-  surface_secondary_dim: "hsl(200, 30%, 10%)"
+
+  color_secondary_lit: "hsl(0, 60%, 40%)"
+  color_secondary_dim: "hsl(0, 50%, 50%)"
+  on_secondary_lit: "hsl(0, 50%, 25%)"
+  on_secondary_dim: "hsl(0, 85%, 85%)"
+  surface_secondary_lit: "hsl(0, 50%, 95%)"
+  surface_secondary_dim: "hsl(0, 30%, 10%)"
+
+  color_tertiary_lit: "hsl(270, 60%, 30%)"
+  color_tertiary_dim: "hsl(270, 40%, 80%)"
+  on_tertiary_lit: "hsl(270, 50%, 25%)"
+  on_tertiary_dim: "hsl(270, 85%, 85%)"
+  surface_tertiary_lit: "hsl(270, 50%, 95%)"
+  surface_tertiary_dim: "hsl(270, 30%, 10%)"
 
 meta:
   favicon:

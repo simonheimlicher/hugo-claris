@@ -56,9 +56,9 @@
     {{- if (and (not .HasChildren) (eq $url $logoURL) ) }} nav_logourl{{ end -}}
     {{- if (and (not .HasChildren) (eq $url $link) ) }} nav_active{{ end -}}
     {{- if eq $url $link }} nav_active nav_active_page{{ end -}}
-    {{- if ( $page.IsMenuCurrent .Menu . ) }} nav_active nav_active_is_menu{{ end -}}
-    {{- if ( $page.HasMenuCurrent .Menu . ) }} nav_active nav_active_has_menu{{ end -}}
-    {{- if or (eq $page.Section $link) (and $page.Section ( (site.GetPage .URL).InSection $page) ) }} nav_active nav_active_in_section{{ end -}}
+    {{- if ( $page.IsMenuCurrent .Menu . ) }} nav_active_is_menu{{ end -}}
+    {{- if ( $page.HasMenuCurrent .Menu . ) }} nav_active_has_menu{{ end -}}
+    {{- if or (eq $page.Section $link) (and $page.Section ( (site.GetPage .URL).InSection $page) ) }} nav_active_in_section{{ end -}}
     {{- if $page.Parent -}}
       {{- if $page.Parent.IsMenuCurrent .Menu . }} nav_active_parent_is_menu{{ end -}}
       {{- if $page.Parent.HasMenuCurrent .Menu . }} nav_active_parent_has_menu{{ end -}}
@@ -79,9 +79,9 @@
         {{- $childID := default "" (printf "%s-%s" $parentID ( (default $name .Identifier) | plainify | urlize) ) }}
                 <a href="{{ $url }}" id="{{ $childID }}" class="nav_child nav_item
         {{- if eq $url $link }} nav_active nav_active_page{{ end -}}
-        {{- if ( $page.IsMenuCurrent .Menu . ) }} nav_active nav_active_is_menu{{ end -}}
-        {{- if ( $page.HasMenuCurrent .Menu . ) }} nav_active nav_active_has_menu{{ end -}}
-        {{- /* if (site.GetPage .URL).InSection $page }} nav_active nav_active_in_section{{ end */ -}}
+        {{- if ( $page.IsMenuCurrent .Menu . ) }} nav_active_is_menu{{ end -}}
+        {{- if ( $page.HasMenuCurrent .Menu . ) }} nav_active_has_menu{{ end -}}
+        {{- /* if (site.GetPage .URL).InSection $page }} nav_active_in_section{{ end */ -}}
         {{- if $page.Parent -}}
           {{- if $page.Parent.IsMenuCurrent .Menu . }} nav_active_parent_is_menu{{ end -}}
           {{- if $page.Parent.HasMenuCurrent .Menu . }} nav_active_parent_has_menu{{ end -}}

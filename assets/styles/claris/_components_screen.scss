@@ -451,19 +451,6 @@ $indicator-width: var(--toc_indicator_width)) {
       @media (any-hover: hover) {
         &:not(.nav_active):hover {
           @include nav-hover-background_flush-left;
-          svg {
-            .primary {
-              stroke: var(--logo-stroke-primary-inverse);
-              fill: var(--logo-fill-primary-inverse); }
-            .secondary {
-              stroke: var(--logo-stroke-secondary-inverse);
-              fill: var(--logo-fill-secondary-inverse);
-            }
-            .tertiary {
-              stroke: var(--logo-stroke-tertiary-inverse);
-              fill: var(--logo-fill-tertiary-inverse);
-            }
-          }
         }
       }
       &_logo {
@@ -582,7 +569,6 @@ $indicator-width: var(--toc_indicator_width)) {
                 background: var(--theme-bg-hover);
                 transition: background 0.35s var(--color-scheme-timing);
                 .icon {
-                  fill: var(--bg);
                   width: 1.25rem;
                   height: 1.25rem;
                 }
