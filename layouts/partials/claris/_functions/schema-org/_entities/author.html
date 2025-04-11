@@ -1,32 +1,23 @@
-{{- $schemaOrgEntities := dict }}
-{{- $page := .Page }}
-{{- $meta := page.Scratch.Get "clarismeta" }}
-{{- $template := "claris/_functions/schema-org/_entities/author" }}
-{{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = true }} */}}
+{{ $entities := .Entities }}
+{{ $page := .Page }}
+{{ $meta := default ($page.Scratch.Get "clarismeta") .Meta }}
+{{ $template := "claris/_functions/schema-org/_entities/author" }}
+{{ $debug := and false ($page.Param "clarisdebug") (and .Debug (eq site.LanguagePrefix "") ) }}
+{{ $dbg := printf "%s [%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+(?:/[^/]+)?)$` `$1` $template) }}
 
-{{- $entityParams := merge . (dict "Debug" $debug) }}
+<!-- [Schema.org entity Author](https://schema.org/Author) -->
 
-<!-- [Schema.org entity Author](https://schema.org/Author)
--->
+{{ $socialProfileURLs := slice }}
+{{ range $site := $meta.Site.Data.Author.Social }}
+  {{ $socialProfileURLs = append (slice .Profile.URL) $socialProfileURLs }}
+{{ end }}
 
-{{- /* if $debug }}
-  {{- warnf "%s[%s]: got entityParams.Meta=%v" $page $template
-  $entityParams.Meta }}
-{{- end */ -}}
+{{ $siteAuthorEntity := false }}
+{{ $pageAuthorEntity := false }}
 
-{{- $socialProfileURLs := slice }}
-{{- range $site := $meta.Site.Data.Author.Social }}
-  {{- $socialProfileURLs = append (slice .Profile.URL) $socialProfileURLs }}
-{{- end }}
-
-{{- $siteAuthorEntity := false }}
-{{- $pageAuthorEntity := false }}
-
-{{- with $meta.Site.Data.Author }}
-  {{- $siteAuthorEntity = (dict "Entity"
-    (dict
+{{ with $meta.Site.Data.Author }}
+  {{ $siteAuthorEntity = (dict
+    "Entity" (dict
       "@type" "Person"
       "@id" .EntityID
       "name" .Name
@@ -34,52 +25,52 @@
       "description" .Description
       "sameAs" $socialProfileURLs
     )
-    "Reference"
-    (dict
+    "Reference" (dict
       "@id" .EntityID
     )
   ) }}
-  {{- if $debug }}
-    {{- warnf "%s[%s]: SiteAuthor=%v from $meta.Site.Data.Author=%v" $page $template
+  {{ if $debug }}
+    {{ warnf "%s SiteAuthor=%v from $meta.Site.Data.Author=%v" $dbg
     (jsonify (dict "indent" "  ") $siteAuthorEntity)
     (jsonify (dict "indent" "  ") $meta.Site.Data.Author) }}
-  {{- end }}
-{{- else }}
-  {{- errorf "%s[%s]: Missing meta data $meta.Site.Data.Author: .Data=%v"
-    $page $template $meta.Site.Data }}
-{{- end }}
-{{- with $meta.Single.Data.Author }}
-  {{- $pageAuthorEntity = (dict
+  {{ end }}
+{{ else }}
+  {{ errorf "%s Missing .Scratch for .Site.Data.Author: .Page.RelPermalink=%v[%T]" $dbg
+      $.Page.RelPermalink $.Page }}
+{{ end }}
+{{ with $meta.Single.Data.Author }}
+  {{ $pageAuthorEntity = (dict
     "Entity" (dict
-        "@type" "Person"
-        "@id" .EntityID
-        "name" .Name
-        "url" .CanonicalURL
-        "description" .Description
-        "sameAs" $socialProfileURLs
+      "@type" "Person"
+      "@id" .EntityID
+      "name" .Name
+      "url" .CanonicalURL
+      "description" .Description
+      "sameAs" $socialProfileURLs
     )
     "Reference" (dict
       "@id" .EntityID
     )
   ) }}
-{{- else }}
-  {{- errorf "%s[%s]: Missing meta data $meta.Single.Data.Author: .Data=%v"
-    $page $template $meta.Single.Data }}
-{{- end }}
+{{ else }}
+  {{ errorf "%s Missing .Scratch for .Single.Data.Author: .Page.RelPermalink=%v[%T]" $dbg
+      $.Page.RelPermalink $.Page }}
+{{ end }}
 
-{{- with and $siteAuthorEntity $pageAuthorEntity }}
-  {{- $schemaOrgEntities = (dict
+{{ with and $siteAuthorEntity $pageAuthorEntity }}
+  {{ $entities = (dict
     "Entities" (dict
       "SiteAuthor" $siteAuthorEntity
       "PageAuthor" $pageAuthorEntity
     )
   ) }}
-{{- else }}
-  {{- errorf "%s[%s]: Either $siteAuthorEntity $pageAuthorEntity is invalid" $page $template }}
-{{- end }}
+{{ else }}
+  {{ errorf "%s Missing entries in .Entities:\n%v" $dbg
+      (jsonify (dict "indent" "  ") $.Entities) }}
+{{ end }}
 
-{{- if $debug }}
-  {{- warnf "%s[%s]: returning %v" $page $template
-  (jsonify (dict "indent" "  ") $schemaOrgEntities) }}
-{{- end }}
-{{- return $schemaOrgEntities }}
+{{ if $debug }}
+  {{ warnf "%s returning %v" $dbg
+      (jsonify (dict "indent" "  ") $entities) }}
+{{ end }}
+{{ return $entities }}

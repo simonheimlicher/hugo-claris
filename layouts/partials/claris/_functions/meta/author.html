@@ -44,9 +44,11 @@
     "CanonicalURL" $authorProfileCanonicalURL
     "ContentID" $contentContainerID
     "Description" $description
-    "Avatar" $avatarImage
     "Social" $socialMeta
   ) }}
+  {{ with $avatarImage }}
+    {{ $authorMeta = merge $authorMeta (dict "Avatar" $avatarImage) }}
+  {{ end }}
 {{ end }}
 
 {{ if $debug }}

@@ -1,22 +1,18 @@
-{{ $schemaOrgEntities := .Entities }}
-{{ $entityParams := .}}
+{{ $entities := .Entities }}
 {{ $page := .Page }}
-{{ $meta := page.Scratch.Get "clarismeta" }}
+{{ $meta := default ($page.Scratch.Get "clarismeta") .Meta }}
 {{ $template := "claris/_functions/schema-org/_entities/website" }}
-{{ $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
-{{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{ $debug := and false ($page.Param "clarisdebug") (and .Debug (eq site.LanguagePrefix "") ) }}
+{{ $dbg := printf "%s [%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+(?:/[^/]+)?)$` `$1` $template) }}
 
 {{ $dateFormat := default "2006-01-02T15:04:05.00Z" .Format.Date }}
 
-{{ $entityParams := merge . (dict "Debug" $debug) }}
-
-<!-- [Schema.org entity Article](https://schema.org/Article)
--->
+<!-- [Schema.org entity WebSite](https://schema.org/WebSite) -->
 
 {{ $webSiteEntity := dict }}
 {{ $webSiteData := dict "@type" "WebSite" }}
 
-{{ with $schemaOrgEntities }}
+{{ with $entities }}
   {{ $webSiteData = merge $webSiteData (dict
       "author" .PageAuthor.Reference
       "creator" .PageAuthor.Reference
@@ -28,7 +24,8 @@
     {{ warnf "%s added author data to webSiteData:\n%v" $dbg (jsonify (dict "indent" "  ") $webSiteData) }}
   {{ end }}
 {{ else }}
-  {{ errorf "%s Missing parameter .Entities" $dbg }}
+  {{ errorf "%s Missing entries in .Entities:\n%v" $dbg
+      (jsonify (dict "indent" "  ") $.Entities) }}
 {{ end }}
 
 
@@ -91,7 +88,7 @@
       "Entity" $webSiteData
       "Reference" (dict "@id" (index $webSiteData "@id") )
     ) }}
-  {{ $schemaOrgEntities = merge $schemaOrgEntities (dict
+  {{ $entities = merge $entities (dict
     "Entities" (dict "WebSite" $webSiteEntity)
   ) }}
 {{ else }}
@@ -99,7 +96,8 @@
 {{ end }}
 
 {{ if $debug }}
-  {{ warnf "%s returning %v" $dbg (jsonify (dict "indent" "  ") $schemaOrgEntities) }}
+  {{ warnf "%s returning %v" $dbg
+      (jsonify (dict "indent" "  ") $entities) }}
 {{ end }}
 
-{{ return $schemaOrgEntities }}
+{{ return $entities }}

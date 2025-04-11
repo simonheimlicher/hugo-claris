@@ -1,49 +1,99 @@
-{{ $entityParams := .}}
+{{ $entities := .Entities }}
 {{ $page := .Page }}
-{{ $meta := page.Scratch.Get "clarismeta" }}
+{{ $meta := default ($page.Scratch.Get "clarismeta") .Meta }}
 {{ $template := "claris/_functions/schema-org/_entities/article" }}
-{{ $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
-{{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{ $debug := and false ($page.Param "clarisdebug") (and .Debug (eq site.LanguagePrefix "") ) }}
+{{ $dbg := printf "%s [%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+(?:/[^/]+)?)$` `$1` $template) }}
 
-{{ $entityParams := merge . (dict "Debug" $debug) }}
+{{ $dateFormat := default "2006-01-02T15:04:05.00Z" .Format.Date }}
 
-<!-- [Schema.org entity Article](https://schema.org/Article)
--->
+<!-- [Schema.org entity Article](https://schema.org/Article) -->
 
 {{ $articleEntity := dict }}
+{{ $articleData := dict "@type" "Article" }}
+
+{{ with and $entities $entities.PageAuthor $entities.SiteAuthor $entities }}
+  {{ $articleData = merge $articleData (dict
+      "author" .PageAuthor.Reference
+      "creator" .PageAuthor.Reference
+      "accountablePerson" .PageAuthor.Reference
+      "copyrightHolder" .PageAuthor.Reference
+      "publisher" .SiteAuthor.Reference
+  ) }}
+  {{ if $debug }}
+    {{ warnf "%s added author data to articleData:\n%v" $dbg
+        (jsonify (dict "indent" "  ") $articleData) }}
+  {{ end }}
+{{ else }}
+  {{ errorf "%s Missing entries in .Entities:\n%v" $dbg
+      (jsonify (dict "indent" "  ") $.Entities) }}
+{{ end }}
 
 {{ with $meta.Single.Data }}
-  {{ $articleData := (dict
-      "@type" "Article"
+  {{ $articleData = merge $articleData (dict
       "@id" .EntityID
       "name" .Title
-      "headline" .Title
+      "headline" .Headline
       "description" (default $meta.Site.Data.Description .Description)
+      "inLanguage" .Language
+      "isFamilyFriendly" "true"
+      "copyrightYear" .CopyrightYear
+      "dateCreated" (.Date.Created.Format $dateFormat)
+      "datePublished" (.Date.Published.Format $dateFormat)
       "url" .CanonicalURL
+      "genre" (default .Genre .ArticleSection)
       "articleSection" .ArticleSection
+      "keywords" .Keywords
   ) }}
+
+  {{ if and .Date.Created .Date.M (ne .Date.M .Date.Created) }}
+    {{ $articleData = merge $articleData (dict "dateModified" (.Date.M.Format $dateFormat)) }}
+  {{ end }}
+
   {{ with .WordCount }}
     {{ $articleData = merge $articleData (dict "wordCount" . ) }}
   {{ end }}
-  {{ $articleEntity = (dict
-    "Entity" $articleData
-    "Reference" (dict
-      "@id" .EntityID
-    )
+
+  {{ with $shareImageURLs := partial "claris/_functions/meta/images/get-image" (dict
+      "Page" $page
+      "kind" "share"
+      "return" "canonicalurls"
+      "Debug" $debug
   ) }}
+    {{ $articleData = merge $articleData (dict "image" $shareImageURLs) }}
+  {{ end }}
+
+  {{ range $imageKind := slice "feature" "share" }}
+    {{ with $primary := partial "claris/_functions/meta/images/get-image" (dict
+        "Page" $page
+        "kind" $imageKind
+        "return" "canonicalurls"
+        "Debug" $debug
+    ) }}
+      {{ with ($primary | first 1) }}
+        {{ $articleData = merge $articleData (dict "primaryImageOfPage" .) }}
+        {{ break }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
 {{ else }}
-  {{ errorf "%s Missing parameter $meta.Single.Data" $dbg }}
+  {{ errorf "%s no meta data: $page.Scratch.Get \"clarismeta\") with .Page=%v failed. Maybe pass the meta data via parameter `.Meta`"
+      $dbg $page }}
 {{ end }}
 
-{{ $schemaOrgArticle := (dict
-  "Entities" (dict
-    "Article" $articleEntity
-  )
-) }}
+{{ with $articleData }}
+  {{ $articleEntity = (dict
+      "Entity" $articleData
+      "Reference" (dict "@id" (index $articleData "@id"))
+  ) }}
+  {{ $entities = merge $entities (dict "Entities" (dict "Article" $articleEntity)) }}
+{{ else }}
+  {{ errorf "%s failed to create Article entity" $dbg }}
+{{ end }}
 
 {{ if $debug }}
-  {{ warnf "%s returning %v" $dbg
-  (jsonify (dict "indent" "  ") $articleEntity) }}
+  {{ warnf "%s returning Article entities:\n%v" $dbg (jsonify (dict "indent" "  ") $entities) }}
 {{ end }}
 
-{{ return $schemaOrgArticle }}
+{{ return $entities }}

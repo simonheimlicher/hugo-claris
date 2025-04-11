@@ -1,56 +1,74 @@
+{{ $entities := dict }}
 {{ $page := .Page }}
 {{ $meta := page.Scratch.Get "clarismeta" }}
 {{ $schemaOrgMeta := .SchemaOrgMeta }}
 {{ $template := "claris/_functions/schema-org/collectionpage" }}
-{{ $debug := false }}
-{{ $entityParams := merge $ (dict "Template" (printf "%s->%s" $.Template $template) "Debug" $debug) }}
+{{ $debug := or false ($page.Param "clarisdebug") (and .Debug (eq site.LanguagePrefix "") ) }}
+{{ $dbg := printf "%s [%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+(?:/[^/]+)?)$` `$1` $template) }}
+{{ $entityParams := merge . (dict "Template" (printf "%s->%s" .Template $template) "Debug" $debug) }}
 
 <!-- [Schema.org entity CollectionPage](https://schema.org/CollectionPage)
 # Background
-* [Usage for a category page]
-(https://webmasters.stackexchange.com/a/99106/135400)
+* [Schema.org CollectionPage](https://schema.org/CollectionPage)
+* [Google docs on list markup](https://developers.google.com/search/docs/appearance/structured-data/article#list-items)
 -->
 
-{{ with $meta.Single.Data }}
-  {{ $schemaOrgMeta = merge $schemaOrgMeta (dict
-    "Root" (dict
-      "@type" "CollectionPage"
-    )
-  ) }}
+{{ with $entities = partial "claris/_functions/schema-org/webpage" $entityParams }}
 {{ else }}
-  {{ errorf "%s[%s]: Missing parameter $meta.Single.Data" $page $template }}
+  {{ errorf "%s failed to generate base WebPage entities" $dbg }}
 {{ end }}
 
 {{ $itemList := slice }}
-
 {{ $listMeta := partial "claris/_functions/meta/list" $entityParams }}
 
+{{ $articleEntityPartial := "claris/_functions/schema-org/_entities/article" }}
 {{ with $listMeta.List.Data }}
-  {{ range .Items }}
-    {{ with . }}
-      {{ $item := partialCached "claris/_functions/schema-org/_entities/article"
-        (dict "Page" $page "Meta" . )
-        .Single.Data.URL }}
-      {{ $itemList = append (slice $item.Entities.Article.Entity) $itemList }}
+  {{ range $idx, $item := .Items }}
+    {{ $articleEntityParams := merge $entityParams (dict "Page" $item.Single.Page "Meta" $item ) }}
+    {{ if $debug }}
+      {{ warnf "%s calling %s with articleEntityParams:\n%v"
+          $dbg $articleEntityPartial
+          (jsonify (dict "indent" "  ") $articleEntityParams) }}
+    {{ end }}
+    {{ $articleMeta := partial $articleEntityPartial $articleEntityParams }}
+
+    {{ with $item := $articleMeta.Entities.Article.Entity }}
+      {{ $listItem := dict
+        "@type" "ListItem"
+        "position" (add $idx 1)
+        "name" (default $item.name $item.Single.Data.Title)
+        "item" $item
+      }}
+      {{ $itemList = append $listItem $itemList }}
     {{ else }}
-      {{ errorf "%s[%s]: Invalid entry at .List.Data.Items: %v" $page $template . }}
+      {{ errorf "%s Failed to extract Article.Entity from list item: %v" $dbg $item }}
     {{ end }}
   {{ end }}
+{{ else }}
+  {{ errorf "%s Failed to obtain .List.Data from listMeta" $dbg }}
+{{ end }}
 
-  {{ $schemaOrgMeta = merge $schemaOrgMeta (dict
-    "Root" (dict
-      "mainEntity" (dict
-        "@type" "ItemList"
-        "itemListElement" $itemList
-      )
+{{ with $webPage := index $entities "WebPage" }}
+  {{ $collectionPage := merge $webPage (dict
+    "@type" "CollectionPage"
+    "mainEntity" (dict
+      "@type" "ItemList"
+      "itemListElement" $itemList
+      "numberOfItems" (len $itemList)
     )
   ) }}
+
+  {{ $entities = merge $entities (dict
+    "WebPage" nil
+    "CollectionPage" $collectionPage
+  ) }}
 {{ else }}
-  {{ errorf "%s[%s]: Failed to obtain $listMeta.List.Data" $page $template }}
+  {{ errorf "%s missing WebPage entity to transform into CollectionPage" $dbg }}
 {{ end }}
 
 {{ if $debug }}
-  {{ warnf "%s[%s]: returning %v" $page $template
-  (jsonify (dict "indent" "  ") $schemaOrgMeta) }}
+  {{ warnf "%s returning CollectionPage entities:\n%v"
+      $dbg (jsonify (dict "indent" "  ") $entities) }}
 {{ end }}
-{{ return $schemaOrgMeta }}
+
+{{ return $entities }}

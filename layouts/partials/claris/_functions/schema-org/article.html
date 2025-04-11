@@ -1,33 +1,47 @@
+{{ $entities := dict }}
 {{ $page := .Page }}
 {{ $meta := page.Scratch.Get "clarismeta" }}
-{{ $schemaOrgMeta := .SchemaOrgMeta }}
 {{ $template := "claris/_functions/schema-org/article" }}
-{{ $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
-{{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{ $debug := and false ($page.Param "clarisdebug") (and .Debug (eq site.LanguagePrefix "") ) }}
+{{ $dbg := printf "%s [%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+(?:/[^/]+)?)$` `$1` $template) }}
+{{ $entityParams := merge . (dict "Template" (printf "%s->%s" .Template $template) "Debug" $debug) }}
 
 <!-- [Schema.org entity Article](https://schema.org/Article)
 ## Background
  * [Correct use of mainEntityOfPage schema](https://stackoverflow.com/a/52496080/617559)
 -->
-{{ $entityParams := merge . (dict "Template" (printf "%s->%s" .Template $template) "Debug" $debug) }}
 
-{{/* Avoid caching with `partialCached` as this leads to the use of cached but
-invalid Schema.org data */}}
-{{ $schemaOrgMeta = merge $schemaOrgMeta (
-  partial "claris/_functions/schema-org/_entities/article" $entityParams
-) }}
-
-{{ $mainEntityOfPage := (dict "@type" "WebPage" "@id" (partial "claris/_functions/canonical-url" .Page) ) }}
-
-{{ with $meta.Single.Data }}
-  {{ $schemaOrgMeta = merge $schemaOrgMeta (dict
-    "Root" (merge $schemaOrgMeta.Entities.Article.Entity (dict
-        "mainEntityOfPage" $mainEntityOfPage
-      )
-    )
-  ) }}
+{{ with $entities = partial "claris/_functions/schema-org/webpage" $entityParams }}
 {{ else }}
-  {{ errorf "%s[%s]: Missing parameter $meta.Single.Data" $page $template }}
+  {{ errorf "%s failed to generate base WebPage entities" $dbg }}
 {{ end }}
 
-{{ return $schemaOrgMeta }}
+{{ with $webPage := index $entities "WebPage" }}
+  {{ $article := merge $webPage (dict
+    "@type" "Article"
+    "mainEntityOfPage" (dict
+      "@type" "WebPage"
+      "@id" (index $webPage "@id")
+    )
+  ) }}
+
+  {{/* Add `Article`-specific fields */}}
+  {{ with $meta.Single.Data }}
+    {{ with .WordCount }}
+      {{ $article = merge $article (dict "wordCount" . ) }}
+    {{ end }}
+    {{ with .ArticleSection }}
+      {{ $article = merge $article (dict "articleSection" . ) }}
+    {{ end }}
+  {{ end }}
+
+  {{ $entities = merge $entities (dict "WebPage" nil) (dict "Article" $article) }}
+{{ else }}
+  {{ errorf "%s missing WebPage entity to transform into Article" $dbg }}
+{{ end }}
+
+{{ if $debug }}
+  {{ warnf "%s returning Article entities:\n%v" $dbg (jsonify (dict "indent" "  ") $entities) }}
+{{ end }}
+
+{{ return $entities }}

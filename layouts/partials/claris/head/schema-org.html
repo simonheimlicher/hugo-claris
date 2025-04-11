@@ -23,7 +23,7 @@
     "Debug" $debug
   ) }}
 
-  {{- $schemaOrgMeta := partial "claris/_functions/schema-org/webpage" $entityParams }}
+  {{- $schemaOrgMeta := partial "claris/_functions/schema-org/index" $entityParams }}
     <script type="application/ld+json">
       {{ $schemaOrgMeta.Root | jsonify (dict "indent" "  " "prefix" "      " "noHTMLEscape" true) | safeJS | }}
     </script>

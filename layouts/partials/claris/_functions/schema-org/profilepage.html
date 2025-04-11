@@ -1,62 +1,51 @@
+{{ $entities := dict }}
 {{ $page := .Page }}
 {{ $meta := page.Scratch.Get "clarismeta" }}
-{{ $schemaOrgMeta := .SchemaOrgMeta }}
 {{ $template := "claris/_functions/schema-org/profilepage" }}
-
 {{ $debug := and false ($page.Param "clarisdebug") (and .Debug (eq site.LanguagePrefix "") ) }}
-{{ $dbg := printf "%s [%s%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink)
-(cond .Template (printf "%s->" .Template ) ("")) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{ $dbg := printf "%s [%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+(?:/[^/]+)?)$` `$1` $template) }}
+{{ $entityParams := merge . (dict "Template" (printf "%s->%s" .Template $template) "Debug" $debug) }}
 
 <!-- [Schema.org entity ProfilePage](https://schema.org/ProfilePage) -->
 
-{{ $entityParams := merge . (dict "Entities" $schemaOrgMeta.Entities "Template" (printf "%s->%s" .Template $template) "Debug" $debug) }}
 
-{{ $graph := slice }}
-{{ $webSiteEntity := false }}
-{{ with $webSiteEntity = $schemaOrgMeta.Entities.WebSite }}
-  {{ $graph = append .Entity $graph }}
+{{ with $entities = partial "claris/_functions/schema-org/webpage" $entityParams }}
 {{ else }}
-  {{ warnf "%s Missing entity $schemaOrgMeta.Entities.WebSite" $dbg }}
-  {{ with partialCached "claris/_functions/schema-org/_entities/website" $entityParams }}
-    {{ $webSiteEntity = .Entities.WebSite }}
-    {{ $graph = append $webSiteEntity.Entity $graph }}
-  {{ else }}
-    {{ errorf "%s Failed to create WebSite entity" $dbg }}
+  {{ errorf "%s failed to generate base WebPage entities" $dbg }}
+{{ end }}
+
+{{ $pageAuthor := index $entities "PageAuthor" }}
+{{ $webPage := index $entities "WebPage" }}
+{{ $webSite := index $entities "WebSite" }}
+
+{{ if and $pageAuthor $webPage $webSite }}
+  {{ $profile := merge $webPage (dict
+    "@type" "ProfilePage"
+    "about" (dict "@id" (index $pageAuthor "@id") )
+    "mainEntity" (dict "@id" (index $pageAuthor "@id") )
+    "isPartOf" (dict "@id" (index $webSite "@id") )
+  ) }}
+
+  {{/* Add `ProfilePage`-specific fields */}}
+  {{ with $meta.Single.Data }}
+    {{ with .CanonicalURL }}
+      {{ $id := printf "%s#%s" . "profilePage" }}
+      {{ $profile = merge $profile (dict "@id" $id ) }}
+    {{ end }}
+  {{ end }}
+
+  {{ $entities = merge $entities (dict "WebPage" nil) (dict "ProfilePage" $profile) }}
+{{ else }}
+  {{ if not $webPage }}
+    {{ errorf "%s missing WebPage entity to transform into ProfilePage" $dbg }}
+  {{ end }}
+  {{ if not $pageAuthor }}
+    {{ errorf "%s missing PageAuthor entity for mainEntity of ProfilePage" $dbg }}
   {{ end }}
 {{ end }}
-{{ $pageAuthorEntity := false }}
-{{ with $pageAuthorEntity = $schemaOrgMeta.Entities.PageAuthor }}
-  {{ $graph = append .Entity $graph }}
-{{ else }}
-  {{ warnf "%s Missing entity $schemaOrgMeta.Entities.PageAuthor" $dbg }}
-{{ end }}
-
-{{/* Avoid caching with `partialCached` as this leads to the use of cached but
-invalid Schema.org data */}}
-{{ with partialCached "claris/_functions/schema-org/_entities/webpage" $entityParams }}
-  {{ with .Entities.WebPage }}
-    {{ $profilePageEntity := merge .Entity (dict
-        "@type" "ProfilePage"
-        "mainEntity" $pageAuthorEntity.Reference
-        "isPartOf" $webSiteEntity.Reference
-    ) }}
-    {{ $graph = append $profilePageEntity $graph }}
-  {{ else }}
-    {{ errorf "%s failed to generate entity `WebPage`" $dbg }}
-  {{ end }}
-{{ else }}
-  {{ errorf "%s failed to generate entity `WebPage`" $dbg }}
-{{ end }}
-
-{{ $schemaOrgMeta = (dict
-  "Root" (dict
-    "@context" "http://schema.org"
-    "@graph" $graph
-  )
-) }}
 
 {{ if $debug }}
-  {{ warnf "%s returning %v" $dbg (jsonify (dict "indent" "  ") $schemaOrgMeta) }}
+  {{ warnf "%s returning ProfilePage entities:\n%v" $dbg (jsonify (dict "indent" "  ") $entities) }}
 {{ end }}
 
-{{ return $schemaOrgMeta }}
+{{ return $entities }}

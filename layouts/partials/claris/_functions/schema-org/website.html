@@ -1,22 +1,19 @@
+{{ $entityMeta := false }}
 {{ $page := .Page }}
 {{ $meta := page.Scratch.Get "clarismeta" }}
-{{ $schemaOrgMeta := .SchemaOrgMeta }}
 {{ $template := "claris/_functions/schema-org/website" }}
-{{ $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
-{{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
-
-<!-- Get meta data for home page -->
-{{/* {{ $args := merge . (dict "Page" (site.GetPage "/")) }}
-{{ $schemaOrgMeta = partial "claris/_functions/schema-org/webpage" $args }} */}}
+{{ $debug := and false ($page.Param "clarisdebug") (and .Debug (eq site.LanguagePrefix "") ) }}
+{{ $dbg := printf "%s [%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+(?:/[^/]+)?)$` `$1` $template) }}
+{{ $entityParams := merge . (dict "Template" (printf "%s->%s" .Template $template) "Debug" $debug) }}
 
 <!-- [Schema.org entity WebSite](https://schema.org/WebSite) -->
 
 {{ with $meta.Site.Data }}
-  {{ $rootMeta := (dict
+  {{ $entityMeta = (dict
       "isPartOf" (dict "@id" .EntityID)
     ) }}
   {{ with .License.HTML }}
-    {{ $rootMeta = merge $rootMeta (dict "license" . ) }}
+    {{ $entityMeta = merge $entityMeta (dict "license" . ) }}
   {{ end }}
   {{- $shareImageURLs := slice }}
   {{ with $shareImageURLs := partial "claris/_functions/meta/images/get-image" (dict
@@ -25,12 +22,12 @@
     "return" "canonicalurls"
     "Debug" $debug
   ) }}
-    {{ $rootMeta = merge $rootMeta (dict
+    {{ $entityMeta = merge $entityMeta (dict
         "image" .
       ) }}
   {{ else }}
     {{ if $debug }}
-      {{ warnf "%s[%s]: Missing share images for website in lang=%v" $page $template site.LanguagePrefix -}}
+      {{ warnf "%s Missing share images for website in lang=%v" $dbg site.LanguagePrefix -}}
     {{ end }}
   {{ end }}
 
@@ -42,26 +39,22 @@
   ) }}
     {{- $thumbnailImageUniqueURLs := complement $shareImageURLs $thumbnailImageURLs }}
     {{- with $thumbnailImageUniqueURLs }}
-      {{ $rootMeta = merge $rootMeta (dict
+      {{ $entityMeta = merge $entityMeta (dict
           "thumbnailUrl" .
         ) }}
     {{ else }}
       {{ if $debug }}
-        {{ warnf "%s[%s]: None of the thumbnail images for website differ from share images in lang=%v" $page $template site.LanguagePrefix -}}
+        {{ warnf "%s None of the thumbnail images for website differ from share images in lang=%v" $dbg site.LanguagePrefix -}}
       {{ end }}
     {{ end }}
   {{ else }}
     {{ if $debug }}
-      {{ warnf "%s[%s]: Missing thumbnail images for website in lang=%v" $page $template site.LanguagePrefix -}}
+      {{ warnf "%s Missing thumbnail images for website in lang=%v" $dbg site.LanguagePrefix -}}
     {{ end }}
   {{ end }}
 
-  {{ $schemaOrgMeta = merge $schemaOrgMeta (dict
-    "Root" $rootMeta
-  ) }}
-
 {{ else }}
-  {{ errorf "%s[%s]: Missing parameter $meta.Site.Data" $page $template }}
+  {{ errorf "%s Missing parameter $meta.Site.Data" $dbg }}
 {{ end }}
 
-{{ return $schemaOrgMeta }}
+{{ return $entityMeta }}
