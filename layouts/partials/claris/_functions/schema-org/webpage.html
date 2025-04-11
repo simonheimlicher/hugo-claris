@@ -7,36 +7,45 @@
 
 <!-- [Schema.org entity WebPage](https://schema.org/WebPage) -->
 
-{{ $webSiteEntity := false }}
-{{ with $webSiteEntity = .Entities.WebSite }}
-  {{ $entities = merge $entities (dict "WebSite" .Entity) }}
+{{ $webSite := false }}
+{{ with $webSite = .Entities.WebSite }}
+  {{ $entities = merge $entities (dict "WebSite" . ) }}
 {{ else }}
   {{ errorf "%s Missing .Entities.WebSite" $dbg }}
 {{ end }}
 
-{{ with .Entities.PageAuthor }}
-  {{ $entities = merge $entities (dict "PageAuthor" .Entity) }}
+{{ $pageAuthor := false }}
+{{ with $pageAuthor = .Entities.PageAuthor }}
+  {{ $entities = merge $entities (dict "PageAuthor" . ) }}
 {{ else }}
   {{ errorf "%s Missing entity .Entities.PageAuthor" $dbg }}
 {{ end }}
 
-{{ with partialCached "claris/_functions/schema-org/_entities/webpage"
-    $entityParams $page.RelPermalink }}
-  {{ with .Entities.WebPage }}
-    {{ $webPageEntity := merge .Entity (dict
-        "@type" "WebPage"
-        "isPartOf" $webSiteEntity.Reference
-    ) }}
-    {{ $entities = merge $entities (dict "WebPage" $webPageEntity) }}
+{{ if and $pageAuthor $webSite }}
+  {{ with partialCached "claris/_functions/schema-org/_entities/webpage"
+      $entityParams $page.RelPermalink }}
+    {{ with .Entities.WebPage }}
+      {{ $entity := merge .Entity (dict
+          "@type" "WebPage"
+          "isPartOf" $webSite.Reference
+      ) }}
+      {{ $entities = merge $entities (dict
+        "WebPage" (dict
+          "Entity" $entity
+          "Reference" .Reference
+          "URL" .URL
+        )
+      ) }}
+    {{ else }}
+      {{ errorf "%s failed to generate entity `WebPage`" $dbg }}
+    {{ end }}
   {{ else }}
     {{ errorf "%s failed to generate entity `WebPage`" $dbg }}
   {{ end }}
-{{ else }}
-  {{ errorf "%s failed to generate entity `WebPage`" $dbg }}
 {{ end }}
 
 {{ if $debug }}
-  {{ warnf "%s returning WebPage entities:\n%v" $dbg (jsonify (dict "indent" "  ") $entities) }}
+  {{ warnf "%s returning WebPage entity:\n%v" $dbg (jsonify (dict "indent" "  ") $entities) }}
 {{ end }}
 
 {{ return $entities }}

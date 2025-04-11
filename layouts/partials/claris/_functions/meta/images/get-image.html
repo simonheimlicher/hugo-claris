@@ -112,7 +112,7 @@
       {{ end }}
       {{ $urlTypeString := "" }}
       {{ if in (slice "canonicalurls") . }}
-        {{ $urlTypeString = "canonical" }}
+        {{ $urlTypeString = "canonical " }}
         {{ range $results }}
           {{ $imageMeta = append (partial "claris/_functions/canonical-url" .resource) $imageMeta }}
         {{ end }}
@@ -128,6 +128,14 @@
       {{ errorf "%s invalid value for .return: '%v'" $dbg . }}
     {{ end }}
   {{ else }}
+    {{ if not $result }}
+      {{/* $results is a map */}}
+      {{ range $results }}
+        {{ if not $result }}
+          {{ $result = . }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
     {{ $variantMetaWithoutVersions := merge $variantMeta (dict "version" nil) }}
     {{ $imageURLs := (dict
       "url" $result.resource.RelPermalink

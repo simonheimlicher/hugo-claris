@@ -137,7 +137,7 @@
   {{ $singleData := (dict
     "URL" $page.RelPermalink
     "CanonicalURL" $canonicalURL
-    "ArticleSection" ( default "Root" (default .Params.section (humanize .Section) ) )
+    "ArticleSection" ( default "Homepage" (default .Params.section (humanize .Section) ) )
     "ArticleID" $articleID
     "EntityID" (printf "%s#%s" $canonicalURL $articleID)
     "ItemType" $itemType

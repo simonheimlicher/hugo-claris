@@ -6,6 +6,8 @@
 {{ $dbg := printf "%s [%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+(?:/[^/]+)?)$` `$1` $template) }}
 {{ $entityParams := merge . (dict "Template" (printf "%s->%s" .Template $template) "Debug" $debug) }}
 
+{{ $entityFragment := default "articleContainer" .EntityFragment }}
+
 <!-- [Schema.org entity Article](https://schema.org/Article)
 ## Background
  * [Correct use of mainEntityOfPage schema](https://stackoverflow.com/a/52496080/617559)
@@ -17,31 +19,41 @@
 {{ end }}
 
 {{ with $webPage := index $entities "WebPage" }}
-  {{ $article := merge $webPage (dict
+  {{ $entity := merge .Entity (dict
     "@type" "Article"
-    "mainEntityOfPage" (dict
-      "@type" "WebPage"
-      "@id" (index $webPage "@id")
+    "mainEntityOfPage" (merge .Reference (dict
+        "@type" "WebPage"
+      )
     )
   ) }}
+  {{ $ref := (dict "@id" (printf "%s#%s" .URL $entityFragment) ) }}
 
   {{/* Add `Article`-specific fields */}}
   {{ with $meta.Single.Data }}
     {{ with .WordCount }}
-      {{ $article = merge $article (dict "wordCount" . ) }}
+      {{ $entity = merge $entity (dict "wordCount" . ) }}
     {{ end }}
     {{ with .ArticleSection }}
-      {{ $article = merge $article (dict "articleSection" . ) }}
+      {{ $entity = merge $entity (dict "articleSection" . ) }}
     {{ end }}
   {{ end }}
 
-  {{ $entities = merge $entities (dict "WebPage" nil) (dict "Article" $article) }}
+  {{/* Invalidate the `WebPage` entity by setting it to `false`.
+  Do not use `nil` as Hugo might dereference it */}}
+  {{ $entities = merge $entities (dict "WebPage" false) }}
+  {{ $entities = merge $entities (dict
+    "Article" (dict
+      "Entity" $entity
+      "Reference" $ref
+      "URL" .URL
+    )
+  ) }}
 {{ else }}
   {{ errorf "%s missing WebPage entity to transform into Article" $dbg }}
 {{ end }}
 
 {{ if $debug }}
-  {{ warnf "%s returning Article entities:\n%v" $dbg (jsonify (dict "indent" "  ") $entities) }}
+  {{ warnf "%s returning Article entity:\n%v" $dbg (jsonify (dict "indent" "  ") $entities) }}
 {{ end }}
 
 {{ return $entities }}

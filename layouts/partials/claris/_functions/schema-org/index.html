@@ -89,11 +89,12 @@
   {{/* Convert entity map to @graph slice */}}
   {{ $graph := slice }}
   {{ range $id, $entity := $entityMap }}
-    {{ if and $debug (eq $entityType "article") }}
-      {{ warnf "%s appending entity %s:\n%v"
-          $dbg $id (jsonify (dict "indent" "  ") $entity) }}
-    {{ end }}
-    {{ with $entity }}
+    {{/* Check first if `.` is truthy before indexing `Entity` */}}
+    {{ with and . .Entity }}
+      {{ if and $debug (eq $entityType "profilepage") }}
+        {{ warnf "%s appending entity %s:\n%v"
+            $dbg $id (jsonify (dict "indent" "  ") $entity) }}
+      {{ end }}
       {{ $graph = append . $graph }}
     {{ end }}
   {{ end }}

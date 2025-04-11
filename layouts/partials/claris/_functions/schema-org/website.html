@@ -1,6 +1,5 @@
-{{ $entityMeta := false }}
+{{ $entities := dict }}
 {{ $page := .Page }}
-{{ $meta := page.Scratch.Get "clarismeta" }}
 {{ $template := "claris/_functions/schema-org/website" }}
 {{ $debug := and false ($page.Param "clarisdebug") (and .Debug (eq site.LanguagePrefix "") ) }}
 {{ $dbg := printf "%s [%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+(?:/[^/]+)?)$` `$1` $template) }}
@@ -8,53 +7,52 @@
 
 <!-- [Schema.org entity WebSite](https://schema.org/WebSite) -->
 
-{{ with $meta.Site.Data }}
-  {{ $entityMeta = (dict
-      "isPartOf" (dict "@id" .EntityID)
-    ) }}
-  {{ with .License.HTML }}
-    {{ $entityMeta = merge $entityMeta (dict "license" . ) }}
-  {{ end }}
-  {{- $shareImageURLs := slice }}
-  {{ with $shareImageURLs := partial "claris/_functions/meta/images/get-image" (dict
-    "Page" $page
-    "kind" "share"
-    "return" "canonicalurls"
-    "Debug" $debug
-  ) }}
-    {{ $entityMeta = merge $entityMeta (dict
-        "image" .
-      ) }}
-  {{ else }}
-    {{ if $debug }}
-      {{ warnf "%s Missing share images for website in lang=%v" $dbg site.LanguagePrefix -}}
-    {{ end }}
-  {{ end }}
-
-  {{ with $thumbnailImageURLs := partial "claris/_functions/meta/images/get-image" (dict
-    "Page" $page
-    "kind" "thumbnail"
-    "return" "canonicalurls"
-    "Debug" $debug
-  ) }}
-    {{- $thumbnailImageUniqueURLs := complement $shareImageURLs $thumbnailImageURLs }}
-    {{- with $thumbnailImageUniqueURLs }}
-      {{ $entityMeta = merge $entityMeta (dict
-          "thumbnailUrl" .
-        ) }}
-    {{ else }}
-      {{ if $debug }}
-        {{ warnf "%s None of the thumbnail images for website differ from share images in lang=%v" $dbg site.LanguagePrefix -}}
-      {{ end }}
-    {{ end }}
-  {{ else }}
-    {{ if $debug }}
-      {{ warnf "%s Missing thumbnail images for website in lang=%v" $dbg site.LanguagePrefix -}}
-    {{ end }}
-  {{ end }}
-
+{{ $siteAuthor := false }}
+{{ with $siteAuthor = .Entities.SiteAuthor }}
+  {{ $entities = merge $entities (dict "SiteAuthor" . ) }}
 {{ else }}
-  {{ errorf "%s Missing parameter $meta.Site.Data" $dbg }}
+  {{ errorf "%s Missing .Entities.SiteAuthor" $dbg }}
 {{ end }}
 
-{{ return $entityMeta }}
+{{/* The homepage of the WebSite is a WebPage entity */}}
+{{ $webPage := false }}
+{{ with partial "claris/_functions/schema-org/webpage" $entityParams }}
+  {{ $webPage = .WebPage }}
+{{ else }}
+  {{ errorf "%s failed to generate base WebPage entities" $dbg }}
+{{ end }}
+
+{{ if and $siteAuthor $webPage }}
+  {{/* Add `WebSite`-specific fields, including `mainEntityOfPage` pointing to the Person */}}
+  {{ $webPageEntity := merge $webPage.Entity (dict
+      "about" $siteAuthor.Reference
+  ) }}
+  {{ $entities = merge $entities (dict
+    "WebPage" (dict
+      "Entity" $webPageEntity
+      "Reference" $webPage.Reference
+      "URL" $webPage.URL
+    )
+  ) }}
+{{ else }}
+  {{ if not $webPage }}
+    {{ errorf "%s missing WebPage entity to represent homepage of WebSite" $dbg }}
+  {{ end }}
+  {{ if not $siteAuthor }}
+    {{ errorf "%s missing SiteAuthor entity for mainEntityOfPage of Website" $dbg }}
+  {{ end }}
+{{ end }}
+
+{{ $webSite := false }}
+{{ with $webSite = .Entities.WebSite }}
+  {{ $entities = merge $entities (dict "WebSite" . ) }}
+{{ else }}
+  {{ errorf "%s Missing .Entities.WebSite" $dbg }}
+{{ end }}
+
+{{ if $debug }}
+  {{ warnf "%s returning WebSite entity:\n%v"
+      $dbg (jsonify (dict "indent" "  ") $entities) }}
+{{ end }}
+
+{{ return $entities }}

@@ -4,15 +4,16 @@
 {{ $template := "claris/_functions/schema-org/_entities/website" }}
 {{ $debug := and false ($page.Param "clarisdebug") (and .Debug (eq site.LanguagePrefix "") ) }}
 {{ $dbg := printf "%s [%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+(?:/[^/]+)?)$` `$1` $template) }}
-
 {{ $dateFormat := default "2006-01-02T15:04:05.00Z" .Format.Date }}
 
 <!-- [Schema.org entity WebSite](https://schema.org/WebSite) -->
 
 {{ $webSiteEntity := dict }}
 {{ $webSiteData := dict "@type" "WebSite" }}
+{{ $ref := false }}
+{{ $url := false }}
 
-{{ with $entities }}
+{{ with and $entities $entities.PageAuthor $entities.SiteAuthor $entities }}
   {{ $webSiteData = merge $webSiteData (dict
       "author" .PageAuthor.Reference
       "creator" .PageAuthor.Reference
@@ -39,10 +40,12 @@
       "inLanguage" .Language
       "url" .CanonicalURL
     ) }}
+  {{ $ref = dict "@id" .EntityID }}
+  {{ $url = .CanonicalURL }}
   {{ with .License.HTML }}
     {{ $webSiteData = merge $webSiteData (dict "license" . ) }}
   {{ end }}
-  {{- $shareImageURLs := slice }}
+  {{ $shareImageURLs := slice }}
   {{ with $shareImageURLs := partial "claris/_functions/meta/images/get-image" (dict
     "Page" $page
     "kind" "share"
@@ -54,7 +57,7 @@
       ) }}
   {{ else }}
     {{ if $debug }}
-      {{ warnf "%s[%s]: Missing share images for website in lang=%v" $page $template site.LanguagePrefix -}}
+      {{ warnf "%s Missing share images for website in lang=%v" $dbg site.LanguagePrefix }}
     {{ end }}
   {{ end }}
 
@@ -64,19 +67,19 @@
     "return" "canonicalurls"
     "Debug" $debug
   ) }}
-    {{- $thumbnailImageUniqueURLs := complement $shareImageURLs $thumbnailImageURLs }}
-    {{- with $thumbnailImageUniqueURLs }}
+    {{ $thumbnailImageUniqueURLs := complement $thumbnailImageURLs $shareImageURLs }}
+    {{ with $thumbnailImageUniqueURLs }}
       {{ $webSiteData = merge $webSiteData (dict
           "thumbnailUrl" .
         ) }}
     {{ else }}
       {{ if $debug }}
-        {{ warnf "%s[%s]: None of the thumbnail images for website differ from share images in lang=%v" $page $template site.LanguagePrefix -}}
+        {{ warnf "%s None of the thumbnail images for website differ from share images in lang=%v" $dbg site.LanguagePrefix }}
       {{ end }}
     {{ end }}
   {{ else }}
     {{ if $debug }}
-      {{ warnf "%s[%s]: Missing thumbnail images for website in lang=%v" $page $template site.LanguagePrefix -}}
+      {{ warnf "%s Missing thumbnail images for website in lang=%v" $dbg site.LanguagePrefix }}
     {{ end }}
   {{ end }}
 {{ else }}
@@ -86,7 +89,8 @@
 {{ with $webSiteData}}
   {{ $webSiteEntity = (dict
       "Entity" $webSiteData
-      "Reference" (dict "@id" (index $webSiteData "@id") )
+      "Reference" $ref
+      "URL" $url
     ) }}
   {{ $entities = merge $entities (dict
     "Entities" (dict "WebSite" $webSiteEntity)

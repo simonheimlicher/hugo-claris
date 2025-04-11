@@ -3,9 +3,11 @@
 {{ $meta := page.Scratch.Get "clarismeta" }}
 {{ $schemaOrgMeta := .SchemaOrgMeta }}
 {{ $template := "claris/_functions/schema-org/collectionpage" }}
-{{ $debug := or false ($page.Param "clarisdebug") (and .Debug (eq site.LanguagePrefix "") ) }}
+{{ $debug := and false ($page.Param "clarisdebug") (and .Debug (eq site.LanguagePrefix "") ) }}
 {{ $dbg := printf "%s [%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+(?:/[^/]+)?)$` `$1` $template) }}
 {{ $entityParams := merge . (dict "Template" (printf "%s->%s" .Template $template) "Debug" $debug) }}
+
+{{ $entityFragment := default "collectionContainer" .EntityFragment }}
 
 <!-- [Schema.org entity CollectionPage](https://schema.org/CollectionPage)
 # Background
@@ -49,7 +51,7 @@
 {{ end }}
 
 {{ with $webPage := index $entities "WebPage" }}
-  {{ $collectionPage := merge $webPage (dict
+  {{ $entity := merge $webPage.Entity (dict
     "@type" "CollectionPage"
     "mainEntity" (dict
       "@type" "ItemList"
@@ -57,17 +59,28 @@
       "numberOfItems" (len $itemList)
     )
   ) }}
+  {{ $ref := (dict "@id" (printf "%s#%s" .URL $entityFragment) ) }}
+
+  {{/* Invalidate the `WebPage` entity by setting it to `false`.
+  Do not use `nil` as Hugo might dereference it */}}
+  {{ $entities = merge $entities (dict
+    "WebPage" false
+  ) }}
 
   {{ $entities = merge $entities (dict
-    "WebPage" nil
-    "CollectionPage" $collectionPage
+    "CollectionPage" (dict
+      "Entity" $entity
+      "Reference" $ref
+      "URL" .URL
+    )
   ) }}
+
 {{ else }}
   {{ errorf "%s missing WebPage entity to transform into CollectionPage" $dbg }}
 {{ end }}
 
 {{ if $debug }}
-  {{ warnf "%s returning CollectionPage entities:\n%v"
+  {{ warnf "%s returning CollectionPage entity:\n%v"
       $dbg (jsonify (dict "indent" "  ") $entities) }}
 {{ end }}
 

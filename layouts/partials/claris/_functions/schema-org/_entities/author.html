@@ -28,6 +28,7 @@
     "Reference" (dict
       "@id" .EntityID
     )
+    "URL" .CanonicalURL
   ) }}
   {{ if $debug }}
     {{ warnf "%s SiteAuthor=%v from $meta.Site.Data.Author=%v" $dbg
@@ -51,6 +52,7 @@
     "Reference" (dict
       "@id" .EntityID
     )
+    "URL" .CanonicalURL
   ) }}
 {{ else }}
   {{ errorf "%s Missing .Scratch for .Single.Data.Author: .Page.RelPermalink=%v[%T]" $dbg
@@ -58,7 +60,7 @@
 {{ end }}
 
 {{ with and $siteAuthorEntity $pageAuthorEntity }}
-  {{ $entities = (dict
+  {{ $entities = merge $entities (dict
     "Entities" (dict
       "SiteAuthor" $siteAuthorEntity
       "PageAuthor" $pageAuthorEntity

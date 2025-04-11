@@ -11,6 +11,8 @@
 
 {{ $webPageEntity := dict }}
 {{ $webPageData := dict "@type" "WebPage" }}
+{{ $ref := false }}
+{{ $url := false }}
 
 {{ with and $entities $entities.PageAuthor $entities.SiteAuthor $entities }}
   {{ $webPageData = merge $webPageData (dict
@@ -20,7 +22,7 @@
       "copyrightHolder" .PageAuthor.Reference
       "publisher" .SiteAuthor.Reference
   ) }}
-  {{ if $debug }}
+  {{ if and false $debug }}
     {{ warnf "%s added author data to webPageData:\n%v" $dbg
         (jsonify (dict "indent" "  ") $webPageData) }}
   {{ end }}
@@ -36,7 +38,7 @@
       "headline" .Headline
       "description" (default $meta.Site.Data.Description .Description)
       "inLanguage" .Language
-      "isFamilyFriendly" "true"
+      "isFamilyFriendly" true
       "copyrightYear" .CopyrightYear
       "dateCreated" (.Date.Created.Format $dateFormat)
       "datePublished" (.Date.Published.Format $dateFormat)
@@ -64,28 +66,39 @@
       {{ warnf "%sMissing share image in lang=%v" $dbg site.LanguagePrefix }}
     {{ end }}
   {{ end }}
-  {{ if $debug }}
+  {{ if and false $debug }}
     {{ warnf "%s added .Data.Single to webPageData:\n%v" $dbg
         (jsonify (dict "indent" "  ") $webPageData) }}
   {{ end }}
 
-  {{ $primaryImageURLs := false }}
+  {{ $imageMeta := false }}
   {{ range $imageKind := slice "feature" "share" }}
-    {{ if not $primaryImageURLs }}
-      {{ with $primaryImageURLs = partial "claris/_functions/meta/images/get-image" (dict
+    {{ if not $imageMeta }}
+      {{ with $imageMeta = partial "claris/_functions/meta/images/get-process-image" (dict
           "Page" $page
           "kind" $imageKind
-          "return" "canonicalurls"
+          "width" 1280
+          "height" 627
           "Debug" $debug
         ) }}
-      {{ end }}
-      {{ with ($primaryImageURLs | first 1) }}
-        {{ $webPageData = merge $webPageData (dict
-            "primaryImageOfPage" .
-          ) }}
+        {{ if $debug }}
+          {{ warnf "%s debug=%v imageMeta:\n%v" $dbg $debug (jsonify (dict "indent" "  ") $imageMeta ) }}
+        {{ end }}
+        {{ with and .width .height .canonicalurl }}
+          {{ $webPageData = merge $webPageData (dict
+              "primaryImageOfPage" (dict
+                "@type" "ImageObject"
+                "url" $imageMeta.canonicalurl
+                "width" $imageMeta.width
+                "height" $imageMeta.height
+              )
+            ) }}
+        {{ end }}
       {{ end }}
     {{ end }}
   {{ end }}
+  {{ $url = .CanonicalURL }}
+  {{ $ref = (dict "@id" .EntityID )  }}
 {{ else }}
   {{ errorf "%s Missing .Scratch for .Single.Data" $dbg }}
 {{ end }}
@@ -93,7 +106,8 @@
 {{ with $webPageData}}
   {{ $webPageEntity = (dict
       "Entity" $webPageData
-      "Reference" (dict "@id" (index $webPageData "@id") )
+      "Reference" $ref
+      "URL" $url
     ) }}
   {{ $entities = merge $entities (dict
     "Entities" (dict "WebPage" $webPageEntity)

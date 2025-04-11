@@ -6,8 +6,10 @@
 {{ $dbg := printf "%s [%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+(?:/[^/]+)?)$` `$1` $template) }}
 {{ $entityParams := merge . (dict "Template" (printf "%s->%s" .Template $template) "Debug" $debug) }}
 
-<!-- [Schema.org entity ProfilePage](https://schema.org/ProfilePage) -->
 
+{{ $entityFragment := default "profileContainer" .EntityFragment }}
+
+<!-- [Schema.org entity ProfilePage](https://schema.org/ProfilePage) -->
 
 {{ with $entities = partial "claris/_functions/schema-org/webpage" $entityParams }}
 {{ else }}
@@ -18,23 +20,32 @@
 {{ $webPage := index $entities "WebPage" }}
 {{ $webSite := index $entities "WebSite" }}
 
-{{ if and $pageAuthor $webPage $webSite }}
-  {{ $profile := merge $webPage (dict
+{{ if and $pageAuthor $webSite $webPage }}
+  {{/* Add `ProfilePage`-specific fields */}}
+  {{ $entity := merge $webPage.Entity (dict
     "@type" "ProfilePage"
-    "about" (dict "@id" (index $pageAuthor "@id") )
-    "mainEntity" (dict "@id" (index $pageAuthor "@id") )
-    "isPartOf" (dict "@id" (index $webSite "@id") )
+    "about" $pageAuthor.Reference
+    "mainEntity" $pageAuthor.Reference
+    "isPartOf" $webSite.Reference
   ) }}
 
-  {{/* Add `ProfilePage`-specific fields */}}
-  {{ with $meta.Single.Data }}
-    {{ with .CanonicalURL }}
-      {{ $id := printf "%s#%s" . "profilePage" }}
-      {{ $profile = merge $profile (dict "@id" $id ) }}
-    {{ end }}
-  {{ end }}
+  {{/* Ensure that the ID of `ProfilePage` differs from `WebPage` */}}
+  {{ $ref := (dict "@id" (printf "%s#%s" $webPage.URL $entityFragment) ) }}
+  {{ $entity = merge $entity $ref }}
 
-  {{ $entities = merge $entities (dict "WebPage" nil) (dict "ProfilePage" $profile) }}
+  {{/* Invalidate the `WebPage` entity by setting it to `false`.
+  Do not use `nil` as Hugo might dereference it */}}
+  {{ $entities = merge $entities (dict
+    "WebPage" false
+  ) }}
+
+  {{ $entities = merge $entities (dict
+    "ProfilePage" (dict
+      "Entity" $entity
+      "Reference" $ref
+      "URL" .URL
+    )
+  ) }}
 {{ else }}
   {{ if not $webPage }}
     {{ errorf "%s missing WebPage entity to transform into ProfilePage" $dbg }}
@@ -45,7 +56,7 @@
 {{ end }}
 
 {{ if $debug }}
-  {{ warnf "%s returning ProfilePage entities:\n%v" $dbg (jsonify (dict "indent" "  ") $entities) }}
+  {{ warnf "%s returning ProfilePage entity:\n%v" $dbg (jsonify (dict "indent" "  ") $entities) }}
 {{ end }}
 
 {{ return $entities }}

@@ -1,0 +1,65 @@
+{{ $imageMeta := dict }}
+{{ $page := default page .Page }}
+{{ $template := "claris/_functions/meta/images/get-process-image" }}
+{{ $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
+{{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
+{{ $meta := page.Scratch.Get "clarismeta" }}
+{{ $defaultKey := "default" }}
+{{ $imageKind := default $defaultKey .kind }}
+{{ $imageVariant := default $defaultKey .variant }}
+{{ $imageVersion := .version }}
+{{ $imageAspect := .aspect }}
+{{ $imageRatio := .ratio }}
+{{ $imageWidth := .width }}
+{{ $imageHeight := .height }}
+{{ $return := default false (lower .return) }}
+
+{{ with $matchingImage := partial "claris/_functions/meta/images/get-image" $ }}
+  {{ $processArgs := dict }}
+  {{/* Filter arguments for `process-image` */}}
+  {{ range $key := slice "width" "height" "aspect" "ratio" }}
+    {{ with $value := index $ . }}
+      {{ $processArgs = merge $processArgs (dict $key $value) }}
+    {{ end }}
+  {{ end }}
+
+  {{ if $debug }}
+    {{ warnf "%s calling process-image processArgs:\n%v\nmatchingImage:\n%v"
+        $dbg (jsonify (dict "indent" "  ") $processArgs)
+        (jsonify (dict "indent" "  ") $matchingImage) }}
+  {{ end }}
+
+  {{ $processArgs = merge $processArgs (dict "resource" $matchingImage.resource) }}
+  {{ with $processedImg := partialCached "claris/_functions/resources/images/process-image" $processArgs  }}
+    {{ if $debug }}
+      {{ warnf "%s process-image returned processedImg %v [%dx%d %v] from processArgs:\n%v\nmatchingImage:\n%v"
+          $dbg .Name .Width .Height .MediaType.Type (jsonify (dict "indent" "  ") $processArgs)
+          (jsonify (dict "indent" "  ") $matchingImage) }}
+    {{ end }}
+    {{ $tmpMeta := merge $imageMeta (dict "resource" $processedImg "name" "default") }}
+    {{ $imageMetaVersion := partial "claris/_functions/meta/images/version-meta" (dict "Page" $page "meta" $tmpMeta) }}
+    {{ with $imageMeta = $imageMetaVersion.version.default }}
+      {{ $imageMeta = merge $imageMeta (dict "canonicalurl" (partial "claris/_functions/canonical-url" .resource) ) }}
+      {{ if $debug }}
+        {{ with $imageMeta.resource }}
+          {{ warnf "%s version-meta returned imageMeta with .resource %v [%dx%d %v]:\n%v from processArgs:\n%v\nmatchingImage:\n%v"
+              $dbg .Name .Width .Height .MediaType.Type
+              (jsonify (dict "indent" "  ") $imageMeta)
+              (jsonify (dict "indent" "  ") $processArgs)
+              (jsonify (dict "indent" "  ") $matchingImage) }}
+        {{ end }}
+      {{ end }}
+    {{ else }}
+      {{ warnf "%s version-meta returned imageMeta without .resource:\n%v from processArgs:\n%v\nmatchingImage:\n%v"
+          $dbg (jsonify (dict "indent" "  ") $imageMeta)
+          (jsonify (dict "indent" "  ") $processArgs)
+          (jsonify (dict "indent" "  ") $matchingImage) }}
+    {{ end }}
+  {{ end }}
+{{ else }}
+  {{ $getImageParams = merge . (dict "Page" "omitted")}}
+  {{ warnf "%s cannot find any meta matching key '.Data.Images' for lang=%v:\n%v"
+      $dbg site.Language.Lang (jsonify (dict "indent" "  ") $getImageParams) }}
+{{ end }}
+{{ return $imageMeta }}

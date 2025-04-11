@@ -36,7 +36,7 @@
       "headline" .Headline
       "description" (default $meta.Site.Data.Description .Description)
       "inLanguage" .Language
-      "isFamilyFriendly" "true"
+      "isFamilyFriendly" true
       "copyrightYear" .CopyrightYear
       "dateCreated" (.Date.Created.Format $dateFormat)
       "datePublished" (.Date.Published.Format $dateFormat)
@@ -63,20 +63,6 @@
     {{ $articleData = merge $articleData (dict "image" $shareImageURLs) }}
   {{ end }}
 
-  {{ range $imageKind := slice "feature" "share" }}
-    {{ with $primary := partial "claris/_functions/meta/images/get-image" (dict
-        "Page" $page
-        "kind" $imageKind
-        "return" "canonicalurls"
-        "Debug" $debug
-    ) }}
-      {{ with ($primary | first 1) }}
-        {{ $articleData = merge $articleData (dict "primaryImageOfPage" .) }}
-        {{ break }}
-      {{ end }}
-    {{ end }}
-  {{ end }}
-
 {{ else }}
   {{ errorf "%s no meta data: $page.Scratch.Get \"clarismeta\") with .Page=%v failed. Maybe pass the meta data via parameter `.Meta`"
       $dbg $page }}
@@ -86,6 +72,7 @@
   {{ $articleEntity = (dict
       "Entity" $articleData
       "Reference" (dict "@id" (index $articleData "@id"))
+      "URL" .url
   ) }}
   {{ $entities = merge $entities (dict "Entities" (dict "Article" $articleEntity)) }}
 {{ else }}
@@ -93,7 +80,7 @@
 {{ end }}
 
 {{ if $debug }}
-  {{ warnf "%s returning Article entities:\n%v" $dbg (jsonify (dict "indent" "  ") $entities) }}
+  {{ warnf "%s returning Article entity:\n%v" $dbg (jsonify (dict "indent" "  ") $entities) }}
 {{ end }}
 
 {{ return $entities }}
