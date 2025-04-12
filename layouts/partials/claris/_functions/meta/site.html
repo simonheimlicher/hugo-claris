@@ -25,17 +25,17 @@
 {{ $name := default site.Title site.Params.website.name }}
 
 {{ $title := site.Title | $page.RenderString }}
-{{ $titlePlain := $title | partial `claris/_functions/sanitize` }}
+{{ $titlePlain := $title | partial `claris/_functions/plainify-string` }}
 
 {{ $tagline := site.Params.website.tagline | $page.RenderString }}
-{{ $taglinePlain := $tagline | partial `claris/_functions/sanitize` }}
+{{ $taglinePlain := $tagline | partial `claris/_functions/plainify-string` }}
 {{ $headline := $title }}
 {{ with $tagline }}
   {{ $headline = printf "%s: %s" $title $tagline }}
 {{ end }}
-{{ $headlinePlain := $headline | partial `claris/_functions/sanitize` }}
+{{ $headlinePlain := $headline | partial `claris/_functions/plainify-string` }}
 
-{{ $description := site.Params.website.description | partial `claris/_functions/sanitize` }}
+{{ $description := site.Params.website.description | partial `claris/_functions/plainify-string` }}
 {{ if and (not $description) site.Params.claris.hints }}
   {{ warnf "%s Missing website description. To include a description of your website, add it to site.Params.website.description" $dbg }}
 {{ end }}

@@ -16,7 +16,7 @@
     {{- $url = relLangURL $url }}
   {{- end }}
             <div class="nav_parent">
-              <a href="{{ $url }}" class="nav_item" title="{{ partial `claris/_functions/sanitize` $name }}">
+              <a href="{{ $url }}" class="nav_item" title="{{ partial `claris/_functions/plainify-html` $name }}">
               {{ partial "sprite" (dict "icon" $label) }}
               </a>
             </div>

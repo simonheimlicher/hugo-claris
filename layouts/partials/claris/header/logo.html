@@ -35,7 +35,7 @@
     {{- $logoParams = false }}
   {{- end }}
   {{- if and (eq (path.Ext .src) ".svg" ) (not (isset . "inline") ) }}
-    {{- if site.Params.claris.hints }}
+    {{- if and false $debug }}
       {{- warnf "%s Rendering the logo=%v inline based on its suffix=%v"
           $dbg .src (path.Ext .src) }}
     {{- end }}

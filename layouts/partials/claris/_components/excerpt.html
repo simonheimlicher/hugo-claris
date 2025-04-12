@@ -31,7 +31,7 @@
   {{- errorf "%s storeExcerptRenderedKey=%q is not a slice: %T"
       $dbg $storeExcerptRenderedKey ($page.Store.Get $storeExcerptRenderedKey) }}
 {{- end }}
-{{- $plainTitle := partial `claris/_functions/sanitize` $title }}
+{{- $plainTitle := partial `claris/_functions/plainify-html` $title }}
 
 {{- $excerptContent := false }}
 {{- if not $excerptMeta }}
@@ -124,13 +124,13 @@
         {{- end }}
       {{- end }}
       {{- /* with $excerptContent }}
-       {{- $excerptContent = partial `claris/_functions/sanitize` $excerptContent }}
+       {{- $excerptContent = partial `claris/_functions/plainify-html` $excerptContent }}
       {{- end */ -}}
     {{- end }}
     {{- $excerptTitle := $excerptMeta.Single.Formatted.Title | default $title }}
     {{- $excerptPlainTitle := $excerptMeta.Single.Data.Title | default $plainTitle }}
     <div class="{{ delimit $containerClassList ` ` }}">
-      <a href="{{ .RelPermalink }}" title="{{ $excerptPlainTitle }}">
+      <a href="{{ .RelPermalink }}" title="{{ $excerptPlainTitle | htmlEscape | safeHTMLAttr }}">
         <div class="excerpt_header">
           <h{{ $headingLevel }} class="excerpt_title">
           {{ $excerptTitle }}

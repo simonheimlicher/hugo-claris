@@ -26,12 +26,12 @@
   {{ end }}
 {{ end }}
 
-{{ $headMetaParams := (dict "Page" $page "AssetVariant" $assetVariant "Debug" $debug) }}
+{{ $headMetaParams := (dict "Page" $page "AssetVariant" $assetVariant "Template" (printf "%s->%s" .Template $template) "Debug" $debug) }}
 
 {{ with $page }}
 
   {{ $metaVariant := (dict
-      "Data" (dict "Title" (partial "claris/_functions/sanitize" .Title) )
+      "Data" (dict "Title" (partial "claris/_functions/plainify-string" .Title) )
       "Formatted" (dict "Title" (page.RenderString .Title))
   ) }}
 
@@ -132,7 +132,7 @@
 
   {{ $canonicalURL := partial "claris/_functions/canonical-url" $page }}
 
-  <!-- NOTE: For consistency, in the `Data` key, we apply the partial `claris/_functions/sanitize`
+  <!-- NOTE: For consistency, in the `Data` key, we apply the partial `claris/_functions/plainify-string`
        to all strings that might contain HTML or soft hyphens -->
   {{ $singleData := (dict
     "URL" $page.RelPermalink

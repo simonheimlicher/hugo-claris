@@ -2,11 +2,10 @@
 {{ $page := .Page }}
 {{ $headMeta := default .HeadMeta dict }}
 {{ $template := "claris/_functions/meta/head" }}
-{{ $debug := false }}
+{{ $debug := and false ($page.Param "clarisdebug") (and .Debug (eq site.LanguagePrefix "") ) }}
+{{ $dbg := printf "%s [%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+(?:/[^/]+)?)$` `$1` $template) }}
 
 {{ $initialTitle := "" }}
-
-{{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) $template (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{ if $page.IsHome }}
   {{/* {{ warnf "%s[%s] home $page.IsHome=%v" $dbg $page.IsHome }} */}}
@@ -14,7 +13,7 @@
     {{ $initialTitle = . }}
   {{ else }}
     {{ if $page.Param "claris.hints" }}
-      {{ warnf "%s[%s]: Invalid site title=%q. Please configure the title of your site in hugo.{yaml|toml}"
+      {{ warnf "%s Invalid site title=%q. Please configure the title of your site in hugo.{yaml|toml}"
           $dbg $initialTitle }}
     {{ end }}
   {{ end }}
@@ -38,7 +37,7 @@
         ) }}
         {{ $pagePath = printf "index%s" $languageSuffix }}
       {{ end }}
-      {{ warnf "%s[%s]: Invalid title=%q. Please add a title to the page at %q"
+      {{ warnf "%s Invalid title=%q. Please add a title to the page at %q"
           $dbg $initialTitle $pagePath }}
     {{ end }}
   {{ end }}
@@ -55,11 +54,11 @@
   {{ $supertitle := default $headMeta.Formatted.supertitle | default $headMeta.Data.supertitle | default .Params.supertitle | .RenderString | default "" }}
 
   {{/* Derive a plain text, sanitized version of title, subtitle and supertitle for length calculations */}}
-  {{ $titlePlain      := $title      | partial "claris/_functions/sanitize" }}
+  {{ $titlePlain      := $title      | partial "claris/_functions/plainify-string" }}
   {{ $titleLen        := len $titlePlain }}
-  {{ $supertitlePlain := $supertitle | partial "claris/_functions/sanitize" }}
+  {{ $supertitlePlain := $supertitle | partial "claris/_functions/plainify-string" }}
   {{ $supertitleLen   := len $supertitlePlain }}
-  {{ $subtitlePlain   := $subtitle   | partial "claris/_functions/sanitize" }}
+  {{ $subtitlePlain   := $subtitle   | partial "claris/_functions/plainify-string" }}
   {{ $subtitleLen     := len $subtitlePlain }}
 
   {{/* If we add the supertitle or subtitle to the title, we move it from ...Outside to ...Inside */}}
@@ -95,8 +94,8 @@
     {{ $max := default 60 (index (.Param "meta.headline.targetlength") 1) }}
     {{ if le $titleLen $max }}
       {{ if $debug }}
-        {{ warnf "%s[%s]: Title='%v'[%d] targetlength=[%d,%d] supertitle='%v'[%d], subtitle='%v'[%d]"
-            $dbg $title $titleLen $min $max $supertitle $supertitleLen $subtitle $subtitleLen }}
+        {{ warnf "%s Title=%q[%d] targetlength=[%d,%d] supertitle=%q[%d], subtitle=%q[%d]"
+            $dbg $title $titleLen $min $max $supertitlePlain $supertitleLen $subtitlePlain $subtitleLen }}
       {{ end }}
 
       {{ if $supertitlePlain }}
@@ -106,7 +105,7 @@
           {{/* We can add at least the supertitle to the title without exceeding the max length */}}
           {{ $supertitleInside = $supertitleOutside }}
           {{ $supertitleOutside = "" }}
-          {{ if and $subtitle (le (add $supertitleLen $supertitleSepLen $titleLen $subtitleSepLen $subtitleLen) $max) }}
+          {{ if and $subtitlePlain (le (add $supertitleLen $supertitleSepLen $titleLen $subtitleSepLen $subtitleLen) $max) }}
             {{/* We can add both the supertitle and the subtitle to the title without exceeding the max length */}}
             {{ $subtitleInside = $subtitleOutside }}
             {{ $subtitleOutside = "" }}
@@ -130,15 +129,17 @@
               - title with either subtitle or supertitle is too long (greater than $max) */}}
           {{ if lt (len $headline) $min }}
             {{ if $debug }}
-              {{ warnf "%s[%s]: Title=%v [%d characters] < min=%d: adding separator and supertitle or subtitle would exceed max=%d characters"
+              {{ warnf "%s Title=%v [%d characters] < min=%d: adding separator and supertitle or subtitle would exceed max=%d characters"
                   $dbg $title $titleLen $min $max }}
               {{ if $supertitlePlain }}
-                {{ warnf "%s[%s]: Adding separator and supertitle: '%v%v' [%d characters]: %d characters too many"
-                    $dbg $supertitleTitleSep $supertitle (add $titleLen $supertitleLen $supertitleSepLen) }}
+                {{ warnf "%s Adding separator and supertitle: \"%v%v\" [%d characters]: %d characters too many"
+                    $dbg $supertitleTitleSep $supertitlePlain (add $titleLen $supertitleLen $supertitleSepLen)
+                    (sub (add $titleLen $supertitleLen $supertitleSepLen) $max) }}
               {{ end }}
               {{ if $subtitlePlain }}
-                {{ warnf "%s[%s]: Adding separator and subtitle:   '%v%v' [%d characters]: %d characters too many"
-                    $dbg $subtitleTitleSep $subtitle (add $titleLen $subtitleLen $subtitleSepLen) }}
+                {{ warnf "%s Adding separator and subtitle:   \"%v%v\" [%d characters]: %d characters too many"
+                    $dbg $subtitleTitleSep $subtitlePlain (add $titleLen $subtitleLen $subtitleSepLen)
+                    (sub (add $titleLen $subtitleLen $subtitleSepLen) $max) }}
               {{ end }}
             {{ end }}
           {{ end }}
@@ -147,7 +148,7 @@
       {{ end }}
 
     {{ else }}
-      {{ warnf "%s[%s]: Title=%v [%d characters] > targetlength=%d: %v"
+      {{ warnf "%s Title=%v [%d characters] > targetlength=%d: %v"
           page $template $title $titleLen $max (substr $title 0 $max) }}
     {{ end }}
 
@@ -159,7 +160,7 @@
       {{ $description = printf "%s %s" (T "taxonomy_index_description") (T .Data.Singular ) | strings.FirstUpper }}
 
       {{/* {{ if $debug }}
-        {{ warnf "%s[%s]: %s: Title='%s' Headline='%s' [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
+        {{ warnf "%s %s: Title='%s' Headline='%s' [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
             $dbg (strings.ToUpper .Kind) $title $headline
             .Data.Singular .Data.Plural .Section .Title }}
       {{ end }} */}}
@@ -179,18 +180,18 @@
       {{ $title = $termTitle }}
       {{ $headline = printf "%s: %s" $supertitle $title | strings.FirstUpper }}
 
-      {{/* {{ if $debug }}
-        {{ warnf "%s[%s]: %s: Title='%s' Supertitle='%v' Headline='%s' [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
+      {{ if and false $debug }}
+        {{ warnf "%s %s: Title='%s' Supertitle=%q Headline='%s' [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
             $dbg (strings.ToUpper .Kind) $title $supertitle $headline
             .Data.Singular .Data.Plural .Section .Title }}
-      {{ end }} */}}
+      {{ end }}
 
     {{ end }}
 
     {{ $supertitleOutside = $supertitle  }}
-    {{ $supertitlePlain = $supertitle | partial "claris/_functions/sanitize" }}
+    {{ $supertitlePlain = $supertitle | partial "claris/_functions/plainify-string" }}
     {{ $subtitleOutside = $subtitle  }}
-    {{ $subtitlePlain   = $subtitle | partial "claris/_functions/sanitize" }}
+    {{ $subtitlePlain   = $subtitle | partial "claris/_functions/plainify-string" }}
 
   {{ end }}
 
@@ -199,9 +200,9 @@
     {{ $headline = . }}
   {{ end }}
 
-  {{ $headlinePlain := $headline | partial "claris/_functions/sanitize" }}
-  {{ $taglinePlain := $tagline | partial "claris/_functions/sanitize" }}
-  {{ $descriptionPlain := $description | partial "claris/_functions/sanitize" }}
+  {{ $headlinePlain := $headline | partial "claris/_functions/plainify-string" }}
+  {{ $taglinePlain := $tagline | partial "claris/_functions/plainify-string" }}
+  {{ $descriptionPlain := $description | partial "claris/_functions/plainify-string" }}
 
   {{/* Append site title if titleSeparator is defined */}}
   {{ if $title }}
@@ -215,18 +216,20 @@
   {{ $keywords := slice }}
   {{ with $keywords = .Params.keywords }}
   {{ else }}
-    {{ range slice $title $supertitle $subtitle $description }}
+    {{ range slice $title $supertitlePlain $subtitlePlain $description }}
       {{ with $anchorized := anchorize . }}
         {{ $words := split . "-" }}
         {{ range $words }}
           {{ $keywords = append . $keywords }}
         {{ end }}
-        {{/* {{ warnf "%s anchorized=%v: added %d words=%v [type=%T], resulting in %d keywords=%v"
-            $dbg $anchorized (len $words) $words $words (len $keywords) $keywords }} */}}
       {{ end }}
     {{ end }}
   {{ end }}
   {{ $keywordsPlain := $keywords | sort | uniq }}
+  {{ if and true $debug }}
+    {{ warnf "%s keywords=%v | sort | uniq keywordsPlain=%v"
+        $dbg $keywords $keywordsPlain }}
+  {{ end }}
 
   {{/*  Load list of stopwords as a slice array Add stop words for your content
   language from https://countwordsfree.com/stopwords in JSON format to
@@ -234,6 +237,7 @@
   {{ $stopwordIndex := printf "stopwords.%s" site.Language.Lang }}
   {{ with $stopWords := index site.Data $stopwordIndex }}
     {{/*  Compare string words to stopwords and return only non-matches  */}}
+    {{ $keywordsFiltered := complement $stopWords $keywordsPlain }}
     {{ $keywordsFiltered := complement $stopWords $keywordsPlain | sort | uniq }}
     {{ if $debug }}
       {{ warnf "%s stop word list with %d entries removed %d stop words, leaving %d keywords: %s"
@@ -279,7 +283,7 @@
         {{ $typeValid = merge $typeValid (dict $key $value) }}
       {{ else }}
         {{ if $page.Title }}
-          {{ warnf "%s[%s]: Invalid %v at %v.%v='%v' based on $initialTitle=%q"
+          {{ warnf "%s Invalid %v at %v.%v=%q based on $initialTitle=%q"
               $dbg $key $type $key $value $initialTitle }}
         {{ end }}
       {{ end }}

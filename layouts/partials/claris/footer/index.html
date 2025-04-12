@@ -94,7 +94,7 @@ headless: true
   </div>
   <div class="footer_legal inner_horizontal ">
     <ul class="footer_legal-list">
-      <li>{{ T "copyright" }}&nbsp;{{ with ($page.Param "website.established") }}{{ if (lt (int .) (int (now.Format "2006") ) ) }}{{ . }}–{{- end }}{{- end }}<span class="year">{{ string (now.Format "2006") }}</span>{{ with $siteAuthor }}&nbsp;{{ . }}{{ end }}. {{ T "all_rights" }}</li>
+      <li>{{ T "copyright" }}&nbsp;{{ with ($page.Param "website.established") }}{{ if (lt (int .) (int (now.Format "2006") ) ) }}{{ . }}–{{- end }}{{- end }}<span class="year">{{ string (now.Format "2006") }}</span>{{ with $siteAuthor }}&nbsp;{{ partial `claris/_functions/plainify-html` . }}{{ end }}. {{ T "all_rights" }}</li>
     </ul>
   </div>
 </div>

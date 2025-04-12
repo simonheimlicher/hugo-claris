@@ -12,15 +12,15 @@
     {{- if $debug }}
       {{- warnf "%s .Site.Data.Headline=%#v .Headline | htmlEscape=%#v" $dbg .Headline (.Headline | htmlEscape) }}
     {{- end }}
-    <meta property="og:site_name" {{ printf `content=%q` .Headline | safeHTMLAttr }}>
+    <meta property="og:site_name" {{ printf `content=%q` (htmlEscape .Headline) | safeHTMLAttr }}>
   {{- end }}
   {{- with $meta.Single.Data }}
     {{- if $debug }}
       {{- warnf "%s .Single.Data.Description=%#v" $dbg .Description }}
     {{- end }}
-    <meta property="og:title" {{ printf `content=%q` .Headline | safeHTMLAttr }}>
+    <meta property="og:title" {{ printf `content=%q` (htmlEscape .Headline) | safeHTMLAttr }}>
     {{- with default $meta.Site.Data.Description .Description }}
-    <meta property="og:description" {{ printf `content=%q` . | safeHTMLAttr }}>
+    <meta property="og:description" {{ printf `content=%q` (htmlEscape . ) | safeHTMLAttr }}>
     {{- end }}
     <meta property="og:type" content="{{ if $page.IsPage }}article{{ else }}website{{ end }}">
     {{- with .CanonicalURL }}
@@ -32,7 +32,7 @@
 
     {{- if $page.IsPage }}
       {{- with .ArticleSection}}
-    <meta property="article:section" {{ printf `content=%q` . | safeHTMLAttr }}>
+    <meta property="article:section" {{ printf `content=%q` (htmlEscape . ) | safeHTMLAttr }}>
       {{- end }}
       {{- with (default .Date.Created .Date.Published) }}
     <meta property="article:published_time" {{ .Format $dateLocalISO8601 | printf `content=%q` | safeHTMLAttr }}>
@@ -59,7 +59,7 @@
     <meta property="og:image:width" content="{{ $resource.Width }}">
     <meta property="og:image:height" content="{{ $resource.Height }}">
         {{- with default $meta.Single.Data.Headline $image.alt }}
-    <meta property="og:image:alt"  {{ printf `content=%q` . | safeHTMLAttr }}>
+    <meta property="og:image:alt"  {{ printf `content=%q` (htmlEscape . ) | safeHTMLAttr }}>
         {{- end }}
       {{- else }}
         {{- errorf "%s Invalid share image in lang=%v: $meta.Site=%#v $meta.Single=%#v"

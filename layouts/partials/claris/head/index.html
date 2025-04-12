@@ -16,17 +16,17 @@
     {{- /* partial "html-comment" (printf "%s[%s]: assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) */ -}}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="{{- $backgroundLight -}}">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="{{- $backgroundLight -}}">
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="{{- $backgroundDark -}}">
-    {{- $title := default $meta.Site.Data.Headline $meta.Single.Data.Headline | safeHTML }}
+    {{- $title := default $meta.Site.Data.Headline $meta.Single.Data.Headline }}
     {{- if not $meta.Single.Data.Headline }}
       {{- warnf "%s[%s]: Invalid meta.Single.Data.Headline=%v; using meta.Site.Data.Headline='%v' [.Title='%v' .Supertitle='%v' .Subtitle='%v']"
           $page $template $meta.Single.Data.Headline $title $meta.Single.Data.Title
           $meta.Single.Data.Supertitle $meta.Single.Data.Subtitle -}}
     {{- end }}
-    <title>{{ $title }}</title>
+    <title>{{ $title | htmlEscape | safeHTML }}</title>
     {{- partial "claris/head/schema-org" . }}
-    <meta name="description" content="{{ default $meta.Site.Data.Description $meta.Single.Data.Description }}">
+    <meta name="description" content="{{ $meta.Single.Data.Description | default $meta.Site.Data.Description | htmlEscape | safeHTMLAttr }}">
     {{- partial "claris/head/opengraph" . }}
     {{- partial "claris/head/twitter-card" . }}
     {{ partial "claris/head/robots" . }}
@@ -36,7 +36,7 @@
 {{- end -}}
 {{- range .AlternativeOutputFormats -}}
   {{- if (ne .Rel "canonical" ) }}
-    {{ printf `<link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .RelPermalink (partial `claris/_functions/sanitize` site.Title) | safeHTML -}}
+    {{ printf `<link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .RelPermalink ($meta.Site.Data.Title | htmlEscape) | safeHTML -}}
   {{- end }}
 {{- end }}
     {{- $canonicalURL := partialCached `claris/_functions/canonical-url` $page $page.Permalink site.Language.Lang }}

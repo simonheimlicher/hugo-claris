@@ -30,7 +30,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="{{ $shareImageURL }}">
       {{- with $shareImageAlt }}
-    <meta name="twitter:alt" content="{{ . }}">
+    <meta name="twitter:alt" content="{{ . | htmlEscape | safeHTMLAttr }}">
       {{- end }}
     {{- else }}
     <meta name="twitter:card" content="summary">
@@ -41,13 +41,13 @@
             $meta.Single.Data.Images.share.variant.default.version }}
       {{- end }}
     {{- end }}
-    <meta name="twitter:title" content="{{ .Headline }}">
+    <meta name="twitter:title" content="{{ .Headline | htmlEscape | safeHTMLAttr }}">
     {{- with (default $meta.Site.Data.Description .Description) }}
-    <meta name="twitter:description" content="{{ . }}">
+    <meta name="twitter:description" content="{{ . | htmlEscape | safeHTMLAttr }}">
     {{- end }}
   {{- with default site.Params.Social.twitter site.Params.social.twitter.id }}
-    <meta name="twitter:creator" content="{{ . }}">
-    <meta name="twitter:site" content="{{ . }}">
+    <meta name="twitter:creator" content="{{ . | htmlEscape | safeHTMLAttr }}">
+    <meta name="twitter:site" content="{{ . | htmlEscape | safeHTMLAttr }}">
   {{- else }}
     {{- if site.Params.claris.hints }}
       {{- warnf "%s[%s]: Missing Twitter handle: site.Params.Social.twitter=%v site.Params.social.twitter.id=%v"

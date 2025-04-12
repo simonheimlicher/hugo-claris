@@ -48,7 +48,7 @@
                         {{- end }}
                       {{- end }}
                         <span class="article_meta_author_name">
-                          {{- $authorName }}
+                          {{- $authorName | htmlEscape -}}
                           </span>
                         {{- if $showAuthorLink }}
                         </a>

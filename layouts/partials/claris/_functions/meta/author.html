@@ -30,7 +30,7 @@
     {{ warnf "%s[%s]: authorProfilePagePath=%v authorProfilePage=%v" $page $template $authorProfilePagePath $authorProfilePage  }}
   {{ end }}
   {{ $description := $authorProfilePage.Params.description | default $authorProfilePage.Summary | default $author }}
-  {{ $description = $description | partial `claris/_functions/sanitize` }}
+  {{ $description = $description | partial `claris/_functions/plainify-string` }}
 
   {{ $authorProfileURL := $authorProfilePage.RelPermalink }}
   {{ $authorProfileCanonicalURL := (partial "claris/_functions/canonical-url" $authorProfilePage) }}

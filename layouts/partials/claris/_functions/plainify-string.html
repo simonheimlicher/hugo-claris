@@ -1,0 +1,11 @@
+{{/* partial plainify-string
+Returns a cleaned, plain version of the input as a raw string.
+USAGE: use as a function in the context of a page, as follows:
+  {{- $plainString := partial "claris/_functions/plainify-string" . }}
+*/}}
+{{ $plainString := page.RenderString . | plainify | htmlUnescape }}
+{{/* Remove soft hyphens */}}
+{{ $plainString = replace $plainString "­" "" }} {{/* this is a soft hyphen (U+00AD) */}}
+{{/* Collapse intermediate whitespace, then remove leading and trailing spaces */}}
+{{ $plainString = replaceRE `\s+` " " $plainString | strings.TrimSpace }}
+{{ return $plainString }}
