@@ -1,38 +1,54 @@
-<!-- This function takes as argument an object that has a URL and
-  returns the canonical URL. Examples for objects with URLs are:
-  - Pages
-  - Image resources
--->
+{{ $canonicalURL := false }}
 {{ $template := "claris/_functions/canonical-url" }}
-{{ $debug := false }}
-{{ $arg := . }}
+{{/* $dbg := printf "%s [%s]: arg=%v" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` page.RelPermalink) (replaceRE `.*?([^/]+(?:/[^/]+)?)$` `$1` $template) $ */}}
+
+{{/* This function takes as argument an object that has a URL and
+  returns the canonical URL based on the parameter
+  `site.Params.canonicalurl`.
+  This parameter is required for this function to work.
+
+  Examples for objects with URLs include:
+
+  - Pages
+  - Image resources */}}
+
+{{ $template := "claris/_functions/canonical-url" }}
 {{ $permalink := false }}
 {{ $relPermalink := false }}
-{{ if eq (printf "%T" $arg) "string" }}
-  {{ with urls.Parse $arg }}
-    {{ $permalink = $arg }}
+
+{{/* If the argument is a string, parse it as a URL and infer
+the equivalents of .Permalink and .RelPermalink */}}
+{{ if eq (printf "%T" $) "string" }}
+  {{ with urls.Parse $ }}
+    {{ $permalink = $ }}
     {{ $relPermalink = .RequestURI }}
+  {{ else }}
+    {{ errorf "%s [%s] invalid argument=%v[type=%T]: failed to parse %q as URL"
+        page.RelPermalink $template $ $ $ }}
   {{ end }}
 {{ else }}
-  {{ $permalink = $arg.Permalink }}
-  {{ $relPermalink := $arg.RelPermalink }}
+  {{/* Otherwise, the argument must provide .Permalink and .RelPermalink */}}
+  {{ with and ($permalink = $.Permalink) ($relPermalink = $.RelPermalink) }}
+  {{ else }}
+    {{ errorf "%s [%s] invalid argument=%v[type=%T .Page=%v]. Pass either a URL string or an object with both .Permalink and .RelPermalink"
+        page.RelPermalink $template $ $ $.Page  }}
+  {{ end }}
 {{ end }}
-{{ if (strings.Contains $relPermalink "///") }}{{ $debug = true }}{{ end }}
-{{ $canonicalURL := false }}
-{{ $relURL := $permalink | strings.TrimPrefix site.BaseURL | strings.TrimLeft "/" }}
-{{ $canonicalBaseURL := site.Params.canonicalbaseurl | default site.BaseURL | strings.TrimRight "/" }}
 
-<!-- If the page itself has a canonical URL, this takes precedence -->
-{{ if strings.Contains (printf "%T" $arg) "hugolib.pageState" }}
-  {{ with $arg.Params.canonicalurl }}
+{{ $relURL := $permalink | strings.TrimPrefix site.BaseURL | strings.TrimLeft "/" }}
+{{ $canonicalBaseURL := getenv "HUGO_CANONICAL_BASE_URL" | default site.Params.canonicalbaseurl | default site.BaseURL | strings.TrimRight "/" }}
+
+{{/* If the page itself has a canonical URL, this takes precedence */}}
+{{ if strings.Contains (printf "%T" $) "hugolib.pageState" }}
+  {{ with $.Params.canonicalurl }}
     {{ $relURL = . | strings.TrimLeft "/" }}
-    {{ if $debug }}{{ warnf "[%s]: arg=%v: using canonical URL from .Params.canonicalurl=%v" $template $arg $relURL }}{{ end }}
+    {{/* warnf "%s using canonical URL from .Params.canonicalurl=%v" $dbg $relURL */}}
   {{ end }}
 {{ end }}
 
 {{ $canonicalURL = printf "%s/%s" $canonicalBaseURL $relURL }}
-{{ if $debug }}{{ warnf "[%s]: arg=%v T=%T\n.RelPermalink:                '%v'\n$relURL:                '%v'\nsite.BaseURL:                 '%v'\nsite.Params.canonicalbaseurl: '%v'\ncanonicalURL:                 '%v'"
-    $template $arg $arg $relPermalink $relURL site.BaseURL site.Params.canonicalbaseurl $canonicalURL }}{{ end }}
+{{/* warnf "%s T=%T\n.RelPermalink:                '%v'\n$relURL:                      '%v'\nsite.BaseURL:                 '%v'\nsite.Params.canonicalbaseurl: '%v'\ncanonicalURL:                 '%v'"
+    $dbg $ $relPermalink $relURL site.BaseURL site.Params.canonicalbaseurl $canonicalURL */}}
 
 {{ if not (hasPrefix $canonicalURL "http") }}
   {{ $canonicalURL = absLangURL $canonicalURL }}
@@ -45,5 +61,4 @@
   {{ end }}
 {{ end }}
 
-{{ $canonicalURL = printf "%s" $canonicalURL | safeURL }}
-{{ return $canonicalURL }}
+{{ return safeURL $canonicalURL }}

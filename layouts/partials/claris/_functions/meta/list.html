@@ -142,8 +142,6 @@
     {{ $itemType = .Single.Data.ItemType }}
   {{ end }}
 
-  {{ $canonicalURL := partial "claris/_functions/canonical-url" $page }}
-
   {{ $images := slice }}
   {{ range $listMetaItems }}
     {{ if not $images }}
