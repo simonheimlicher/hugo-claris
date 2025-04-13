@@ -31,6 +31,12 @@ enableMissingTranslationPlaceholders: true
 # build:
 #   writeStats: true
 
+# Ensure that the image cache is in the cache directory, not `resources/_gen`
+# https://gohugo.io/host-and-deploy/host-on-github-pages/
+caches:
+  images:
+    dir: :cacheDir/images
+
 security:
   enableInlineShortcodes: false
   exec:
