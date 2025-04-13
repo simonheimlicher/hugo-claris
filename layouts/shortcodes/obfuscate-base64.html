@@ -1,4 +1,4 @@
-{{ $encoded := (.Inner | htmlEscape | markdownify | base64Encode) }}
+{{ $encoded := (.Inner | htmlEscape | .Page.RenderString | base64Encode) }}
 {{ $halfLength := div (len $encoded) 2 }}
 {{ $part1 := substr $encoded 0 $halfLength }}
 {{ $part2 := substr $encoded $halfLength }}

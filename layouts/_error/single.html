@@ -1,7 +1,6 @@
 {{- define "main" }}
 <div class="error inner_horizontal">
-  {{- $t := .Title }}
-  <h1>{{ $t | markdownify }}</h1>
+  <h1>{{ .Page.RenderString .Title }}</h1>
   {{- .Content }}
   <a href="{{ relLangURL `` }}" title="{{ T `go_back` }}">
     <div class="button error_back-button">{{ T "go_back" }}</div>
