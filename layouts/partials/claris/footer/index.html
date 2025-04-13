@@ -5,16 +5,24 @@
 {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*/([^/]+)/index$|.*/([^/]+)$` `$1$2` $template) }}
 
 {{- /* The footer of each page comprises several elements.
-    Its main part is fed from individual pages whose contents are merged
-    These pages are located in a special section defined by the parameter `site.Params.footer.section`.
-    It is imperative to keep the pages in this section out of search engine indexes.
-    For this reason, please put an `index.md` file into the footer section
-    with the following front matter:
-    ```
-      ---
-      headless: true
-      ---
-    ```
+Its main part is fed from individual pages whose contents are merged
+These pages are located in a special section defined by the parameter `site.Params.footer.section`.
+It is imperative to keep the pages in this section out of search engine indexes.
+See https://gohugo.io/content-management/build-options/#example--headless-section
+For this reason, please put an `_index.md` file into the footer section
+(the leading `_` befor `index.md` is imperative) with the following front matter:
+
+```
+---
+title: Headless section
+cascade:
+  - build:
+      list: local
+      publishResources: false
+      render: never
+---
+```
+
 */ -}}
 {{- $title := site.Title }}
 {{- $siteAuthor := $meta.Site.Data.Author.Name }}
@@ -24,15 +32,21 @@
   {{- $footerPages := slice }}
   {{- with $footerSection }}
     {{- with site.GetPage $footerSection }}
-      {{- if $debug }}
-        {{- warnf "%s site.GetPage '%v' returned %v" $dbg $footerSection .Path }}
+      {{- if and false $debug }}
+        {{- warnf "%s site.GetPage '%v' returned %v [%T]\n%v" $dbg
+            $footerSection .Path . (jsonify (dict "indent" "  ") . ) }}
       {{- end }}
-      {{- with .Resources.Match "*.md" }}
-        {{- $footerPages = sort . ".Params.weight" }}
+      {{- with $footerPages = .RegularPages.ByWeight }}
+        {{- if $debug }}
+          {{- range $i, $r := $footerPages }}
+            {{- warnf "%s footerPages[%d]: .Path=%q .Name=%v .Weight=%v .Lang=%v"
+                $dbg $i .Path .Name .Weight .Lang  }}
+          {{- end }}
+        {{- end }}
       {{- else }}
         {{- if $debug }}
-          {{- warnf "%s No page resources match '*.md' in '%v'"
-              $dbg $footerSection }}
+          {{- warnf "%s footerSection=%q [Lang=%v]: .RegularPages.ByWeight returned nothing"
+              $dbg $footerSection site.Language.Lang }}
         {{- end }}
       {{- end }}
     {{- else }}
@@ -43,15 +57,15 @@ headless: true
 ---
 `        }}
         {{- $missingIndexFile := printf "index.md" }}
-        {{- if site.LanguagePrefix }}
+        {{- if site.Language.Lang }}
           {{- $missingIndexFile = printf "index.%s.md" $page.Language.Lang }}
-          {{- warnf "%s Note: this error occurred with site.LanguagePrefix=%v. To use section '%v' as a headless bundle, add a localized index file '%s' for every language separately"
-              $dbg site.LanguagePrefix $footerSection $missingIndexFile }}
+          {{- warnf "%s Note: this error occurred with site.Language.Lang=%v. To use section '%v' as a headless bundle, add a localized index file '%s' for every language separately"
+              $dbg site.Language.Lang $footerSection $missingIndexFile }}
           {{- warnf "%s For a headless bundle, the localized index file '%s' should contain:\n%s"
               $dbg $missingIndexFile $headlessBundleContents }}
         {{- else }}
-          {{- warnf "%s Note: this error occurred with site.LanguagePrefix=%v. To use section '%v' as a headless bundle, add an index file to this section"
-              $dbg site.LanguagePrefix $footerSection }}
+          {{- warnf "%s Note: this error occurred with site.Language.Lang=%v. To use section '%v' as a headless bundle, add an index file to this section"
+              $dbg site.Language.Lang $footerSection }}
           {{- warnf "%s For a headless bundle, the index file '%s' should contain:\n%s"
               $dbg $missingIndexFile $headlessBundleContents }}
         {{- end }}
@@ -65,13 +79,6 @@ headless: true
   {{- end }}
 
   {{- with $footerPages }}
-    {{- if $debug }}
-      {{- warnf "%s site.RegularPages.ByWeight \"Type\" \"in\" %v: %v"
-          $dbg $footerSection $footerPages }}
-      {{- range $id, $page := $footerPages }}
-        {{- warnf "%s Footer page: %v" $dbg .Path }}
-      {{- end }}
-    {{- end }}
   <div class="footer_main inner_horizontal">
   {{- range $id, $page := $footerPages }}
     {{- $inlineStyle := false }}

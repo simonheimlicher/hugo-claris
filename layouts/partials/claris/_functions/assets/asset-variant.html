@@ -181,10 +181,12 @@ When calling `asset-variant` with `partialCached`, make sure to add
 
 {{/* Determine if the page shall be rendered as a non-default output format,
 such as `print` for printing */}}
-{{ with $outputFormat.Name }}
+{{ with and $outputFormat $outputFormat.Name }}
   {{ $assetVariant = merge $assetVariant (dict "OutputFormatName" . ) }}
 {{ else }}
-  {{ warnf "%s Invalid OutputFormat: missing .Name in %#v [type=%T]" $dbg . . }}
+  {{/* This page shall not be output at all.
+  See https://gohugo.io/content-management/build-options/ */}}
+  {{ $assetVariant = merge $assetVariant (dict "OutputFormatName" . ) }}
 {{ end }}
 
 {{ with $assetStyleSuffix }}
