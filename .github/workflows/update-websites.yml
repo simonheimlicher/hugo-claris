@@ -8,6 +8,9 @@ on:
       - main
       - stage
 
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
 jobs:
   update-modules:
     runs-on: ubuntu-latest
@@ -16,13 +19,13 @@ jobs:
       contents: read
 
     env:
+      HUGO_VERSION: ${{ vars.HUGO_VERSION || '0.145.0' }}
       REPO_URI: ${{ github.repository }}
       BRANCH_NAME: ${{ github.ref_name }}
       EVENT_ACTOR_ID: "${{ github.actor }}"
       EVENT_ACTOR_EMAIL: "${{ github.event.sender.id }}+${{ github.event.sender.login }}@users.noreply.github.com"
       COMMIT_MESSAGE_PREFIX: "chore: update ${{ github.repository }}@${{ github.ref_name }}\n\n"
       COMMIT_MESSAGE_FILE: ${{ github.workspace }}/website_commit_message.txt
-      HUGO_VERSION: 0.145.0
 
     steps:
 
