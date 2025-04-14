@@ -22,21 +22,22 @@ import { qrCodeInit } from "scripts/claris/optional/qrcode-svg";
 {{- end }}
 
 // Only load PostHog Analytics in production and staging environments
-{{- $postHogEnv := page.Param "assets.scripts.optional.posthog.environments" | default (slice "production" "prod" "staging" "stage") }}
-{{- $postHogKey := page.Param "assets.scripts.optional.posthog.key" | default "" }}
-{{- if in $postHogEnv hugo.Environment }}
-  {{- $postHogHost := page.Param "assets.scripts.optional.posthog.host" | default "" }}
-  {{- $postHogKey = strings.TrimSpace $postHogKey }}
-  {{- $postHogHost = strings.TrimSpace $postHogHost }}
-  {{- if and (gt (len $postHogKey) 8) (gt (len $postHogHost) 3) }}
+{{- with $postHogKey := page.Param "assets.scripts.optional.posthog.key" | default "" }}
+  {{- $postHogEnv := page.Param "assets.scripts.optional.posthog.environments" | default (slice "production" "prod" "staging" "stage") }}
+  {{- if in $postHogEnv hugo.Environment }}
+    {{- $postHogHost := page.Param "assets.scripts.optional.posthog.host" | default "" }}
+    {{- $postHogKey = strings.TrimSpace $postHogKey }}
+    {{- $postHogHost = strings.TrimSpace $postHogHost }}
+    {{- if and (gt (len $postHogKey) 8) (gt (len $postHogHost) 3) }}
 import { postHogAnalyticsInit } from "scripts/claris/optional/posthog-analytics";
 const postHogAnalyticsInitParametrized = () => postHogAnalyticsInit({{ printf "%q" $postHogKey | safeJS }}, {{ printf "%q" $postHogHost | safeJS }});
-  {{- $initializers = append "postHogAnalyticsInitParametrized" $initializers }}
+    {{- $initializers = append "postHogAnalyticsInitParametrized" $initializers }}
+    {{- else }}
+      {{- warnf "Optional module 'posthog-analytics' is not loaded because the parameters in map `assets.scripts.optional.posthog` are invalid" }}
+    {{- end }}
   {{- else }}
-    {{- warnf "Optional module 'posthog-analytics' is not loaded because the parameters in map `assets.scripts.optional.posthog` are missing." }}
+    {{- warnf "Optional module 'posthog-analytics' is not loaded because the Hugo environment %s is not in %s." hugo.Environment $postHogEnv }}
   {{- end }}
-{{- else if $postHogKey }}
-  {{- warnf "Optional module 'posthog-analytics' is not loaded because the Hugo environment %s is not in %s." hugo.Environment $postHogEnv }}
 {{- end }}
 
 {{- with $initializers }}
