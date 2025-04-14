@@ -32,7 +32,7 @@
         {{- warnf "%s .Kind=%v: Looking for font matching .Scratch claris.assets.font.main=%v"
             $dbg $page.Kind ($page.Scratch.Get "claris.assets.font.main") }}
       {{- end }}
-      {{- $preloadFonts := partialCached "claris/_functions/resources/fonts/preload" (dict "Page" $page "StyleSheet" .) $assetVariant.CoalesceLanguageKey }}
+      {{- $preloadFonts := partialCached "claris/_functions/resources/fonts/preload" (dict "Page" $page "StyleSheet" $styleSheet) $assetVariant.CoalesceLanguageKey }}
       {{- if $debug }}
         {{- warnf "%s .Kind=%v: Pre-loading font .Scratch claris.assets.font.main=%v %v"
             $dbg $page.Kind ($page.Scratch.Get "claris.assets.font.main") $preloadFonts }}
