@@ -7,35 +7,53 @@
 
 {{ $siteMeta := dict }}
 
+{{ $canonicalBaseURL := ( site.Params.canonicalBaseURL | default site.Params.BaseURL ) }}
+{{ $canonicalURL := partialCached "claris/_functions/canonical-url" $homePage
+    $homePage.Permalink $canonicalBaseURL }}
+
+{{ $metaParams := merge . (dict
+  "Page" $homePage
+  "Template" (printf "%s->%s" .Template $template)
+  "Params" (merge $homePage.Params site.Params)
+  "CanonicalSiteURL" $canonicalURL
+  "Debug" $debug
+) }}
+{{ $metaKey := merge $metaParams (dict "Page" nil) }}
+
 {{ $metaSchemaOrg := site.Params.robots.index }}
 {{ $metaOpengraph := site.Params.robots.index }}
 {{ $metaTwitterCard := site.Params.robots.index }}
 
-{{ $author := default site.Author.name ($page.Param "siteAuthor") }}
+{{ $authorMeta := false }}
+{{ $socialMeta := false }}
+{{ $author := default site.Author.name ($page.Param "siteauthor") }}
 {{ with $author }}
   {{ with site.Param "authors" }}
     {{ with index . (anchorize $author) }}
       {{ $author = .name }}
     {{ end }}
   {{ end }}
+  {{ $metaParams = merge $metaParams (dict "Author" $author) }}
+  {{ $authorMeta = partialCached "claris/_functions/meta/author" $metaParams $metaKey }}
+  {{ $socialMeta = partialCached "claris/_functions/meta/social" $metaParams $metaKey }}
+{{ else }}
+  {{ errorf "%s site.Author.name and page.Param \"siteauthor\" are unset" }}
 {{ end }}
-{{ $authorMeta := partialCached "claris/_functions/meta/author" (dict "Page" $homePage "Author" $author "Debug" $debug) $homePage.Permalink }}
-{{ $socialMeta := partialCached "claris/_functions/meta/social" (dict "Page" $homePage "Author" $author "Debug" $debug) $homePage.Permalink }}
 
 {{ $name := default site.Title site.Params.website.name }}
 
-{{ $title := site.Title | $page.RenderString }}
-{{ $titlePlain := $title | partial `claris/_functions/plainify-string` }}
+{{ $title := site.Title | partial "claris/_functions/plainify-html" }}
+{{ $titlePlain := $title | partial "claris/_functions/plainify-string" }}
 
-{{ $tagline := site.Params.website.tagline | $page.RenderString }}
-{{ $taglinePlain := $tagline | partial `claris/_functions/plainify-string` }}
+{{ $tagline := site.Params.website.tagline | partial "claris/_functions/plainify-html" }}
+{{ $taglinePlain := $tagline | partial "claris/_functions/plainify-string" }}
 {{ $headline := $title }}
 {{ with $tagline }}
   {{ $headline = printf "%s: %s" $title $tagline }}
 {{ end }}
-{{ $headlinePlain := $headline | partial `claris/_functions/plainify-string` }}
+{{ $headlinePlain := $headline | partial "claris/_functions/plainify-string" }}
 
-{{ $description := site.Params.website.description | partial `claris/_functions/plainify-string` }}
+{{ $description := site.Params.website.description | partial "claris/_functions/plainify-string" }}
 {{ if and (not $description) site.Params.claris.hints }}
   {{ warnf "%s Missing website description. To include a description of your website, add it to site.Params.website.description" $dbg }}
 {{ end }}
@@ -82,19 +100,10 @@
   {{ end }}
 {{ end }}
 
-{{ $canonicalBaseURL := ( site.Params.canonicalBaseURL | default site.Params.BaseURL ) }}
-{{ $canonicalURL := partialCached "claris/_functions/canonical-url" $homePage $canonicalBaseURL }}
-
 <!-- HTML 'id' attribute of the DOM container of the main content -->
 {{ $websiteID := "mainContainer" }}
 
-{{ $metaImagesParams := (dict
-  "Page" $homePage
-  "Params" (merge $homePage.Params site.Params)
-  "Debug" $debug
-) }}
-
-{{ $metaImages := partialCached "claris/_functions/meta/images/from-params" $metaImagesParams $metaImagesParams }}
+{{ $imagesMeta := partialCached "claris/_functions/meta/images/from-params" $metaParams $metaKey }}
 
 {{ $siteData := (dict
     "CanonicalURL" $canonicalURL
@@ -105,13 +114,35 @@
     "Headline" $headlinePlain
     "Tagline" $taglinePlain
     "Description" $description
-    "Author" $authorMeta
-    "Social" $socialMeta
-    "Images" $metaImages
     "Language" $language
     "AlternativeLanguages" $alternativeLanguages
     "Copyright" $copyright
 ) }}
+
+{{ with $authorMeta }}
+  {{ $siteData = merge $siteData (dict "Author" $authorMeta ) }}
+{{ else }}
+  {{ if $debug }}
+    {{ warnf "%s missing site author" $dbg }}
+  {{ end }}
+{{ end }}
+
+{{ with $imagesMeta }}
+  {{ $siteData = merge $siteData (dict "Images" $imagesMeta ) }}
+{{ else }}
+  {{ if $debug }}
+    {{ warnf "%s missing images data" $dbg }}
+  {{ end }}
+{{ end }}
+
+{{ with $socialMeta }}
+  {{ $siteData = merge $siteData (dict "Social" $socialMeta ) }}
+{{ else }}
+  {{ if $debug }}
+    {{ warnf "%s missing social data" $dbg }}
+  {{ end }}
+{{ end }}
+
 {{ with and $licenseText $licenseHTML }}
   {{ $license := (dict
       "Text" $licenseText
@@ -120,13 +151,12 @@
   {{ if $debug }}
     {{ warnf "%s adding license=%s" $dbg $license }}
   {{ end }}
-  {{ $singleData = merge $singleData (dict "License" $license ) }}
+  {{ $siteData = merge $siteData (dict "License" $license ) }}
 {{ else }}
   {{ if $debug }}
     {{ warnf "%s no license: licenseText=%s licenseHTML=%s" $dbg $licenseText $licenseHTML }}
   {{ end }}
 {{ end }}
-
 
 {{ $siteMeta = (dict
   "Site" (dict
@@ -146,7 +176,7 @@
 ) }}
 
 {{ if $debug }}
-  {{ warnf "%s returning %v" $dbg
+  {{ warnf "%s returning siteMeta: %v" $dbg
       (jsonify (dict "indent" "  " "noHTMLEscape" true) $siteMeta) }}
 {{ end }}
 

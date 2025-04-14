@@ -49,6 +49,25 @@
 {{- end }}
 
 {{- $meta := partialCached "claris/_functions/meta/index" (dict "Page" $page "AssetVariant" $assetVariant "Template" $template "Debug" $debug) $page.Permalink $assetVariant.Key }}
+{{- with $meta.Site.Data.Author.Name }}
+{{- else }}
+  {{- if or $debug (and site.Params.claris.hints (eq page.RelPermalink (relLangURL ""))) }}
+    {{- $missingAuthorHint := `
+siteAuthor: Simon Heimlicher
+authors:
+  simon-heimlicher:
+    last_name: Heimlicher
+    first_name: Simon
+    # Email address is set via environment variable "HUGO_CLARIS_AUTHOR_EMAIL"
+    # Note: "HUGO_CLARIS_" is the prefix of the environment variable
+    # Only use the part after "HUGO_CLARIS_"
+    email: AUTHOR_EMAIL
+    name: Simon Heimlicher
+    `}}
+    {{- warnf "%s Missing .Author in $meta.Site.Data. Add the following to \"hugo.yaml\":\n%v\n" $dbg $missingAuthorHint }}
+  {{- end }}
+{{- end }}
+
 {{- .Scratch.Set "clarismeta" $meta }}
 
 {{- $htmlClassList := (slice "no-js") }}

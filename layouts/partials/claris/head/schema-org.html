@@ -1,7 +1,8 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/head/schema-org" }}
-{{- $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
+{{- $debug := and false ($page.Param "clarisdebug") (and .Debug (eq site.LanguagePrefix "") ) }}
+{{- $dbg := printf "%s [%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+(?:/[^/]+)?)$` `$1` $template) }}
 
 {{- $pagePath := "" }}
 {{- with $page.File }}
@@ -23,9 +24,16 @@
     "Debug" $debug
   ) }}
 
-  {{- $schemaOrgMeta := partial "claris/_functions/schema-org/index" $entityParams }}
+  {{- with $schemaOrgMeta := partial "claris/_functions/schema-org/index" $entityParams }}
     <script type="application/ld+json">
       {{ $schemaOrgMeta.Root | jsonify (dict "indent" "  " "prefix" "      " "noHTMLEscape" true) | safeJS | }}
     </script>
+  {{- else }}
+    {{- if or $debug (eq page.RelPermalink (relLangURL "")) }}
+      {{- warnf "%s failed to generate Schema.org meta from .Site.Data:\n%v"
+          $dbg (jsonify (dict "indent" "  ") (merge $meta.Site.Data
+              (dict "Images" nil) ) ) }}
+    {{- end }}
+  {{- end }}
 
 {{- end -}}

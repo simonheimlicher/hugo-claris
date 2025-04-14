@@ -13,7 +13,11 @@
   {{ end }}
 {{ end }}
 
-{{ $metaParams := (dict "Page" $page "AssetVariant" $assetVariant "Template" $template "Debug" $debug) }}
+{{ $metaParams := merge . (dict
+  "Template" (printf "%s->%s" .Template $template)
+  "AssetVariant" $assetVariant
+  "Debug" $debug
+) }}
 
 {{ $siteMeta := partialCached "claris/_functions/meta/site" $metaParams site.BaseURL }}
 {{ $singleMeta := partialCached "claris/_functions/meta/single" $metaParams $page.Permalink }}

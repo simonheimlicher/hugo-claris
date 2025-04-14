@@ -26,7 +26,17 @@
   {{ end }}
 {{ end }}
 
-{{ $headMetaParams := (dict "Page" $page "AssetVariant" $assetVariant "Template" (printf "%s->%s" .Template $template) "Debug" $debug) }}
+{{ $metaParams := merge . (dict
+  "Template" (printf "%s->%s" .Template $template)
+  "AssetVariant" $assetVariant
+  "Debug" $debug
+) }}
+{{ $metaKey := merge $metaParams (dict
+    "Page" nil
+    "PageKey" $page.Permalink
+    "AssetVariant" nil
+    "AssetKey" $assetVariant.Key
+) }}
 
 {{ with $page }}
 
@@ -38,17 +48,17 @@
   {{ with $assetVariant.ContentType }}
     {{ $contentTypeMetaPartial := printf "partials/%s/_functions/meta/head.html" . }}
     {{ if templates.Exists $contentTypeMetaPartial }}
-      {{ $contentTypeHeadMetaParams := merge $headMetaParams
+      {{ $contentTypeMetaParams := merge $metaParams
         (dict
             "HeadMeta" $metaVariant
         )
       }}
       {{ if $debug }}
         {{ warnf "%s contentType=%v: Calling contentType-specific head partial %v with:\n%v"
-            $dbg . $contentTypeMetaPartial (jsonify (dict "indent" "  ") $contentTypeHeadMetaParams) }}
+            $dbg . $contentTypeMetaPartial (jsonify (dict "indent" "  ") $contentTypeMetaParams) }}
       {{ end }}
-      {{ $contentTypeMetaVariant := partialCached $contentTypeMetaPartial $contentTypeHeadMetaParams $page.Permalink }}
-      {{ $headMetaParams = merge $headMetaParams (dict
+      {{ $contentTypeMetaVariant := partialCached $contentTypeMetaPartial $contentTypeMetaParams $metaKey }}
+      {{ $metaParams = merge $metaParams (dict
             "HeadMeta" $contentTypeMetaVariant
         ) }}
     {{ else }}
@@ -64,10 +74,10 @@
 
   {{ $defaultMetaPartial := "claris/_functions/meta/head.html" }}
   {{ if $debug }}
-    {{ warnf "%s Calling default head partial %v with headMetaParams:\n%v"
-        $dbg $defaultMetaPartial (jsonify (dict "indent" "  ") $headMetaParams) }}
+    {{ warnf "%s Calling default head partial %v with metaParams:\n%v"
+        $dbg $defaultMetaPartial (jsonify (dict "indent" "  ") $metaParams) }}
   {{ end }}
-  {{ $metaVariant = merge $metaVariant (partialCached $defaultMetaPartial $headMetaParams .Permalink) }}
+  {{ $metaVariant = merge $metaVariant (partialCached $defaultMetaPartial $metaParams $metaKey) }}
 
   {{ $mainSections := .Param "mainSections" }}
   {{ $itemType := "page" }}
@@ -91,14 +101,9 @@
     {{ errorf "%s no .Page: $page=%v [type=%T] .Page=%v [type=%T]" $dbg $page $page .Page .Page }}
   {{ end }}
 
-  {{ $authorMeta := partialCached "claris/_functions/meta/author" (dict "Page" $page "Debug" $debug) $page.Permalink }}
+  {{ $authorMeta := partialCached "claris/_functions/meta/author" $metaParams $metaKey }}
 
-  {{ $metaImagesParams := (dict
-    "Page" $page
-    "Params" $page.Params
-    "Debug" $debug
-  ) }}
-  {{ $imageMeta := partialCached "claris/_functions/meta/images/from-params" $metaImagesParams $metaImagesParams }}
+  {{ $imageMeta := partialCached "claris/_functions/meta/images/from-params" $metaParams $metaKey }}
 
   {{ $license := false }}
   {{ with .Param "license" }}

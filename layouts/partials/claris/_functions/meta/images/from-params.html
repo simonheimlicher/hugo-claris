@@ -1,7 +1,7 @@
 {{- $imageMeta := dict }}
 {{- $page := .Page }}
 {{- $template := "claris/_functions/meta/images/from-params" }}
-{{- $paramsImage := .Params.image }}
+{{- $paramsImage := default .Params.image $page.Params.image }}
 {{- $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
 {{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 

@@ -9,10 +9,9 @@
 <!-- [Schema.org schemas](https://schema.org/docs/schemas.html) -->
 
 {{/* Add site and page author entities */}}
-{{ if reflect.IsMap $meta.Single.Data }}
-  {{ with $author := $meta.Single.Data.Author }}
-    {{ $authorName := cond (and (isset $author "Name") (ne (print $author.Name) "")) $author.Name nil }}
-    {{ if $authorName }}
+{{ if and (reflect.IsMap $meta.Single.Data) (reflect.IsMap $meta.Site.Data) }}
+  {{ with $author := $meta.Single.Data.Author | default $meta.Site.Data.Author }}
+    {{ with $authorName := $author.Name }}
       {{ $authorKey := lower (urlize $authorName) }}
       {{ with partialCached "claris/_functions/schema-org/_entities/author" $entityParams $authorKey }}
         {{ $entityParams = merge $entityParams . }}
@@ -21,65 +20,86 @@
             $dbg (jsonify (dict "indent" "  ") $meta.Single.Data.Author) }}
       {{ end }}
     {{ else }}
-      {{ errorf "%s Missing author name in $meta.Single.Data.Author" $dbg }}
+      {{ errorf "%s Missing author name in both $meta.Single.Data.Author and $meta.Site.Data.Author" $dbg }}
     {{ end }}
     {{ if $debug }}
       {{ warnf "%s added authorEntities to entityParams.Entities:\n%v"
       $dbg (jsonify (dict "indent" "  ") $entityParams.Entities) }}
     {{ end }}
   {{ else }}
-    {{ errorf "%s Missing .Author in $meta.Single.Data:\n%v"
-        $dbg (jsonify (dict "indent" "  ") . ) }}
-  {{ end }}
-{{ else }}
-  {{ errorf "%s Missing .Data in $meta.Single:\n%v"
-      $dbg (jsonify (dict "indent" "  ") $meta.Single) }}
-{{ end }}
-
-{{/* Add website entity */}}
-{{ if reflect.IsMap $meta.Site.Data }}
-  {{ $webSiteEntities := partialCached "claris/_functions/schema-org/_entities/website" $entityParams }}
-  {{ $entityParams = merge $entityParams $webSiteEntities }}
-{{ else }}
-  {{ errorf "%s Missing .Data in $meta.Site:\n%v"
-      $dbg (jsonify (dict "indent" "  ") $meta.Site) }}
-{{ end }}
-
-{{/* Determine entity type */}}
-{{ $entityType := false }}
-{{ with $page.Params.schemaorg.entitytype }}
-  {{ $entityType = . }}
-{{ else }}
-  {{ with $page.Kind }}
-  {{ $kindToEntity := (dict
-      "home" "WebSite"
-      "page" "Article"
-      "section" "CollectionPage"
-      "term" "CollectionPage"
-      "taxonomy" "CollectionPage"
-    ) }}
-    {{ with index $kindToEntity . }}
-      {{ $entityType = . }}
-      {{ if and false $debug }}
-        {{ warnf "%s kind=%v: entityType=%v kindToEntity=%v" $dbg $page.Kind . $kindToEntity }}
-      {{ end }}
+    {{ if $debug }}
+      {{ warnf "%s Missing .Author in both $meta.Single.Data and $meta.Site.Data" $dbg }}
     {{ end }}
   {{ end }}
+
+  {{/* Add website entity */}}
+  {{ with $webSiteEntity := partialCached "claris/_functions/schema-org/_entities/website" $entityParams }}
+    {{ $entityParams = merge $entityParams $webSiteEntity }}
+  {{ else }}
+    {{ errorf "%s failed to generate Schema.org meta for website from .Site.Data:\n%v"
+        $dbg (jsonify (dict "indent" "  ") (merge $meta.Site.Data
+        (dict "Images" nil) ) ) }}
+  {{ end }}
+{{ else }}
+  {{ errorf "%s cannot generate Schema.org meta without $meta.Single.Data and $meta.Site.Data" }}
 {{ end }}
-{{/* Lower case $entityType to facilitate matching */}}
-{{ $entityType = lower $entityType }}
+
+{{ $entityType := false }}
+{{/* Only continue if we have at least SiteAuthor, PageAuthor and WebSite entities */}}
+{{ with $entityParams.Entities }}
+  {{ with and .WebSite .SiteAuthor .PageAuthor }}
+    {{/* Determine entity type */}}
+    {{ with $page.Params.schemaorg.entitytype }}
+      {{ $entityType = . }}
+    {{ else }}
+      {{ with $page.Kind }}
+      {{ $kindToEntity := (dict
+          "home" "WebSite"
+          "page" "Article"
+          "section" "CollectionPage"
+          "term" "CollectionPage"
+          "taxonomy" "CollectionPage"
+        ) }}
+        {{ with index $kindToEntity . }}
+          {{ $entityType = . }}
+          {{ if and false $debug }}
+            {{ warnf "%s kind=%v: entityType=%v kindToEntity=%v" $dbg $page.Kind . $kindToEntity }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+
+    {{ with $entityType }}
+      {{/* Lower case $entityType to facilitate matching */}}
+      {{ $entityType = lower $entityType }}
+      {{ if and false $debug }}
+        {{ warnf "%s using entityType=%v based on .Kind=%v" $dbg $entityType $page.Kind }}
+      {{ end }}
+    {{ else }}
+      {{ errorf "%s kind=%v: no entityType=%v" $dbg $page.Kind $entityType }}
+    {{ end }}
+
+  {{ else }}
+    {{ errorf "%s failed to generate required Schema.org entities %v.\nAvailable entities:\n%v"
+        $dbg (delimit (cond .WebSite
+            (cond .SiteAuthor
+              (slice "PageAuthor")
+              (cond .PageAuthor (slice "SiteAuthor") (slice "SiteAuthor" "PageAuthor") ) )
+            (cond .PageAuthor (slice "WebSite" "SiteAuthor") (slice "WebSite" "SiteAuthor" "PageAuthor") )
+        ) ", " )
+        (jsonify (dict "indent" "  ") $entityParams.Entities) }}
+  {{ end }}
+{{ end }}
 
 {{/* Dispatch to partial for selected entity type */}}
-{{ $schemaOrgMeta := dict }}
-{{ $entityMap := dict }}
 {{ with $entityType }}
   {{ $schemaOrgPartial := printf "claris/_functions/schema-org/%s" $entityType }}
-  {{ if $debug }}
+  {{ if and false $debug }}
     {{ warnf "%s calling %s with entityParams.Entities:\n%v"
         $dbg $schemaOrgPartial
         (jsonify (dict "indent" "  ") $entityParams.Entities) }}
   {{ end }}
-  {{ $entityMap = partial $schemaOrgPartial $entityParams }}
+  {{ $entityMap := partial $schemaOrgPartial $entityParams }}
   {{ if and false $debug }}
     {{ warnf "%s schemaOrgPartial %s returned entityMap:\n%v"
         $dbg $schemaOrgPartial
@@ -103,9 +123,6 @@
     "@context" "http://schema.org"
     "@graph" $graph
   ) }}
-
-{{ else }}
-  {{ errorf "%s kind=%v: no entityType=%v" $dbg $page.Kind $entityType }}
 {{ end }}
 
 {{ if and false $debug }}

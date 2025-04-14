@@ -1,19 +1,18 @@
+{{ $authorMeta := dict }}
 {{ $page := .Page }}
 {{ $template := "claris/_functions/meta/author" }}
-{{ $debug := false }}
+{{ $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
+{{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
+{{ $contentContainerID := "authorProfile" }}
 {{ $author := default false .Author }}
 
-{{ $authorMeta := dict }}
+{{ $authorProfilePagePath := "about" }}
 
 {{ with $page }}
-
-  {{ $socialMeta := partialCached "claris/_functions/meta/social" (dict "Page" $page "Debug" $debug) }}
-
-  {{ $authorProfilePagePath := "about" }}
   {{ with $author }}
   {{ else }}
-    {{ with $author =  ($page.Param "siteAuthor") | default site.Author.name }}
+    {{ with $author =  ($page.Param "siteauthor") | default site.Author.name }}
       {{ with site.Param "authors" }}
         {{ with index . (anchorize $author) }}
           {{ $author = .name }}
@@ -24,35 +23,63 @@
       {{ end }}
     {{ end }}
   {{ end }}
+{{ else }}
+{{ end }}
 
-  {{ $authorProfilePage := site.GetPage $authorProfilePagePath }}
+{{ with $author }}
+  {{ $authorMeta = (dict "Name" $author) }}
+{{ else }}
+  {{ errorf "%s invalid author=%v" $dbg $author  }}
+{{ end }}
+
+{{/*
+  site.GetPage, as opposed to page.GetPage, does not expect a leading slash
+  https://gohugo.io/methods/site/getpage/#multilingual-projects
+  https://gohugo.io/functions/urls/rellangurl/#input-begins-with-a-slash
+*/}}
+{{ $authorProfilePagePath = strings.Trim $authorProfilePagePath "/" }}
+{{ $authorProfilePage := false }}
+{{ with $authorProfilePage = site.GetPage $authorProfilePagePath }}
   {{ if $debug }}
-    {{ warnf "%s[%s]: authorProfilePagePath=%v authorProfilePage=%v" $page $template $authorProfilePagePath $authorProfilePage  }}
+    {{ warnf "%s using language-specific author profile page %v [RelPermalink=%v relLangURL=%v]" $dbg
+        .Path .RelPermalink (relLangURL .RelPermalink) }}
   {{ end }}
-  {{ $description := $authorProfilePage.Params.description | default $authorProfilePage.Summary | default $author }}
+{{ else }}
+  {{ with $authorProfilePage = site.Sites.Default.GetPage $authorProfilePagePath }}
+    {{ if $debug }}
+      {{ warnf "%s using author profile page %v in default language [RelPermalink=%v relLangURL=%v]" $dbg
+        .Path .RelPermalink (relLangURL .RelPermalink) }}
+    {{ end }}
+  {{ else }}
+    {{ warnf "%s failed to find an author profile page at %v" $dbg $authorProfilePagePath }}
+  {{ end }}
+{{ end }}
+{{ with $authorProfilePage }}
+  {{ $description := .Params.description | default .Summary | default $author }}
   {{ $description = $description | partial `claris/_functions/plainify-string` }}
 
-  {{ $authorProfileURL := $authorProfilePage.RelPermalink }}
-  {{ $authorProfileCanonicalURL := (partial "claris/_functions/canonical-url" $authorProfilePage) }}
-  {{ $contentContainerID := "authorProfile" }}
+  {{ $authorProfileURL := .RelPermalink }}
+  {{ $authorProfileCanonicalURL := (partial "claris/_functions/canonical-url" . ) }}
 
-  {{ $avatarImage := default site.Params.logo (index site.Params.authors $author).avatar }}
-  {{ $authorMeta = (dict
-    "Name" $author
+  {{ $authorMeta = merge $authorMeta (dict
     "EntityID" (printf "%s#%s" $authorProfileCanonicalURL $contentContainerID)
     "URL" $authorProfileURL
     "CanonicalURL" $authorProfileCanonicalURL
     "ContentID" $contentContainerID
     "Description" $description
-    "Social" $socialMeta
   ) }}
-  {{ with $avatarImage }}
-    {{ $authorMeta = merge $authorMeta (dict "Avatar" $avatarImage) }}
-  {{ end }}
 {{ end }}
 
-{{ if $debug }}
-  {{ warnf "%s[%s]: returning %v" $page $template
-      (jsonify (dict "indent" "  ") $authorMeta) }}
+{{ with $avatarImage := default site.Params.logo (index site.Params.authors $author).avatar }}
+  {{ $authorMeta = merge $authorMeta (dict "Avatar" $avatarImage) }}
+{{ end }}
+
+{{ with $socialMeta := partialCached "claris/_functions/meta/social" (dict "Page" $page "Debug" $debug) }}
+  {{ $authorMeta = merge $authorMeta (dict "Social" $socialMeta) }}
+{{ end }}
+
+{{ if and false $debug }}
+  {{ warnf "%s returning authorMeta:\n%v" $dbg
+      (jsonify (dict "indent" "  " "noHTMLEscape" true) $authorMeta) }}
 {{ end }}
 {{ return $authorMeta }}
