@@ -6,104 +6,97 @@
 
 {{- $dateLocalISO8601 := "2006-01-02T15:04:05-07:00" -}}
 
-{{- $opengraph := default $meta.Site.Classification.Opengraph $meta.Classification.Opengraph }}
-{{- if $opengraph }}
-  {{- with $meta.Site.Data }}
-    {{- if $debug }}
-      {{- warnf "%s .Site.Data.Headline=%#v .Headline | htmlEscape=%#v" $dbg .Headline (.Headline | htmlEscape) }}
-    {{- end }}
-    <meta property="og:site_name" {{ printf `content=%q` (htmlEscape .Headline) | safeHTMLAttr }}>
+{{- with $meta.Site.Data }}
+  {{- if $debug }}
+    {{- warnf "%s .Site.Data.Headline=%#v .Headline | htmlEscape=%#v" $dbg .Headline (.Headline | htmlEscape) }}
   {{- end }}
-  {{- with $meta.Single.Data }}
-    {{- if $debug }}
-      {{- warnf "%s .Single.Data.Description=%#v" $dbg .Description }}
-    {{- end }}
-    <meta property="og:title" {{ printf `content=%q` (htmlEscape .Headline) | safeHTMLAttr }}>
-    {{- with default $meta.Site.Data.Description .Description }}
-    <meta property="og:description" {{ printf `content=%q` (htmlEscape . ) | safeHTMLAttr }}>
-    {{- end }}
-    <meta property="og:type" content="{{ if $page.IsPage }}article{{ else }}website{{ end }}">
-    {{- with .CanonicalURL }}
-    <meta property="og:url" content="{{ . }}">
-    {{- end }}
-    {{- with .Locale }}
-    <meta property="og:locale" content="{{ . }}">
-    {{- end }}
+  <meta property="og:site_name" {{ printf `content=%q` (htmlEscape .Headline) | safeHTMLAttr }}>
+{{- end }}
+{{- with $meta.Single.Data }}
+  {{- if $debug }}
+    {{- warnf "%s .Single.Data.Description=%#v" $dbg .Description }}
+  {{- end }}
+  <meta property="og:title" {{ printf `content=%q` (htmlEscape .Headline) | safeHTMLAttr }}>
+  {{- with default $meta.Site.Data.Description .Description }}
+  <meta property="og:description" {{ printf `content=%q` (htmlEscape . ) | safeHTMLAttr }}>
+  {{- end }}
+  <meta property="og:type" content="{{ if $page.IsPage }}article{{ else }}website{{ end }}">
+  {{- with .CanonicalURL }}
+  <meta property="og:url" content="{{ . }}">
+  {{- end }}
+  {{- with .Locale }}
+  <meta property="og:locale" content="{{ . }}">
+  {{- end }}
 
-    {{- if $page.IsPage }}
-      {{- with .ArticleSection}}
-    <meta property="article:section" {{ printf `content=%q` (htmlEscape . ) | safeHTMLAttr }}>
-      {{- end }}
-      {{- with (default .Date.Created .Date.Published) }}
-    <meta property="article:published_time" {{ .Format $dateLocalISO8601 | printf `content=%q` | safeHTMLAttr }}>
+  {{- if $page.IsPage }}
+    {{- with .ArticleSection}}
+  <meta property="article:section" {{ printf `content=%q` (htmlEscape . ) | safeHTMLAttr }}>
     {{- end }}
-      {{- with .Date.Modified }}
-    <meta property="article:modified_time" {{ .Format $dateLocalISO8601 | printf `content=%q` | safeHTMLAttr }}>
-      {{- end }}
-    {{- end -}}
+    {{- with (default .Date.Created .Date.Published) }}
+  <meta property="article:published_time" {{ .Format $dateLocalISO8601 | printf `content=%q` | safeHTMLAttr }}>
+  {{- end }}
+    {{- with .Date.Modified }}
+  <meta property="article:modified_time" {{ .Format $dateLocalISO8601 | printf `content=%q` | safeHTMLAttr }}>
+    {{- end }}
+  {{- end -}}
 
-    {{- with $image := partial "claris/_functions/meta/images/get-image" (dict
-      "Page" $page
-      "kind" "share"
-      "width" 1200
-      "height" 627
-      "Debug" $debug
-    ) -}}
-      {{- with $resource := .resource }}
-        {{- $imageCanonicalURL := partial "claris/_functions/canonical-url" $resource }}
-    <meta property="og:image" {{ printf `content=%q` $imageCanonicalURL | safeHTMLAttr }}>
-        {{- if strings.HasPrefix $imageCanonicalURL "https" }}
-    <meta property="og:image:secure_url" {{ printf `content=%q` $imageCanonicalURL | safeHTMLAttr }}>
-        {{- end }}
-    <meta property="og:image:type" content="{{ $resource.MediaType.Type }}">
-    <meta property="og:image:width" content="{{ $resource.Width }}">
-    <meta property="og:image:height" content="{{ $resource.Height }}">
-        {{- with default $meta.Single.Data.Headline $image.alt }}
-    <meta property="og:image:alt"  {{ printf `content=%q` (htmlEscape . ) | safeHTMLAttr }}>
-        {{- end }}
-      {{- else }}
-        {{- errorf "%s Invalid share image in lang=%v: $meta.Site=%#v $meta.Single=%#v"
-            $dbg site.Language.Lang
-            $meta.Site.Data.Images.share.variant.default.version
-            $meta.Single.Data.Images.share.variant.default.version }}
+  {{- with $image := partial "claris/_functions/meta/images/get-image" (dict
+    "Page" $page
+    "kind" "share"
+    "width" 1200
+    "height" 627
+    "Debug" $debug
+  ) -}}
+    {{- with $resource := .resource }}
+      {{- $imageCanonicalURL := partial "claris/_functions/canonical-url" $resource }}
+  <meta property="og:image" {{ printf `content=%q` $imageCanonicalURL | safeHTMLAttr }}>
+  <meta property="og:image:type" content="{{ $resource.MediaType.Type }}">
+  <meta property="og:image:width" content="{{ $resource.Width }}">
+  <meta property="og:image:height" content="{{ $resource.Height }}">
+      {{- with default $meta.Single.Data.Headline $image.alt }}
+  <meta property="og:image:alt"  {{ printf `content=%q` (htmlEscape . ) | safeHTMLAttr }}>
       {{- end }}
     {{- else }}
-      {{- if $debug }}
-        {{- warnf "%s Missing share image in lang=%v: $meta.Site=%#v $meta.Single=%#v"
-            $dbg site.Language.Lang
-            $meta.Site.Data.Images.share.variant.default.version
-            $meta.Single.Data.Images.share.variant.default.version }}
-      {{- end }}
+      {{- errorf "%s Invalid share image in lang=%v: $meta.Site=%#v $meta.Single=%#v"
+          $dbg site.Language.Lang
+          $meta.Site.Data.Images.share.variant.default.version
+          $meta.Single.Data.Images.share.variant.default.version }}
     {{- end }}
   {{- else }}
     {{- if $debug }}
-      {{- warnf "%s Missing opengraph data in lang=%v: $meta.Site=%#v $meta.Single=%#v"
+      {{- warnf "%s Missing share image in lang=%v: $meta.Site=%#v $meta.Single=%#v"
           $dbg site.Language.Lang
           $meta.Site.Data.Images.share.variant.default.version
           $meta.Single.Data.Images.share.variant.default.version }}
     {{- end }}
   {{- end }}
+{{- else }}
+  {{- if $debug }}
+    {{- warnf "%s Missing opengraph data in lang=%v: $meta.Site=%#v $meta.Single=%#v"
+        $dbg site.Language.Lang
+        $meta.Site.Data.Images.share.variant.default.version
+        $meta.Single.Data.Images.share.variant.default.version }}
+  {{- end }}
+{{- end }}
 
-  {{- /* If it is part of a series, link to related articles */ -}}
-  {{- $permalink := $page.Permalink }}
-  {{- $siteSeries := site.Taxonomies.series }}
-  {{- if $siteSeries }}
-    {{- with $page.Params.series }}
-      {{- range $name := . }}
-        {{- $series := index $siteSeries ($name | urlize) }}
-        {{- range $seriesPage := first 6 $series.Pages }}
-          {{- if ne $seriesPage.Permalink $permalink }}
-            {{- $seriesPageCanonicalURL := partial "claris/_functions/canonical-url" $seriesPage }}
-    <meta property="og:see_also" content="{{ $seriesPageCanonicalURL }}">
-          {{- end }}
+{{- /* If it is part of a series, link to related articles */ -}}
+{{- $permalink := $page.Permalink }}
+{{- $siteSeries := site.Taxonomies.series }}
+{{- if $siteSeries }}
+  {{- with $page.Params.series }}
+    {{- range $name := . }}
+      {{- $series := index $siteSeries ($name | urlize) }}
+      {{- range $seriesPage := first 6 $series.Pages }}
+        {{- if ne $seriesPage.Permalink $permalink }}
+          {{- $seriesPageCanonicalURL := partial "claris/_functions/canonical-url" $seriesPage }}
+  <meta property="og:see_also" content="{{ $seriesPageCanonicalURL }}">
         {{- end }}
       {{- end }}
     {{- end }}
-  {{- end -}}
-
-  {{- /* Facebook Page Admin ID for Domain Insights */ -}}
-  {{- with site.Params.Social.facebook_admin }}
-    <meta property="fb:admins" content="{{ . }}">
   {{- end }}
-
 {{- end -}}
+
+{{- /* Facebook Page Admin ID for Domain Insights */ -}}
+{{- with site.Params.Social.facebook_admin }}
+    <meta property="fb:admins" content="{{ . }}">
+{{- end }}

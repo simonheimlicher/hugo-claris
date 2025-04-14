@@ -1,4 +1,4 @@
-{{ $entities := .Entities }}
+{{ $authorEntities := .Entities }}
 {{ $page := .Page }}
 {{ $meta := default ($page.Scratch.Get "clarismeta") .Meta }}
 {{ $template := "claris/_functions/schema-org/_entities/author" }}
@@ -7,72 +7,74 @@
 
 <!-- [Schema.org entity Author](https://schema.org/Author) -->
 
-{{ $socialProfileURLs := slice }}
-{{ range $site := $meta.Site.Data.Author.Social }}
-  {{ $socialProfileURLs = append (slice .Profile.URL) $socialProfileURLs }}
-{{ end }}
-
 {{ $siteAuthorEntity := false }}
 {{ $pageAuthorEntity := false }}
 
+{{ $authorMeta := dict }}
 {{ with $meta.Site.Data.Author }}
-  {{ $siteAuthorEntity = (dict
-    "Entity" (dict
-      "@type" "Person"
-      "@id" .EntityID
-      "name" .Name
-      "url" .CanonicalURL
-      "description" .Description
-      "sameAs" $socialProfileURLs
-    )
-    "Reference" (dict
-      "@id" .EntityID
-    )
-    "URL" .CanonicalURL
+  {{ $authorMeta = merge $authorMeta (dict
+  "SiteAuthor" .
   ) }}
-  {{ if $debug }}
-    {{ warnf "%s SiteAuthor=%v from $meta.Site.Data.Author=%v" $dbg
-    (jsonify (dict "indent" "  ") $siteAuthorEntity)
-    (jsonify (dict "indent" "  ") $meta.Site.Data.Author) }}
-  {{ end }}
 {{ else }}
   {{ errorf "%s Missing .Scratch for .Site.Data.Author: .Page.RelPermalink=%v[%T]" $dbg
       $.Page.RelPermalink $.Page }}
 {{ end }}
+
 {{ with $meta.Single.Data.Author }}
-  {{ $pageAuthorEntity = (dict
-    "Entity" (dict
-      "@type" "Person"
-      "@id" .EntityID
-      "name" .Name
-      "url" .CanonicalURL
-      "description" .Description
-      "sameAs" $socialProfileURLs
-    )
-    "Reference" (dict
-      "@id" .EntityID
-    )
-    "URL" .CanonicalURL
+  {{ $authorMeta = merge $authorMeta (dict
+  "PageAuthor" .
   ) }}
 {{ else }}
   {{ errorf "%s Missing .Scratch for .Single.Data.Author: .Page.RelPermalink=%v[%T]" $dbg
       $.Page.RelPermalink $.Page }}
 {{ end }}
 
-{{ with and $siteAuthorEntity $pageAuthorEntity }}
-  {{ $entities = merge $entities (dict
-    "Entities" (dict
-      "SiteAuthor" $siteAuthorEntity
-      "PageAuthor" $pageAuthorEntity
+{{ range $entityName, $entityMeta := $authorMeta }}
+  {{ $entity := (dict
+    "Entity" (dict
+      "@type" "Person"
+      "@id" .EntityID
+      "name" .Name
     )
+    "Reference" (dict "@id" .EntityID)
   ) }}
-{{ else }}
-  {{ errorf "%s Missing entries in .Entities:\n%v" $dbg
-      (jsonify (dict "indent" "  ") $.Entities) }}
+  {{ with .CanonicalURL}}
+    {{ $entity = merge $entity (dict
+      "Entity" (dict
+        "url" .
+      )
+      "URL" .
+    ) }}
+  {{ end }}
+  {{ with .Description }}
+    {{ $entity = merge $entity (dict
+      "Entity" (dict
+        "description" .
+      )
+    ) }}
+  {{ end }}
+  {{ with .Social }}
+    {{ $socialProfileURLs := slice }}
+    {{ range . }}
+      {{ $socialProfileURLs = append (slice .Profile.URL) $socialProfileURLs }}
+    {{ end }}
+
+    {{ with $socialProfileURLs }}
+      {{ $entity = merge $entity (dict
+        "Entity" (dict
+          "sameAs" .
+        )
+      ) }}
+    {{ end }}
+  {{ end }}
+  {{ with $entity }}
+    {{ $authorEntities = merge $authorEntities (dict
+      "Entities" (dict $entityName . ) ) }}
+  {{ end }}
 {{ end }}
 
 {{ if $debug }}
-  {{ warnf "%s returning %v" $dbg
-      (jsonify (dict "indent" "  ") $entities) }}
+  {{ warnf "%s returning authorEntities:\n%v" $dbg
+      (jsonify (dict "indent" "  ") $authorEntities) }}
 {{ end }}
-{{ return $entities }}
+{{ return $authorEntities }}

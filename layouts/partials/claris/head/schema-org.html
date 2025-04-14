@@ -4,36 +4,25 @@
 {{- $debug := and false ($page.Param "clarisdebug") (and .Debug (eq site.LanguagePrefix "") ) }}
 {{- $dbg := printf "%s [%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+(?:/[^/]+)?)$` `$1` $template) }}
 
-{{- $pagePath := "" }}
-{{- with $page.File }}
-  {{- $pagePath = .Path }}
-{{- end }}
-
 {{- $dateUTCISO8601   := "2006-01-02T15:04:05.00Z" -}}
 
-{{- $schemaOrg := default $meta.Site.Classification.SchemaOrg $meta.Classification.SchemaOrg }}
+{{- $entityParams := merge $ (dict
+  "Template" (printf "%s->%s" $.Template $template)
+  "Meta" $meta
+  "Format" (dict
+    "Date" $dateUTCISO8601
+  )
+  "Debug" $debug
+) }}
 
-{{- if $schemaOrg }}
-
-  {{- $entityParams := merge $ (dict
-    "Template" (printf "%s->%s" $.Template $template)
-    "Meta" $meta
-    "Format" (dict
-      "Date" $dateUTCISO8601
-    )
-    "Debug" $debug
-  ) }}
-
-  {{- with $schemaOrgMeta := partial "claris/_functions/schema-org/index" $entityParams }}
+{{- with $schemaOrgMeta := partial "claris/_functions/schema-org/index" $entityParams }}
     <script type="application/ld+json">
       {{ $schemaOrgMeta.Root | jsonify (dict "indent" "  " "prefix" "      " "noHTMLEscape" true) | safeJS | }}
     </script>
-  {{- else }}
-    {{- if or $debug (eq page.RelPermalink (relLangURL "")) }}
-      {{- warnf "%s failed to generate Schema.org meta from .Site.Data:\n%v"
-          $dbg (jsonify (dict "indent" "  ") (merge $meta.Site.Data
-              (dict "Images" nil) ) ) }}
-    {{- end }}
+{{- else }}
+  {{- if or $debug (eq page.RelPermalink (relLangURL "")) }}
+    {{- warnf "%s failed to generate Schema.org meta from .Site.Data:\n%v"
+        $dbg (jsonify (dict "indent" "  ") (merge $meta.Site.Data
+            (dict "Images" nil) ) ) }}
   {{- end }}
-
-{{- end -}}
+{{- end }}

@@ -5,59 +5,51 @@
 
 {{- $dateLocalISO8601 := "2006-01-02T15:04:05-07:00" -}}
 
-{{- $twitterCard := default $meta.Site.Classification.TwitterCard $meta.Classification.TwitterCard }}
-{{- if $twitterCard }}
-  {{- with $meta.Single.Data }}
-    {{- $shareImageURL := false }}
-    {{- $shareImageAlt := false }}
-    {{- with partial "claris/_functions/meta/images/get-image" (dict
-      "Page" $page
-      "kind" "share"
-      "aspect" "16x9"
-      "Debug" $debug
-    ) }}
-      {{- $shareImageURL = .canonicalurl }}
-      {{- $shareImageAlt = .alt }}
-    {{- else }}
-      {{- if $debug }}
-        {{- warnf "%s[%s]: Missing share image in lang=%v: $meta.Site=%#v $meta.Single=%#v"
-            $page $template site.Language.Lang
-            $meta.Site.Data.Images.share.variant.default.version
-            $meta.Single.Data.Images.share.variant.default.version -}}
-      {{- end }}
+{{- with $meta.Single.Data }}
+  {{- $shareImageURL := false }}
+  {{- $shareImageAlt := false }}
+  {{- with partial "claris/_functions/meta/images/get-image" (dict
+    "Page" $page
+    "kind" "share"
+    "aspect" "16x9"
+    "Debug" $debug
+  ) }}
+    {{- $shareImageURL = .canonicalurl }}
+    {{- $shareImageAlt = .alt }}
+  {{- else }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: Missing share image in lang=%v: $meta.Site=%#v $meta.Single=%#v"
+          $page $template site.Language.Lang
+          $meta.Site.Data.Images.share.variant.default.version
+          $meta.Single.Data.Images.share.variant.default.version -}}
     {{- end }}
-    {{- with $shareImageURL }}
+  {{- end }}
+  {{- with $shareImageURL }}
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="{{ $shareImageURL }}">
-      {{- with $shareImageAlt }}
+    {{- with $shareImageAlt }}
     <meta name="twitter:alt" content="{{ . | htmlEscape | safeHTMLAttr }}">
-      {{- end }}
-    {{- else }}
-    <meta name="twitter:card" content="summary">
-      {{- if $debug }}
-        {{- warnf "%s[%s]: Missing share image: $meta.Site=%#v $meta.Single=%#v"
-            $page $template
-            $meta.Site.Data.Images.share.variant.default.version
-            $meta.Single.Data.Images.share.variant.default.version }}
-      {{- end }}
     {{- end }}
-    <meta name="twitter:title" content="{{ .Headline | htmlEscape | safeHTMLAttr }}">
-    {{- with (default $meta.Site.Data.Description .Description) }}
-    <meta name="twitter:description" content="{{ . | htmlEscape | safeHTMLAttr }}">
-    {{- end }}
-  {{- with default site.Params.Social.twitter site.Params.social.twitter.id }}
-    <meta name="twitter:creator" content="{{ . | htmlEscape | safeHTMLAttr }}">
-    <meta name="twitter:site" content="{{ . | htmlEscape | safeHTMLAttr }}">
   {{- else }}
-    {{- if site.Params.claris.hints }}
-      {{- warnf "%s[%s]: Missing Twitter handle: site.Params.Social.twitter=%v site.Params.social.twitter.id=%v"
-          $page $template site.Params.Social.twitter site.Params.social.twitter.id -}}
+    <meta name="twitter:card" content="summary">
+    {{- if $debug }}
+      {{- warnf "%s[%s]: Missing share image: $meta.Site=%#v $meta.Single=%#v"
+          $page $template
+          $meta.Site.Data.Images.share.variant.default.version
+          $meta.Single.Data.Images.share.variant.default.version }}
     {{- end }}
   {{- end }}
-{{- else }}
-  {{- if site.Params.claris.hints }}
-    {{- warnf "%s[%s]: Twitter card disabled: meta.Site.Classification.TwitterCard=%v meta.Classification.TwitterCard=%v"
-        $page $template $meta.Site.Classification.TwitterCard $meta.Classification.TwitterCard -}}
+    <meta name="twitter:title" content="{{ .Headline | htmlEscape | safeHTMLAttr }}">
+  {{- with (default $meta.Site.Data.Description .Description) }}
+    <meta name="twitter:description" content="{{ . | htmlEscape | safeHTMLAttr }}">
   {{- end }}
 {{- end }}
-{{- end -}}
+{{- with default site.Params.Social.twitter site.Params.social.twitter.id }}
+    <meta name="twitter:creator" content="{{ . | htmlEscape | safeHTMLAttr }}">
+    <meta name="twitter:site" content="{{ . | htmlEscape | safeHTMLAttr }}">
+{{- else }}
+  {{- if site.Params.claris.hints }}
+    {{- warnf "%s[%s]: Missing Twitter handle: site.Params.Social.twitter=%v site.Params.social.twitter.id=%v"
+        $page $template site.Params.Social.twitter site.Params.social.twitter.id -}}
+  {{- end }}
+{{- end }}

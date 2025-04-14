@@ -5,57 +5,111 @@
 {{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{ $contentContainerID := "authorProfile" }}
-{{ $author := default false .Author }}
+{{ $authorName := false }}
+{{ $authorParams := false }}
 
-{{ $authorProfilePagePath := "about" }}
+{{/* A profile page is a special page about a specific person. If it is found,
+it will be referred to throughout the website in the Schema.org metadata, where
+it will be declared as an entity of type
+[ProfilePage](https://schema.org/ProfilePage)
+
+The profile page path is set in the author profile in site.Params, as follows:
+
+siteAuthor: Simon Heimlicher
+authors:
+  simon-heimlicher:
+    last_name: Heimlicher
+    first_name: Simon
+    # Email address is set via environment variable "HUGO_CLARIS_AUTHOR_EMAIL"
+    # Note: "HUGO_CLARIS_" is the prefix of the environment variable
+    # Only use the part after "HUGO_CLARIS_"
+    email: AUTHOR_EMAIL
+    name: Simon Heimlicher
+    profilepage: about
+
+*/}}
+{{ $authorProfilePagePath := false }}
 
 {{ with $page }}
-  {{ with $author }}
+  {{ with $authorName = $page.Param "author" | default site.Params.siteauthor }}
+    {{ with $authorDirectory := $page.Param "authors" }}
+      {{ $authorKey := anchorize $authorName }}
+        {{ if $debug }}
+          {{ warnf "%s looking up authorName=%v from page.Param \"author\"=%v site.Params.siteauthor=%v at key=%v in site.Params.authors:\n%v"
+              $dbg $authorName ($page.Param "author") site.Params.siteauthor $authorKey
+              (jsonify (dict "indent" "  ") $authorDirectory) }}
+        {{ end }}
+      {{ with $authorParams = (index $authorDirectory $authorKey ) }}
+        {{ $authorName = .name }}
+      {{ else }}
+        {{ errorf "%s missing entry for authorName=%q using index %q"
+            $dbg $authorName $authorKey }}
+      {{ end }}
+    {{ end }}
   {{ else }}
-    {{ with $author =  ($page.Param "siteauthor") | default site.Author.name }}
-      {{ with site.Param "authors" }}
-        {{ with index . (anchorize $author) }}
-          {{ $author = .name }}
-          {{ with index . "profilepage" }}
-            {{ $authorProfilePagePath = . }}
+    {{ errorf "%s invalid authorName=%v from page.Param \"author\"=%v site.Params.siteauthor=%v. Author meta from site.Params.authors:\n%v"
+        $dbg $authorName (page.Param "author") site.Params.siteauthor
+        (jsonify (dict "indent" "  ") site.Params.authors) }}
+  {{ end }}
+{{ else }}
+  {{ errorf "%s invalid $page=%v. Pass a valid page via .Page" $dbg $page }}
+{{ end }}
+
+{{ with $authorName }}
+  {{ $authorMeta = (dict
+      "Name" $authorName
+      "EntityID" (printf "#%s" $contentContainerID)
+  ) }}
+{{ end }}
+
+{{ $authorProfilePage := false }}
+{{ with $authorParams }}
+  {{ with $authorProfilePagePath = $authorParams.profilepage }}
+    {{/* site.GetPage, as opposed to page.GetPage, does not expect a leading slash
+    https://gohugo.io/methods/site/getpage/#multilingual-projects
+    https://gohugo.io/functions/urls/rellangurl/#input-begins-with-a-slash */}}
+    {{ $authorProfilePagePath = strings.Trim $authorProfilePagePath "/" }}
+    {{ if eq $authorProfilePagePath "" }}
+      {{ errorf "%s invalid authorProfilePagePath=%v: cannot use home page as profile page to avoid infinite recursion"
+          $dbg $authorProfilePagePath }}
+    {{ else }}
+      {{ if $debug }}
+        {{ warnf "%s looking for language-specific author profile page with path=%v"
+            $dbg $authorProfilePagePath }}
+      {{ end }}
+      {{ with $authorProfilePage = site.GetPage $authorProfilePagePath }}
+        {{ if $debug }}
+          {{ warnf "%s using language-specific author profile page %v [RelPermalink=%v relLangURL=%v]" $dbg
+              .Path .RelPermalink (relLangURL .RelPermalink) }}
+        {{ end }}
+      {{ else }}
+        {{ with $authorProfilePage = site.Sites.Default.GetPage $authorProfilePagePath }}
+          {{ if $debug }}
+            {{ warnf "%s using author profile page %v in default language [RelPermalink=%v relLangURL=%v]" $dbg
+              .Path .RelPermalink (relLangURL .RelPermalink) }}
           {{ end }}
+        {{ else }}
+          {{ warnf "%s no profile page found at %q in current=%v and default language=%v with authorParams:\n%v"
+              $dbg $authorProfilePagePath site.Language.Lang
+              site.Sites.Default.Language.Lang
+              (jsonify (dict "indent" "  ") $authorParams) }}
         {{ end }}
       {{ end }}
     {{ end }}
-  {{ end }}
-{{ else }}
-{{ end }}
-
-{{ with $author }}
-  {{ $authorMeta = (dict "Name" $author) }}
-{{ else }}
-  {{ errorf "%s invalid author=%v" $dbg $author  }}
-{{ end }}
-
-{{/*
-  site.GetPage, as opposed to page.GetPage, does not expect a leading slash
-  https://gohugo.io/methods/site/getpage/#multilingual-projects
-  https://gohugo.io/functions/urls/rellangurl/#input-begins-with-a-slash
-*/}}
-{{ $authorProfilePagePath = strings.Trim $authorProfilePagePath "/" }}
-{{ $authorProfilePage := false }}
-{{ with $authorProfilePage = site.GetPage $authorProfilePagePath }}
-  {{ if $debug }}
-    {{ warnf "%s using language-specific author profile page %v [RelPermalink=%v relLangURL=%v]" $dbg
-        .Path .RelPermalink (relLangURL .RelPermalink) }}
-  {{ end }}
-{{ else }}
-  {{ with $authorProfilePage = site.Sites.Default.GetPage $authorProfilePagePath }}
-    {{ if $debug }}
-      {{ warnf "%s using author profile page %v in default language [RelPermalink=%v relLangURL=%v]" $dbg
-        .Path .RelPermalink (relLangURL .RelPermalink) }}
-    {{ end }}
   {{ else }}
-    {{ warnf "%s failed to find an author profile page at %v" $dbg $authorProfilePagePath }}
+    {{ if $debug }}
+      {{ warnf "%s missing .profilepath in authorParams:\n%v"
+          $dbg (jsonify (dict "indent" "  ") $authorParams) }}
+    {{ end }}
+  {{ end }}
+{{ else }}
+  {{ if $debug }}
+    {{ warnf "%s invalid authorParams: %#v" $dbg $authorParams }}
   {{ end }}
 {{ end }}
+
 {{ with $authorProfilePage }}
-  {{ $description := .Params.description | default .Summary | default $author }}
+  {{ $description := .Params.description | default .Summary | default $authorName }}
   {{ $description = $description | partial `claris/_functions/plainify-string` }}
 
   {{ $authorProfileURL := .RelPermalink }}
@@ -70,7 +124,7 @@
   ) }}
 {{ end }}
 
-{{ with $avatarImage := default site.Params.logo (index site.Params.authors $author).avatar }}
+{{ with $avatarImage := default site.Params.logo (index site.Params.authors $authorName).avatar }}
   {{ $authorMeta = merge $authorMeta (dict "Avatar" $avatarImage) }}
 {{ end }}
 
@@ -78,7 +132,7 @@
   {{ $authorMeta = merge $authorMeta (dict "Social" $socialMeta) }}
 {{ end }}
 
-{{ if and false $debug }}
+{{ if and true $debug }}
   {{ warnf "%s returning authorMeta:\n%v" $dbg
       (jsonify (dict "indent" "  " "noHTMLEscape" true) $authorMeta) }}
 {{ end }}

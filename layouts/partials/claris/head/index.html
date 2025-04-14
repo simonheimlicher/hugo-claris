@@ -1,10 +1,12 @@
 {{- $page := .Page }}
 {{- $meta := page.Scratch.Get "clarismeta" }}
 {{- $template := "claris/head/index" }}
-{{- $ctx := merge . (dict "Template" (printf "%s->%s" .Template $template) ) }}
-{{- $debug := false }}
+{{- $debug := and false ($page.Param "clarisdebug") (and .Debug (eq site.LanguagePrefix "") ) }}
+{{- $dbg := printf "%s [%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+(?:/[^/]+)?)$` `$1` $template) }}
 
-{{- $assetVariant := .AssetVariant -}}
+{{- $assetVariant := .AssetVariant }}
+{{- $partialParams := merge . (dict "Template" (printf "%s->%s" .Template $template "Debug" $debug) ) }}
+
 {{- $backgroundLight := $page.Param "colors.color_background_lit" }}
 {{- $backgroundDark := $page.Param "colors.color_background_dim" }}
 {{- if not (in (slice "page") $page.Kind ) }}
@@ -12,43 +14,48 @@
   {{- $backgroundDark = $page.Param "colors.surface_primary_dim" }}
 {{- end }}
 
-{{- with $ctx }}
-    {{- /* partial "html-comment" (printf "%s[%s]: assetVariant:\n%v" $page.RelPermalink $template (jsonify (dict "indent" "  ") $assetVariant) ) */ -}}
+{{- with $meta }}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="{{- $backgroundLight -}}">
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="{{- $backgroundDark -}}">
-    {{- $title := default $meta.Site.Data.Headline $meta.Single.Data.Headline }}
-    {{- if not $meta.Single.Data.Headline }}
-      {{- warnf "%s[%s]: Invalid meta.Single.Data.Headline=%v; using meta.Site.Data.Headline='%v' [.Title='%v' .Supertitle='%v' .Subtitle='%v']"
-          $page $template $meta.Single.Data.Headline $title $meta.Single.Data.Title
-          $meta.Single.Data.Supertitle $meta.Single.Data.Subtitle -}}
+    {{- $title := default .Site.Data.Headline .Single.Data.Headline }}
+    {{- if not .Single.Data.Headline }}
+      {{- warnf "%s invalid meta.Single.Data.Headline=%v; using meta.Site.Data.Headline='%v' [.Title='%v' .Supertitle='%v' .Subtitle='%v']"
+          $dbg .Single.Data.Headline $title .Single.Data.Title
+          .Single.Data.Supertitle .Single.Data.Subtitle -}}
     {{- end }}
     <title>{{ $title | htmlEscape | safeHTML }}</title>
-    {{- partial "claris/head/schema-org" . }}
-    <meta name="description" content="{{ $meta.Single.Data.Description | default $meta.Site.Data.Description | htmlEscape | safeHTMLAttr }}">
-    {{- partial "claris/head/opengraph" . }}
-    {{- partial "claris/head/twitter-card" . }}
-    {{ partial "claris/head/robots" . }}
+    {{- if default .Site.Classification.SchemaOrg .Classification.SchemaOrg }}
+      {{- partial "claris/head/schema-org" $partialParams }}
+    {{- end }}
+    <meta name="description" content="{{ .Single.Data.Description | default .Site.Data.Description | htmlEscape | safeHTMLAttr }}">
+    {{- if default .Site.Classification.Opengraph .Classification.Opengraph }}
+      {{- partial "claris/head/opengraph" $partialParams }}
+    {{- end }}
+    {{- if default .Site.Classification.TwitterCard .Classification.TwitterCard }}
+      {{- partial "claris/head/twitter-card" $partialParams }}
+    {{- end }}
+    {{ partial "claris/head/robots" $partialParams }}
     {{ hugo.Generator }}
-{{- with .Page.Param "googleSiteVerification" }}
-    <meta name="google-site-verification" content="{{ . }}">
+{{- end }}
+{{- with $page.Param "googleSiteVerification" }}
+    <meta name="google-site-verification" content="{{ $partialParams }}">
 {{- end -}}
-{{- range .AlternativeOutputFormats -}}
+{{- range $page.AlternativeOutputFormats -}}
   {{- if (ne .Rel "canonical" ) }}
-    {{ printf `<link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .RelPermalink ($meta.Site.Data.Title | htmlEscape) | safeHTML -}}
+    {{ printf `<link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type
+        .RelPermalink ($meta.Site.Data.Title | htmlEscape) | safeHTML -}}
   {{- end }}
 {{- end }}
-    {{- $canonicalURL := partialCached `claris/_functions/canonical-url` $page $page.Permalink site.Language.Lang }}
-    {{- if $debug }}
-      {{- warnf "%s[%s]: canonicalURL=%v [type=%T]" $template $page.RelPermalink $canonicalURL $canonicalURL }}
-    {{- end }}
+{{- $canonicalURL := partialCached `claris/_functions/canonical-url` $page $page.Permalink site.Language.Lang }}
+{{- if $debug }}
+  {{- warnf "%s canonicalURL=%v [type=%T]" $dbg $page.RelPermalink $canonicalURL $canonicalURL }}
+{{- end }}
     <link rel="canonical" href="{{ $canonicalURL }}">
-    {{- partialCached "claris/head/app-meta" . }}
+    {{- partialCached "claris/head/app-meta" $partialParams }}
 
-{{- partialCached "claris/head/assets" $ctx $assetVariant.CoalesceLanguageKey -}}
+    {{- partialCached "claris/head/assets" $partialParams $assetVariant.CoalesceLanguageKey }}
     <noscript>
       <style>.noscript-hide { display: none !important; }</style>
     </noscript>
-
-{{- end -}}
