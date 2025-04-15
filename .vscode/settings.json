@@ -1,8 +1,8 @@
 {
   "files.associations": {
     "*.html": "gohtml",
-    "**/fonts/hosted/*.scss": "gocss",
-    "**/fonts/fallback/*.scss": "gocss",
+    "**/fonts/specs/*.scss": "gocss",
+    "**/*.scss": "scss",
     "**/bundles/*.js": "gojs",
     "**/bundles/*.ts": "gots",
     "robots.txt": "gohtml"
