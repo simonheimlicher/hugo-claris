@@ -99,7 +99,7 @@
       grid-column: 5 / span 2;
       @include variables.body_aside_right-padding;
     }
-    .article_aside + .article_content {
+    :not(.hero-image_background_main) .article_aside + .article_content {
       grid-column: 1 / span 4;
     }
     .grid-columns-all, .content, .sidebar, .header_multicolumn, .content_multicolumn {

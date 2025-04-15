@@ -78,12 +78,12 @@ $link-focus-dim: hugo.$colorPrimaryDim;
 $link-active-dim: hugo.$colorPrimaryDim;
 
 $theme-bg-lit: hugo.$surfacePrimaryLit;
-$theme-bg-active-lit: color.mix(white, $theme-lit, 30%);
-$theme-bg-hover-lit: color.mix(white, $theme-lit, 75%);
+$theme-bg-active-lit: color.adjust($theme-lit, $lightness: 50%, $saturation: -60%);
+$theme-bg-hover-lit: color.adjust($theme-lit, $lightness: 50%);
 
 $theme-bg-dim: hugo.$surfacePrimaryDim;
-$theme-bg-active-dim: color.mix(black,$theme-dim, 50%);
-$theme-bg-hover-dim: color.mix(black, $theme-dim, 60%);
+$theme-bg-active-dim: color.adjust($theme-dim, $lightness: -20%, $saturation: -60%);
+$theme-bg-hover-dim: color.adjust($theme-dim, $lightness: -20%);
 
 $haze-lit: hugo.$colorSurfaceLit;
 $xhaze-lit: color.adjust($haze-lit, $lightness: -10%);
@@ -95,15 +95,17 @@ $xhaze-dim: color.adjust($haze-dim, $lightness: 10%);
 $xxhaze-dim: color.adjust($xhaze-dim, $lightness: 10%);
 $xxxhaze-dim: color.adjust($xxhaze-dim, $lightness: 10%);
 
-$theme-haze-lit: hugo.$surfacePrimaryLit;
-$theme-xhaze-lit: color.adjust($theme-haze-lit, $lightness: -5%);
-$theme-xxhaze-lit: color.adjust($theme-xhaze-lit, $lightness: -5%);
-$theme-xxxhaze-lit: color.adjust($theme-xxhaze-lit, $lightness: -5%);
+$theme-haze-lit: color.change(hugo.$surfacePrimaryLit, $alpha: 0.8);
+$theme-xhaze-lit: color.adjust($theme-haze-lit, $lightness: 1%, $saturation: 10%);
+$theme-xxhaze-lit: color.adjust($theme-haze-lit, $lightness: 2%, $saturation: 15%);
+$theme-xxxhaze-lit: color.adjust($theme-haze-lit, $lightness: 3%, $saturation: 20%);
+$theme-haze-hover-lit: color.change(hugo.$surfacePrimaryLit, $alpha: 0.9);
 
-$theme-haze-dim: hugo.$surfacePrimaryDim;
-$theme-xhaze-dim: color.adjust($theme-haze-dim, $lightness: 10%);
-$theme-xxhaze-dim: color.adjust($theme-xhaze-dim, $lightness: 10%);
-$theme-xxxhaze-dim: color.adjust($theme-xxhaze-dim, $lightness: 10%);
+$theme-haze-dim: color.change(hugo.$surfacePrimaryDim, $alpha: 0.8);
+$theme-xhaze-dim: color.adjust($theme-haze-dim, $lightness: 20%, $saturation: -10%);
+$theme-xxhaze-dim: color.adjust($theme-haze-dim, $lightness: 25%, $saturation: -15%);
+$theme-xxxhaze-dim: color.adjust($theme-haze-dim, $lightness: 30%, $saturation: -15%);
+$theme-haze-hover-dim: color.adjust(color.change(hugo.$surfacePrimaryDim, $alpha: 0.95), $lightness: 15%, $saturation: -15%);
 
 $highlight-bg-yellow-lit: hsl(60, 100%, 77%);
 $highlight-bg-yellow-dim: hsl(60, 100%, 20%);
@@ -147,13 +149,6 @@ $colors-lit: (
   theme-text-hover: $theme-text-hover-lit,
   neutral-theme: hsl(0, 0%, 13%),
 
-  // dark-bg-hue-0: $dark-bg-hue-0-lit,
-  // dark-bg-hue-1: $dark-bg-hue-1-lit,
-  // dark-bg-hue-2: $dark-bg-hue-2-lit,
-  // dark-bg-hue-3: $dark-bg-hue-3-lit,
-  // dark-bg-hue-4: $dark-bg-hue-4-lit,
-  // dark-bg-hue-5: $dark-bg-hue-5-lit,
-
   accent: hsl(20, 100%, 40%),
   xaccent: hsl(20, 100%, 25%),
   dark-hover: hsla(0,0%,20%,1),
@@ -165,6 +160,7 @@ $colors-lit: (
   theme-xhaze: $theme-xhaze-lit,
   theme-xxhaze: $theme-xxhaze-lit,
   theme-xxxhaze: $theme-xxxhaze-lit,
+  theme-haze-hover: $theme-haze-hover-lit,
   neutral-haze: hsl(0, 0%, 80%),
   highlight-bg-yellow: $highlight-bg-yellow-lit,
   initial: hsl(0, 100%, 30%),
@@ -246,6 +242,7 @@ $colors-dim: (
   theme-xhaze: $theme-xhaze-dim,
   theme-xxhaze: $theme-xxhaze-dim,
   theme-xxxhaze: $theme-xxxhaze-dim,
+  theme-haze-hover: $theme-haze-hover-dim,
   neutral-haze: hsl(0, 0%, 20%),
   highlight-bg-yellow: $highlight-bg-yellow-dim,
   initial: hsl(0, 100%, 60%),

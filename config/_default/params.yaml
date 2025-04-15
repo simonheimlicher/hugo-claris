@@ -271,7 +271,7 @@ colors:
   color_primary_dim: "hsl(200, 100%, 50%)"
   on_primary_lit: "hsl(200, 50%, 25%)"
   on_primary_dim: "hsl(200, 85%, 85%)"
-  surface_primary_lit: "hsl(200, 10%, 95%)"
+  surface_primary_lit: "hsl(200, 10%, 98%)"
   surface_primary_dim: "hsl(200, 30%, 10%)"
   color_surface_lit: "hsl(200, 20%, 90%)"
   color_surface_dim: "hsl(200, 10%, 20%)"

@@ -342,6 +342,34 @@ $main-z-index: 1;
   }
 }
 
+@mixin content-box_impl($background: var(--theme-haze), $background-hover: var(--theme-haze-hover), $shadow-opacity: 0.2, $shadow-hover-opacity: 0.4 ) {
+  background: $background;
+  @if $background-hover != null and $background-hover != $background {
+    @include drop-shadow-inset(3rem, $shadow-opacity, $shadow-hover-opacity);
+    @media (any-hover: hover) {
+      &:hover,
+      &:focus {
+        background: $background-hover;
+      }
+    }
+  }
+  @else {
+    @include drop-shadow-inset(3rem, $shadow-opacity, null);
+  }
+  @include color-scheme_transition;
+  .content &, .article_body & {
+    @include link-lvhfa-inherit;
+  }
+}
+
+@mixin content-box_hover($background: var(--theme-haze), $background-hover: var(--theme-haze-hover) ) {
+  @include content-box_impl($background, $background-hover);
+}
+
+@mixin content-box($background: var(--theme-haze) ) {
+  @include content-box_impl($background, null);
+}
+
 // Header that has multiple columns
 @mixin header_multicolumn() {
   @include body_horizontal-padding;
@@ -595,30 +623,45 @@ $main-z-index: 1;
 
 @mixin drop-shadow_impl($inset: false, $dist: 3rem, $opacity: 0.2, $hover-opacity: 0.4) {
   // If $inset is true, use "inset", otherwise use an empty string.
-  $maybe-inset: if($inset, ' inset', '');
+  $conditional-inset: if($inset, ' inset', '');
+  $conditional-inset-hover: if(not $inset, ' inset', '');
 
-  $shadow:#{$maybe-inset} 0 0 $dist hsla(0, 0%, 0%, $opacity);
-  $hover:#{$maybe-inset} 0 0 $dist hsla(0, 0%, 0%, $hover-opacity);
-  $shadow-dim:#{$maybe-inset} 0 0 $dist hsla(0, 0%, 100%, $opacity);
-  $hover-dim:#{$maybe-inset} 0 0 $dist hsla(0, 0%, 100%, $hover-opacity);
+  $shadow:#{$conditional-inset} 0 0 $dist hsla(0, 0%, 0%, $opacity);
+  $shadow-dim:#{$conditional-inset} 0 0 $dist hsla(0, 0%, 50%, $opacity);
+
+  $shadow-hover: null;
+  $shadow-hover-dim: null;
+
+  $hover: false;
+  @if $hover-opacity != null and $hover-opacity != $opacity {
+    $shadow-hover:#{$conditional-inset-hover} 0 0 $dist hsla(0, 0%, 0%, $hover-opacity);
+    $shadow-hover-dim:#{$conditional-inset-hover} 0 0 $dist hsla(0, 0%, 100%, $hover-opacity);
+    $hover: true;
+  }
 
   box-shadow: #{$shadow};
-  &:hover {
-    box-shadow: #{$hover};
+  @if $hover {
+    &:hover {
+      box-shadow: #{$shadow-hover};
+    }
   }
   @media screen {
     html[data-color-scheme="dark"] & {
       box-shadow: #{$shadow-dim};
-      &:hover {
-        box-shadow: #{$hover-dim};
+      @if $hover {
+        &:hover {
+          box-shadow: #{$shadow-hover-dim};
+        }
       }
     }
   }
   @media screen and (prefers-color-scheme: dark) {
     html:not([data-color-scheme="light"]) & {
       box-shadow: #{$shadow-dim};
-      &:hover {
-        box-shadow: #{$hover-dim};
+      @if $hover {
+        &:hover {
+          box-shadow: #{$shadow-hover-dim};
+        }
       }
     }
   }

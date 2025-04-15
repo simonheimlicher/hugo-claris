@@ -5,7 +5,7 @@
 @use "functions" as functions;
 @use "variables" as variables;
 
-@mixin nav-background($color: var(--text-active), $background: var(--theme-bg-active), $border: var(--theme-bg-active), $underline: var(--theme-bg-active), $top-left: 0.25rem, $top-right: 0.25rem, $bottom-right: 0.25rem, $bottom-left: 0.25rem) {
+@mixin nav-background($color: var(--text-active), $background: var(--theme-bg-active), $border: var(--theme-bg-active), $underline: var(--theme), $top-left: 0.25rem, $top-right: 0.25rem, $bottom-right: 0.25rem, $bottom-left: 0.25rem) {
   color: $color;
   z-index: (variables.$main-z-index + 1);
   &::after {
@@ -35,7 +35,7 @@
   }
 }
 
-@mixin nav-active-background($color: var(--text), $background: var(--theme-xxhaze), $border: var(--theme-xxhaze), $underline: var(--theme-bg-active) ) {
+@mixin nav-active-background($color: var(--text), $background: var(--theme-bg-active), $border: var(--theme-bg-active), $underline: var(--theme) ) {
   @include nav-background($color, $background, $border, $underline);
   cursor: default;
   &:hover {
@@ -43,7 +43,7 @@
   }
 }
 
-@mixin nav-active-section-background($color: var(--text), $background: transparent, $border: var(--theme-haze), $underline: var(--theme-haze) ) {
+@mixin nav-active-section-background($color: var(--text), $background: transparent, $border: var(--theme), $underline: var(--theme) ) {
   @include nav-background($color, $background, $border);
 }
 

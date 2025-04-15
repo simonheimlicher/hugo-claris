@@ -6,7 +6,7 @@ $colorPrimaryLit: if(hugo.$colors_color_primary_lit != null, hugo.$colors_color_
 $colorPrimaryDim: if(hugo.$colors_color_primary_dim != null, hugo.$colors_color_primary_dim, hsl(200, 100%, 50%));
 $onPrimaryLit: if(hugo.$colors_on_primary_lit != null, hugo.$colors_on_primary_lit, hsl(200, 75%, 25%));
 $onPrimaryDim: if(hugo.$colors_on_primary_dim != null, hugo.$colors_on_primary_dim, hsl(200, 85%, 85%));
-$surfacePrimaryLit: if(hugo.$colors_surface_primary_lit != null, hugo.$colors_surface_primary_lit, hsl(200, 10%, 95%));
+$surfacePrimaryLit: if(hugo.$colors_surface_primary_lit != null, hugo.$colors_surface_primary_lit, hsl(200, 10%, 98%));
 $surfacePrimaryDim: if(hugo.$colors_surface_primary_dim != null, hugo.$colors_surface_primary_dim, hsl(200, 30%, 10%));
 
 $colorSurfaceLit: if(hugo.$colors_color_surface_lit != null, hugo.$colors_color_surface_lit, hsl(200, 20%, 98%));
