@@ -46,25 +46,27 @@
   ) }}
 
   {{ with $assetVariant.ContentType }}
-    {{ $contentTypeMetaPartial := printf "partials/%s/_functions/meta/head.html" . }}
-    {{ if templates.Exists $contentTypeMetaPartial }}
-      {{ $contentTypeMetaParams := merge $metaParams
-        (dict
-            "HeadMeta" $metaVariant
-        )
-      }}
-      {{ if $debug }}
-        {{ warnf "%s contentType=%v: Calling contentType-specific head partial %v with:\n%v"
-            $dbg . $contentTypeMetaPartial (jsonify (dict "indent" "  ") $contentTypeMetaParams) }}
-      {{ end }}
-      {{ $contentTypeMetaVariant := partialCached $contentTypeMetaPartial $contentTypeMetaParams $metaKey }}
-      {{ $metaParams = merge $metaParams (dict
-            "HeadMeta" $contentTypeMetaVariant
-        ) }}
-    {{ else }}
-      {{ if $debug }}
-        {{ warnf "%s contentType=%v: No meta partial found at %v"
-            $dbg . $contentTypeMetaPartial }}
+    {{ if ne . "claris" }}
+      {{ $contentTypeMetaPartial := printf "%s/_functions/meta/head.html" . }}
+      {{ if templates.Exists (printf "partials/%s" $contentTypeMetaPartial) }}
+        {{ $contentTypeMetaParams := merge $metaParams
+          (dict
+              "HeadMeta" $metaVariant
+          )
+        }}
+        {{ if $debug }}
+          {{ warnf "%s contentType=%v: Calling contentType-specific head partial %v with:\n%v"
+              $dbg . $contentTypeMetaPartial (jsonify (dict "indent" "  ") $contentTypeMetaParams) }}
+        {{ end }}
+        {{ $contentTypeMetaVariant := partialCached $contentTypeMetaPartial $contentTypeMetaParams $metaKey }}
+        {{ $metaParams = merge $metaParams (dict
+              "HeadMeta" $contentTypeMetaVariant
+          ) }}
+      {{ else }}
+        {{ if $debug }}
+          {{ warnf "%s contentType=%v: No meta partial found at %v"
+              $dbg . $contentTypeMetaPartial }}
+        {{ end }}
       {{ end }}
     {{ end }}
   {{ else }}
