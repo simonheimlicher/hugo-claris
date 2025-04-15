@@ -278,7 +278,7 @@ colors:
   on_surface_lit: "hsl(200, 100%, 13%)"
   on_surface_dim: "hsl(200, 100%, 95%)"
   color_background_lit: "hsl(200, 10%, 95%)"
-  color_background_dim: "hsl(200, 15%, 15%)"
+  color_background_dim: "hsl(200, 40%, 5%)"
   on_background_lit: "hsl(200, 10%, 13%)"
   on_background_dim: "hsl(200, 10%, 100%)"
 

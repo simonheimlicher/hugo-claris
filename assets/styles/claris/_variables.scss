@@ -593,27 +593,43 @@ $main-z-index: 1;
   }
 }
 
-@mixin drop-shadow($dist: 3rem, $opacity: 0.2, $hover-opacity: 0.4) {
-  box-shadow: 0 0 $dist hsla(0, 0%, 0%, $opacity);
+@mixin drop-shadow_impl($inset: false, $dist: 3rem, $opacity: 0.2, $hover-opacity: 0.4) {
+  // If $inset is true, use "inset", otherwise use an empty string.
+  $maybe-inset: if($inset, ' inset', '');
+
+  $shadow:#{$maybe-inset} 0 0 $dist hsla(0, 0%, 0%, $opacity);
+  $hover:#{$maybe-inset} 0 0 $dist hsla(0, 0%, 0%, $hover-opacity);
+  $shadow-dim:#{$maybe-inset} 0 0 $dist hsla(0, 0%, 100%, $opacity);
+  $hover-dim:#{$maybe-inset} 0 0 $dist hsla(0, 0%, 100%, $hover-opacity);
+
+  box-shadow: #{$shadow};
   &:hover {
-    box-shadow: 0 0 $dist hsla(0, 0%, 0%, $hover-opacity);
+    box-shadow: #{$hover};
   }
   @media screen {
     html[data-color-scheme="dark"] & {
-      box-shadow: 0 0 $dist hsla(0, 0%, 100%, $opacity);
+      box-shadow: #{$shadow-dim};
       &:hover {
-        box-shadow: 0 0 $dist hsla(0, 0%, 100%, $hover-opacity);
+        box-shadow: #{$hover-dim};
       }
     }
   }
   @media screen and (prefers-color-scheme: dark) {
     html:not([data-color-scheme="light"]) & {
-      box-shadow: 0 0 $dist hsla(0, 0%, 100%, $opacity);
+      box-shadow: #{$shadow-dim};
       &:hover {
-        box-shadow: 0 0 $dist hsla(0, 0%, 100%, $hover-opacity);
+        box-shadow: #{$hover-dim};
       }
     }
   }
+}
+
+@mixin drop-shadow($dist: 3rem, $opacity: 0.2, $hover-opacity: 0.4) {
+  @include drop-shadow_impl(false, $dist, $opacity, $hover-opacity);
+}
+
+@mixin drop-shadow-inset($dist: 3rem, $opacity: 0.2, $hover-opacity: 0.4) {
+  @include drop-shadow_impl(true, $dist, $opacity, $hover-opacity);
 }
 
 @mixin drop-shadow-offset($x: 0, $y: 0, $dist: 3rem, $opacity: 0.2, $hover-opacity: 0.4) {

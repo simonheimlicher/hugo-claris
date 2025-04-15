@@ -68,10 +68,10 @@ $link-hover-lit: color.scale(hugo.$colorPrimaryLit, $lightness: -10%);
 $link-focus-lit: hugo.$colorPrimaryLit;
 $link-active-lit: hugo.$colorPrimaryLit;
 
-$link-dim: color.scale(hugo.$colorPrimaryDim, $lightness: 5%);
+$link-dim: color.scale(hugo.$colorPrimaryDim, $lightness: -20%);
 $link-visited-dim: color.scale(
-  color.adjust(hugo.$colorPrimaryDim, $hue: 30, $saturation: -20%),
-  $lightness: 60%
+  color.adjust(hugo.$colorPrimaryDim, $hue: 60, $saturation: -20%),
+  $lightness: 35%
 );
 $link-hover-dim: color.scale(hugo.$colorPrimaryDim, $lightness: 30%);
 $link-focus-dim: hugo.$colorPrimaryDim;
