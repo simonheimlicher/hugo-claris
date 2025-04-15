@@ -93,12 +93,14 @@
 
 {{/* Dispatch to partial for selected entity type */}}
 {{ with $entityType }}
+
   {{ $schemaOrgPartial := printf "claris/_functions/schema-org/%s" $entityType }}
+
   {{ if and false $debug }}
-    {{ warnf "%s calling %s with entityParams.Entities:\n%v"
-        $dbg $schemaOrgPartial
-        (jsonify (dict "indent" "  ") $entityParams.Entities) }}
+    {{ warnf "%s calling %v based on entityType=%v using entityParams:\n%v"
+        $dbg $schemaOrgPartial $entityType (jsonify (dict "indent" "  ") $entityParams) }}
   {{ end }}
+
   {{ $entityMap := partial $schemaOrgPartial $entityParams }}
   {{ if and false $debug }}
     {{ warnf "%s schemaOrgPartial %s returned entityMap:\n%v"
@@ -119,7 +121,7 @@
     {{ end }}
   {{ end }}
 
-  {{ $schemaOrgMeta = dict "Root" (dict
+  {{ $schemaOrgMeta = (dict
     "@context" "http://schema.org"
     "@graph" $graph
   ) }}

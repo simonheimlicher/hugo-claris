@@ -14,10 +14,13 @@
   )
   "Debug" $debug
 ) }}
-
+{{- if $debug }}
+  {{- warnf "%s generating Schema.Org meta using entityParams:\n%v"
+      $dbg (jsonify (dict "indent" "  ") $entityParams) }}
+{{- end }}
 {{- with $schemaOrgMeta := partial "claris/_functions/schema-org/index" $entityParams }}
     <script type="application/ld+json">
-      {{ $schemaOrgMeta.Root | jsonify (dict "indent" "  " "prefix" "      " "noHTMLEscape" true) | safeJS | }}
+      {{ . | jsonify (dict "indent" "  " "prefix" "      " "noHTMLEscape" true) | safeJS }}
     </script>
 {{- else }}
   {{- if or $debug (eq page.RelPermalink (relLangURL "")) }}
@@ -25,4 +28,4 @@
         $dbg (jsonify (dict "indent" "  ") (merge $meta.Site.Data
             (dict "Images" nil) ) ) }}
   {{- end }}
-{{- end }}
+{{- end -}}
