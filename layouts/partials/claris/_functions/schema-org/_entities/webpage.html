@@ -46,9 +46,9 @@
       "genre" (default .Genre .ArticleSection)
       "keywords" .Keywords
   ) }}
-  {{ if and .Date.Created .Date.M (ne .Date.M .Date.Created) }}
+  {{ if and .Date.Created .Date.Modified (ne .Date.Modified .Date.Created) }}
     {{ $webPageData = merge $webPageData (dict
-        "dateModified" (.Date.M.Format $dateFormat)
+        "dateModified" (.Date.Modified.Format $dateFormat)
     ) }}
   {{ end }}
 
