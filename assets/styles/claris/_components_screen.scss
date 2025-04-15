@@ -299,11 +299,14 @@ $indicator-width: var(--toc_indicator_width)) {
         align-items: center;
         min-width: fit-content;
       }
-      &_follow {
+      &_related, &_follow {
         display: flex;
         align-content: center;
         justify-content: space-between;
         flex: 0 0 auto;
+        .nav_item {
+          padding: var(--inner_padding_4-2);
+        }
       }
     }
     &_sub {
@@ -776,6 +779,7 @@ $indicator-width: var(--toc_indicator_width)) {
         top: auto;
         bottom: auto;
         transition: none;
+        column-gap: var(--inner_margin_4-2);
         &::after {
           content: none;
         }
