@@ -80,16 +80,19 @@ headless: true
   {{- with $footerPages }}
   <div class="footer_main inner_horizontal">
   {{- range $id, $page := $footerPages }}
-    {{- $inlineStyle := false }}
-    {{- with .Params.flexbasis }}
-      {{- $inlineStyle = printf ` style="flex-basis: %v"` . | safeHTMLAttr }}
-    {{- end }}
+    {{- if $page.Content | strings.TrimSpace }}
+      {{- $inlineStyle := false }}
+      {{- with $page.Params.flexbasis }}
+        {{- $inlineStyle = printf ` style="flex-basis: %v"` . | safeHTMLAttr }}
+      {{- end }}
+    {{ partial "html-comment" (printf "[%s] content:\n%v" $template (jsonify (dict "indent" "  ") $page.Content) ) }}
     <div class="footer_main-item"{{ with $inlineStyle }}{{ . }}{{ end }}>
-    {{- with .Title }}
+      {{- with $page.Title }}
       <h2 class="footer_title">{{ page.RenderString . }}</h2>
-    {{- end }}
-        {{ $page.Page.Content }}
+      {{- end }}
+        {{ $page.Content }}
     </div>
+    {{- end }}
   {{- end }}
   </div>
   {{- end -}}
