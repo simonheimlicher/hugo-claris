@@ -6,11 +6,10 @@
 {{- $outdated := $meta.Classification.Outdated }}
 
 {{- with $page }}
-{{- $mainSection := (in ($page.Param "mainSections") .Section) -}}
+{{- $mainSection := (in ($page.Param "mainSections") .Section) }}
 
-{{- $displayTableOfContents := and (default true ($page.Param "toc") ) (ge (strings.Count "<li>" .TableOfContents) 2) -}}
-{{- $showComments := default true ($page.Param "comments") }}
-
+{{- $displayTableOfContents := and (default true ($page.Param "toc") ) (ge (strings.Count "<li>" .TableOfContents) 2) }}
+{{- $showComments := default true ($page.Param "comments") -}}
 {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
 {{- if $displayTableOfContents }}
   <aside class="article_aside font-meta">
@@ -18,7 +17,7 @@
   </aside>
 {{- end }}
 <article class="article_content content_singlecolumn content">
-  {{- if (and (eq $itemType "article") $mainSection) -}}
+  {{- if (and (eq $itemType "article") $mainSection) }}
     {{- $metaParams := (merge $ (dict
         "Page" $page
         "ShowAuthor" true
@@ -27,15 +26,15 @@
         "AuthorAvatar" false
         "Template" (printf "%s->%s" $.Template $template)
       )
-    ) }}
+    ) -}}
     {{- partial "claris/_components/meta" $metaParams }}
-  {{- end -}}
+  {{- end }}
   <div class="article_body">
   {{- if $outdated }}
     {{- if not ($page.Param "bestbefore") }}
       {{- warnf "%s[%s]: article is outdated.\n    Add explicit expiration date via parameter 'bestbefore: 2020-12-31' to its front matter to hide this warning" $page $template }}
     {{- end }}
-    {{- partial "claris/_components/outdated" . -}}
+    {{- partial "claris/_components/outdated" . }}
   {{- end -}}
   {{- partial "claris/_components/lede-initial" $page.Content }}
   </div>
@@ -45,4 +44,4 @@
   {{- partial "claris/_components/i18nlist" . }}
 </article>
 {{ partial "html-comment" (printf "[%s]: END" $template) }}
-{{- end }}
+{{- end -}}

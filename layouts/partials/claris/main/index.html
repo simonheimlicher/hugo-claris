@@ -6,8 +6,8 @@
 {{- with $page }}
   {{- $mainKind := (.Scratch.Get "claris.render.main.kind") }}
   {{- $mainInnerClassList := (slice "main_inner" "grid-main") }}
-  {{ if eq $mainKind "page" }}
-    {{ if in ($page.Param "mainSections") .Section }}
+  {{- if eq $mainKind "page" }}
+    {{- if in ($page.Param "mainSections") .Section }}
       {{- $mainInnerClassList = append (slice "section_main-section") $mainInnerClassList }}
     {{- end }}
   {{- end }}
@@ -34,13 +34,12 @@
     "Meta" $meta
     "ItemType" $itemType
     "HeadingLevel" 1
-  ) }}
+  ) -}}
 
   {{- $sidebar := default false ($page.Param "sidebar") }}
   {{- if (in (slice "page") $mainKind) }}
     {{- $sidebar = default true ($page.Param "sidebar") }}
-  {{- end }}
-
+  {{- end -}}
   {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
   {{- $mainHeaderClassList := slice "main_header" "grid-main" }}
   {{- with $featureImageClassList }}
@@ -54,10 +53,10 @@
     {{- $mainPartial := printf "%s/main/%s" $type $mainKind }}
     {{- partial $mainPartial $componentParams }}
     {{- if $sidebar }}
-      {{ partial "claris/_components/sidebar" (merge $componentParams (dict
+      {{- partial "claris/_components/sidebar" (merge $componentParams (dict
         "HeadingLevel" 2
-      ) ) }}
-    {{- end }}
+      ) ) -}}
+    {{- end -}}
   </div>
   {{ partial "html-comment" (printf "[%s]: END" $template) }}
 {{- end -}}

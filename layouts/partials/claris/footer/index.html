@@ -27,7 +27,6 @@ cascade:
 {{- $title := site.Title }}
 {{- $siteAuthor := $meta.Site.Data.Author.Name }}
 {{- $footerSection := $page.Param "footer.section" }}
-
 <div class="footer_inner inner_bottom">
   {{- $footerPages := slice }}
   {{- with $footerSection }}
@@ -89,11 +88,11 @@ headless: true
     {{- with .Title }}
       <h2 class="footer_title">{{ page.RenderString . }}</h2>
     {{- end }}
-    {{ $page.Page.Content }}
+        {{ $page.Page.Content }}
     </div>
   {{- end }}
   </div>
-  {{- end }}
+  {{- end -}}
 
   <div class="footer_links inner_horizontal">
     {{- partialCached "claris/footer/social" $page }}

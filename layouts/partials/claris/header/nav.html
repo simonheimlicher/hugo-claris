@@ -12,7 +12,7 @@
 {{- $name := "" }}
 {{- $children := false }}
 {{- $elementIdPrefix := "nav-menu-item" }}
-{{- partial "html-comment" (printf "BEGIN %v" $template) -}}
+{{ partial "html-comment" (printf "BEGIN %v" $template) -}}
 {{- with $menu }}
           <div class="nav_group nav_group_menu">
   {{- range $menu }}
@@ -126,7 +126,7 @@
               <a href="{{ .RelPermalink }}" class="nav_item{{ $activeClass }}" title="{{ partial `claris/_functions/plainify-html` .Title }}">{{ $menuTitle }}</a>
             </div>
     {{- end }}
-    {{- partial "html-comment" (printf "[%s]: .Section=%v $invisibleSections=%v .Pages=%v"
+    {{ partial "html-comment" (printf "[%s]: .Section=%v $invisibleSections=%v .Pages=%v"
         $template .Section $invisibleSections (delimit .Pages ", ") ) }}
     {{- with .Pages }}
       {{- range (sort (where . "Section" "not in" $excludeSections) "Weight" "desc") -}}
@@ -142,7 +142,7 @@
       {{- end }}
     {{- else }}
       {{- with .Parent -}}
-        {{- partial "html-comment" (printf "[%s]: .Parent.Section=%v $invisibleSections=%v .Parent.Pages=%v"
+        {{ partial "html-comment" (printf "[%s]: .Parent.Section=%v $invisibleSections=%v .Parent.Pages=%v"
             $template .Section $invisibleSections (delimit .Pages ", ") ) }}
         {{- with .Pages -}}
           {{- range (sort (where . "Section" "not in" $excludeSections) "Weight" "desc") -}}
@@ -162,8 +162,7 @@
       {{- end }}
     {{- end }}
   {{- end }}
-
-  {{- partial "html-comment" (printf "[%s]: .AlternativeOutputFormats=%v"
+  {{ partial "html-comment" (printf "[%s]: .AlternativeOutputFormats=%v"
     $template .AlternativeOutputFormats) -}}
   {{- with .AlternativeOutputFormats.Get "print" -}}
     {{- if not $relatedNavEntries }}
@@ -183,8 +182,7 @@
             <a href="{{ .RelPermalink }}" class="nav_item" title="{{ T `screen-view` }}">{{ partial "sprite" (dict "icon" "arrow") }}</a>
           </div>
   {{- end }}
-
-  {{- partial "html-comment" (printf "[%s]: .Param assetDownloadFolders=%v"
+  {{ partial "html-comment" (printf "[%s]: .Param assetDownloadFolders=%v"
     $template (.Param "assetDownloadFolders") ) -}}
   {{- with $page.Param "assetDownloadFolders" }}
      {{- /* partial "html-comment" (printf "%s[%s]: Resources.ByType=%v" $page $template ($page.Resources.ByType "application") ) */ -}}
@@ -201,14 +199,13 @@
             <a href="{{ .RelPermalink }}" class="nav_item" title="{{ T `download-pdf` }} {{ partial `claris/_functions/plainify-html` .Title }}">{{ partial "sprite" (dict "icon" "file-pdf") }}</a>
           </div>
           {{- else }}
-            {{- partial "html-comment" (printf "%s[%s]: fileGlob=%v" $page $template $fileGlob ) }}
+            {{ partial "html-comment" (printf "%s[%s]: fileGlob=%v" $page $template $fileGlob ) }}
           {{- end }}
         {{- end }}
       {{- end }}
     {{- end }}
   {{- end }}
-
-  {{- partial "html-comment" (printf "[%s]: .IsTranslated=%v"
+  {{ partial "html-comment" (printf "[%s]: .IsTranslated=%v"
     $template .IsTranslated) -}}
   {{- if .IsTranslated }}
     {{- if not $relatedNavEntries }}
@@ -219,9 +216,9 @@
               <a href="#" title="{{ T `switch_language_page` }}" class="nav_item">{{ partial "sprite" (dict "icon" "icon-language") }}</a>
               <div class="nav_sub">
                 <span class="nav_child"></span>
-    {{- partial "html-comment" (printf "%s: available translations: %v" $template $page.Translations) -}}
+    {{ partial "html-comment" (printf "%s: available translations: %v" $template $page.Translations) -}}
     {{- range sort site.Languages "Weight" "asc" }}
-      {{- partial "html-comment" (printf "%s: ctx.Lang:%v translation: %v" $template $page.Lang . ) -}}
+      {{ partial "html-comment" (printf "%s: ctx.Lang:%v translation: %v" $template $page.Lang . ) -}}
       {{- if (eq (printf "%s" $page.Lang) (printf "%s" .)) }}
                 <a href="{{ $link }}" class="nav_child nav_item nav_active">{{ $page.Language.LanguageName }}</a>
       {{- else }}
@@ -251,4 +248,4 @@
           </div>
   {{- end }}
 {{- end }}
-{{- partial "html-comment" (printf "END   %v" $template) -}}
+{{ partial "html-comment" (printf "END   %v" $template) -}}

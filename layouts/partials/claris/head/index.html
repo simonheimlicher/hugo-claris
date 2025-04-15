@@ -5,7 +5,7 @@
 {{- $dbg := printf "%s [%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+(?:/[^/]+)?)$` `$1` $template) }}
 
 {{- $assetVariant := .AssetVariant }}
-{{- $partialParams := merge . (dict "Template" (printf "%s->%s" .Template $template "Debug" $debug) ) }}
+{{- $partialParams := merge . (dict "Template" (printf "%s->%s" .Template $template) "Debug" $debug ) }}
 
 {{- $backgroundLight := $page.Param "colors.color_background_lit" }}
 {{- $backgroundDark := $page.Param "colors.color_background_dim" }}
@@ -59,3 +59,4 @@
     <noscript>
       <style>.noscript-hide { display: none !important; }</style>
     </noscript>
+{{- /* Avoid trailing newline */ -}}

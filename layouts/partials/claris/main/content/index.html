@@ -4,4 +4,4 @@
 {{- $contentPartial := printf "claris/main/content/%s" $mainKind }}
 {{- $contentParams := (merge $ (dict "Template" (printf "%s->%s" $.Template $template) ) ) }}
 {{ partial $contentPartial $contentParams }}
-{{ partial "html-comment" (printf "[%s]:   END" $template) }}
+{{ partial "html-comment" (printf "[%s]:   END" $template) -}}

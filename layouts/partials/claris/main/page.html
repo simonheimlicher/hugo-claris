@@ -1,5 +1,4 @@
 {{- $template := "claris/main/page" }}
-
 {{ partial "html-comment" (printf "[%s]: BEGIN" $template) }}
 {{- $partialParams := merge $ (dict "Template" (printf "%s->%s" $.Template $template) ) }}
 {{- partial "claris/main/content/index" $partialParams }}

@@ -92,7 +92,6 @@
   {{- else }}
     {{- errorf "%s page.Paginate returned %v. $itemsMeta=%v" $dbg $paginated $itemsMeta }}
   {{- end }}
-
   {{- if (eq $listLayout "grid") }}
     </div>
   {{- else if (eq $listLayout "list") }}
@@ -100,4 +99,4 @@
   {{- end }}
 {{- /* {{- else }}
   {{- warnf "%s Nothing to list: .Items=%v" $dbg $itemsMeta }} */ -}}
-{{- end }}
+{{- end -}}
