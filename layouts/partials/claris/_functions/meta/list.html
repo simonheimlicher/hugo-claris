@@ -1,7 +1,7 @@
 {{ $page := .Page }}
 {{ $rootPage := default $page .RootPage }}
 {{ $template := "claris/_functions/meta/list" }}
-{{ $debug := false }}
+{{ $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
 {{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (default "meta/list: MISSING .Template" .Template) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{ if $debug }}
@@ -92,8 +92,16 @@
     {{ if $debug }}
       {{ warnf "%s[%s]: Found items to list: validListItems=%v" $page $template $validListItems }}
     {{ end }}
+    {{ $listItemMetaParams := (dict
+        "RootPage" $rootPage
+        "AssetVariant"
+        $assetVariant
+        "Template" (printf "%s->%s" $.Template $template)
+        "Debug" $debug
+    ) }}
+
     {{ range $validListItems }}
-      {{ $listItemMetaParams := (dict "Page" . "RootPage" $rootPage "AssetVariant" $assetVariant "Template" $template "Debug" $debug) }}
+      {{ $listItemMetaParams = merge $listItemMetaParams (dict "Page" . ) }}
       {{ $singleMeta := partialCached "claris/_functions/meta/single" $listItemMetaParams .Permalink }}
       {{ $classificationMeta := partialCached "claris/_functions/meta/classification" $listItemMetaParams .Permalink }}
       {{ $itemMeta := merge $singleMeta $classificationMeta }}
@@ -106,7 +114,8 @@
           {{ warnf "%s[%s]: .Kind=%v: $page=%v $rootPage=%v" $page $template .Kind $page $rootPage }}
         {{ end }}
         {{ if (eq $rootPage $page) }}
-          {{ $itemListMeta := partial "claris/_functions/meta/list" $listItemMetaParams }}
+          {{ $itemListMeta := partialCached "claris/_functions/meta/list"
+              $listItemMetaParams $assetVariant.Key $listItemMetaParams.Page.Permalink }}
           {{ $itemMeta = merge $itemMeta $itemListMeta }}
           {{ if $debug }}
             {{ warnf "%s[%s]: .Kind=%v: added itemListMeta for %d items" $page $template .Kind (len $itemMeta.List.Data.Items) }}
