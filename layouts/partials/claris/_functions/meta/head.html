@@ -49,9 +49,9 @@
   {{ $subtitleTitleSep := " – " }}
   {{ $subtitleSepLen := len $subtitleTitleSep }}
 
-  {{ $title      := default $headMeta.Formatted.title      | default $headMeta.Data.title      | default .Title             | .RenderString | default "" }}
-  {{ $subtitle   := default $headMeta.Formatted.subtitle   | default $headMeta.Data.subtitle   | default .Params.subtitle   | .RenderString | default "" }}
-  {{ $supertitle := default $headMeta.Formatted.supertitle | default $headMeta.Data.supertitle | default .Params.supertitle | .RenderString | default "" }}
+  {{ $title      := default $headMeta.Formatted.title      | default $headMeta.Data.title      | default .Title             | partial "claris/_functions/plainify-html" | default "" }}
+  {{ $subtitle   := default $headMeta.Formatted.subtitle   | default $headMeta.Data.subtitle   | default .Params.subtitle   | partial "claris/_functions/plainify-html" | default "" }}
+  {{ $supertitle := default $headMeta.Formatted.supertitle | default $headMeta.Data.supertitle | default .Params.supertitle | partial "claris/_functions/plainify-html" | default "" }}
 
   {{/* Derive a plain text, sanitized version of title, subtitle and supertitle for length calculations */}}
   {{ $titlePlain      := $title      | partial "claris/_functions/plainify-string" }}
@@ -72,16 +72,44 @@
   {{ $description := "" }}
 
   {{ with .Description }}
-      {{ $description = . }}
+      {{ $description = partial "claris/_functions/plainify-html" }}
   {{ else }}
-    {{ with .Summary }}
-      {{ $description = . }}
+    {{/* NOTE: Only use
+    [PAGE.Summary](https://gohugo.io/content-management/summaries/) if
+    `.Content` contains a `<!--more-->` tag. If this is not the case, Hugo
+    extracts text itself and it uses not only `<p>` tags but also `<figure>`.
+    This may lead to suprising results on pages that don't start with a heading
+    or paragaph of text. Instead, we manually extract heading and paragraph
+    elements. Note that we need to convert the result into plain text to ensure
+    it can safely be rendered to HTML */}}
+    {{/* Regexes are prefixed with `(?s)` to allow the dot symbol (`.`) to match
+    newline characters (`\n`) */}}
+    {{ with $match := findRE `<!--more-->` .Content }}
+      {{ $description = .Summary }}
+      {{ if $debug }}
+        {{ warnf "%s .Content contains `<!--more-->`: match=%v. Set description=.Summary:\n%v"
+            $dbg $match $description }}
+      {{ end }}
+    {{ else }}
+      {{ $limitTextBlocks := 3 }}
+      {{ $textBlocksRE := `(?s)<p>.*?</p>|<h[1-6]>.*?</h[1-6]>|<blockquote>.*?</blockquote>` }}
+      {{ $textBlocks := findRE $textBlocksRE .Content $limitTextBlocks }}
+      {{ $cleanBlocks := slice }}
+      {{ range $textBlocks }}
+        {{ if and . (not (findRE "<(?:pre|code|figure)" . ) ) }}
+          {{ $cleanBlocks = append (plainify . | strings.TrimSpace) $cleanBlocks }}
+        {{ end }}
+      {{ end }}
+      {{ $description = delimit $cleanBlocks " " | safeHTML }}
+      {{ if $debug }}
+        {{ warnf "%s textBlocksRE=%q. .Content:\n%vtextBlocks:\n%v\ncleanBlocks:\n%v\ndescription:\n%v"
+            $dbg $textBlocksRE .Content $textBlocks $cleanBlocks $description }}
+      {{ end }}
     {{ end }}
   {{ end }}
-  {{ $description = $description | .RenderString }}
 
   {{ with .Params.tagline }}
-    {{ $tagline = $tagline | .RenderString }}
+    {{ $tagline = $tagline | partial "claris/_functions/plainify-html" }}
   {{ end }}
 
   {{/* We only process the title if there is a subtitle or a supertitle
@@ -159,11 +187,11 @@
       {{ $title = default .Data.Plural (T (printf "all_%s" .Data.Plural) ) | strings.FirstUpper }}
       {{ $description = printf "%s %s" (T "taxonomy_index_description") (T .Data.Singular ) | strings.FirstUpper }}
 
-      {{/* {{ if $debug }}
+      {{ if and false $debug }}
         {{ warnf "%s %s: Title='%s' Headline='%s' [.Singular=%v .Plural=%v .Section=%v .Title=%v]"
             $dbg (strings.ToUpper .Kind) $title $headline
             .Data.Singular .Data.Plural .Section .Title }}
-      {{ end }} */}}
+      {{ end }}
 
     {{ else if in (slice "term") .Kind }}
 
@@ -176,7 +204,6 @@
         {{ $supertitle = printf "%s %s" (T "articles_in_taxonomy") (T .Data.Singular 1) | strings.FirstUpper }}
         {{ $description = printf "%s %s %s %s" (T "term_index_description") (T "articles_in_taxonomy") (T .Data.Singular 1) $termTitle | strings.FirstUpper }}
       {{ end }}
-      {{/* {{ $headline = printf "%s %s %s" (humanize $supertitle) (T .Data.Plural 1) (.RenderString (printf "*%s*" (default $title (T (lower $title) ) ) ) ) | safeHTML }} */}}
       {{ $title = $termTitle }}
       {{ $headline = printf "%s: %s" $supertitle $title | strings.FirstUpper }}
 
@@ -213,22 +240,26 @@
     {{ $title = site.Title }}
   {{ end }}
 
-  {{ $keywords := slice }}
-  {{ with $keywords = .Params.keywords }}
+  {{ $keywordsPlain := slice }}
+  {{ with $keywordsPlain = .Params.keywords }}
   {{ else }}
+    {{ $numKeywords := 15 }}
+    {{ $keywordsRaw := slice }}
     {{ range slice $title $supertitlePlain $subtitlePlain $description }}
       {{ with $anchorized := anchorize . }}
         {{ $words := split . "-" }}
         {{ range $words }}
-          {{ $keywords = append . $keywords }}
+          {{ $keywordsRaw = append . $keywordsRaw }}
         {{ end }}
       {{ end }}
     {{ end }}
-  {{ end }}
-  {{ $keywordsPlain := $keywords | sort | uniq }}
-  {{ if and true $debug }}
-    {{ warnf "%s keywords=%v | sort | uniq keywordsPlain=%v"
-        $dbg $keywords $keywordsPlain }}
+    {{ $keywordsPlain = $keywordsRaw | uniq | first $numKeywords }}
+    {{ if and true $debug }}
+      {{ warnf "%s keywordsRaw: %v"
+          $dbg $keywordsRaw }}
+      {{ warnf "%s keywordsPlain: %v"
+          $dbg $keywordsPlain }}
+    {{ end }}
   {{ end }}
 
   {{/*  Load list of stopwords as a slice array Add stop words for your content
@@ -238,7 +269,6 @@
   {{ with $stopWords := index site.Data $stopwordIndex }}
     {{/*  Compare string words to stopwords and return only non-matches  */}}
     {{ $keywordsFiltered := complement $stopWords $keywordsPlain }}
-    {{ $keywordsFiltered := complement $stopWords $keywordsPlain | sort | uniq }}
     {{ if $debug }}
       {{ warnf "%s stop word list with %d entries removed %d stop words, leaving %d keywords: %s"
         $dbg (len $stopWords) (sub (len $keywordsPlain) (len $keywordsFiltered) ) (len $keywordsFiltered) $keywordsFiltered }}
@@ -293,10 +323,13 @@
     {{ end }}
   {{ end }}
 
-  {{ warnf "%s .Kind=%s .Section=%v .Title=%v [.Singular=%v .Plural=%v] called with:\n%v\nReturning\n%v"
+  {{ warnf "%s .Kind=%s .Section=%v .Title=%v [.Singular=%v .Plural=%v] called %vReturning\n%v"
       $dbg $page.Kind $page.Section $page.Title $page.Data.Singular $page.Data.Plural
-      (jsonify (dict "indent" "  ") $headMeta )
-      (jsonify (dict "indent" "  ") $titleVariantValid ) }}
+      (cond $headMeta
+        (printf "with headMeta:\n%v\n" (jsonify (dict "indent" "  ") $headMeta ) )
+        "without headMeta. "
+      )
+      (jsonify (dict "indent" "  ") $titleVariant ) }}
 
 {{ end }}
 

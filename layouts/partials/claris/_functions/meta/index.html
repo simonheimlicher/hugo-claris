@@ -1,6 +1,6 @@
 {{ $page := .Page }}
 {{ $template := "claris/_functions/meta/index" }}
-{{ $debug := false }}
+{{ $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
 {{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (default "meta/index: MISSING .Template" .Template) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{ $assetVariant := .AssetVariant }}
