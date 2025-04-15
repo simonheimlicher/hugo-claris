@@ -2,7 +2,7 @@
 {{ $page := default page .Page }}
 {{ $template := "claris/_functions/meta/images/get-image" }}
 {{ $debug := and false (or .Debug ($page.Param "clarisdebug") ) }}
-{{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{ $dbg := printf "%s [%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+(?:/[^/]+)?)$` `$1` $template) }}
 
 {{ $meta := page.Scratch.Get "clarismeta" }}
 {{ $defaultKey := "default" }}
@@ -14,28 +14,36 @@
 {{ $imageWidth := .width }}
 {{ $imageHeight := .height }}
 {{ $return := default false (lower .return) }}
+{{/* Default to only returning primary image versions, i.e., versions that have
+been validated or deliberately created to match what is expected by the given
+kind */}}
+{{ $targetDisposition := default "primary" .disposition }}
 
 {{ if and (or $imageWidth $imageHeight) (not (and $imageWidth $imageHeight) ) }}
   {{ errorf "%s invalid value for .width=%v and .height%v: either none must be set or both" $dbg $imageWidth $imageHeight }}
 {{ end }}
 
-{{- $getImageParams := . }}
 {{ if $debug }}
-  {{- $getImageParams = merge . (dict "Page" "omitted")}}
-  {{ warnf "%s lang=%v key=.Data.Images.%v.variant.%v.version.%v with imageAspect=%v imageRatio=%v based on arguments\n%v"
+  {{ warnf "%s lang=%v looking for image in .Data.Images.%v.variant.%v.version.%v with imageAspect=%v imageRatio=%v from arguments:\n%v"
       $dbg site.Language.Lang $imageKind $imageVariant $imageVersion $imageAspect $imageRatio
-      (jsonify (dict "indent" "  ") $getImageParams) }}
+      (jsonify (dict "indent" "  ") (merge $ (dict "Page" "omitted") ) ) }}
 {{ end }}
+
+{{ $closestAspectParamsBase := merge $ (dict
+    "disposition" $targetDisposition
+    "Page" $page
+    "Template" (printf "%v->%v" $.Template $template)
+) }}
 
 {{ $result := false }}
 {{ $results := false }}
 {{ $variantMeta := false }}
-{{ $mergedMeta := merge $meta.Site.Data.Images $meta.Single.Data.Images }}
-{{ with $mergedMeta }}
+{{ $mergedImageMeta := merge $meta.Site.Data.Images $meta.Single.Data.Images }}
+{{ with $mergedImageMeta }}
   {{ with default (index . $defaultKey) (index . $imageKind)  }}
     {{ with .variant }}
       {{ with $variantMeta = default (index . $defaultKey) (index . $imageVariant) }}
-        {{ with .version }}
+        {{ with $version := .version }}
           {{ if $imageVersion }}
             {{ with $versionMeta := default (index . $defaultKey) (index . $imageVersion) }}
               {{ $result = . }}
@@ -44,47 +52,82 @@
                   $dbg site.Language.Lang $imageKind $imageVariant $imageVersion $defaultKey (jsonify (dict "indent" "  ") . ) }}
             {{ end }}
           {{ else if and $imageWidth $imageHeight }}
-            {{ with $bestMatchVersion := partial "claris/_functions/resources/images/closest-aspect" (dict
-                "Page" $page
+            {{ with $bestMatchVersion := partial "claris/_functions/resources/images/closest-aspect"
+              (merge $closestAspectParamsBase (dict
                 "width" $imageWidth
                 "height" $imageHeight
                 "version" .
-                "Debug" $debug
-              ) }}
+              ) ) }}
               {{ $result = .meta }}
               {{ if $debug }}
                 {{ warnf "%s using closest match for width=%v height=%v:\n%v"
                     $dbg $imageWidth $imageHeight (jsonify (dict "indent" "  ") $result ) }}
               {{ end }}
+            {{ else }}
+              {{ if $debug }}
+                {{ warnf "%s could not find a closest match for width=%v height=%v in .version:\n%v"
+                    $dbg $imageWidth $imageHeight (jsonify (dict "indent" "  ") $version ) }}
+              {{ end }}
             {{ end }}
           {{ else if $imageAspect }}
-            {{ with $bestMatchVersion := partial "claris/_functions/resources/images/closest-aspect" (dict
-                "Page" $page
+            {{ $closestAspectParams := merge $closestAspectParamsBase (dict
                 "aspect" $imageAspect
                 "version" .
-                "Debug" $debug
-              ) }}
+            ) }}
+            {{ with $bestMatchVersion := partial "claris/_functions/resources/images/closest-aspect" $closestAspectParams }}
               {{ $result = .meta }}
               {{ if $debug }}
-                {{ warnf "%s using closest match for aspect=%v:\n%v"
-                    $dbg $imageAspect (jsonify (dict "indent" "  ") $result ) }}
+                {{ warnf "%s using closest match for aspect=%v: closestAspectParams:\n%v\nresult:\n%v"
+                    $dbg $imageAspect (jsonify (dict "indent" "  ") $closestAspectParams )
+                    (jsonify (dict "indent" "  ") $result ) }}
+              {{ end }}
+            {{ else }}
+              {{ if $debug }}
+                {{ warnf "%s using closest match for aspect=%v: closestAspectParams:\n%v\nin .version:\n%v"
+                    $dbg $imageAspect (jsonify (dict "indent" "  ") $closestAspectParams )
+                    (jsonify (dict "indent" "  ") $version) }}
               {{ end }}
             {{ end }}
           {{ else if $imageRatio }}
-            {{ with $bestMatchVersion := partial "claris/_functions/resources/images/closest-aspect" (dict
-                "Page" $page
+            {{ $closestAspectParams := merge $closestAspectParamsBase (dict
                 "ratio" $imageRatio
                 "version" .
-                "Debug" $debug
-              ) }}
+            ) }}
+            {{ with $bestMatchVersion := partial "claris/_functions/resources/images/closest-aspect" $closestAspectParams }}
               {{ $result = .meta }}
               {{ if $debug }}
-                {{ warnf "%s using closest match for ratio=%v:\n%v"
-                    $dbg $imageRatio (jsonify (dict "indent" "  ") $result ) }}
+                {{ warnf "%s using closest match for ratio=%v: closestAspectParams:\n%v\nresult:\n%v"
+                    $dbg $imageRatio (jsonify (dict "indent" "  ") $closestAspectParams )
+                    (jsonify (dict "indent" "  ") $result ) }}
+              {{ end }}
+            {{ else }}
+              {{ if $debug }}
+                {{ warnf "%s using closest match for ratio=%v: closestAspectParams:\n%v\nin .version:\n%v"
+                    $dbg $imageRatio (jsonify (dict "indent" "  ") $closestAspectParams )
+                    (jsonify (dict "indent" "  ") $version) }}
               {{ end }}
             {{ end }}
           {{ else }}
             {{ $results = . }}
+            {{ if $targetDisposition  }}
+              {{ $resultsMatchingDisposition := slice }}
+              {{ range $key, $imageMeta := $results }}
+                {{ if eq $imageMeta.disposition $targetDisposition }}
+                  {{ $resultsMatchingDisposition = merge $resultsMatchingDisposition (dict $key $imageMeta) }}
+                {{ end }}
+              {{ end }}
+              {{ if $debug }}
+                {{ warnf "%s filtered results by targetDisposition=%v: all results:\n%v\nresultsMatchingDisposition:\n%v"
+                    $dbg $targetDisposition  (jsonify (dict "indent" "  ") $results )
+                    (jsonify (dict "indent" "  ") $resultsMatchingDisposition) }}
+              {{ end }}
+              {{ $results = $resultsMatchingDisposition }}
+            {{ else }}
+              {{ if $debug }}
+                {{ warnf "%s targetDisposition=%v: returning all results:\n%v"
+                    $dbg $targetDisposition  (jsonify (dict "indent" "  ") $results ) }}
+              {{ end }}
+            {{ end }}
           {{ end }}
         {{ else }}
           {{ warnf `%s cannot find any meta for lang=%v matching key=".Data.Images.%v.variant.%v.version" nor ".%v.version":\n%v`
@@ -103,7 +146,7 @@
         $dbg site.Language.Lang $imageKind $defaultKey (jsonify (dict "indent" "  ") . ) }}
   {{ end }}
 {{ end }}
-{{- if or $result $results}}
+{{ if or $result $results}}
   {{ with $return }}
     {{ if in (slice "urls" "canonicalurls") . }}
       {{ $imageMeta = slice }}
@@ -149,9 +192,11 @@
           }}
     {{ end }}
   {{ end }}
-{{- else }}
-  {{- $getImageParams = merge . (dict "Page" "omitted")}}
-  {{ warnf "%s cannot find any meta matching key '.Data.Images' for lang=%v:\n%v"
-      $dbg site.Language.Lang (jsonify (dict "indent" "  ") $getImageParams) }}
-{{- end }}
+{{ else }}
+  {{ if $debug }}
+    {{ warnf "%s cannot find any meta matching key '.Data.Images' for lang=%v with arguments:\n%v\n.Data.Images:\n%v"
+        $dbg site.Language.Lang (jsonify (dict "indent" "  ") (merge $ (dict "Page" "omitted") ) )
+        (jsonify (dict "indent" "  ") $mergedImageMeta) }}
+  {{ end }}
+{{ end }}
 {{ return $imageMeta }}

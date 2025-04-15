@@ -56,6 +56,7 @@
       "Page" $page
       "kind" "share"
       "return" "canonicalurls"
+      "Template" (printf "%s->%s" $.Template $template)
       "Debug" $debug
     ) }}
     {{ $webPageData = merge $webPageData (dict

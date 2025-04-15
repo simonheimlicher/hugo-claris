@@ -58,6 +58,7 @@
       "Page" $page
       "kind" "share"
       "return" "canonicalurls"
+      "Template" (printf "%s->%s" $.Template $template)
       "Debug" $debug
   ) }}
     {{ $articleData = merge $articleData (dict "image" $shareImageURLs) }}

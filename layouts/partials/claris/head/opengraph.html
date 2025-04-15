@@ -46,8 +46,8 @@
   {{- with $image := partial "claris/_functions/meta/images/get-image" (dict
     "Page" $page
     "kind" "share"
-    "width" 1200
-    "height" 627
+    "version" "default"
+    "Template" (printf "%s->%s" $.Template $template)
     "Debug" $debug
   ) -}}
     {{- with $resource := .resource }}

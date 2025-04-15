@@ -14,8 +14,21 @@
 {{ $imageWidth := .width }}
 {{ $imageHeight := .height }}
 {{ $return := default false (lower .return) }}
+{{/* Since we post-process the image, we ask `get-image` for any image versions,
+i.e., we want
 
-{{ with $matchingImage := partial "claris/_functions/meta/images/get-image" $ }}
+* "primary": versions that have been validated or deliberately created to match
+  what is expected by the given kind
+* "supplementry": any other existing versions (originals) */}}
+{{ $targetDisposition := default false .disposition }}
+
+{{ $getImageParams := merge $ (dict
+    "Page" $page
+    "disposition" $targetDisposition
+    "Template" (printf "%s->%s" $.Template $template)
+  )
+}}
+{{ with $matchingImage := partial "claris/_functions/meta/images/get-image" $getImageParams }}
   {{ $processArgs := dict }}
   {{/* Filter arguments for `process-image` */}}
   {{ range $key := slice "width" "height" "aspect" "ratio" }}
@@ -58,8 +71,8 @@
     {{ end }}
   {{ end }}
 {{ else }}
-  {{ $getImageParams = merge . (dict "Page" "omitted")}}
   {{ warnf "%s cannot find any meta matching key '.Data.Images' for lang=%v:\n%v"
-      $dbg site.Language.Lang (jsonify (dict "indent" "  ") $getImageParams) }}
+      $dbg site.Language.Lang (jsonify (dict "indent" "  ")
+        (merge $ (dict "Page" "omitted") ) ) }}
 {{ end }}
 {{ return $imageMeta }}

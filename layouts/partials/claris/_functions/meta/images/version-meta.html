@@ -9,6 +9,9 @@
 {{ $versionName := $imgMeta.name }}
 {{ $versionResource := $imgMeta.resource }}
 {{ $versionIndex := $imgMeta.index }}
+{{ $versionOrigin := $imgMeta.origin }}
+{{ $versionDisposition := $imgMeta.disposition }}
+
 {{ with partialCached "claris/_functions/resources/images/is-image" $versionResource $versionResource }}
   {{ $aspectRatio := partial "claris/_functions/resources/images/get-ratio-fraction" $versionResource }}
 
@@ -32,6 +35,8 @@
         "aspect" $aspectRatio.human
         "ratio" $aspectRatio.float
         "format" $versionResource.MediaType.SubType
+        "origin" $versionOrigin
+        "disposition" $versionDisposition
       )
     )
   ) }}

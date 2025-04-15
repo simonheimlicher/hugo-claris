@@ -11,7 +11,8 @@
   {{- with partial "claris/_functions/meta/images/get-image" (dict
     "Page" $page
     "kind" "share"
-    "aspect" "16x9"
+    "version" "default"
+    "Template" (printf "%s->%s" $.Template $template)
     "Debug" $debug
   ) }}
     {{- $shareImageURL = .canonicalurl }}

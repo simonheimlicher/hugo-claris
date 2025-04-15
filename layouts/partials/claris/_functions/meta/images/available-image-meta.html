@@ -198,6 +198,8 @@ $imageKindMeta = (dict
             "resource" $imgResource
             "index" $versionIndex
             "name" $versionName
+            "origin" "existing"
+            "disposition" "supplementary"
           ) }}
           {{- $imgVersionMeta := partial "claris/_functions/meta/images/version-meta" (dict "Page" $page "meta" $imgMeta) }}
           {{- $imageKindVariantMeta = merge $imageKindVariantMeta (dict $variantName $imgVersionMeta) }}
