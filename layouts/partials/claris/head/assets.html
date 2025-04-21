@@ -7,9 +7,6 @@
 
 {{- $assetVariant := .AssetVariant -}}
 {{- $bundleParams := $assetVariant.BundleParams  }}
-    <script>
-      try { document.documentElement.dataset.colorScheme = window.localStorage.getItem('userSelectedColorScheme'); } catch (e) { }
-    </script>
 
 {{- if and false $debug }}
   {{- warnf "%s assetVariant:\n%v" $dbg (jsonify (dict "indent" "  ") $assetVariant) -}}

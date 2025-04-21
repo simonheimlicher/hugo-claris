@@ -15,9 +15,10 @@
 {{ end }}
 
 {{ $bundleMap := (slice
-    (dict "base"     (dict "target" "body" "type" "inline") )
-    (dict "enhanced" (dict "target" "body" "type" "defer" "priority" "auto") )
-    (dict "optional" (dict "target" "body" "type" "defer" "priority" "low") )
+    (dict "head"     (dict "target" "head-end" "type" "inline") )
+    (dict "base"     (dict "target" "body-end" "type" "inline") )
+    (dict "enhanced" (dict "target" "body-end" "type" "defer" "priority" "auto") )
+    (dict "optional" (dict "target" "body-end" "type" "defer" "priority" "low") )
 ) }}
 {{ with $page.Param "assets.scripts.bundles" }}
   {{ if and false $debug }}

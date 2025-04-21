@@ -70,7 +70,7 @@ function updateSourceMedia(scheme) {
         // ... otherwise, remove the 'srcset' attribute to hide the image
       } else if (source.srcset) {
           source.media = source.dataset.media;
-          source.srcset = [];
+          source.removeAttribute("srcset");
         }
       }
       // Otherwise, we let the browser decide which image to load
@@ -85,9 +85,11 @@ function updateSourceMedia(scheme) {
       const imgs = picture.querySelectorAll("img[style]");
       imgs.forEach((img) => {
         if (img?.style) {
-          img.dataset.style = img.style;
+          // Get string value of the inline `style` attribute
+          img.dataset.style = img.getAttribute('style');
         }
-        img.style = variantStyleAttr;
+        // Set string value of the inline `style` attribute
+        img.setAttribute('style', variantStyleAttr);
       });
     }
   });
@@ -227,6 +229,6 @@ export function colorSchemeInit() {
   document.querySelector('.nav_color-scheme_choice').addEventListener('click', function () {
     setUserColorScheme(true, true);
   });
-  // Note: Moved call to `setUserColorScheme` into `claris/head/assets`
-  // to allow loading variant images before JavaScript bundle has been fetched
+
+  setUserColorScheme();
 }

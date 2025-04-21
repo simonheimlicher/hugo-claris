@@ -1,0 +1,3 @@
+{{- $scriptParams := merge . (dict "Target" "head-end")  }}
+{{- partialCached "claris/_assets/scripts"
+    $scriptParams $scriptParams.Target .AssetVariant.CoalesceLanguageKey }}

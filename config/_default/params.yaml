@@ -162,15 +162,18 @@ assets:
 
   scripts:
     bundles:
+      - head:
+          target: head-end
+          type: inline
       - base:
-          target: body
+          target: body-end
           type: inline
       - enhanced:
-          target: body
+          target: body-end
           type: defer
           priority: auto
       - optional:
-          target: body
+          target: body-end
           type: defer
           priority: low
 

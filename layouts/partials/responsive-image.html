@@ -121,7 +121,7 @@
 {{- $noscriptHideClass := "noscript-hide" }}
 {{- $lazyloadPolyfillClass := "lazyload" }}
 {{- $scriptBasedLoading := or $lazy $variantSpec -}}
-{{- $includePlaceholder := or $includePlaceholder $scriptBasedLoading }}
+{{- $includePlaceholder = or $includePlaceholder $scriptBasedLoading }}
 {{- $includeNoscriptFallback := $includePlaceholder }}
 
 <!-- Always include the low-quality placeholder to avoid the jarring white hole on slow connections -->
@@ -301,9 +301,18 @@
           $dbg (len .) (delimit $pictureResourcesSummary "\n") }}
     {{- end }}
     {{- $defaultSrcURL := "" }}
+    {{- $dummyURL := "" }}
     {{- with (where $pictureResources "variant" "eq" $defaultVariantName) }}
-      {{- with last 1 (index . 0).formatsrcsets.formats }}
-        {{- $defaultSrcURL = (index . 0).resource.RelPermalink }}
+      {{- with (index . 0).formatsrcsets }}
+        {{- if $debug }}
+          {{- warnf "%s default variant:\n%v" $dbg (jsonify (dict "indent" "  ") . ) }}
+        {{- end }}
+        {{- $dummyURL = .dummy }}
+        {{- with last 1 .formats }}
+          {{- with (index . 0) }}
+            {{- $defaultSrcURL = .resource.RelPermalink }}
+          {{- end }}
+        {{- end }}
       {{- end }}
     {{- end }}
     {{- if not $defaultSrcURL }}
@@ -345,16 +354,14 @@
           {{- $imgWidth := default .resource.Width $imageResourceArgs.Width }}
           {{- $imgHeight := default .resource.Height $imageResourceArgs.Height }}
           <source type="{{ .resource.MediaType }}"
-            data-media="{{ $media }}" {{ printf "data-style=%q" $variantInlineStyleAttr | safeHTMLAttr }}
-          {{- if $includePlaceholder }}
-                {{ printf "srcset=%q" (printf  "%s %dw" $placeholderInlineImg $imgWidth) | safeHTMLAttr }}
+            {{- with $multiVariant }}
+                 media="not all"
+            data-media="{{ $media }}"
+            {{- end }}
+                {{ printf `srcset=%q` (printf  `%s %dw` $dummyURL $imgWidth) | safeHTMLAttr }}
            data-srcset="{{ .srcset }}"
-          {{- else }}
-                srcset="{{ .srcset }}"
-          {{- end -}}
-          {{- with $imgSizes }}
-                 sizes="{{ . | safeHTMLAttr }}"
-          {{- end }}
+                {{ printf `sizes=%q` $imgSizes | safeHTMLAttr }}
+            {{ printf `data-style=%q` $variantInlineStyleAttr | safeHTMLAttr }}
           >
       {{- end }}
     {{- end }}
@@ -369,24 +376,17 @@
               $dbg $media (jsonify (dict "indent" "  ") $nonDefaultFormats ) }}
         {{- end }}
         {{- $variantInlineStyleAttr := .style }}
-        {{- $placeholderInlineImg := .formatsrcsets.placeholder }}
         {{- range $nonDefaultFormats }}
           {{- $imgWidth := default .resource.Width $imageResourceArgs.Width }}
           {{- $imgHeight := default .resource.Height $imageResourceArgs.Height }}
           <source type="{{ .resource.MediaType }}"
-            {{ with $multiVariant }}
+            {{- with $multiVariant }}
+                 media="not all"
             data-media="all"
-            {{ end }}
-            {{ printf "data-style=%q" $variantInlineStyleAttr | safeHTMLAttr }}
-            {{- if $includePlaceholder }}
-              {{ printf "srcset=%q" (printf  "%s %dw" $placeholderInlineImg $imgWidth) | safeHTMLAttr }}
-              data-srcset="{{ .srcset }}"
-            {{- else }}
+            {{ end -}}
                 srcset="{{ .srcset }}"
-            {{- end -}}
-            {{- with $imgSizes }}
-                 sizes="{{ . | safeHTMLAttr }}"
-            {{- end }}
+                {{ printf `sizes=%q` $imgSizes | safeHTMLAttr }}
+            {{ printf `data-style=%q` $variantInlineStyleAttr | safeHTMLAttr }}
           >
         {{- end }}
       {{- end }}
@@ -398,34 +398,33 @@
       {{- end }}
       {{- if $placeholderAsBackground }}
         {{ $imgInlineStyleSlice = append (printf `background-image: url('%s')` $placeholderInlineImg) $imgInlineStyleSlice}}
+        {{- /* warnf "%s added placeholder to imgInlineStyleSlice:\n%v"
+            $dbg (jsonify (dict "indent" "  ") $imgInlineStyleSlice) */ -}}
       {{- end }}
       {{- range (last 1 .formatsrcsets.formats) }}
         {{- $srcURL := .resource.RelPermalink }}
         {{- $imgWidth := default .resource.Width $imageResourceArgs.Width }}
         {{- $imgHeight := default .resource.Height $imageResourceArgs.Height }}
-        {{- $imgInlineStyleSlice := slice }}
           <img  class="{{ with $imgClass }}{{ . }}{{ end }}{{ if $lazy }} {{ $lazyloadPolyfillClass }}{{ end }}{{ if $includeNoscriptFallback }} {{ $noscriptHideClass }}{{ end }}"
                 width="{{ $imgWidth }}" height="{{ $imgHeight }}"
             {{- if $includePlaceholder }}
-                  {{ printf "src=%q" $placeholderInlineImg | safeHTMLAttr }}
-              {{ printf " srcset=%q" (printf  "%s %dw" $placeholderInlineImg $imgWidth) | safeHTMLAttr }}
+                  {{ printf `src=%q` $placeholderInlineImg | safeHTMLAttr }}
              data-src="{{ $srcURL }}"
           data-srcset="{{ .srcset }}"
+           {{ printf `data-sizes=%q` $imgSizes | safeHTMLAttr }}
               {{- if $lazy }}
               loading="lazy"
               {{- end }}
             {{- else }}
                   src="{{ $srcURL }}"
               srcset="{{ .srcset }}"
+                {{ printf `sizes=%q` $imgSizes | safeHTMLAttr }}
             {{- end }}
             {{- with $fetchPriority }}
         fetchpriority="{{ . | safeHTMLAttr }}"
             {{- end }}
             {{- with $lightbox }}
         data-zoomable="{{ . | safeHTMLAttr }}"
-            {{- end }}
-            {{- with $imgSizes }}
-                sizes="{{ . | safeHTMLAttr }}"
             {{- end }}
             {{- with $variant.title }}
                 title="{{ partial `claris/_functions/plainify-html` . | safeHTMLAttr }}"
@@ -452,13 +451,15 @@
             <img  class="{{ with $imgClass }}{{ . }}{{ end }}"
                   width="{{ $imgWidth }}" height="{{ $imgHeight }}"
                     src="{{ $srcURL }}"
+              {{- /*
+              {{- with $imgSizes }}
+                  sizes="{{ . | safeHTMLAttr }}"
+              {{- end }}
                  srcset="{{ .srcset }}"
               {{- with $fetchPriority }}
           fetchpriority="{{ . | safeHTMLAttr }}"
               {{- end }}
-              {{- with $imgSizes }}
-                  sizes="{{ . | safeHTMLAttr }}"
-              {{- end }}
+              */ -}}
               {{- with $variant.title }}
                   title="{{ . | safeHTMLAttr }}"
               {{- end }}

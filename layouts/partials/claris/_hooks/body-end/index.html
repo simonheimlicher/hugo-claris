@@ -6,4 +6,6 @@
 
 {{- partialCached "claris/_hooks/body-end/math" $ctx $assetVariant.CoalesceLanguageKey }}
 {{- partialCached "claris/_hooks/body-end/icons" $ctx $assetVariant.CoalesceLanguageKey }}
-{{- partialCached "claris/_hooks/body-end/scripts" $ctx $assetVariant.CoalesceLanguageKey }}
+{{- $scriptParams := merge $ctx (dict "Target" "body-end")  }}
+{{- partialCached "claris/_assets/scripts"
+    $scriptParams $scriptParams.Target .AssetVariant.CoalesceLanguageKey }}
