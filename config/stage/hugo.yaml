@@ -1,11 +1,6 @@
-# NOTE: It is imperative for `build.buildStats.enable` to be `true`
-# in both stage and production, or any environment for which
-# `is-build-environment production` returns true
+# NOTE: To avoid minification of CSS removing relevant rules,
+# it is imperative for `build.buildStats.enable` to be `true`
+# in any environment for which `is-minify-enabled` returns true
 build:
-  writeStats: true
-  # New from 0.15.0
   buildStats:
-    # disableClasses: false
-    # disableIDs: false
-    # disableTags: false
     enable: true

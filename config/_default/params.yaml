@@ -322,12 +322,12 @@ hidden:
   sections: [_error]
   pathelements: [hidden, confidential]
 
+# Only enable indexing for production
 robots:
-  # configuration of robots tag in head of individual pages
-  index: true
-  indeximages: true
-  follow: true
-  # Sections to be listed in robots.txt as being excluded from indexing
-  # CAUTION: This will cause attackers to look at these sections in particular,
-  # so do not use this parameter to hide a private section
+  index: false
+  indeximages: false
+  follow: false
+  # Sections to be listed in robots.txt as being excluded from indexing CAUTION:
+  # This will cause attackers to look at these sections in particular, so do not
+  # use this parameter to hide your top secret sections
   # robotsTxtDisallowSections: [_error]
