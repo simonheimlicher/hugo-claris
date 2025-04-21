@@ -491,7 +491,8 @@
   // NOTE: Experiment with displaying h3 and lower headings inline
   &_content, &_body {
     & > h2 {
-      margin: calc(1em * (var(--line-height-heading) - 1) * 4) 0 calc(1em * (var(--line-height-heading) - 1)) 0;
+      margin-top: calc(1em * (var(--line-height-heading) - 1) * 4);
+      margin-bottom: calc(1em * (var(--line-height-heading) - 1)) 0;
       &:first-child {
         margin-top: calc( (1 - var(--line-height-heading) ) * 1em);
       }

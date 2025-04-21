@@ -94,6 +94,8 @@ h6 {
   color: var(--header-text);
   font-weight: var(--font-weight-strong);
   hyphens: manual;
+  // Avoid long titles causing horizontal scrollbars
+  overflow-wrap: anywhere;
   .icon,
   .icon svg {
     width: 1em;
@@ -103,7 +105,6 @@ h6 {
     margin-right: 2em;
   }
   .link {
-    position: relative;
     margin: 0 -2em 0 0;
     padding: 0 0 0 0.25em;
     display: inline-flex;
