@@ -75,20 +75,20 @@ When calling `asset-variant` with `partialCached`, make sure to add
       {{ $assetStyleSuffix = printf "_style-map-%s" ($customAssetStyle | jsonify | sha256) }}
       {{ $assetStyle = $customAssetStyle }}
       {{ if $debug }}
-        {{ warnf "%s using customAssetStyle=%vfrom site.Params.%s=%v $page.Params.%s=%v: defined assetStyleSuffix=%v"
-            $dbg $customAssetStyle $customStyleParamsKey (index site.Params $customStyleParamsKey)
-            $customStyleParamsKey (index $page.Params $customStyleParamsKey)
+        {{ warnf "%s using customAssetStyle=%v from .Page.Params.%s=%v: defined assetStyleSuffix=%v"
+            $dbg $customAssetStyle $customStyleParamsKey
+            (index $page.Params $customStyleParamsIndex)
             $assetStyleSuffix }}
       {{ end }}
     {{ else }}
-      {{ warnf "%s ignoring empty customAssetStyle=%v site.Params.%s=%v $page.Params.%s=%v"
-          $dbg $customAssetStyle $customStyleParamsKey (index site.Params $customStyleParamsKey)
-          $customStyleParamsKey (index $page.Params $customStyleParamsKey) }}
+      {{ warnf "%s ignoring empty customAssetStyle=%v: .Page.Params.%s=%v"
+          $dbg $customAssetStyle $customStyleParamsKey
+          (index $page.Params $customStyleParamsIndex) }}
     {{ end }}
   {{ else }}
     {{ errorf "%s invalid 'style' param: must be of type 'string' or 'map'. Check site.%s=%v and $page.%s=%v"
-        $dbg $customStyleParamsKey (index site.Params $customStyleParamsKey)
-          $customStyleParamsKey (index $page.Params $customStyleParamsKey) }}
+        $dbg $customStyleParamsKey
+        (index $page.Params $customStyleParamsIndex) }}
   {{ end }}
   {{ with $assetStyleSuffix }}
     {{ $contentTypeListID = printf "%s%s" $contentTypeListID . }}
@@ -128,13 +128,13 @@ When calling `asset-variant` with `partialCached`, make sure to add
       {{ $renderFormatSuffix = printf "_style-map-%s" ($customRenderFormat | jsonify | sha256) }}
       {{ $renderFormat = $customRenderFormat }}
       {{ if $debug }}
-        {{ warnf "%s using customRenderFormat=%vfrom site.Params.%s=%v $page.Params.%s=%v: defined renderFormatSuffix=%v"
+        {{ warnf "%s using customRenderFormat=%vfrom .Page.Params.%s=%v: defined renderFormatSuffix=%v"
             $dbg $customRenderFormat $customFormatParamsKey (index site.Params $customFormatParamsKey)
             $customFormatParamsKey (index $page.Params $customFormatParamsKey)
             $renderFormatSuffix }}
       {{ end }}
     {{ else }}
-      {{ warnf "%s ignoring empty customRenderFormat=%v site.Params.%s=%v $page.Params.%s=%v"
+      {{ warnf "%s ignoring empty customRenderFormat=%v .Page.Params.%s=%v"
           $dbg $customRenderFormat $customFormatParamsKey (index site.Params $customFormatParamsKey)
           $customFormatParamsKey (index $page.Params $customFormatParamsKey) }}
     {{ end }}
