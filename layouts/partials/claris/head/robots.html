@@ -38,15 +38,12 @@
     {{- warnf "%s[%s]: robotsIndex=%v robotsFollow=%v" $page $template $robotsIndex $robotsFollow }}
   {{- end }}
 
-  {{- $robotsIndexImages := default $robotsIndex $page.Params.robots.indeximages }}
-
-  {{- $impliedDirectives := slice "indeximages" }}
+  {{- $impliedDirectives := slice }}
   {{- $robotPermissions := (dict
       "index" $robotsIndex
-      "indeximages" $robotsIndexImages
       "follow" $robotsFollow
     ) }}
-  {{- $robotDirectives := slice "index" "indeximages" "follow" }}
+  {{- $robotDirectives := slice "index" "follow" }}
   {{- $definedDirectives := slice }}
   {{- range $directive := $robotDirectives }}
     {{- with $value := index $robotPermissions $directive }}

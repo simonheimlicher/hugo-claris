@@ -8,7 +8,6 @@ build:
 # Only enable indexing for production
 robots:
   index: true
-  indeximages: true
   follow: true
   # Sections to be listed in robots.txt as being excluded from indexing CAUTION:
   # This will cause attackers to look at these sections in particular, so do not

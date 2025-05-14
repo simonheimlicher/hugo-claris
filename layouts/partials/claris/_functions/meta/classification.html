@@ -11,18 +11,15 @@
   {{ $pageVisible := not (or $pageHidden $pageOutdated) }}
 
   {{ $robotsIndex := and (default false site.Params.robots.index) (and $pageVisible (index ($page.Param "robots") "index") ) }}
-  {{ $robotsIndexImages := and (default false site.Params.robots.indeximages) (and $pageVisible (index ($page.Param "robots") "indeximages") ) }}
   {{ $robotsFollow := and (default false site.Params.robots.follow) (and $pageVisible (index ($page.Param "robots") "follow") ) }}
 
   <!-- Don't index taxonomy and term pages but follow links -->
   {{ if in (slice "taxonomy" "term") .Kind }}
     {{ $robotsIndex = false }}
-    {{ $robotsIndexImages = false }}
   {{ end }}
 
   {{ $metaRobots := (dict
     "Index" $robotsIndex
-    "IndexImages" $robotsIndexImages
     "Follow" $robotsFollow
   ) }}
 
