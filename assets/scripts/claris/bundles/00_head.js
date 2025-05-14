@@ -17,9 +17,6 @@
 */
 try {
   document.documentElement.dataset.colorScheme = window.localStorage.getItem('userSelectedColorScheme');
-  if (window.localStorage.getItem('userSelectedColorScheme')) {
-    console.log(`Detected user-selected scheme: `, document.documentElement.dataset.colorScheme);
-  }
 } catch (e) {
   console.log(e);
 }
