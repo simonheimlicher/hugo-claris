@@ -94,8 +94,7 @@
     {{ end }}
     {{ $listItemMetaParams := (dict
         "RootPage" $rootPage
-        "AssetVariant"
-        $assetVariant
+        "AssetVariant" false
         "Template" (printf "%s->%s" $.Template $template)
         "Debug" $debug
     ) }}
