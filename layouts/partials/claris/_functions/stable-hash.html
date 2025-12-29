@@ -32,7 +32,7 @@ strings before we hash it */}}
           {{ $keyValue := slice $key $value }}
           {{ $keyFlattenedKValue := (printf "%s=%v" $key $value) }}
           {{ if or (reflect.IsSlice . ) (reflect.IsMap .) }}
-            {{ $flattenedValue := partial "partials/claris/_functions/stable-hash_flatten" . }}
+            {{ $flattenedValue := partial "claris/_functions/stable-hash_flatten" . }}
             {{ $keyFlattenedKValue = (printf "%s:{%v}" $key $flattenedValue ) }}
             {{ if $debug }}
               {{ warnf "%s MAP:  recursive call with %v [type=%T] returned type=%T:\n%#v"
@@ -48,7 +48,7 @@ strings before we hash it */}}
         {{ else }}
           {{ $flattenedKValue := (printf "%v" . ) }}
           {{ if or (reflect.IsSlice . ) (reflect.IsMap .) }}
-            {{ $flattenedValue = partial "partials/claris/_functions/stable-hash_flatten" . }}
+            {{ $flattenedValue = partial "claris/_functions/stable-hash_flatten" . }}
             {{ if $debug }}
               {{ warnf "%s SLICE: recursive call with %v [type=%T] returned type=%T:\n%#v" $template . . $flattenedKValue $flattenedKValue }}
             {{ end }}

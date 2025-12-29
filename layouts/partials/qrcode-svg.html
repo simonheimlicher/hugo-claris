@@ -8,5 +8,5 @@
   {{- .Scratch.Set "claris.module.qrcode.count" (default 0 (add (default 0 (.Scratch.Get "claris.module.qrcode.count")) 1) ) }}
   {{- /* {{- warnf "%s[%s]: claris.module.qrcode.count=%v" $page $template (.Scratch.Get "claris.module.qrcode.count") }} */ -}}
   {{- $comp := cond $linkURL "a" "span" }}
-  {{ printf "<%s" $comp | safeHTML }}{{ with $linkURL }}href="{{ safeHTMLAttr . }}"{{ end }}{{ with $linkTitle }} title="{{ safeHTMLAttr . }}"{{ end }} class="qrcode-svg{{ with $linkClass }} {{ safeHTMLAttr . }}{{ end }}" data-width="192" data-height="192" data-color="black" data-background="transparent" data-content="{{ $content }}"></{{ $comp }}>
+  {{ printf "<%s" $comp | safeHTML }}{{ with $linkURL }}href="{{ safeHTMLAttr . }}"{{ end }}{{ with $linkTitle }} title="{{ safeHTMLAttr . }}"{{ end }} class="qrcode-svg{{ with $linkClass }} {{ safeHTMLAttr . }}{{ end }}" data-width="192" data-height="192" data-color="black" data-background="transparent" data-content="{{ $content }}">{{ printf "</%s>" $comp | safeHTML }}
 {{- end }}

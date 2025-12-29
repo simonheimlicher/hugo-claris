@@ -41,7 +41,7 @@
           {{- range $slicedTags }}
             {{- $recentCount := .recentCount }}
             {{- $term := .term }}
-            {{- $titleMap := partial "partials/claris/_components/taxonomy/title.html" (dict "taxonomy" $taxonomyID "term" $term) }}
+            {{- $titleMap := partial "claris/_components/taxonomy/title.html" (dict "taxonomy" $taxonomyID "term" $term) }}
             <a href='{{ $taxonomyPageURL }}/{{ (replace $term.Name "#" "%23") | urlize }}/' class="article_meta_tag button button_translucent" title="{{ $titleMap.link }}">
               {{- $titleMap.term }}
               <span class="button_tally">{{ $term.Count }}</span>
@@ -55,7 +55,7 @@
               <div class="taxonomy-overlay_list">
               {{- range $term := $taxonomy.Alphabetical }}
                 {{- $tagsInfo.Add "tagsInfo" (slice .Name .Count)}}
-                {{- $titleMap := partial "partials/claris/_components/taxonomy/title.html" (dict "taxonomy" $taxonomyID "term" $term) }}
+                {{- $titleMap := partial "claris/_components/taxonomy/title.html" (dict "taxonomy" $taxonomyID "term" $term) }}
                 <a href="{{ $taxonomyPageURL }}/{{ (replace .Name `#` `%23`) | urlize }}/" class="article_meta_tag button button_translucent" data-position="{{ .Count }}" title="{{ $titleMap.link }}">
                   {{- $titleMap.term -}}
                   <span class="button_tally">{{ .Count }}</span>
