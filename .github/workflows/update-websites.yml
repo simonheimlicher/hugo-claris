@@ -19,7 +19,7 @@ jobs:
       contents: read
 
     env:
-      HUGO_VERSION: ${{ vars.HUGO_VERSION || '0.145.0' }}
+      HUGO_VERSION: ${{ vars.HUGO_VERSION || '0.153.3' }}
       REPO_URI: ${{ github.repository }}
       BRANCH_NAME: ${{ github.ref_name }}
       EVENT_ACTOR_ID: "${{ github.actor }}"
