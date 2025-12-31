@@ -71,7 +71,7 @@ does not have an effect, as mentioned above.
 }}
 {{ if not $debugSassDeprecation }}
   {{ $toCSSoptionsBase = merge $toCSSoptionsBase (dict
-    "silenceDeprecations" (slice "mixed-decls" "global-builtin")
+    "silenceDeprecations" (slice "global-builtin")
   ) }}
 {{ end }}
 {{ if $minifyCSS }}
