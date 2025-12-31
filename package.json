@@ -2,7 +2,6 @@
   "author": "Simon Heimlicher",
   "comments": {
     "dependencies": {
-      "esbuild": "project",
       "medium-zoom": "project",
       "posthog-js": "project"
     },
@@ -16,7 +15,6 @@
     }
   },
   "dependencies": {
-    "esbuild": "^0.12.5",
     "medium-zoom": "^1.0.6",
     "posthog-js": "^1.94.2"
   },
