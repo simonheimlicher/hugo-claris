@@ -2,127 +2,312 @@
 @use 'sass:math';
 @use 'hugo:vars' as hugo;
 
-$colorPrimaryLit: if(hugo.$colors_color_primary_lit != null, hugo.$colors_color_primary_lit, hsl(200, 100%, 30%));
-$colorPrimaryDim: if(hugo.$colors_color_primary_dim != null, hugo.$colors_color_primary_dim, hsl(200, 100%, 50%));
-$onPrimaryLit: if(hugo.$colors_on_primary_lit != null, hugo.$colors_on_primary_lit, hsl(200, 75%, 25%));
-$onPrimaryDim: if(hugo.$colors_on_primary_dim != null, hugo.$colors_on_primary_dim, hsl(200, 85%, 85%));
-$surfacePrimaryLit: if(hugo.$colors_surface_primary_lit != null, hugo.$colors_surface_primary_lit, hsl(200, 10%, 98%));
-$surfacePrimaryDim: if(hugo.$colors_surface_primary_dim != null, hugo.$colors_surface_primary_dim, hsl(200, 30%, 10%));
+// Color defaults - Primary
+$colorPrimaryLit: hsl(200, 100%, 30%);
+@if hugo.$colors_color_primary_lit != null {
+  $colorPrimaryLit: hugo.$colors_color_primary_lit;
+}
+$colorPrimaryDim: hsl(200, 100%, 50%);
+@if hugo.$colors_color_primary_dim != null {
+  $colorPrimaryDim: hugo.$colors_color_primary_dim;
+}
+$onPrimaryLit: hsl(200, 75%, 25%);
+@if hugo.$colors_on_primary_lit != null {
+  $onPrimaryLit: hugo.$colors_on_primary_lit;
+}
+$onPrimaryDim: hsl(200, 85%, 85%);
+@if hugo.$colors_on_primary_dim != null {
+  $onPrimaryDim: hugo.$colors_on_primary_dim;
+}
+$surfacePrimaryLit: hsl(200, 10%, 98%);
+@if hugo.$colors_surface_primary_lit != null {
+  $surfacePrimaryLit: hugo.$colors_surface_primary_lit;
+}
+$surfacePrimaryDim: hsl(200, 30%, 10%);
+@if hugo.$colors_surface_primary_dim != null {
+  $surfacePrimaryDim: hugo.$colors_surface_primary_dim;
+}
 
-$colorSurfaceLit: if(hugo.$colors_color_surface_lit != null, hugo.$colors_color_surface_lit, hsl(200, 20%, 98%));
-$colorSurfaceDim: if(hugo.$colors_color_surface_dim != null, hugo.$colors_color_surface_dim, hsl(200, 10%, 20%));
-$onSurfaceLit: if(hugo.$colors_on_surface_lit != null, hugo.$colors_on_surface_lit, hsl(200, 100%, 13%));
-$onSurfaceDim: if(hugo.$colors_on_surface_dim != null, hugo.$colors_on_surface_dim, hsl(200, 100%, 95%));
-$colorBackgroundLit: if(hugo.$colors_color_background_lit != null, hugo.$colors_color_background_lit, hsl(200, 10%, 95%));
-$colorBackgroundDim: if(hugo.$colors_color_background_dim != null, hugo.$colors_color_background_dim, hsl(200, 40%, 5%));
-$onBackgroundLit: if(hugo.$colors_on_background_lit != null, hugo.$colors_on_background_lit, hsl(200, 10%, 13%));
-$onBackgroundDim: if(hugo.$colors_on_background_dim != null, hugo.$colors_on_background_dim, hsl(200, 10%, 100%));
+// Color defaults - Surface
+$colorSurfaceLit: hsl(200, 20%, 98%);
+@if hugo.$colors_color_surface_lit != null {
+  $colorSurfaceLit: hugo.$colors_color_surface_lit;
+}
+$colorSurfaceDim: hsl(200, 10%, 20%);
+@if hugo.$colors_color_surface_dim != null {
+  $colorSurfaceDim: hugo.$colors_color_surface_dim;
+}
+$onSurfaceLit: hsl(200, 100%, 13%);
+@if hugo.$colors_on_surface_lit != null {
+  $onSurfaceLit: hugo.$colors_on_surface_lit;
+}
+$onSurfaceDim: hsl(200, 100%, 95%);
+@if hugo.$colors_on_surface_dim != null {
+  $onSurfaceDim: hugo.$colors_on_surface_dim;
+}
+$colorBackgroundLit: hsl(200, 10%, 95%);
+@if hugo.$colors_color_background_lit != null {
+  $colorBackgroundLit: hugo.$colors_color_background_lit;
+}
+$colorBackgroundDim: hsl(200, 40%, 5%);
+@if hugo.$colors_color_background_dim != null {
+  $colorBackgroundDim: hugo.$colors_color_background_dim;
+}
+$onBackgroundLit: hsl(200, 10%, 13%);
+@if hugo.$colors_on_background_lit != null {
+  $onBackgroundLit: hugo.$colors_on_background_lit;
+}
+$onBackgroundDim: hsl(200, 10%, 100%);
+@if hugo.$colors_on_background_dim != null {
+  $onBackgroundDim: hugo.$colors_on_background_dim;
+}
 
-$colorSecondaryLit: if(hugo.$colors_color_secondary_lit != null, hugo.$colors_color_secondary_lit, hsl(0, 60%, 40%));
-$colorSecondaryDim: if(hugo.$colors_color_secondary_dim != null, hugo.$colors_color_secondary_dim, hsl(0, 50%, 50%));
-$onSecondaryLit: if(hugo.$colors_on_secondary_lit != null, hugo.$colors_on_secondary_lit, darken(desaturate($colorSecondaryLit, 50%), 45%));
-$onSecondaryDim: if(hugo.$colors_on_secondary_dim != null, hugo.$colors_on_secondary_dim, lighten(desaturate($colorSecondaryDim, 60%), 35%));
-$surfaceSecondaryLit: if(hugo.$colors_surface_secondary_lit != null, hugo.$colors_surface_secondary_lit, lighten(desaturate($colorSecondaryLit, 50%), 45%));
-$surfaceSecondaryDim: if(hugo.$colors_surface_secondary_dim != null, hugo.$colors_surface_secondary_dim, darken(desaturate($colorSecondaryDim, 60%), 35%));
+// Color defaults - Secondary
+$colorSecondaryLit: hsl(0, 60%, 40%);
+@if hugo.$colors_color_secondary_lit != null {
+  $colorSecondaryLit: hugo.$colors_color_secondary_lit;
+}
+$colorSecondaryDim: hsl(0, 50%, 50%);
+@if hugo.$colors_color_secondary_dim != null {
+  $colorSecondaryDim: hugo.$colors_color_secondary_dim;
+}
+$onSecondaryLit: darken(desaturate($colorSecondaryLit, 50%), 45%);
+@if hugo.$colors_on_secondary_lit != null {
+  $onSecondaryLit: hugo.$colors_on_secondary_lit;
+}
+$onSecondaryDim: lighten(desaturate($colorSecondaryDim, 60%), 35%);
+@if hugo.$colors_on_secondary_dim != null {
+  $onSecondaryDim: hugo.$colors_on_secondary_dim;
+}
+$surfaceSecondaryLit: lighten(desaturate($colorSecondaryLit, 50%), 45%);
+@if hugo.$colors_surface_secondary_lit != null {
+  $surfaceSecondaryLit: hugo.$colors_surface_secondary_lit;
+}
+$surfaceSecondaryDim: darken(desaturate($colorSecondaryDim, 60%), 35%);
+@if hugo.$colors_surface_secondary_dim != null {
+  $surfaceSecondaryDim: hugo.$colors_surface_secondary_dim;
+}
 
-$colorTertiaryLit: if(hugo.$colors_color_tertiary_lit != null, hugo.$colors_color_tertiary_lit, hsl(200, 100%, 20%));
-$colorTertiaryDim: if(hugo.$colors_color_tertiary_dim != null, hugo.$colors_color_tertiary_dim, hsl(200, 100%, 80%));
-$onTertiaryLit: if(hugo.$colors_on_tertiary_lit != null, hugo.$colors_on_tertiary_lit, darken(desaturate($colorTertiaryLit, 50%), 45%));
-$onTertiaryDim: if(hugo.$colors_on_tertiary_dim != null, hugo.$colors_on_tertiary_dim, lighten(desaturate($colorTertiaryDim, 60%), 35%));
-$surfaceTertiaryLit: if(hugo.$colors_surface_tertiary_lit != null, hugo.$colors_surface_tertiary_lit, lighten(desaturate($colorTertiaryLit, 50%), 45%));
-$surfaceTertiaryDim: if(hugo.$colors_surface_tertiary_dim != null, hugo.$colors_surface_tertiary_dim, darken(desaturate($colorTertiaryDim, 60%), 35%));
+// Color defaults - Tertiary
+$colorTertiaryLit: hsl(200, 100%, 20%);
+@if hugo.$colors_color_tertiary_lit != null {
+  $colorTertiaryLit: hugo.$colors_color_tertiary_lit;
+}
+$colorTertiaryDim: hsl(200, 100%, 80%);
+@if hugo.$colors_color_tertiary_dim != null {
+  $colorTertiaryDim: hugo.$colors_color_tertiary_dim;
+}
+$onTertiaryLit: darken(desaturate($colorTertiaryLit, 50%), 45%);
+@if hugo.$colors_on_tertiary_lit != null {
+  $onTertiaryLit: hugo.$colors_on_tertiary_lit;
+}
+$onTertiaryDim: lighten(desaturate($colorTertiaryDim, 60%), 35%);
+@if hugo.$colors_on_tertiary_dim != null {
+  $onTertiaryDim: hugo.$colors_on_tertiary_dim;
+}
+$surfaceTertiaryLit: lighten(desaturate($colorTertiaryLit, 50%), 45%);
+@if hugo.$colors_surface_tertiary_lit != null {
+  $surfaceTertiaryLit: hugo.$colors_surface_tertiary_lit;
+}
+$surfaceTertiaryDim: darken(desaturate($colorTertiaryDim, 60%), 35%);
+@if hugo.$colors_surface_tertiary_dim != null {
+  $surfaceTertiaryDim: hugo.$colors_surface_tertiary_dim;
+}
 
-$geometricScaleFactor: if(hugo.$fonts_geometric_scale_factor != "null", hugo.$fonts_geometric_scale_factor, math.pow(2.0, math.div(1, 4) ));
-$fractionalScaleDenominator: if(hugo.$fonts_fractional_scale_denominator != "null", hugo.$fonts_fractional_scale_denominator, 4);
-$fluidScaleDigits: if(hugo.$fonts_fluid_scale_digits != "null", hugo.$fonts_fluid_scale_digits, 2);
+// Font scale defaults
+$geometricScaleFactor: math.pow(2.0, math.div(1, 4));
+@if hugo.$fonts_geometric_scale_factor != "null" {
+  $geometricScaleFactor: hugo.$fonts_geometric_scale_factor;
+}
+$fractionalScaleDenominator: 4;
+@if hugo.$fonts_fractional_scale_denominator != "null" {
+  $fractionalScaleDenominator: hugo.$fonts_fractional_scale_denominator;
+}
+$fluidScaleDigits: 2;
+@if hugo.$fonts_fluid_scale_digits != "null" {
+  $fluidScaleDigits: hugo.$fonts_fluid_scale_digits;
+}
 
 // Adapt to width of screen
 // Maximum width for anything the user is supposed
 // to interact with (the "page chrome")
-$screenViewWidthChrome: if(hugo.$dimensions_width_chrome != null, hugo.$dimensions_width_chrome, 96rem);
+$screenViewWidthChrome: 96rem;
+@if hugo.$dimensions_width_chrome != null {
+  $screenViewWidthChrome: hugo.$dimensions_width_chrome;
+}
 
 // Maximum widht of feature images
-$screenViewFeatureImageWidthMax: if(hugo.$dimensions_feature_image_width_max != null, hugo.$dimensions_feature_image_width_max, 3840px);
+$screenViewFeatureImageWidthMax: 3840px;
+@if hugo.$dimensions_feature_image_width_max != null {
+  $screenViewFeatureImageWidthMax: hugo.$dimensions_feature_image_width_max;
+}
 
 // Padding around body up to narrow breakpoint
-$screenViewBodyMarginMobile: if(hugo.$dimensions_body_margin_mobile != null, hugo.$dimensions_body_margin_mobile, 0rem);
+$screenViewBodyMarginMobile: 0rem;
+@if hugo.$dimensions_body_margin_mobile != null {
+  $screenViewBodyMarginMobile: hugo.$dimensions_body_margin_mobile;
+}
 // Padding around main elements (header, main, footer) up to narrow breakpoint
-$screenViewInnerMarginMobile: if(hugo.$dimensions_inner_margin_mobile != null, hugo.$dimensions_inner_margin_mobile, 0.75rem);
+$screenViewInnerMarginMobile: 0.75rem;
+@if hugo.$dimensions_inner_margin_mobile != null {
+  $screenViewInnerMarginMobile: hugo.$dimensions_inner_margin_mobile;
+}
 
 // Padding around body up to narrow breakpoint
-$screenViewBodyPaddingMobile: if(hugo.$dimensions_body_padding_mobile != null, hugo.$dimensions_body_padding_mobile, 0rem);
+$screenViewBodyPaddingMobile: 0rem;
+@if hugo.$dimensions_body_padding_mobile != null {
+  $screenViewBodyPaddingMobile: hugo.$dimensions_body_padding_mobile;
+}
 // Padding around main elements (header, main, footer) up to narrow breakpoint
-$screenViewInnerPaddingMobile: if(hugo.$dimensions_inner_padding_mobile != null, hugo.$dimensions_inner_padding_mobile, 0.75rem);
+$screenViewInnerPaddingMobile: 0.75rem;
+@if hugo.$dimensions_inner_padding_mobile != null {
+  $screenViewInnerPaddingMobile: hugo.$dimensions_inner_padding_mobile;
+}
 
 // Parameters for layout with one column
 // Margin around body up to one-column breakpoint
-$screenViewInnerMarginNarrow: if(hugo.$dimensions_inner_margin_narrow != null, hugo.$dimensions_inner_margin_narrow, 1rem);
+$screenViewInnerMarginNarrow: 1rem;
+@if hugo.$dimensions_inner_margin_narrow != null {
+  $screenViewInnerMarginNarrow: hugo.$dimensions_inner_margin_narrow;
+}
 // Margin around main elements (header, main, footer) up to one-column breakpoint
-$screenViewBodyMarginNarrow: if(hugo.$dimensions_body_margin_narrow != null, hugo.$dimensions_body_margin_narrow, 0rem);
+$screenViewBodyMarginNarrow: 0rem;
+@if hugo.$dimensions_body_margin_narrow != null {
+  $screenViewBodyMarginNarrow: hugo.$dimensions_body_margin_narrow;
+}
 // Padding around body up to one-column breakpoint
-$screenViewInnerPaddingNarrow: if(hugo.$dimensions_inner_padding_narrow != null, hugo.$dimensions_inner_padding_narrow, 1rem);
+$screenViewInnerPaddingNarrow: 1rem;
+@if hugo.$dimensions_inner_padding_narrow != null {
+  $screenViewInnerPaddingNarrow: hugo.$dimensions_inner_padding_narrow;
+}
 // Padding around main elements (header, main, footer) up to one-column breakpoint
-$screenViewBodyPaddingNarrow: if(hugo.$dimensions_body_padding_narrow != null, hugo.$dimensions_body_padding_narrow, 1rem);
+$screenViewBodyPaddingNarrow: 1rem;
+@if hugo.$dimensions_body_padding_narrow != null {
+  $screenViewBodyPaddingNarrow: hugo.$dimensions_body_padding_narrow;
+}
 
 // Margin around body from one-column breakpoint upward
-$screenViewInnerMarginOneColumn: if(hugo.$dimensions_inner_margin_one_column != null, hugo.$dimensions_inner_margin_one_column, 1.5rem);
+$screenViewInnerMarginOneColumn: 1.5rem;
+@if hugo.$dimensions_inner_margin_one_column != null {
+  $screenViewInnerMarginOneColumn: hugo.$dimensions_inner_margin_one_column;
+}
 // Margin around main elements (header, main, footer) from one-column breakpoint upward
-$screenViewBodyMarginOneColumn: if(hugo.$dimensions_body_margin_one_column != null, hugo.$dimensions_body_margin_one_column, 0rem);
+$screenViewBodyMarginOneColumn: 0rem;
+@if hugo.$dimensions_body_margin_one_column != null {
+  $screenViewBodyMarginOneColumn: hugo.$dimensions_body_margin_one_column;
+}
 // Padding around body from one-column breakpoint upward
-$screenViewInnerPaddingOneColumn: if(hugo.$dimensions_inner_padding_one_column != null, hugo.$dimensions_inner_padding_one_column, 1.5rem);
+$screenViewInnerPaddingOneColumn: 1.5rem;
+@if hugo.$dimensions_inner_padding_one_column != null {
+  $screenViewInnerPaddingOneColumn: hugo.$dimensions_inner_padding_one_column;
+}
 // Padding around main elements (header, main, footer) from one-column breakpoint upward
-$screenViewBodyPaddingOneColumn: if(hugo.$dimensions_body_padding_one_column != null, hugo.$dimensions_body_padding_one_column, 1rem);
+$screenViewBodyPaddingOneColumn: 1rem;
+@if hugo.$dimensions_body_padding_one_column != null {
+  $screenViewBodyPaddingOneColumn: hugo.$dimensions_body_padding_one_column;
+}
 
 $screenViewNavHeightNarrow: 2.5rem;
 $screenViewNavHeight: 3rem;
 
-$screenViewColumnGap: if(hugo.$dimensions_column_gap != null, hugo.$dimensions_column_gap, 1rem);
+$screenViewColumnGap: 1rem;
+@if hugo.$dimensions_column_gap != null {
+  $screenViewColumnGap: hugo.$dimensions_column_gap;
+}
 
 // Breakpoints
 
 // From this width upward, the mobile menu is hidden
 // and the full menu bar is shown
-$screenViewBreakpointWidthMobileMenu: if(hugo.$breakpoints_width_mobile_menu != null, hugo.$breakpoints_width_mobile_menu, 28rem);
+$screenViewBreakpointWidthMobileMenu: 28rem;
+@if hugo.$breakpoints_width_mobile_menu != null {
+  $screenViewBreakpointWidthMobileMenu: hugo.$breakpoints_width_mobile_menu;
+}
 
 // From this width upward, more than one content item is shown -
 // e.g., a floating image surrounded by text
-$screenViewBreakpointWidthMobile: if(hugo.$breakpoints_width_mobile != null, hugo.$breakpoints_width_mobile, 20rem);
+$screenViewBreakpointWidthMobile: 20rem;
+@if hugo.$breakpoints_width_mobile != null {
+  $screenViewBreakpointWidthMobile: hugo.$breakpoints_width_mobile;
+}
 // Reset font size to regular size
-$screenViewBreakpointWidthNarrow: if(hugo.$breakpoints_width_narrow != null, hugo.$breakpoints_width_narrow, 36rem);
+$screenViewBreakpointWidthNarrow: 36rem;
+@if hugo.$breakpoints_width_narrow != null {
+  $screenViewBreakpointWidthNarrow: hugo.$breakpoints_width_narrow;
+}
 
 // Fit content to iPad in portrait orientation: 768px = 48rem
-$screenViewBreakpointWidthOneColumn: if(hugo.$breakpoints_width_one_column != null, hugo.$breakpoints_width_one_column, 48rem);
+$screenViewBreakpointWidthOneColumn: 48rem;
+@if hugo.$breakpoints_width_one_column != null {
+  $screenViewBreakpointWidthOneColumn: hugo.$breakpoints_width_one_column;
+}
 
 // Layout with one aside
-$screenViewBreakpointWidthTwoColumn: if(hugo.$breakpoints_width_two_column != null, hugo.$breakpoints_width_two_column, 60rem);
+$screenViewBreakpointWidthTwoColumn: 60rem;
+@if hugo.$breakpoints_width_two_column != null {
+  $screenViewBreakpointWidthTwoColumn: hugo.$breakpoints_width_two_column;
+}
 $screenViewWidthAsideTwoColumn: $screenViewBreakpointWidthOneColumn - $screenViewBreakpointWidthNarrow;
 
 // Layout with two asides
-$screenViewBreakpointWidthWide: if(hugo.$breakpoints_width_wide != null, hugo.$breakpoints_width_wide, 76rem);
+$screenViewBreakpointWidthWide: 76rem;
+@if hugo.$breakpoints_width_wide != null {
+  $screenViewBreakpointWidthWide: hugo.$breakpoints_width_wide;
+}
 $screenViewWidthAsideWide: $screenViewBreakpointWidthWide - $screenViewBreakpointWidthTwoColumn;
 
 // Layout with two asides and wider sections in main column, e.g., for code or figures
-$screenViewBreakpointWidthUltrawide: if(hugo.$breakpoints_width_ultra_wide != null, hugo.$breakpoints_width_ultra_wide, 96rem);
+$screenViewBreakpointWidthUltrawide: 96rem;
+@if hugo.$breakpoints_width_ultra_wide != null {
+  $screenViewBreakpointWidthUltrawide: hugo.$breakpoints_width_ultra_wide;
+}
 
 // // Parameters for layout with three columns: main content and two asides
-$screenViewColumnGapWide: if(hugo.$dimensions_column_gap_wide != null, hugo.$dimensions_column_gap_wide, 2rem);
-$screenViewColumnWidthWideMax: if(hugo.$dimensions_column_width_wide_max != null, hugo.$dimensions_column_width_wide_max, 60rem);
-$screenViewWidthWideAsideMin: if(hugo.$dimensions_width_aside_min_wide != null, hugo.$dimensions_width_aside_min_wide, 12rem);
-$screenViewWidthWideAsideMax: if(hugo.$dimensions_width_aside_max_wide != null, hugo.$dimensions_width_aside_max_wide, 19rem);
+$screenViewColumnGapWide: 2rem;
+@if hugo.$dimensions_column_gap_wide != null {
+  $screenViewColumnGapWide: hugo.$dimensions_column_gap_wide;
+}
+$screenViewColumnWidthWideMax: 60rem;
+@if hugo.$dimensions_column_width_wide_max != null {
+  $screenViewColumnWidthWideMax: hugo.$dimensions_column_width_wide_max;
+}
+$screenViewWidthWideAsideMin: 12rem;
+@if hugo.$dimensions_width_aside_min_wide != null {
+  $screenViewWidthWideAsideMin: hugo.$dimensions_width_aside_min_wide;
+}
+$screenViewWidthWideAsideMax: 19rem;
+@if hugo.$dimensions_width_aside_max_wide != null {
+  $screenViewWidthWideAsideMax: hugo.$dimensions_width_aside_max_wide;
+}
 $screenViewColumnWidthWideMin: ($screenViewBreakpointWidthWide - 2 * $screenViewWidthWideAsideMin - 2 * $screenViewBodyPaddingOneColumn - 2 * $screenViewColumnGapWide);
 
 // Parameters for layout with three columns: main content and two asides and wider sections in main column, e.g., for code or figures
-$screenViewWidthUltrawide: if(hugo.$dimensions_width_ultrawide != null, hugo.$dimensions_width_ultrawide, 57rem);
+$screenViewWidthUltrawide: 57rem;
+@if hugo.$dimensions_width_ultrawide != null {
+  $screenViewWidthUltrawide: hugo.$dimensions_width_ultrawide;
+}
 
-$screenViewBreakpointHeightTall: if(hugo.$breakpoints_height_tall != null, hugo.$breakpoints_height_tall, 48rem);
-$screenViewBreakpointHeightShallow: if(hugo.$breakpoints_height_shallow != null, hugo.$breakpoints_height_shallow, 42rem);
+$screenViewBreakpointHeightTall: 48rem;
+@if hugo.$breakpoints_height_tall != null {
+  $screenViewBreakpointHeightTall: hugo.$breakpoints_height_tall;
+}
+$screenViewBreakpointHeightShallow: 42rem;
+@if hugo.$breakpoints_height_shallow != null {
+  $screenViewBreakpointHeightShallow: hugo.$breakpoints_height_shallow;
+}
 
 // From this height upward, the footer is layered beneath the main content
 // and revealed when scrolling up
-$screenViewBreakpointHeightStickyFooter: if(hugo.$breakpoints_height_sticky_footer != null, hugo.$breakpoints_height_sticky_footer, 42rem);
+$screenViewBreakpointHeightStickyFooter: 42rem;
+@if hugo.$breakpoints_height_sticky_footer != null {
+  $screenViewBreakpointHeightStickyFooter: hugo.$breakpoints_height_sticky_footer;
+}
 
 $featureImageAspectRatioMin: hugo.$images_feature_ratio_min + 0;
 $featureImageAspectRatioMax: hugo.$images_feature_ratio_max;
 $featureImageViewportHeightMax: hugo.$images_feature_viewport_height_max;
 
-$mediaType: if(hugo.$media_type != null, hugo.$media_type, "screen");
+$mediaType: "screen";
+@if hugo.$media_type != null {
+  $mediaType: hugo.$media_type;
+}

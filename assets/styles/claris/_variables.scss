@@ -235,7 +235,15 @@ $main-z-index: 1;
   $variant: map.get($attrs, variant);
   $highlight: map.get($attrs, highlight);
 
-  $color: link#{if($variant != null and $variant != '', -#{$variant}, '')}#{if($color-id != null and $color-id != '', -#{$color-id}, '')};
+  $variant-suffix: '';
+  @if $variant != null and $variant != '' {
+    $variant-suffix: -#{$variant};
+  }
+  $color-id-suffix: '';
+  @if $color-id != null and $color-id != '' {
+    $color-id-suffix: -#{$color-id};
+  }
+  $color: link#{$variant-suffix}#{$color-id-suffix};
   @each $key, $attr in $highlight {
     $name: map.get($attr, name);
     $opacity: map.get($attr, opacity);
@@ -306,7 +314,15 @@ $main-z-index: 1;
       }
       &:focus {
         @include link-lvhfa_color($attrs, $focus);
-        outline: 1px dashed var(--link#{if($variant != null and $variant != '', -#{$variant}, '')}#{if($focus != null and $focus != '', -#{$focus}, '')});
+        $variant-suffix: '';
+        @if $variant != null and $variant != '' {
+          $variant-suffix: -#{$variant};
+        }
+        $focus-suffix: '';
+        @if $focus != null and $focus != '' {
+          $focus-suffix: -#{$focus};
+        }
+        outline: 1px dashed var(--link#{$variant-suffix}#{$focus-suffix});
       }
       &:active {
         @include link-lvhfa_color($attrs, $active, 1.0);
@@ -623,8 +639,14 @@ $main-z-index: 1;
 
 @mixin drop-shadow_impl($inset: false, $dist: 3rem, $opacity: 0.2, $hover-opacity: 0.4) {
   // If $inset is true, use "inset", otherwise use an empty string.
-  $conditional-inset: if($inset, ' inset', '');
-  $conditional-inset-hover: if(not $inset, ' inset', '');
+  $conditional-inset: '';
+  @if $inset {
+    $conditional-inset: ' inset';
+  }
+  $conditional-inset-hover: '';
+  @if not $inset {
+    $conditional-inset-hover: ' inset';
+  }
 
   $shadow:#{$conditional-inset} 0 0 $dist hsla(0, 0%, 0%, $opacity);
   $shadow-dim:#{$conditional-inset} 0 0 $dist hsla(0, 0%, 50%, $opacity);

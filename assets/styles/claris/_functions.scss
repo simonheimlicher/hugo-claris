@@ -75,11 +75,11 @@
         @warn 'joinArray: adding empty element in list=[#{$list}] at position #{$i}';
       }
       // Note: need to wrap string concatenation in '' to avoid spurious spaces
-      $result: if(
-        $i != length($list) or $is-nested,
-        '#{$result}#{$e}#{$glue}',
-        '#{$result}#{$e}'
-      );
+      @if $i != length($list) or $is-nested {
+        $result: '#{$result}#{$e}#{$glue}';
+      } @else {
+        $result: '#{$result}#{$e}';
+      }
     }
   }
   @return $result;

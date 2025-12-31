@@ -19,21 +19,61 @@ $debugType: false and $debug !default; // Set to `true` to enable debugging of d
 
 $debugCSSProperties: false !default; // Set to `true` to enable debugging of CSS properties
 
+// Font type defaults - using @if to avoid deprecated if() function
+$_sans_id: "source-sans-3";
+@if hugo.$fonts_type_sans_id != "null" {
+  $_sans_id: hugo.$fonts_type_sans_id;
+}
+$_sans_name: "Source Sans 3";
+@if hugo.$fonts_type_sans_name != "null" {
+  $_sans_name: hugo.$fonts_type_sans_name;
+}
+$_sans_fallback_names: "null";
+@if hugo.$fonts_type_sans_fallback_names != "null" {
+  $_sans_fallback_names: hugo.$fonts_type_sans_fallback_names;
+}
+
+$_serif_id: "alegreya";
+@if hugo.$fonts_type_serif_id != "null" {
+  $_serif_id: hugo.$fonts_type_serif_id;
+}
+$_serif_name: "Alegreya";
+@if hugo.$fonts_type_serif_name != "null" {
+  $_serif_name: hugo.$fonts_type_serif_name;
+}
+$_serif_fallback_names: "null";
+@if hugo.$fonts_type_serif_fallback_names != "null" {
+  $_serif_fallback_names: hugo.$fonts_type_serif_fallback_names;
+}
+
+$_mono_id: "dm-mono";
+@if hugo.$fonts_type_mono_id != "null" {
+  $_mono_id: hugo.$fonts_type_mono_id;
+}
+$_mono_name: "DM Mono";
+@if hugo.$fonts_type_mono_name != "null" {
+  $_mono_name: hugo.$fonts_type_mono_name;
+}
+$_mono_fallback_names: "null";
+@if hugo.$fonts_type_mono_fallback_names != "null" {
+  $_mono_fallback_names: hugo.$fonts_type_mono_fallback_names;
+}
+
 $fontTypeToFamilyMap: (
   sans: (
-    id: if(hugo.$fonts_type_sans_id != "null", hugo.$fonts_type_sans_id, "source-sans-3"),
-    name: if(hugo.$fonts_type_sans_name != "null", hugo.$fonts_type_sans_name, "Source Sans 3"),
-    fallback_names: if(hugo.$fonts_type_sans_fallback_names != "null", hugo.$fonts_type_sans_fallback_names, "null"),
+    id: $_sans_id,
+    name: $_sans_name,
+    fallback_names: $_sans_fallback_names,
   ),
   serif: (
-    id: if(hugo.$fonts_type_serif_id != "null", hugo.$fonts_type_serif_id, "alegreya"),
-    name: if(hugo.$fonts_type_serif_name != "null", hugo.$fonts_type_serif_name, "Alegreya"),
-    fallback_names: if(hugo.$fonts_type_serif_fallback_names != "null", hugo.$fonts_type_serif_fallback_names, "null"),
+    id: $_serif_id,
+    name: $_serif_name,
+    fallback_names: $_serif_fallback_names,
   ),
   mono: (
-    id: if(hugo.$fonts_type_mono_id != "null", hugo.$fonts_type_mono_id, "dm-mono"),
-    name: if(hugo.$fonts_type_mono_name != "null", hugo.$fonts_type_mono_name, "DM Mono"),
-    fallback_names: if(hugo.$fonts_type_mono_fallback_names != "null", hugo.$fonts_type_mono_fallback_names, "null"),
+    id: $_mono_id,
+    name: $_mono_name,
+    fallback_names: $_mono_fallback_names,
   )
 );
 
@@ -402,7 +442,9 @@ $fontFamilySpecDefault: (
 
 @mixin defineFontUtilityClasses($specFamilyOverride, $useAs: default) {
   $specFamily: map-merge($fontFamilySpecDefault, $specFamilyOverride);
-  $useAs: if(type-of($useAs) == list, $useAs, ($useAs,));
+  @if type-of($useAs) != list {
+    $useAs: ($useAs,);
+  }
   @if $debugType {
     @debug 'defineFontUtilityClasses: specFamilyOverride:\n#{meta.inspect($specFamilyOverride)}\nuseAs: #{meta.inspect($useAs)}';
   }
