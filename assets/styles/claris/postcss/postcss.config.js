@@ -13,7 +13,7 @@ const cssCustomPropertiesKeepRegex = [
   /color-scheme/, // color-scheme.js
   /note-bg/, // shortcode note
 ]
-const purgeCSS = require("@fullhuman/postcss-purgecss")({
+const purgeCSS = require("@fullhuman/postcss-purgecss").default({
   content: ["./hugo_stats.json"],
   defaultExtractor: (content) => {
     const els = JSON.parse(content).htmlElements;
