@@ -10,3 +10,4 @@ package-lock.json
 
 go.work
 go.work.sum
+.spx/sessions/
