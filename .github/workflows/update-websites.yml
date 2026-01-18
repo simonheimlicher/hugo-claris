@@ -29,6 +29,7 @@ jobs:
         website:
           - repo: simonheimlicher/hugo-claris-demo
           - repo: simonheimlicher/heimlicher.com
+          - repo: simonheimlicher/spx.sh
 
     permissions:
       contents: read
