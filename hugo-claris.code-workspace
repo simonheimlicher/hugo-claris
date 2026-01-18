@@ -4,7 +4,7 @@
 			"path": "."
 		},
 		{
-			"path": "../claris-resources"
+			"path": "../../claris-resources"
 		}
 	],
 }
