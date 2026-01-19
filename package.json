@@ -8,6 +8,7 @@
     "devDependencies": {
       "@fullhuman/postcss-purgecss": "project",
       "autoprefixer": "project",
+      "cssnano": "project",
       "postcss": "project",
       "postcss-cli": "project",
       "postcss-prune-var": "project",
@@ -18,7 +19,6 @@
     "medium-zoom": "^1.0.6",
     "posthog-js": "^1.94.2"
   },
-  "description": "The professional website of Simon Heimlicher",
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^5.0.0",
     "autoprefixer": "^10.4.14",
