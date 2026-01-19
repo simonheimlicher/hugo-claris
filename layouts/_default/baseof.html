@@ -12,7 +12,7 @@
   $.Type $.Kind
   $.AlternativeOutputFormats $.OutputFormats
   $page.Params.assets $page.Params.render
-  hugo.Environment (getenv "HUGO_MINIFY") -}}
+  hugo.Environment (getenv "HUGO_CLARIS_MINIFY") -}}
 {{- $partialContext := (dict "Page" . "Template" $template "AssetVariant" $assetVariant) }}
 
 {{- if $debug }}

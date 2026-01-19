@@ -3,9 +3,10 @@
 {{ $debug := false }}
 {{ $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
-{{ $envMinifyValue := default "unset" (getenv "HUGO_MINIFY") }}
+{{/* Use HUGO_CLARIS_MINIFY to control theme minification (separate from Hugo's --minify flag) */}}
+{{ $envMinifyValue := default "unset" (getenv "HUGO_CLARIS_MINIFY") }}
 {{ $envMinifySet := ne $envMinifyValue "unset" }}
-{{ $envMinify := and $envMinifyValue (in $envMinifyValue (slice "true" "on" "1") ) }}
+{{ $envMinify := and $envMinifyValue (in (slice "true" "on" "1") $envMinifyValue) }}
 {{ $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
 {{ $envStage := partialCached "claris/_functions/is-build-environment" "stage" "stage" hugo.Environment }}
 {{ $isMinifyEnabled := or $envMinify (and (or $envProd $envStage) (or (not $envMinifySet) $envMinify ) ) }}
