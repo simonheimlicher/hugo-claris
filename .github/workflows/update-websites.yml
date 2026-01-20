@@ -1,18 +1,26 @@
 name: Update websites
 
 # Update Hugo modules and trigger deployment on dependent website repositories.
-# When hugo-claris is pushed to main or stage, this workflow updates the module
-# version in each dependent website and pushes the change, triggering their
-# deployment pipelines.
+#
+# Behavior:
+# - push to main: Update module reference in downstream repos (branch must exist)
+# - push to feature branch: Create branch if needed, then update module reference
+# - delete feature branch: Delete matching branches in downstream repos
 
 on:
   push:
   pull_request:
+  delete: # Triggers when a branch is deleted
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Job: Update module reference in downstream websites (push events)
+  # ═══════════════════════════════════════════════════════════════════════════
   update-website:
+    # Only run on push events (not delete)
+    if: github.event_name != 'delete'
     runs-on: ubuntu-latest
 
     # Prevent race conditions when multiple pushes happen quickly.
@@ -46,7 +54,6 @@ jobs:
       # ─────────────────────────────────────────────────────────────────────────
       # Setup: Install tools and checkout source repo
       # ─────────────────────────────────────────────────────────────────────────
-
       - name: Setup Hugo
         # Direct download from Hugo releases (no third-party action needed)
         run: |
@@ -85,19 +92,47 @@ jobs:
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
-            echo "::warning::Branch '${{ env.BRANCH_NAME }}' does not exist in ${{ matrix.website.repo }}, skipping"
-            echo "### Skipped ${{ matrix.website.repo }}" >> $GITHUB_STEP_SUMMARY
-            echo "Branch \`${{ env.BRANCH_NAME }}\` does not exist" >> $GITHUB_STEP_SUMMARY
           fi
         env:
           GH_TOKEN: ${{ secrets.GH_ACTIONS_PAT }}
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Create branch if it doesn't exist (feature branches only, not main)
+      # ─────────────────────────────────────────────────────────────────────────
+
+      - name: Create branch ${{ env.BRANCH_NAME }} in ${{ matrix.website.repo }}
+        id: create-branch
+        if: steps.check-branch.outputs.exists == 'false' && env.BRANCH_NAME != 'main'
+        run: |
+          # Get the SHA of the main branch
+          MAIN_SHA=$(gh api repos/${{ matrix.website.repo }}/git/refs/heads/main --jq '.object.sha')
+
+          # Create the new branch from main
+          gh api repos/${{ matrix.website.repo }}/git/refs \
+            --method POST \
+            --field ref="refs/heads/${{ env.BRANCH_NAME }}" \
+            --field sha="$MAIN_SHA"
+
+          echo "created=true" >> $GITHUB_OUTPUT
+          echo "### Created branch in ${{ matrix.website.repo }}" >> $GITHUB_STEP_SUMMARY
+          echo "Created \`${{ env.BRANCH_NAME }}\` from \`main\`" >> $GITHUB_STEP_SUMMARY
+        env:
+          GH_TOKEN: ${{ secrets.GH_ACTIONS_PAT }}
+
+      # Skip if main branch doesn't exist (it should always exist)
+      - name: Skip - branch does not exist
+        if: steps.check-branch.outputs.exists == 'false' && env.BRANCH_NAME == 'main'
+        run: |
+          echo "::warning::Branch 'main' does not exist in ${{ matrix.website.repo }}, skipping"
+          echo "### Skipped ${{ matrix.website.repo }}" >> $GITHUB_STEP_SUMMARY
+          echo "Branch \`main\` does not exist (this should not happen)" >> $GITHUB_STEP_SUMMARY
 
       # ─────────────────────────────────────────────────────────────────────────
       # Checkout and update the website repo
       # ─────────────────────────────────────────────────────────────────────────
 
       - name: Checkout ${{ matrix.website.repo }}
-        if: steps.check-branch.outputs.exists == 'true'
+        if: steps.check-branch.outputs.exists == 'true' || steps.create-branch.outputs.created == 'true'
         uses: actions/checkout@v4
         with:
           repository: ${{ matrix.website.repo }}
@@ -107,7 +142,7 @@ jobs:
 
       # Configure Go module cache after checkout (needs go.sum from website)
       - name: Configure Go cache
-        if: steps.check-branch.outputs.exists == 'true'
+        if: steps.check-branch.outputs.exists == 'true' || steps.create-branch.outputs.created == 'true'
         uses: actions/cache@v4
         with:
           path: ~/go/pkg/mod
@@ -116,7 +151,7 @@ jobs:
             ${{ runner.os }}-go-
 
       - name: Update Hugo modules in ${{ matrix.website.repo }}
-        if: steps.check-branch.outputs.exists == 'true'
+        if: steps.check-branch.outputs.exists == 'true' || steps.create-branch.outputs.created == 'true'
         run: |
           cd website
 
@@ -147,3 +182,44 @@ jobs:
             echo "### No changes for ${{ matrix.website.repo }}" >> $GITHUB_STEP_SUMMARY
             echo "Module versions already up to date on \`${{ env.BRANCH_NAME }}\`" >> $GITHUB_STEP_SUMMARY
           fi
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Job: Delete matching branches in downstream websites (delete events)
+  # ═══════════════════════════════════════════════════════════════════════════
+  delete-branch:
+    # Only run on branch delete events, and never delete main
+    if: github.event_name == 'delete' && github.event.ref_type == 'branch' && github.event.ref != 'main'
+    runs-on: ubuntu-latest
+
+    # Process all websites even if one fails
+    strategy:
+      fail-fast: false
+      matrix:
+        website:
+          - repo: simonheimlicher/hugo-claris-demo
+          - repo: simonheimlicher/heimlicher.com
+          - repo: simonheimlicher/spx.sh
+
+    permissions:
+      contents: read
+
+    env:
+      # For delete events, branch name is in github.event.ref (not github.ref_name)
+      BRANCH_NAME: ${{ github.event.ref }}
+
+    steps:
+      - name: Delete branch ${{ env.BRANCH_NAME }} in ${{ matrix.website.repo }}
+        run: |
+          # Check if branch exists before trying to delete
+          if gh api repos/${{ matrix.website.repo }}/branches/${{ env.BRANCH_NAME }} --silent 2>/dev/null; then
+            gh api repos/${{ matrix.website.repo }}/git/refs/heads/${{ env.BRANCH_NAME }} \
+              --method DELETE
+
+            echo "### Deleted branch in ${{ matrix.website.repo }}" >> $GITHUB_STEP_SUMMARY
+            echo "Deleted \`${{ env.BRANCH_NAME }}\`" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### Branch not found in ${{ matrix.website.repo }}" >> $GITHUB_STEP_SUMMARY
+            echo "Branch \`${{ env.BRANCH_NAME }}\` does not exist (already deleted or never created)" >> $GITHUB_STEP_SUMMARY
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GH_ACTIONS_PAT }}
