@@ -40,7 +40,7 @@ caches:
 security:
   enableInlineShortcodes: false
   exec:
-    allow: ["^dart-sass", "^sass", "^go$", "^npx$", "^postcss$"]
+    allow: ["^sass", "^go$", "^npx$", "^postcss$"]
     osEnv: ["(?i)^(PATH|PATHEXT|APPDATA|TMP|TEMP|TERM)$"]
   funcs:
     getenv: ["^HUGO_"]
