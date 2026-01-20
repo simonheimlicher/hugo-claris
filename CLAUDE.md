@@ -16,11 +16,11 @@ This is the **Hugo Claris** theme module, consumed by websites like `heimlicher.
 
 This module uses git worktrees:
 
-| Directory | Branch | Purpose |
-|-----------|--------|---------|
-| `root/` | devel | Active development (YOU ARE HERE) |
-| `main/` | main | Read-only mirror of origin/main (production) |
-| `stage/` | stage | Read-only mirror of origin/stage (staging) |
+| Directory | Branch | Purpose                                      |
+| --------- | ------ | -------------------------------------------- |
+| `root/`   | devel  | Active development (YOU ARE HERE)            |
+| `main/`   | main   | Read-only mirror of origin/main (production) |
+| `stage/`  | stage  | Read-only mirror of origin/stage (staging)   |
 
 **Always work in `root/`** - the `main/` and `stage/` directories are for reference only.
 
@@ -28,11 +28,11 @@ This module uses git worktrees:
 
 > **Critical**: The `main/` and `stage/` worktrees target different Hugo versions.
 
-| Worktree  | Hugo Compatibility | Notes                                    |
-| --------- | ------------------ | ---------------------------------------- |
-| `main/`   | Hugo ≤0.145.0      | Will **NOT** build with Hugo 0.153.5+    |
-| `stage/`  | Hugo 0.153.5+      | Updated for latest Hugo and Dart SASS    |
-| `root/`   | Hugo 0.153.5+      | Active development (based on stage)      |
+| Worktree | Hugo Compatibility | Notes                                 |
+| -------- | ------------------ | ------------------------------------- |
+| `main/`  | Hugo ≤0.145.0      | Will **NOT** build with Hugo 0.153.5+ |
+| `stage/` | Hugo 0.153.5+      | Updated for latest Hugo and Dart SASS |
+| `root/`  | Hugo 0.153.5+      | Active development (based on stage)   |
 
 **Why `main/` fails with latest Hugo:**
 
@@ -65,19 +65,23 @@ hugo mod npm pack         # Regenerate package.json from package.hugo.json
 
 This is a **Hugo Module** consumed by websites. Changes trigger downstream deployments.
 
-| Branch | Environment | Downstream Effect |
-|--------|-------------|-------------------|
-| `main` | Production | Triggers update on simon.heimlicher.com |
-| `stage` | Staging | Triggers update on stage.heimlicher.com |
-| `devel` | Development | Local development only |
+| Branch  | Environment | Downstream Effect                       |
+| ------- | ----------- | --------------------------------------- |
+| `main`  | Production  | Triggers update on simon.heimlicher.com |
+| `stage` | Staging     | Triggers update on stage.heimlicher.com |
+| `devel` | Development | Local development only                  |
 
 **Current Context**: You are in `root/` on the **`devel`** branch.
 
 ## Deployment Workflow
 
-- **Module Updates**: Pushing to `main` or `stage` triggers the `update-websites` GitHub Workflow.
+See [WORKFLOWS.md](./WORKFLOWS.md) for detailed documentation on CI/CD workflows.
+
+- **Module Updates**: Pushing to `main` or any feature branch triggers the `update-websites` GitHub Workflow.
+- **Feature Branches**: Automatically created in consuming sites, enabling end-to-end testing.
 - **Downstream Triggers**: This workflow updates the module version in dependent repositories (like `heimlicher.com`) and pushes the change.
 - **Site Deployment**: The commit to the dependent repository interacts with its own deployment pipeline (e.g., Cloudflare Pages).
+- **Cleanup**: Deleting a feature branch in hugo-claris auto-deletes matching branches in consuming sites.
 
 ## Local Development
 
@@ -101,10 +105,10 @@ This is a **Hugo Module** consumed by websites. Changes trigger downstream deplo
 
 ### Version Requirements
 
-| Tool | Minimum Version | Notes |
-| :--- | :--- | :--- |
-| Hugo | 0.153.3 | Required for WASM-based WebP encoding with fixed memory ceiling |
-| Dart Sass | 1.97.1 | Required for updated color functions and deprecation handling |
+| Tool      | Minimum Version | Notes                                                           |
+| :-------- | :-------------- | :-------------------------------------------------------------- |
+| Hugo      | 0.153.3         | Required for WASM-based WebP encoding with fixed memory ceiling |
+| Dart Sass | 1.97.1          | Required for updated color functions and deprecation handling   |
 
 ## Module Dependencies
 
@@ -119,10 +123,10 @@ hugo-claris
 
 ### Relationship with claris-resources
 
-| Module              | Purpose                    | Contains                                         |
-| ------------------- | -------------------------- | ------------------------------------------------ |
-| **hugo-claris**     | Theme-specific code        | font-styles.html, style-bundles.html, assets.html |
-| **claris-resources** | General-purpose utilities | preload.html, image processing, shared assets    |
+| Module               | Purpose                   | Contains                                          |
+| -------------------- | ------------------------- | ------------------------------------------------- |
+| **hugo-claris**      | Theme-specific code       | font-styles.html, style-bundles.html, assets.html |
+| **claris-resources** | General-purpose utilities | preload.html, image processing, shared assets     |
 
 ### Local Development with claris-resources
 

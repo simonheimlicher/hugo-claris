@@ -1,6 +1,6 @@
 # **Hugo Claris:** a fluid and responsive theme for a professional portfolio website
 
-<img alt="iPhone 12 Pro landscape" src="./static/images/hugo-claris-demo_home_iPhone_12_Pro-landscape.png" width=844> 
+<img alt="iPhone 12 Pro landscape" src="./static/images/hugo-claris-demo_home_iPhone_12_Pro-landscape.png" width=844>
 
 ### Visit the [*demo website of Hugo Claris*](https://claris.heimlicher.com/)
 
@@ -12,9 +12,9 @@
 
 *Claris* is a theme for [Hugo](https://gohugo.io/), the world’s fastest static website generator.
 
-* **Mobile-first:** *Claris* works great on mobile devices as well as on laptops, iMacs, and desktop PCs.
-* **Responsive:** Adapts its layout and design to the device and orientation of the user.
-* **Modular:** Implemented as a Hugo module, which is just a Go module.
+- **Mobile-first:** *Claris* works great on mobile devices as well as on laptops, iMacs, and desktop PCs.
+- **Responsive:** Adapts its layout and design to the device and orientation of the user.
+- **Modular:** Implemented as a Hugo module, which is just a Go module.
 
 ## Responsive
 
@@ -98,8 +98,8 @@ baseURL = "/"
 title = "Hugo theme *Claris* Demo"
 
 [module]
-  [[module.imports]]
-    path = "github.com/simonheimlicher/hugo-claris"
+[[module.imports]]
+path = "github.com/simonheimlicher/hugo-claris"
 ```
 
 #### Using YAML for your configuration files
@@ -127,47 +127,47 @@ hugo mod get -u
 
 <details  style="cursor:pointer"><summary><strong>If this does not work...</strong></summary>
 
-  If you add any module to the Hugo configuration without having initialized the current directory as a `Hugo Module` with `hugo mod init github.com/your-username/your-hugo-site` (see **Step 2.b** above), you will get the following error message:
+If you add any module to the Hugo configuration without having initialized the current directory as a `Hugo Module` with `hugo mod init github.com/your-username/your-hugo-site` (see **Step 2.b** above), you will get the following error message:
 
-  ```zsh
-  Error: failed to load modules: 
-  module "github.com/simonheimlicher/hugo-claris" not found in 
-  ".../your-hugo-site/themes/github.com/simonheimlicher/hugo-claris";
-  either add it as a Hugo Module or store it in 
-  ".../your-hugo-site/themes".: module does not exist
-  ```
+```zsh
+Error: failed to load modules: 
+module "github.com/simonheimlicher/hugo-claris" not found in 
+".../your-hugo-site/themes/github.com/simonheimlicher/hugo-claris";
+either add it as a Hugo Module or store it in 
+".../your-hugo-site/themes".: module does not exist
+```
 
-  This error indicates that you have **correctly configured the module** to be loaded but your site's **root directory itself is not a Hugo Module.**
-  
-  You can easily verify this by checking if there is a file named `go.mod`:
-  
-  ```zsh
-  cat go.mod
-  ```
+This error indicates that you have **correctly configured the module** to be loaded but your site's **root directory itself is not a Hugo Module.**
+
+You can easily verify this by checking if there is a file named `go.mod`:
+
+```zsh
+cat go.mod
+```
 
 This should yield something along the following lines:
 
-  ```zsh
+```zsh
 module github.com/simonheimlicher/heimlicher.com
 
 go 1.23
 
 require (
-  github.com/simonheimlicher/claris-resources v0.0.0-20240505124848-a527345b7de9 // indirect
-  github.com/simonheimlicher/hugo-claris v0.0.0-20241125145343-9821a3e92479 // indirect
-  github.com/simonheimlicher/hugo-fontawesome v0.0.0-20230505145305-a0afa1d13cf7 // indirect
+github.com/simonheimlicher/claris-resources v0.0.0-20240505124848-a527345b7de9 // indirect
+github.com/simonheimlicher/hugo-claris v0.0.0-20241125145343-9821a3e92479 // indirect
+github.com/simonheimlicher/hugo-fontawesome v0.0.0-20230505145305-a0afa1d13cf7 // indirect
 )
 ```
-  
-  Before you try to go back to the above step, you need to temporarily rename your configuration, otherwise initializing the directory as Hugo Module will not work. To rectify the situation, you may proceed along the following lines:
 
-  ```zsh
-  mv -i config{,-disabled}
+Before you try to go back to the above step, you need to temporarily rename your configuration, otherwise initializing the directory as Hugo Module will not work. To rectify the situation, you may proceed along the following lines:
 
-  hugo mod init github.com/your-username/your-hugo-site
+```zsh
+mv -i config{,-disabled}
 
-  mv -i config{-disabled,}
-  ```
+hugo mod init github.com/your-username/your-hugo-site
+
+mv -i config{-disabled,}
+```
 
 </details>
 
@@ -191,10 +191,14 @@ Your site should now be running locally, accessible at `http://localhost:1313`. 
 
 To deploy your Hugo site with the *Claris* theme to Cloudflare Pages:
 
-* Push your site to a GitHub repository.
-* [Set up a new project on Cloudflare Pages](https://developers.cloudflare.com/pages/get-started), linking it to your GitHub repository.
-* Follow the [framework-specific guide for Hugo](https://developers.cloudflare.com/pages/framework-guides/deploy-a-hugo-site/)
-* Cloudflare Pages will build and deploy your site every time you push to your repository.
+- Push your site to a GitHub repository.
+- [Set up a new project on Cloudflare Pages](https://developers.cloudflare.com/pages/get-started), linking it to your GitHub repository.
+- Follow the [framework-specific guide for Hugo](https://developers.cloudflare.com/pages/framework-guides/deploy-a-hugo-site/)
+- Cloudflare Pages will build and deploy your site every time you push to your repository.
+
+## Development
+
+For information about the CI/CD workflows used in this project, see [WORKFLOWS.md](./WORKFLOWS.md).
 
 ## Contributing
 
