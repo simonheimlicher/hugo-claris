@@ -1,5 +1,5 @@
 {{ $commentStr := "" }}
-{{ if not (partialCached "claris/_functions/is-minify-enabled" page hugo.Environment site.Params) }}
+{{ if partialCached "claris/_functions/verbose-output" "verbose" }}
 {{ with . }}
 {{ $commentStr = (printf "<!-- %s -->" .) | safeHTML }}
 {{ end }}

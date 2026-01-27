@@ -5,14 +5,14 @@
 {{- $debug := and false ($page.Param "clarisdebug") }}
 {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
-{{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
-{{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
+{{- $envDevel := hugo.IsDevelopment }}
+{{- $envProd := hugo.IsProduction }}
 
 {{- $assetVariant := partialCached "claris/_functions/assets/asset-variant" (dict "Page" $.Page "Template" $template)
   $.Type $.Kind
   $.AlternativeOutputFormats $.OutputFormats
   $page.Params.assets $page.Params.render
-  hugo.Environment (getenv "HUGO_CLARIS_MINIFY") -}}
+  hugo.Environment site.Params.claris.verbose -}}
 {{- $partialContext := (dict "Page" . "Template" $template "AssetVariant" $assetVariant) }}
 
 {{- if $debug }}

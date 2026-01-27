@@ -1,6 +1,0 @@
-# NOTE: To avoid minification of CSS removing relevant rules,
-# it is imperative for `build.buildStats.enable` to be `true`
-# in any environment for which `is-minify-enabled` returns true
-build:
-  buildStats:
-    enable: true

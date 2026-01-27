@@ -1,24 +1,18 @@
-{{- $envDevel := partialCached "claris/_functions/is-build-environment" "devel" "devel" hugo.Environment }}
-{{- $envProd := partialCached "claris/_functions/is-build-environment" "prod" "prod" hugo.Environment }}
-{{- if (or $envDevel $envProd) -}}
-  {{- $canonicalBaseURL := site.Params.canonicalbaseurl | default site.BaseURL }}
-  {{- $siteMap := printf "%s/%s" (strings.TrimRight "/" $canonicalBaseURL) "sitemap.xml" }}
-  {{- with $siteMap -}}
+{{/* robots.txt: Always output production content (sitemap + section rules).
+Debug/preview deployments are protected from indexing by infrastructure (Cloudflare Access),
+not by robots.txt content. */}}
+{{- $canonicalBaseURL := site.Params.canonicalbaseurl | default site.BaseURL }}
+{{- $siteMap := printf "%s/%s" (strings.TrimRight "/" $canonicalBaseURL) "sitemap.xml" }}
 Sitemap: {{ $siteMap }}
+{{- $robotsTxtDisallowSections := default false site.Params.robots.robotsTxtDisallowSections }}
+{{- with $robotsTxtDisallowSections }}
+  {{- if not (reflect.IsSlice $robotsTxtDisallowSections) }}
+    {{- $robotsTxtDisallowSections = slice $robotsTxtDisallowSections }}
   {{- end }}
-  {{- $robotsTxtDisallowSections := default false site.Params.robots.robotsTxtDisallowSections }}
-  {{- with $robotsTxtDisallowSections }}
-    {{- if not (reflect.IsSlice $robotsTxtDisallowSections) }}
-      {{- $robotsTxtDisallowSections = slice $robotsTxtDisallowSections }}
-    {{- end }}
-    {{- $siteBaseURL := site.BaseURL | default "/" | urls.Parse }}
-    {{- $siteBasePath := $siteBaseURL.Path }}
+  {{- $siteBaseURL := site.BaseURL | default "/" | urls.Parse }}
+  {{- $siteBasePath := $siteBaseURL.Path }}
 User-agent: *
-    {{- range $robotsTxtDisallowSections }}
+  {{- range $robotsTxtDisallowSections }}
 {{ printf "Disallow: %s%s" $siteBasePath (strings.TrimLeft "/" .) }}
-    {{- end }}
   {{- end }}
-{{ else -}}
-User-agent: *
-Disallow: /
-{{ end -}}
+{{- end }}

@@ -1,15 +1,5 @@
-# NOTE: To avoid minification of CSS removing relevant rules,
-# it is imperative for `build.buildStats.enable` to be `true`
-# in any environment for which `is-minify-enabled` returns true
-build:
-  buildStats:
-    enable: true
-
 # Only enable indexing for production
+# (overrides default robots: { index: false, follow: false } from params.yaml)
 robots:
   index: true
   follow: true
-  # Sections to be listed in robots.txt as being excluded from indexing CAUTION:
-  # This will cause attackers to look at these sections in particular, so do not
-  # use this parameter to hide your top secret sections
-  # robotsTxtDisallowSections: [_error]

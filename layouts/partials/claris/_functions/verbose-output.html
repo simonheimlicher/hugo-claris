@@ -1,0 +1,20 @@
+{{/*
+Returns true if verbose output is enabled:
+- Unminified CSS/JS bundles
+- Debug HTML comments visible
+- Source maps included
+
+Default: verbose in development, not verbose in production
+Override: site.Params.claris.verbose
+          (set via HUGO_PARAMS_CLARIS_VERBOSE=true env var)
+
+See: https://gohugo.io/configuration/introduction/#environment-variables
+*/}}
+{{ $verbose := hugo.IsDevelopment }}
+{{ with site.Params.claris }}
+  {{ if isset . "verbose" }}
+    {{/* Handle both boolean and string values (env vars are strings) */}}
+    {{ $verbose = in (slice true "true" "1" "on" "yes") .verbose }}
+  {{ end }}
+{{ end }}
+{{ return $verbose }}

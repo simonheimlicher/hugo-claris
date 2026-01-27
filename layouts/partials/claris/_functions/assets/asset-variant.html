@@ -148,18 +148,16 @@ When calling `asset-variant` with `partialCached`, make sure to add
   {{ end }}
 {{ end }}
 
-{{/* Whether assets should be minified is determined by three conditions:
+{{/* Whether CSS/JS bundles should be minified is controlled by verbose output mode.
+When verbose output is enabled (development), bundles are NOT minified.
+When verbose output is disabled (production), bundles ARE minified.
 
-1. If `hugo` is called with `--minify`, the HTML is minified.
-2. If the environment variable `HUGO_CLARIS_MINIFY` is truthy
-3. If the Hugo environment is `production` and the environment variable
-   `HUGO_CLARIS_MINIFY` is not set or truthy
+Override via: HUGO_PARAMS_CLARIS_VERBOSE=true (env var) or site.Params.claris.verbose (config)
 
-When calling `asset-variant` with `partialCached`, make sure to add
-`hugo.Environment` and `getenv "HUGO_CLARIS_MINIFY"` to the cache key.
-
+Note: HTML minification is controlled separately by Hugo's --minify flag.
 */}}
-{{ $minifyBundles := partialCached "claris/_functions/is-minify-enabled" . hugo.Environment }}
+{{ $verbose := partialCached "claris/_functions/verbose-output" "verbose" }}
+{{ $minifyBundles := not $verbose }}
 
 {{ $assetVariant = (dict
   "MainKind" $mainKind
