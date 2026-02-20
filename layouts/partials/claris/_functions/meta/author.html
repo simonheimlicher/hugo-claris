@@ -62,6 +62,18 @@ authors:
   ) }}
 {{ end }}
 
+{{ with $authorParams }}
+  {{ with .email }}
+    {{ $emailRaw := . }}
+    {{ $envVarName := printf "HUGO_CLARIS_%s" . }}
+    {{ with getenv $envVarName }}
+      {{ $authorMeta = merge $authorMeta (dict "Email" .) }}
+    {{ else }}
+      {{ $authorMeta = merge $authorMeta (dict "Email" $emailRaw) }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
 {{ $authorProfilePage := false }}
 {{ with $authorParams }}
   {{ with $authorProfilePagePath = $authorParams.profilepage }}
@@ -109,7 +121,7 @@ authors:
 {{ end }}
 
 {{ with $authorProfilePage }}
-  {{ $description := .Params.description | default .Summary | default $authorName }}
+  {{ $description := .Params.description | default $authorName }}
   {{ $description = $description | partial `claris/_functions/plainify-string` }}
 
   {{ $authorProfileURL := .RelPermalink }}
