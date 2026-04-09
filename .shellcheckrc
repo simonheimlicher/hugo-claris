@@ -1,0 +1,10 @@
+# Shellcheck configuration
+#
+# Applies to both standalone shellcheck and actionlint's integrated
+# shellcheck pass over `run:` blocks in GitHub Actions workflows.
+
+# SC2016: "Expressions don't expand in single quotes".
+# False positive for the idiomatic `printf '%s\n' "$var"` pattern, where
+# the format string MUST be single-quoted so printf can handle the
+# expansion.
+disable=SC2016

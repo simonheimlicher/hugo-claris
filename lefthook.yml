@@ -1,0 +1,26 @@
+# Lefthook configuration
+#
+# Pre-commit hook runner. Installs git hooks that run linters against staged
+# files before each commit. Run `lefthook install` once after cloning to
+# activate.
+#
+# Required tools (brew install):
+#   - lefthook
+#   - actionlint   (workflow file linter; invokes shellcheck on `run:` blocks)
+#   - shellcheck   (standalone shell script linter; also used by actionlint)
+
+pre-commit:
+  parallel: true
+  commands:
+    actionlint:
+      # Lint changed GitHub Actions workflow files. `-ignore 'SC2016:'`
+      # suppresses the SC2016 info-level false positive triggered by the
+      # idiomatic `printf '%s\n' "$var"` pattern (where the format string
+      # MUST be single-quoted). See .shellcheckrc for the same rule applied
+      # to direct shellcheck invocations.
+      glob: ".github/workflows/*.{yml,yaml}"
+      run: actionlint -ignore 'SC2016:' {staged_files}
+    shellcheck:
+      # Lint changed standalone shell scripts.
+      glob: "*.{sh,bash}"
+      run: shellcheck {staged_files}
