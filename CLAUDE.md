@@ -1,52 +1,45 @@
 # AI Agent Context Guide: hugo-claris
 
-## Quick Start for Agents
+## Critical Rules
 
-1. Read this file for project overview
-2. See `~/Sites/hugo/CLAUDE.md` for workspace-level context
-3. Check `specs/doing/` for active work items
-4. See `context/CLAUDE.md` for detailed orchestration guide
-5. See `context/` for coding standards and workflow documentation
+- ⚠️ **NEVER answer ANY question without invoking at least one skill first** - If the question touches testing, specs, code, architecture, or any topic covered by a skill, invoke the relevant skill BEFORE answering. Skills are the authoritative source — not grep results, not existing files, not your training data. See skill table below.
+- ⚠️ **NEVER write code without invoking a skill first** - See skill table below
+- ⚠️ **NEVER manually navigate `spx/` hierarchy** - Use `/contextualizing spx/path/to/node` skill
+- ⚠️ **ALWAYS read CLAUDE.md in subdirectories** - When working with files in `spx/`, or any other directory, read that directory's CLAUDE.md FIRST if it exists
+- ⚠️ **Skills are ALWAYS authoritative over existing files** - When a skill template prescribes a structure (e.g., Architectural Constraints table), follow the skill — not patterns found in existing spec files. Existing files may contain non-standard sections added before skills existed. Never infer framework conventions from existing files; always read the skill.
+- ⚠️ **NEVER maintain backward compatibility** - When rewriting a module, replace it entirely. No legacy aliases, no re-exports of old names, no shims. Update all imports across the codebase to use the new API.
+- ⚠️ **NEVER reference specs or decisions from code** - No `ADR-21`, `PDR-13`, or similar in code comments or docstrings. Specs are the source of truth; code should not duplicate or point to them. The `semgrep` rule enforces this.
+- ⚠️ **NEVER manually delete untracked files or empty directories** - Git doesn't track empty dirs; use `pnpm run clean` to remove them
+- ⚠️ **NEVER use general-purpose agents to create or modify ANY files** - Agents (subagents, background agents) must ONLY be used for read-only research: searching code, reading files, running read-only commands. ALL file creation, editing, and writing MUST be done by the `applier` agent (see `spec-tree` plugin) or remain in the main conversation context
+
+- ✅ **Always use `just run test`** - Never bare pytest (just run loads .env automatically)
+- ✅ **When uncertain, ASK STRUCTURED QUESTIONS. Never guess implementation patterns, test methodology or requirements.**
+- ✅ **Use `AskUserQuestion` for structured questions with predefined options.** Do NOT use it for open-ended questions where the user needs to provide free-form context — just ask in plain text instead.
+- ✅ **When you are wrong, KEEP ASKING STRUCTURED QUESTIONS. Never assume that you are bothering the user. As long as you are thinking deeply and asking high-leverage questions, you are doing the right thing.**
+
+## Quick Reference: Skills and Agents
+
+Skills run in the main conversation. Agents preload the skill and run autonomously as subagents, returning structured APPROVED/REJECTED verdicts. Use agents when running multiple audits in parallel; use skills when you want to discuss findings with the user.
+
+| User Says...             | Skill                           | Agent                         |
+| ------------------------ | ------------------------------- | ----------------------------- |
+| "Implement this outcome" | `/contextualizing`              | —                             |
+| "Create an outcome"      | `/authoring`                    | —                             |
+| "Add an ADR"             | `/authoring`                    | —                             |
+| "This node is too big"   | `/decomposing`                  | —                             |
+| "Move this under that"   | `/refactoring`                  | —                             |
+| "Check these specs"      | `/aligning`                     | —                             |
+| "Write tests for this"   | `/testing`                      | —                             |
+| "Start the TDD flow"     | `/applying`                     | `applier`                     |
+| "Audit this PDR"         | `/auditing-product-decisions`   | `pdr-auditor`                 |
+| "Audit test evidence"    | `/auditing-tests`               | `test-evidence-auditor`       |
+| "Audit this code"        | `/auditing-python`              | `python-code-auditor`         |
+| "Audit this ADR"         | `/auditing-python-architecture` | `python-architecture-auditor` |
+| "Audit these tests"      | `/auditing-python-tests`        | `python-test-auditor`         |
 
 ## Project Overview
 
 This is the **Hugo Claris** theme module, consumed by websites like `heimlicher.com`.
-
-## Worktree Structure
-
-This module uses git worktrees:
-
-| Directory | Branch | Purpose |
-|-----------|--------|---------|
-| `root/` | devel | Active development (YOU ARE HERE) |
-| `main/` | main | Read-only mirror of origin/main (production) |
-| `stage/` | stage | Read-only mirror of origin/stage (staging) |
-
-**Always work in `root/`** - the `main/` and `stage/` directories are for reference only.
-
-### Hugo Version Compatibility Across Worktrees
-
-> **Critical**: The `main/` and `stage/` worktrees target different Hugo versions.
-
-| Worktree  | Hugo Compatibility | Notes                                    |
-| --------- | ------------------ | ---------------------------------------- |
-| `main/`   | Hugo ≤0.145.0      | Will **NOT** build with Hugo 0.153.5+    |
-| `stage/`  | Hugo 0.153.5+      | Updated for latest Hugo and Dart SASS    |
-| `root/`   | Hugo 0.153.5+      | Active development (based on stage)      |
-
-**Why `main/` fails with latest Hugo:**
-
-- Hugo 0.153.0 introduced breaking changes (WebP encoder switched to WASM with 6MP limit)
-- Dart SASS deprecated the inline `if()` function, requiring `@if/@else` blocks
-- Template partial naming conventions changed
-
-**When comparing `main/` vs `stage/`:**
-
-- Do NOT try to build `main/` locally with latest Hugo - it will fail
-- Use deployed sites for comparison:
-  - Production (main): <https://simon.heimlicher.com/>
-  - Staging (stage): <https://stage.simon.heimlicher.com/>
-- Or compare source files directly between worktrees
 
 ## Key Development Requirements
 
@@ -63,29 +56,25 @@ hugo mod npm pack         # Regenerate package.json from package.hugo.json
 
 ## Branching & Deployment Strategy
 
-This is a **Hugo Module** consumed by websites. Changes trigger downstream deployments.
+This is a **Hugo Module** consumed by websites. `main` is the only long-lived branch; all other work happens on short-lived feature branches that are merged into `main` and then deleted.
 
-| Branch | Environment | Downstream Effect |
-|--------|-------------|-------------------|
-| `main` | Production | Triggers update on simon.heimlicher.com |
-| `stage` | Staging | Triggers update on stage.heimlicher.com |
-| `devel` | Development | Local development only |
+| Branch           | Purpose                                                                                                                     |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `main`           | Production. Pushes update `main` in all consuming sites → deploy to simon.heimlicher.com (and other sites)                  |
+| feature branches | Short-lived. Pushes auto-create matching branch in consuming sites → Cloudflare Pages preview deployment with a preview URL |
 
-**Current Context**: You are in `root/` on the **`devel`** branch.
+See `.github/WORKFLOWS.md` for details on the `update-websites` workflow.
 
 ## Deployment Workflow
 
-- **Module Updates**: Pushing to `main` or `stage` triggers the `update-websites` GitHub Workflow.
-- **Downstream Triggers**: This workflow updates the module version in dependent repositories (like `heimlicher.com`) and pushes the change.
-- **Site Deployment**: The commit to the dependent repository interacts with its own deployment pipeline (e.g., Cloudflare Pages).
+- **Module Updates**: Any push to hugo-claris triggers the `update-websites` GitHub Workflow.
+- **Downstream Triggers**: The workflow updates the module reference in each consuming site (via `hugo mod get`) and pushes the change.
+- **Site Deployment**: The downstream commit triggers each site's own deployment pipeline (Cloudflare Pages).
 
 ## Local Development
 
-- **Context**: Development typically happens on the `stage` branch of this module.
-- **Integrated Setup**: We test changes against `stage.heimlicher.com`. The actual site project is located at `~/Sites/hugo/sites/heimlicher.com/stage`.
-- **Go Workspace**: The site references this module via `go.work`, allowing immediate feedback on changes.
-- **Running the Server**:
-  To run the site with local module changes:
+- **Go Workspace**: Consuming sites reference this module via `go.work`, so changes are visible immediately without committing.
+- **Running the Server**: From the consuming site's directory:
 
   ```bash
   HUGO_MODULE_WORKSPACE=go.work hugo server --port=$HUGO_SERVERPORT --disableFastRender
@@ -98,13 +87,6 @@ This is a **Hugo Module** consumed by websites. Changes trigger downstream deplo
 - **Static Site Generator**: Hugo
 - **Theme**: Hugo Claris (Go Module)
 - **Languages**: HTML, CSS, JavaScript, Go (templates)
-
-### Version Requirements
-
-| Tool | Minimum Version | Notes |
-| :--- | :--- | :--- |
-| Hugo | 0.153.3 | Required for WASM-based WebP encoding with fixed memory ceiling |
-| Dart Sass | 1.97.1 | Required for updated color functions and deprecation handling |
 
 ## Module Dependencies
 
@@ -119,77 +101,7 @@ hugo-claris
 
 ### Relationship with claris-resources
 
-| Module              | Purpose                    | Contains                                         |
-| ------------------- | -------------------------- | ------------------------------------------------ |
-| **hugo-claris**     | Theme-specific code        | font-styles.html, style-bundles.html, assets.html |
-| **claris-resources** | General-purpose utilities | preload.html, image processing, shared assets    |
-
-### Local Development with claris-resources
-
-When developing features that span both modules:
-
-1. The site's `go.work` includes both modules:
-
-   ```
-   # sites/heimlicher.com/root/go.work
-   use ../../../modules/hugo-claris/root
-   use ../../../modules/claris-resources
-   ```
-
-2. Run from the site directory:
-
-   ```bash
-   cd ~/Sites/hugo/sites/heimlicher.com/root
-   set -a && source .env && set +a
-   HUGO_MODULE_WORKSPACE=go.work hugo server --disableFastRender
-   ```
-
-3. Changes to either module are immediately reflected without committing
-
-4. When done, commit to each module's devel branch separately
-
----
-
-## Context System
-
-This project uses a structured context system for AI agent collaboration.
-
-### Documentation Structure
-
-| Location                         | Purpose                                  |
-| -------------------------------- | ---------------------------------------- |
-| `context/CLAUDE.md`              | Agent orchestration guide                |
-| `context/1-structure.md`         | Module layout and conventions            |
-| `context/2-workflow.md`          | TRD → Capability → Feature → Story flow  |
-| `context/3-coding-standards/`    | Go templates, SCSS, TypeScript standards |
-| `context/4-testing-standards.md` | Hugo validation approach                 |
-| `context/5-commit-standards.md`  | Commit message format                    |
-| `context/templates/`             | Templates for ADRs and work items        |
-
-### Work Tracking
-
-Active work is tracked in `specs/doing/`:
-
-```
-specs/doing/
-└── capability-NN_{slug}/
-    ├── {slug}.capability.md
-    ├── decisions/
-    └── feature-NN_{slug}/
-        ├── {slug}.feature.md
-        └── story-NN_{slug}/
-            ├── {slug}.story.md
-            └── DONE.md (when complete)
-```
-
-### Work Item Sizing
-
-| Level          | Scope                    | Session Span       |
-| -------------- | ------------------------ | ------------------ |
-| **Capability** | Multi-day, cross-cutting | Many sessions      |
-| **Feature**    | Meaningful milestone     | Few sessions       |
-| **Story**      | Single-session task      | One context window |
-
-### Reference Documentation
-
-- `docs/CSS_ARCHITECTURE.md` - CSS bundle architecture
+| Module               | Purpose                   | Contains                                          |
+| -------------------- | ------------------------- | ------------------------------------------------- |
+| **hugo-claris**      | Theme-specific code       | font-styles.html, style-bundles.html, assets.html |
+| **claris-resources** | General-purpose utilities | preload.html, image processing, shared assets     |
