@@ -24,21 +24,10 @@
 {{ $metaOpengraph := site.Params.robots.index }}
 {{ $metaTwitterCard := site.Params.robots.index }}
 
-{{ $authorMeta := false }}
+{{ $authorMeta := partialCached "claris/_functions/meta/author" $metaParams $metaKey }}
 {{ $socialMeta := false }}
-{{ $author := default site.Author.name ($page.Param "siteauthor") }}
-{{ with $author }}
-  {{ with site.Param "authors" }}
-    {{ with index . (anchorize $author) }}
-      {{ $author = .name }}
-    {{ end }}
-  {{ end }}
-  {{ $metaParams = merge $metaParams (dict "Author" $author) }}
-  {{ $authorMeta = partialCached "claris/_functions/meta/author" $metaParams $metaKey }}
-  {{ $socialMeta = partialCached "claris/_functions/meta/social" $metaParams $metaKey }}
-{{ else }}
-  {{ errorf "%s site.Author.name and page.Param \"siteauthor\" are unset" }}
-{{ end }}
+{{ $metaParams = merge $metaParams (dict "Author" $authorMeta.Name) }}
+{{ $socialMeta = partialCached "claris/_functions/meta/social" $metaParams $metaKey }}
 
 {{ $name := default site.Title site.Params.website.name }}
 
@@ -61,9 +50,9 @@
 {{ $organization := site.Params.organization.name }}
 
 {{ $currentYear := (string now.Year) }}
-{{ $copyright := default (T "copyright") (printf "%s %s %s. %s" (string now.Year) $author (T "all_rights") ) }}
+{{ $copyright := default (T "copyright") (printf "%s %s %s. %s" (string now.Year) $authorMeta.Name (T "all_rights") ) }}
 {{ with site.Params.website.established }}
-  {{ $copyright = printf "%s %s–%s %s. %s" (T "copyright") (string .) $currentYear $author (T "all_rights" ) }}
+  {{ $copyright = printf "%s %s–%s %s. %s" (T "copyright") (string .) $currentYear $authorMeta.Name (T "all_rights" ) }}
 {{ end }}
 
 {{ $licenseText := "" }}
@@ -73,7 +62,7 @@
   {{ $licenseParams := (dict
       "Count" 1
       "WebsiteName" $name
-      "SiteAuthor" $author
+      "SiteAuthor" $authorMeta.Name
       "Date" (dict
         "Established" site.Params.website.established
         "Current" $currentYear

@@ -6,24 +6,9 @@
 {{- $noScript := default (T "obfuscated-link_requires-javascript") .NoScript }}
 {{- if not $plain }}
   {{- /* If no email address is provided, default to the email of the first author of the page or site */ -}}
-  {{- $authorMap := false }}
-  {{- with site.Author.name | default ($page.Param "siteAuthor") | default ($page.Param "author") }}
-    {{- if reflect.IsMap . }}
-      {{- $authorMap = . }}
-    {{- else }}
-      {{- /* Assume that `$page.Param "author"` is the author of the specific page
-          and look up their entry in the author map based on the `anchorize`d version */ -}}
-      {{- $authorMap = index ($page.Param "authors") (anchorize . ) }}
-    {{- end }}
-  {{- end }}
-  {{- with $authorMap }}
-    {{- /* warnf "%s[%s]: authorMap=%v" $page $template $authorMap */ -}}
-    {{- with $plainText = $authorMap.email }}
-      {{- $emailEnvVariableName := printf "HUGO_CLARIS_%s" $plainText }}
-      {{- with (getenv $emailEnvVariableName) }}
-        {{- $plainText = . }}
-        {{- /* warnf "%s[%s]: %s=%v" $page $template $emailEnvVariableName $plainText */ -}}
-      {{- end }}
+  {{- $authorMeta := partialCached "claris/_functions/meta/author" (dict "Page" $page "Template" $template) $page.Permalink }}
+  {{- with $authorMeta.Name }}
+    {{- with $plainText = $authorMeta.Email }}
     {{- end }}
   {{- else }}
     {{- errorf "%s[%s]: no valid email found: \n.Param \"siteAuthor\": '%v'\n.Param \"author\": '%v'\n.Param \"authors\": '%v'"
@@ -36,8 +21,6 @@
     {{- if (strings.FindRE `.+@.+` $plainText) }}
       {{- $url = urls.Parse (printf "mailto:%s" $url) }}
     {{- else }}
-      {{- /* warnf "%s[%s]: site.Author=%#v site.Author=%#v site.Author.email=%#v"
-          $page $template site.Author site.Author site.Author.email */ -}}
       {{- errorf "%s[%s]: Invalid email address: .Plain=%v $plainText=%v $url=%v .Scheme=%v .Host=%v .RequestURI=%v"
           $page $template $plain $plainText $url $url.Scheme $url.Host $url.RequestURI }}
     {{- end }}
